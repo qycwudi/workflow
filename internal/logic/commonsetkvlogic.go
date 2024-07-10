@@ -24,11 +24,11 @@ func NewCommonSetKvLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Commo
 }
 
 func (l *CommonSetKvLogic) CommonSetKv(req *types.SetKvRequest) (resp *types.SetKvResponse, err error) {
-	// todo: add your logic here and delete this line
 	l.Info("request:%+v", req)
+	one, err := l.svcCtx.GogogoKvModel.FindByKey(l.ctx, "xuetu")
 	response := types.SetKvResponse{
 		Code:    0,
-		Message: "SUCCESS",
+		Message: "SUCCESS:" + one.V,
 	}
 	return &response, nil
 }

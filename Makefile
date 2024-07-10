@@ -32,6 +32,7 @@ setenv:
 
 .PHONY: gogogo
 gogogo:setenv
+	@echo "ImageID: $(ImageID)"  # 添加这一行来打印 ImageID
 	buildctl --addr tcp://10.99.253.223:1234 build \
 	--frontend dockerfile.v0 \
 	--local context=. \
