@@ -1,4 +1,4 @@
-FROM golang:alpine AS builder
+FROM 10.12.0.78:5000/cosmos/ci:glite-build-go22 AS builder
 
 LABEL stage=gobuilder
 
