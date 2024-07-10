@@ -6,4 +6,4 @@ Log:
   Mode: console #file
   Encoding: plain #json
 #MySqlDataSource: root:123456@tcp(127.0.0.1:3306)/col?charset=utf8mb4&parseTime=True&loc=Local
-MySqlDataSource: root:123456@tcp(ido-mysql-headless:3306)/col?charset=utf8mb4&parseTime=True&loc=Local
+MySqlDataSource: root:Root@123@tcp(ido-mysql-headless:3306)/col?charset=utf8mb4&parseTime=True&loc=Local

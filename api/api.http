@@ -20,3 +20,15 @@ Content-Type: application/json
   "value": "vvv",
   "spiderName": "ccc"
 }
+
+### 创建数据源
+POST http://10.99.43.88:8888/common/set/kv
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "key": "qqq",
+  "value": "vvv",
+  "spiderName": "ccc"
+}
+
