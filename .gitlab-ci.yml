@@ -3,7 +3,7 @@ stages:
 
 build-back:
   stage: build-back
-  image: $REGISTRY_URL/cosmos/ci:latest
+  image: 10.12.0.78:5000/cosmos/ci:latest
   script:
     - mkdir -p ~/.docker
     - echo "{\"auths\":{\"10.12.0.78:5000\":{\"auth\":\"$(echo -n $HARBOR_USERNAME:$HARBOR_PASSWORD | base64)\"}}}" > ~/.docker/config.json
