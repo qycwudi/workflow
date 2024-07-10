@@ -1,9 +1,9 @@
 CREATE TABLE `gogogo_kv`
 (
-    `id`          INT          NOT NULL,
-    `spider_name` VARCHAR(255) NOT NULL,
-    `k`           VARCHAR(255) NOT NULL,
-    `v`           VARCHAR(255) NOT NULL,
-    `timestamp`   BIGINT       NOT NULL,
+    `id`          int(11) NOT NULL AUTO_INCREMENT,
+    `spider_name` varchar(255) NOT NULL,
+    `k`           varchar(255) NOT NULL,
+    `v`           varchar(255) NOT NULL,
+    `timestamp`   bigint(20) NOT NULL,
     PRIMARY KEY (`id`)
-);
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8

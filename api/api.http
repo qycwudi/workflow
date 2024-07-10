@@ -10,7 +10,7 @@ Content-Disposition: form-data; name="file"; filename="数产数据录入模版.
 < "/Users/qiangyuecheng/Downloads/数产数据录入模版.xlsx"
 --WebAppBoundary--
 
-### 创建数据源
+### 设置key
 POST http://127.0.0.1:8888/common/set/kv
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
@@ -21,7 +21,7 @@ Content-Type: application/json
   "spiderName": "ccc"
 }
 
-### 创建数据源
+### 设置key生产
 POST http://10.99.43.88:8888/common/set/kv
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
@@ -30,5 +30,14 @@ Content-Type: application/json
   "key": "qqq",
   "value": "vvv",
   "spiderName": "ccc"
+}
+
+### 获取key
+POST http://127.0.0.1:8888/common/get/vByk
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "key": "qqq11"
 }
 

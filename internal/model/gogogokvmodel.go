@@ -14,7 +14,7 @@ type (
 	// and implement the added methods in customGogogoKvModel.
 	GogogoKvModel interface {
 		gogogoKvModel
-		FindByKey(ctx context.Context, id string) (*GogogoKv, error)
+		FindByKey(ctx context.Context, key string) (*GogogoKv, error)
 	}
 
 	customGogogoKvModel struct {

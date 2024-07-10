@@ -2,6 +2,8 @@ package logic
 
 import (
 	"context"
+	"errors"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
 
 	"gogogo/internal/svc"
 	"gogogo/internal/types"
@@ -24,7 +26,23 @@ func NewCommonGetVByKLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Com
 }
 
 func (l *CommonGetVByKLogic) CommonGetVByK(req *types.GetVByKRequest) (resp *types.GetVByKResponse, err error) {
-	// todo: add your logic here and delete this line
+	response := types.GetVByKResponse{}
 
-	return
+	value, err := l.svcCtx.GogogoKvModel.FindByKey(l.ctx, req.Key)
+	if errors.Is(err, sqlx.ErrNotFound) {
+		response.Code = int(KeyMiss)
+		response.Message = "miss key " + req.Key
+		return &response, nil
+	}
+
+	if err != nil {
+		response.Code = int(SystemError)
+		response.Message = "system error" + err.Error()
+		return &response, nil
+	}
+
+	response.Code = int(SUCCESS)
+	response.Message = "hit key"
+	response.Value = value.V
+	return &response, nil
 }
