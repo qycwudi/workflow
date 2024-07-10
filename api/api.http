@@ -41,3 +41,12 @@ Content-Type: application/json
   "key": "qqq11"
 }
 
+### 获取key生产
+POST http://10.99.43.88:8888/common/get/vByk
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "key": "qqq"
+}
+

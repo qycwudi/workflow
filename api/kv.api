@@ -11,7 +11,7 @@ type SetKvRequest {
 }
 
 type SetKvResponse {
-    Code int `json:"code"`
+    Code int `json:"code" common:"0-成功|100-key存在|500-系统错误"`
     Message string `json:"message"`
 }
 
@@ -21,7 +21,7 @@ type GetVByKRequest {
 }
 
 type GetVByKResponse {
-    Code int `json:"code"`
+    Code int `json:"code" common:"0-成功|101-key不存在|500-系统错误"`
     Message string `json:"message"`
     Value string `json:"value"`
 }
@@ -29,11 +29,11 @@ type GetVByKResponse {
 
 service gogogo-api {
 
-    // 设置kv
+    @doc "设置kv"
     @handler CommonSetKvHandler
     post /common/set/kv (SetKvRequest) returns (SetKvResponse)
 
-    // k获取v
+    @doc "根据key获取value"
     @handler CommonGetVByKHandler
     post /common/get/vByk (GetVByKRequest) returns (GetVByKResponse)
 }
