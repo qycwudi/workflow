@@ -1,0 +1,7 @@
+Name: GoGOGO-api
+Host: 0.0.0.0
+Port: 8888
+Timeout: 50000
+Log:
+  Mode: console #file
+  Encoding: plain #json

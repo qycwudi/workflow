@@ -1,0 +1,20 @@
+syntax = "v1"
+
+
+
+type FlowRequest {
+    Key string `json:"key"`
+    Value string `json:"value"`
+}
+
+type FlowResponse {
+    Code int `json:"code"`
+    Message string `json:"message"`
+}
+
+service gogogo-api {
+
+    // 设置kv
+    @handler FlowSetKvHandler
+    post /flow/set/kv (FlowRequest) returns (FlowResponse)
+}
