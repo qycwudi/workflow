@@ -18,6 +18,7 @@ setenv:
 	#$(if $(Tag),$(shell echo $(Tag) | sed -e "s/[master\/|release\/|dev\/|feature\/|alpha\/|beta\/]//g"),$(Stage))
 	$(eval Version:=$(shell echo $(or $(Branch),1.0.0) | sed -e "s/\//-/g"))
 	$(eval MinaVersion:=$(shell echo $(Version) | sed -e "s/release-//g"))
+	$(call set,Stage,$(Branch),main,main)
 	$(call set,Stage,$(Branch),dev,dev)
 	$(call set,Stage,$(Branch),feature,dev)
 	$(call set,Stage,$(Branch),beta,dev)
@@ -28,7 +29,6 @@ setenv:
 	$(eval ImageRegistryUrl:=$(or $(REGISTRY_URL),10.12.0.78:5000))
 	$(eval ImageID:=$(ImageRegistryUrl)/middleware-$(Stage)/gogogo:$(Version)-$(CommitID))
 	$(call set,ImageID,$(Stage),release,$(ImageRegistryUrl)/middleware-$(Version)/gogogo:$(MinaVersion)-beta-$(CommitID))
-	$(eval Flags:="-X gitlab.trustbe.net/middleware/gogogo/client/golang/exec.Version=$(MinaVersion) -X gitlab.trustbe.net/middleware/gogogo/client/golang/exec.CommitID=$(CommitID)")
 
 .PHONY: gogogo
 gogogo:setenv
