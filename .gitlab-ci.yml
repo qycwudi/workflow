@@ -5,10 +5,9 @@ build-back:
   stage: build-back
   image: 10.12.0.78:5000/cosmos/ci:latest
   script:
-    - mkdir -p ~/.docker
-    - echo "{\"auths\":{\"10.12.0.78:5000\":{\"auth\":\"$(echo -n admin:Harbor12345 | base64)\"}}}" > ~/.docker/config.json
     - make gogogo
   only:
     - main
+    - /^dev-.*$/
   tags:
     - k8s-ci
