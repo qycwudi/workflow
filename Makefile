@@ -25,7 +25,7 @@ setenv:
 	$(call set,Stage,$(Branch),release,release)
 	$(call set,Stage,$(Branch),master,dev)
 	$(eval ImageRegistryUsername:=$(or $(HARBOR_USERNAME),admin))
-	$(eval ImageRegistryPassword:=$(or $(HARBOR_PASSWORD),Abc12345))
+	$(eval ImageRegistryPassword:=$(or $(HARBOR_PASSWORD),Harbor12345))
 	$(eval ImageRegistryUrl:=$(or $(REGISTRY_URL),10.12.0.78:5000))
 	$(eval ImageID:=$(ImageRegistryUrl)/middleware-$(Stage)/gogogo:$(Version)-$(CommitID))
 	$(call set,ImageID,$(Stage),release,$(ImageRegistryUrl)/middleware-$(Version)/gogogo:$(MinaVersion)-beta-$(CommitID))
