@@ -7,10 +7,10 @@ equals = $(and $(findstring x$(1),x$(2)), $(findstring x$(2),x$(1)))
 contains = $(call equals, $(findstring x$(2), x$(1)), x$(2))
 set = $(if $(call contains,x$(2),x$(3)), $(eval $(1):=$(4)))
 
-.PHONY: build
-
 .PHONY: setenv
 setenv:
+	$(eval TmpDir := $(shell mktemp -d))
+	$(eval ProtoPath := $(TmpDir)/src:$(ProtoPath):$(TmpDir)/src/types/protos:$(TmpDir)/src/types/pb:.)
 	$(eval GOOS:=$(shell go env GOOS))
 	$(eval Branch:=$(or $(shell git branch --show-current),$(CI_BUILD_REF_NAME)))
 	$(eval CommitID:=$(or $(shell git rev-parse --short HEAD),$(CI_COMMIT_SHORT_SHA)))
@@ -29,6 +29,7 @@ setenv:
 	$(eval ImageID:=$(ImageRegistryUrl)/middleware-$(Stage)/gogogo:$(Version)-$(CommitID))
 	$(call set,ImageID,$(Stage),release,$(ImageRegistryUrl)/middleware-$(Version)/gogogo:$(MinaVersion)-beta-$(CommitID))
 	$(eval Flags:="-X gitlab.trustbe.net/middleware/gogogo/client/golang/exec.Version=$(MinaVersion) -X gitlab.trustbe.net/middleware/gogogo/client/golang/exec.CommitID=$(CommitID)")
+
 .PHONY: gogogo
 gogogo:setenv
 	buildctl --addr tcp://10.99.253.223:1234 build \
@@ -40,4 +41,3 @@ gogogo:setenv
 	--opt filename=Dockerfile \
 	--opt platform=linux/amd64 \
 	--opt build-arg:flags=$(Flags)
-
