@@ -38,7 +38,7 @@ func (l *CommonSetKvLogic) CommonSetKv(req *types.SetKvRequest) (resp *types.Set
 			SpiderName: req.SpiderName,
 			K:          req.Key,
 			V:          req.Value,
-			Timestamp:  int64(time.Now().Second()),
+			Timestamp:  time.Now().UnixMilli(),
 		})
 		if err != nil {
 			response.Code = int(SystemError)
