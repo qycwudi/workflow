@@ -48,13 +48,32 @@ func HandleOcrTask(ctx context.Context, t *asynq.Task) error {
 	if err != nil {
 		return err
 	}
-	// 创建 llm
+	// next任务
+	p.next(ctx)
 	return nil
 }
 
 func (p OcrPayload) ocrApiV1(url string) string {
 
 	return "处理结果处理结果处理结果处理结果处理结果"
+}
+
+func (p OcrPayload) next(ctx context.Context) {
+	if p.NeedLlm {
+		payload := LlmPayload{
+			Key:        p.Key,
+			SpiderName: p.SpiderName,
+			Value:      p.Value,
+			NeedOcr:    p.NeedOcr,
+			OcrAdds:    p.OcrAdds,
+			NeedLlm:    p.NeedLlm,
+			LlmType:    p.LlmType,
+		}
+		err := SendLlmMessage(ctx, AsynqTaskContext.AsynqTaskClient, payload)
+		if err != nil {
+			logx.WithContext(ctx).Errorf("ocr task send next task -> llm task error:", err.Error())
+		}
+	}
 }
 
 func Message2OcrPayload(param *types.SendMessageRequest) OcrPayload {

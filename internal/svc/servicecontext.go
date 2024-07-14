@@ -25,7 +25,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 
 	// mongoDB
 	mgDataModel := model2.NewDataModel(c.MongoDbUrl)
-	asynq2.AsynqTaskContext = asynq2.AsynqTask{MGDataModel: mgDataModel}
+	asynq2.AsynqTaskContext = asynq2.AsynqTask{MGDataModel: mgDataModel, AsynqTaskClient: asynqClient}
 	return &ServiceContext{
 		Config:          c,
 		GogogoKvModel:   model.NewGogogoKvModel(conn),

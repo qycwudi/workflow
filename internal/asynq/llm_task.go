@@ -38,7 +38,7 @@ func HandleLlmTask(ctx context.Context, t *asynq.Task) error {
 	if source.OcrResult != "" {
 		source.OcrResult = " content by ocr:" + source.OcrResult
 	}
-	llmResult := llm(source.Source + source.OcrResult)
+	llmResult := p.llm(source.Source + source.OcrResult)
 	// 存储结果
 	logx.WithContext(ctx).Info("Store llm results")
 	// 更新文档
@@ -53,7 +53,7 @@ func HandleLlmTask(ctx context.Context, t *asynq.Task) error {
 	return nil
 }
 
-func llm(source string) map[string]string {
+func (l LlmPayload) llm(source string) map[string]string {
 	// 调用llm接口
 	return map[string]string{"k": "v"}
 }
