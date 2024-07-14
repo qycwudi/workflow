@@ -3,8 +3,15 @@ package asynq
 import (
 	"github.com/hibiken/asynq"
 	"gogogo/internal/config"
+	model2 "gogogo/internal/model/mongo"
 	"log"
 )
+
+type AsynqTask struct {
+	MGDataModel model2.DataModel
+}
+
+var AsynqTaskContext AsynqTask
 
 func NewAsynqClient(config config.RedisConfig) *asynq.Client {
 	return asynq.NewClient(asynq.RedisClientOpt{Addr: config.RedisAddr, Username: config.RedisUserName, Password: config.RedisPassword, DB: config.RedisDb})

@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
+	model "gogogo/internal/model/mongo"
 	"gogogo/internal/types"
 	"log"
 	"strings"
@@ -52,14 +53,23 @@ func HandleOcrTask(ctx context.Context, t *asynq.Task) error {
 	}
 	logx.WithContext(ctx).Infof("execute ocr task: key = %s,value = %v", p.Key, p.OcrAdds)
 	// 识别内容
-	logx.WithContext(ctx).Info("识别内容")
+	logx.WithContext(ctx).Info("Identify content")
 	var ocrResult = strings.Builder{}
 	for _, addr := range p.OcrAdds {
 		ocrResult.WriteString(p.OcrApiV1(addr))
 	}
 	logx.WithContext(ctx).Info(ocrResult.String())
 	// 存储结果
-	logx.WithContext(ctx).Info("存储结果")
+	logx.WithContext(ctx).Info("Store results")
+	// 更新文档
+	data := model.Data{
+		Key:       p.Key,
+		OcrResult: ocrResult.String(),
+	}
+	_, err := AsynqTaskContext.MGDataModel.UpdateOcrResultByKey(ctx, &data)
+	if err != nil {
+		return err
+	}
 	return nil
 }
 
@@ -77,5 +87,5 @@ func Message2OcrPayload(param *types.SendMessageRequest) OcrPayload {
 
 func (p OcrPayload) OcrApiV1(url string) string {
 
-	return ""
+	return "处理结果处理结果处理结果处理结果处理结果"
 }

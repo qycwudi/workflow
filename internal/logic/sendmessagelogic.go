@@ -2,8 +2,10 @@ package logic
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/zeromicro/go-zero/core/logx"
 	"gogogo/internal/asynq"
+	model2 "gogogo/internal/model/mongo"
 	"gogogo/internal/svc"
 	"gogogo/internal/types"
 )
@@ -31,6 +33,18 @@ func NewSendMessageLogic(ctx context.Context, svcCtx *svc.ServiceContext) *SendM
 
 func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *types.SendMessageResponse, err error) {
 	resp = &types.SendMessageResponse{Code: int(SUCCESS), Message: "SUCCESS"}
+	// 持久化数据
+	reqJson, err := json.Marshal(req)
+	model := &model2.Data{
+		Key:    req.Key,
+		Source: string(reqJson),
+	}
+	err = l.svcCtx.MGDataModel.InsertOne(l.ctx, model)
+	if err != nil {
+		l.Infof("store data:%+v \n", model)
+		l.Errorf("save data to mongo error :", err)
+		return nil, err
+	}
 	// 分发消息
 	if req.NeedOcr {
 		// 发送ocr消息

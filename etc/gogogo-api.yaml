@@ -15,6 +15,7 @@ RedisConfig:
   RedisUserName:
   RedisPassword:
   RedisDb: 6
+MongoDbUrl: mongodb://root:123456@127.0.0.1:27017
 #RocketMQNameServerAddress: '127.0.0.1:9876'
 #RocketMQNameServerAddress: '127.0.0.1:8081'
 #MySqlDataSource: root:Root@123@tcp(ido-mysql-headless:3306)/col?charset=utf8mb4&parseTime=True&loc=Local

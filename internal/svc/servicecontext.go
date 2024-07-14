@@ -6,48 +6,30 @@ import (
 	asynq2 "gogogo/internal/asynq"
 	"gogogo/internal/config"
 	"gogogo/internal/model"
+	model2 "gogogo/internal/model/mongo"
 )
 
 type ServiceContext struct {
 	Config          config.Config
 	GogogoKvModel   model.GogogoKvModel
 	AsynqTaskClient *asynq.Client
-	// rocketMQ太重,优先使用asynq https://github.com/hibiken/asynq
-	// -OcrProducer   golang.Producer
-	// -LlmProducer   golang.Producer
-	// -ocrConsumer   golang.SimpleConsumer
-	// -llmConsumer   golang.SimpleConsumer
+	MGDataModel     model2.DataModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.MySqlDataSource)
-
-	// -// 创建生产者
-	// -ocrProducerMQ := mq.CreateOcrMqProducer(c.RocketMQNameServerAddress)
-	// -llmProducerMQ := mq.CreateLlmMqProducer(c.RocketMQNameServerAddress)
-	//
-	// -// 创建消费者
-	// -ocrConsumer := mq.CreateOCRConsumer(c.RocketMQNameServerAddress)
-	// -llmConsumer := mq.CreateLLMConsumer(c.RocketMQNameServerAddress)
-
 	asynqClient := asynq2.NewAsynqClient(c.RedisConfig)
 	go func() {
 		asynq2.NewAsynqServer(c.RedisConfig)
 	}()
+
+	// mongoDB
+	mgDataModel := model2.NewDataModel(c.MongoDbUrl)
+	asynq2.AsynqTaskContext = asynq2.AsynqTask{MGDataModel: mgDataModel}
 	return &ServiceContext{
 		Config:          c,
 		GogogoKvModel:   model.NewGogogoKvModel(conn),
 		AsynqTaskClient: asynqClient,
-		// -OcrProducer:   ocrProducerMQ,
-		// -LlmProducer:   llmProducerMQ,
-		// -ocrConsumer:   ocrConsumer,
-		// -llmConsumer:   llmConsumer,
+		MGDataModel:     mgDataModel,
 	}
 }
-
-// -func GetOCRConsumer(svc *ServiceContext) golang.SimpleConsumer {
-// 	-return svc.ocrConsumer
-// -}
-// -func GetLLMConsumer(svc *ServiceContext) golang.SimpleConsumer {
-// 	-return svc.llmConsumer
-// -}
