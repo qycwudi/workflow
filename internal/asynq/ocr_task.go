@@ -10,6 +10,7 @@ import (
 	"gogogo/internal/types"
 	"log"
 	"strings"
+	"time"
 )
 
 type OcrPayload struct {
@@ -21,6 +22,51 @@ type OcrPayload struct {
 	NeedLlm    bool     `json:"needLlm"`
 	LlmType    string   `json:"llmType"`
 	OcrResult  string   `json:"ocrResult"`
+}
+
+func HandleOcrTask(ctx context.Context, t *asynq.Task) error {
+	var p OcrPayload
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return fmt.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
+	}
+	logx.WithContext(ctx).Infof("execute ocr task: key = %s,value = %v", p.Key, p.OcrAdds)
+	// 识别内容
+	logx.WithContext(ctx).Info("Identify content")
+	var ocrResult = strings.Builder{}
+	for _, addr := range p.OcrAdds {
+		ocrResult.WriteString(p.ocrApiV1(addr))
+	}
+	logx.WithContext(ctx).Info(ocrResult.String())
+	// 存储结果
+	logx.WithContext(ctx).Info("Store ocr results")
+	// 更新文档
+	data := model.Data{
+		Key:       p.Key,
+		OcrResult: ocrResult.String(),
+	}
+	_, err := AsynqTaskContext.MGDataModel.UpdateOcrResultByKey(ctx, &data)
+	if err != nil {
+		return err
+	}
+	// 创建 llm
+	return nil
+}
+
+func (p OcrPayload) ocrApiV1(url string) string {
+
+	return "处理结果处理结果处理结果处理结果处理结果"
+}
+
+func Message2OcrPayload(param *types.SendMessageRequest) OcrPayload {
+	return OcrPayload{
+		Key:        param.Key,
+		Value:      param.Value,
+		SpiderName: param.SpiderName,
+		NeedOcr:    param.NeedOcr,
+		OcrAdds:    param.OcrAdds,
+		NeedLlm:    param.NeedLlm,
+		LlmType:    param.LlmType,
+	}
 }
 
 func SendOcrMessage(ctx context.Context, client *asynq.Client, ocrPayload OcrPayload) error {
@@ -43,49 +89,5 @@ func NewOCRTask(ocrProcess OcrPayload) (*asynq.Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	return asynq.NewTask(TypeOCRRecognize, payload), nil
-}
-
-func HandleOcrTask(ctx context.Context, t *asynq.Task) error {
-	var p OcrPayload
-	if err := json.Unmarshal(t.Payload(), &p); err != nil {
-		return fmt.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
-	}
-	logx.WithContext(ctx).Infof("execute ocr task: key = %s,value = %v", p.Key, p.OcrAdds)
-	// 识别内容
-	logx.WithContext(ctx).Info("Identify content")
-	var ocrResult = strings.Builder{}
-	for _, addr := range p.OcrAdds {
-		ocrResult.WriteString(p.OcrApiV1(addr))
-	}
-	logx.WithContext(ctx).Info(ocrResult.String())
-	// 存储结果
-	logx.WithContext(ctx).Info("Store results")
-	// 更新文档
-	data := model.Data{
-		Key:       p.Key,
-		OcrResult: ocrResult.String(),
-	}
-	_, err := AsynqTaskContext.MGDataModel.UpdateOcrResultByKey(ctx, &data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func Message2OcrPayload(param *types.SendMessageRequest) OcrPayload {
-	return OcrPayload{
-		Key:        param.Key,
-		Value:      param.Value,
-		SpiderName: param.SpiderName,
-		NeedOcr:    param.NeedOcr,
-		OcrAdds:    param.OcrAdds,
-		NeedLlm:    param.NeedLlm,
-		LlmType:    param.LlmType,
-	}
-}
-
-func (p OcrPayload) OcrApiV1(url string) string {
-
-	return "处理结果处理结果处理结果处理结果处理结果"
+	return asynq.NewTask(TypeOCRRecognize, payload, asynq.Retention(24*time.Hour)), nil
 }

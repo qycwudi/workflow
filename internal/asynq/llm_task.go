@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
+	model "gogogo/internal/model/mongo"
 	"gogogo/internal/types"
 	"log"
 	"time"
@@ -19,6 +20,54 @@ type LlmPayload struct {
 	OcrAdds    []string `json:"OcrAdds"`
 	NeedLlm    bool     `json:"needLlm"`
 	LlmType    string   `json:"llmType"`
+}
+
+func HandleLlmTask(ctx context.Context, t *asynq.Task) error {
+	var p LlmPayload
+	if err := json.Unmarshal(t.Payload(), &p); err != nil {
+		return fmt.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
+	}
+	logx.Infof("execute Llm task: key = %s,value = %s", p.Key, p.Value)
+	// 识别内容
+	logx.WithContext(ctx).Info("Extract feature")
+	// 查询ocr内容和源内容
+	source, err := AsynqTaskContext.MGDataModel.FindOneByKey(ctx, p.Key)
+	if err != nil {
+		return err
+	}
+	if source.OcrResult != "" {
+		source.OcrResult = " content by ocr:" + source.OcrResult
+	}
+	llmResult := llm(source.Source + source.OcrResult)
+	// 存储结果
+	logx.WithContext(ctx).Info("Store llm results")
+	// 更新文档
+	data := model.Data{
+		Key:       p.Key,
+		LLMResult: llmResult,
+	}
+	_, err = AsynqTaskContext.MGDataModel.UpdateLlmResultByKey(ctx, &data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func llm(source string) map[string]string {
+	// 调用llm接口
+	return map[string]string{"k": "v"}
+}
+
+func Message2LlmPayload(param *types.SendMessageRequest) LlmPayload {
+	return LlmPayload{
+		Key:        param.Key,
+		Value:      param.Value,
+		SpiderName: param.SpiderName,
+		NeedOcr:    param.NeedOcr,
+		OcrAdds:    param.OcrAdds,
+		NeedLlm:    param.NeedLlm,
+		LlmType:    param.LlmType,
+	}
 }
 
 func SendLlmMessage(ctx context.Context, client *asynq.Client, LlmPayload LlmPayload) error {
@@ -41,31 +90,5 @@ func NewLlmTask(LlmProcess LlmPayload) (*asynq.Task, error) {
 	if err != nil {
 		return nil, err
 	}
-	return asynq.NewTask(TypeLLMFeatureExtraction, payload), nil
-}
-
-func HandleLlmTask(ctx context.Context, t *asynq.Task) error {
-	var p LlmPayload
-	if err := json.Unmarshal(t.Payload(), &p); err != nil {
-		return fmt.Errorf("json.Unmarshal failed: %v: %w", err, asynq.SkipRetry)
-	}
-	logx.Infof("execute Llm task: key = %s,value = %s", p.Key, p.Value)
-	// 识别内容
-	logx.WithContext(ctx).Info("提取特征")
-	time.Sleep(5 * time.Second)
-	// 存储结果
-	logx.WithContext(ctx).Info("存储结果")
-	return nil
-}
-
-func Message2LlmPayload(param *types.SendMessageRequest) LlmPayload {
-	return LlmPayload{
-		Key:        param.Key,
-		Value:      param.Value,
-		SpiderName: param.SpiderName,
-		NeedOcr:    param.NeedOcr,
-		OcrAdds:    param.OcrAdds,
-		NeedLlm:    param.NeedLlm,
-		LlmType:    param.LlmType,
-	}
+	return asynq.NewTask(TypeLLMFeatureExtraction, payload, asynq.Retention(24*time.Hour)), nil
 }

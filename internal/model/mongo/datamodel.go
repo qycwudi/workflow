@@ -19,12 +19,27 @@ type (
 		InsertOne(ctx context.Context, data *Data) error
 		UpdateOcrResultByKey(ctx context.Context, data *Data) (*mongo.UpdateResult, error)
 		UpdateLlmResultByKey(ctx context.Context, data *Data) (*mongo.UpdateResult, error)
+		FindOneByKey(ctx context.Context, key string) (*Data, error)
 	}
 
 	customDataModel struct {
 		*defaultDataModel
 	}
 )
+
+func (m customDataModel) FindOneByKey(ctx context.Context, key string) (*Data, error) {
+
+	var data Data
+	err := m.conn.FindOne(ctx, &data, bson.M{"key": key})
+	switch err {
+	case nil:
+		return &data, nil
+	case mon.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
 
 func (m customDataModel) UpdateOcrResultByKey(ctx context.Context, data *Data) (*mongo.UpdateResult, error) {
 	// 创建filter，用于查找要更新的文档
@@ -47,7 +62,7 @@ func (m customDataModel) UpdateLlmResultByKey(ctx context.Context, data *Data) (
 	// 创建update，用于指定要更新的字段
 	update := bson.M{
 		"$set": bson.M{
-			"llmResult": data.OcrResult,
+			"llmResult": data.LLMResult,
 			"updateAt":  time.Now(),
 		},
 	}
