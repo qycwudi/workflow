@@ -4,5 +4,6 @@ import "github.com/zeromicro/go-zero/rest"
 
 type Config struct {
 	rest.RestConf
-	MySqlDataSource string
+	MySqlDataSource           string
+	RocketMQNameServerAddress string
 }

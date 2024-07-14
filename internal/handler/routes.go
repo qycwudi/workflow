@@ -29,8 +29,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/flow/set/kv",
-				Handler: FlowSetKvHandler(serverCtx),
+				Path:    "/send/message",
+				Handler: SendMessageHandler(serverCtx),
 			},
 		},
 	)

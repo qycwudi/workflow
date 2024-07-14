@@ -8,7 +8,7 @@ type SetKvRequest struct {
 }
 
 type SetKvResponse struct {
-	Code    int    `json:"code"`
+	Code    int    `json:"code" common:"0-成功|100-key存在|500-系统错误"`
 	Message string `json:"message"`
 }
 
@@ -17,17 +17,22 @@ type GetVByKRequest struct {
 }
 
 type GetVByKResponse struct {
-	Code    int    `json:"code"`
+	Code    int    `json:"code" common:"0-成功|101-key不存在|500-系统错误"`
 	Message string `json:"message"`
 	Value   string `json:"value"`
 }
 
-type FlowRequest struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+type SendMessageRequest struct {
+	Key        string   `json:"key"`
+	Value      string   `json:"value"`
+	SpiderName string   `json:"spiderName"`
+	NeedOcr    bool     `json:"needOcr"`
+	OcrAdds    []string `json:"ocrAdds"`
+	NeedLlm    bool     `json:"needLlm"`
+	LlmType    string   `json:"llmType"`
 }
 
-type FlowResponse struct {
+type SendMessageResponse struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
 }

@@ -3,13 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
-
-	"gogogo/internal/config"
-	"gogogo/internal/handler"
-	"gogogo/internal/svc"
-
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
+	"gogogo/internal/config"
+	"gogogo/internal/handler"
+	"gogogo/internal/mq"
+	"gogogo/internal/svc"
 )
 
 var configFile = flag.String("f", "etc/gogogo-api.yaml", "the config file")
@@ -25,7 +24,23 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
-
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
+
+	// 开启监听
+	consumer := mq.NewRockerConsumer(svc.GetOCRConsumer(ctx), svc.GetLLMConsumer(ctx))
+	go func() {
+		// 开启OCR监听
+		consumer.ReceiveOCRMessage()
+	}()
+	go func() {
+		// 开启LLM监听
+		consumer.ReceiveLLMMessage()
+	}()
+
+	// 关闭rockerMQ生产者
+	defer func() {
+		mq.CloseProducer(ctx.OcrProducer)
+		mq.CloseProducer(ctx.LlmProducer)
+	}()
 	server.Start()
 }
