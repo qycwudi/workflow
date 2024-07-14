@@ -2,9 +2,8 @@ package logic
 
 import (
 	"context"
-	"encoding/json"
 	"github.com/zeromicro/go-zero/core/logx"
-	"gogogo/internal/mq"
+	"gogogo/internal/asynq"
 	"gogogo/internal/svc"
 	"gogogo/internal/types"
 )
@@ -35,8 +34,7 @@ func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *typ
 	// 分发消息
 	if req.NeedOcr {
 		// 发送ocr消息
-		marshal, _ := json.Marshal(req)
-		err := mq.SendMessage(l.ctx, l.svcCtx.OcrProducer, marshal, []string{req.SpiderName, req.Key}, mq.OCRTag, mq.OCR_V1_TOPIC)
+		err := asynq.SendOcrMessage(l.ctx, l.svcCtx.AsynqTaskClient, asynq.Message2OcrPayload(req))
 		if err != nil {
 			resp.Code = int(SendMessageErr)
 			resp.Message = "发送OCR消息异常"
@@ -46,8 +44,7 @@ func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *typ
 
 	if req.NeedLlm {
 		// 发送特征提取消息
-		marshal, _ := json.Marshal(req)
-		err := mq.SendMessage(l.ctx, l.svcCtx.LlmProducer, marshal, []string{req.SpiderName, req.Key}, mq.LLMTag, mq.LLM_TRAIT_EXTRACT_V1_TOPIC)
+		err := asynq.SendLlmMessage(l.ctx, l.svcCtx.AsynqTaskClient, asynq.Message2LlmPayload(req))
 		if err != nil {
 			resp.Code = int(SendMessageErr)
 			resp.Message = "发送LLM消息异常"

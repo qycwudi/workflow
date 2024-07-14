@@ -83,3 +83,11 @@ Content-Type: application/json
   "llmType": "default"
 }
 
+### OCR识别
+POST http://10.10.0.27:6007/v1/pdf_text
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "pdf_url": "http://bidding.fgw.hunan.gov.cn/ztbPdf/project/2024-06/noticeFile/Z430100H017H00384001/952669994d66438aa30dc35d75e79583.pdf"
+}
