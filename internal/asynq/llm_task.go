@@ -3,6 +3,7 @@ package asynq
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -70,6 +71,11 @@ func HandleLlmTask(ctx context.Context, t *asynq.Task) error {
 	delCount, err := AsynqTaskContext.MGHotDataModel.Delete(ctx, hotData.ID.Hex())
 	if err != nil {
 		logx.WithContext(ctx).Errorf("delete hot-data error:%s", err.Error())
+		// 手动回滚cold文档
+		_, err2 := AsynqTaskContext.MGColdDataModel.Delete(ctx, coldData.ID.Hex())
+		if err2 != nil {
+			return errors.Join(err, err2)
+		}
 		return err
 	}
 	logx.WithContext(ctx).Infof("delete hot-data :ID:%s,delCount:%d \n", hotData.ID.String(), delCount)
