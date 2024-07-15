@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	model "gogogo/internal/model/mongo"
 	"gogogo/internal/types"
 	"log"
@@ -31,7 +32,7 @@ func HandleLlmTask(ctx context.Context, t *asynq.Task) error {
 	// 识别内容
 	logx.WithContext(ctx).Info("Extract feature")
 	// 查询ocr内容和源内容
-	source, err := AsynqTaskContext.MGDataModel.FindOneByKey(ctx, p.Key)
+	source, err := AsynqTaskContext.MGHotDataModel.FindOneByKey(ctx, p.Key)
 	if err != nil {
 		return err
 	}
@@ -42,14 +43,36 @@ func HandleLlmTask(ctx context.Context, t *asynq.Task) error {
 	// 存储结果
 	logx.WithContext(ctx).Info("Store llm results")
 	// 更新文档
-	data := model.Data{
+	data := model.HotData{
 		Key:       p.Key,
 		LLMResult: llmResult,
 	}
-	_, err = AsynqTaskContext.MGDataModel.UpdateLlmResultByKey(ctx, &data)
+	_, err = AsynqTaskContext.MGHotDataModel.UpdateLlmResultByKey(ctx, &data)
 	if err != nil {
 		return err
 	}
+	// 迁移文档到coldData
+	hotData, err := AsynqTaskContext.MGHotDataModel.FindOneByKey(ctx, p.Key)
+	coldData := model.ColdData{
+		ID:        primitive.NewObjectID(),
+		UpdateAt:  hotData.UpdateAt,
+		CreateAt:  hotData.CreateAt,
+		Key:       hotData.Key,
+		Source:    hotData.Source,
+		OcrResult: hotData.OcrResult,
+		LLMResult: hotData.LLMResult,
+	}
+	err = AsynqTaskContext.MGColdDataModel.InsertOne(ctx, &coldData)
+	if err != nil {
+		return err
+	}
+	// 删除hotData数据
+	delCount, err := AsynqTaskContext.MGHotDataModel.Delete(ctx, hotData.ID.Hex())
+	if err != nil {
+		logx.WithContext(ctx).Errorf("delete hot-data error:%s", err.Error())
+		return err
+	}
+	logx.WithContext(ctx).Infof("delete hot-data :ID:%s,delCount:%d \n", hotData.ID.String(), delCount)
 	return nil
 }
 

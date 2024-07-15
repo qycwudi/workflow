@@ -35,11 +35,11 @@ func (l *SendMessageLogic) SendMessage(req *types.SendMessageRequest) (resp *typ
 	resp = &types.SendMessageResponse{Code: int(SUCCESS), Message: "SUCCESS"}
 	// 持久化数据
 	reqJson, err := json.Marshal(req)
-	model := &model2.Data{
+	model := &model2.HotData{
 		Key:    req.Key,
 		Source: string(reqJson),
 	}
-	err = l.svcCtx.MGDataModel.InsertOne(l.ctx, model)
+	err = l.svcCtx.MGHotDataModel.InsertOne(l.ctx, model)
 	if err != nil {
 		l.Infof("store data:%+v \n", model)
 		l.Errorf("save data to mongo error :", err)

@@ -2,7 +2,6 @@ package svc
 
 import (
 	"github.com/hibiken/asynq"
-	"github.com/zeromicro/go-zero/core/stores/sqlx"
 	asynq2 "gogogo/internal/asynq"
 	"gogogo/internal/config"
 	"gogogo/internal/model"
@@ -13,23 +12,26 @@ type ServiceContext struct {
 	Config          config.Config
 	GogogoKvModel   model.GogogoKvModel
 	AsynqTaskClient *asynq.Client
-	MGDataModel     model2.DataModel
+	MGHotDataModel  model2.HotDataModel
+	MGColdDataModel model2.ColdDataModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	conn := sqlx.NewMysql(c.MySqlDataSource)
+	// conn := sqlx.NewMysql(c.MySqlDataSource)
 	asynqClient := asynq2.NewAsynqClient(c.RedisConfig)
 	go func() {
 		asynq2.NewAsynqServer(c.RedisConfig)
 	}()
 
 	// mongoDB
-	mgDataModel := model2.NewDataModel(c.MongoDbUrl)
-	asynq2.AsynqTaskContext = asynq2.AsynqTask{MGDataModel: mgDataModel, AsynqTaskClient: asynqClient}
+	mgHotDataModel := model2.NewHotDataModel(c.MongoDbUrl)
+	mgColdDataModel := model2.NewColdDataModel(c.MongoDbUrl)
+	asynq2.AsynqTaskContext = asynq2.AsynqTask{MGHotDataModel: mgHotDataModel, MGColdDataModel: mgColdDataModel, AsynqTaskClient: asynqClient}
 	return &ServiceContext{
-		Config:          c,
-		GogogoKvModel:   model.NewGogogoKvModel(conn),
+		Config: c,
+		// GogogoKvModel:   model.NewGogogoKvModel(conn),
 		AsynqTaskClient: asynqClient,
-		MGDataModel:     mgDataModel,
+		MGHotDataModel:  mgHotDataModel,
+		MGColdDataModel: mgColdDataModel,
 	}
 }

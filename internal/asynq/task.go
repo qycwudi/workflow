@@ -8,7 +8,8 @@ import (
 )
 
 type AsynqTask struct {
-	MGDataModel     model2.DataModel
+	MGHotDataModel  model2.HotDataModel
+	MGColdDataModel model2.ColdDataModel
 	AsynqTaskClient *asynq.Client
 }
 

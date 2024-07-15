@@ -40,11 +40,11 @@ func HandleOcrTask(ctx context.Context, t *asynq.Task) error {
 	// 存储结果
 	logx.WithContext(ctx).Info("Store ocr results")
 	// 更新文档
-	data := model.Data{
+	data := model.HotData{
 		Key:       p.Key,
 		OcrResult: ocrResult.String(),
 	}
-	_, err := AsynqTaskContext.MGDataModel.UpdateOcrResultByKey(ctx, &data)
+	_, err := AsynqTaskContext.MGHotDataModel.UpdateOcrResultByKey(ctx, &data)
 	if err != nil {
 		return err
 	}

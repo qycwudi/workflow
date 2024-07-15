@@ -11,22 +11,22 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type dataModel interface {
-	Insert(ctx context.Context, data *Data) error
-	FindOne(ctx context.Context, id string) (*Data, error)
-	Update(ctx context.Context, data *Data) (*mongo.UpdateResult, error)
+type hotDataModel interface {
+	Insert(ctx context.Context, data *HotData) error
+	FindOne(ctx context.Context, id string) (*HotData, error)
+	Update(ctx context.Context, data *HotData) (*mongo.UpdateResult, error)
 	Delete(ctx context.Context, id string) (int64, error)
 }
 
-type defaultDataModel struct {
+type defaultHotHotDataModel struct {
 	conn *mon.Model
 }
 
-func newDefaultDataModel(conn *mon.Model) *defaultDataModel {
-	return &defaultDataModel{conn: conn}
+func newDefaultHotHotDataModel(conn *mon.Model) *defaultHotHotDataModel {
+	return &defaultHotHotDataModel{conn: conn}
 }
 
-func (m *defaultDataModel) Insert(ctx context.Context, data *Data) error {
+func (m *defaultHotHotDataModel) Insert(ctx context.Context, data *HotData) error {
 	if data.ID.IsZero() {
 		data.ID = primitive.NewObjectID()
 		data.CreateAt = time.Now()
@@ -37,13 +37,13 @@ func (m *defaultDataModel) Insert(ctx context.Context, data *Data) error {
 	return err
 }
 
-func (m *defaultDataModel) FindOne(ctx context.Context, id string) (*Data, error) {
+func (m *defaultHotHotDataModel) FindOne(ctx context.Context, id string) (*HotData, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return nil, ErrInvalidObjectId
 	}
 
-	var data Data
+	var data HotData
 
 	err = m.conn.FindOne(ctx, &data, bson.M{"_id": oid})
 	switch err {
@@ -56,14 +56,14 @@ func (m *defaultDataModel) FindOne(ctx context.Context, id string) (*Data, error
 	}
 }
 
-func (m *defaultDataModel) Update(ctx context.Context, data *Data) (*mongo.UpdateResult, error) {
+func (m *defaultHotHotDataModel) Update(ctx context.Context, data *HotData) (*mongo.UpdateResult, error) {
 	data.UpdateAt = time.Now()
 
 	res, err := m.conn.UpdateOne(ctx, bson.M{"_id": data.ID}, bson.M{"$set": data})
 	return res, err
 }
 
-func (m *defaultDataModel) Delete(ctx context.Context, id string) (int64, error) {
+func (m *defaultHotHotDataModel) Delete(ctx context.Context, id string) (int64, error) {
 	oid, err := primitive.ObjectIDFromHex(id)
 	if err != nil {
 		return 0, ErrInvalidObjectId

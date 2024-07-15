@@ -9,27 +9,27 @@ import (
 	"time"
 )
 
-var _ DataModel = (*customDataModel)(nil)
+var _ ColdDataModel = (*customColdDataModel)(nil)
 
 type (
-	// DataModel is an interface to be customized, add more methods here,
-	// and implement the added methods in customDataModel.
-	DataModel interface {
-		dataModel
-		InsertOne(ctx context.Context, data *Data) error
-		UpdateOcrResultByKey(ctx context.Context, data *Data) (*mongo.UpdateResult, error)
-		UpdateLlmResultByKey(ctx context.Context, data *Data) (*mongo.UpdateResult, error)
-		FindOneByKey(ctx context.Context, key string) (*Data, error)
+	// ColdDataModel is an interface to be customized, add more methods here,
+	// and implement the added methods in customColdDataModel.
+	ColdDataModel interface {
+		coldDataModel
+		InsertOne(ctx context.Context, data *ColdData) error
+		UpdateOcrResultByKey(ctx context.Context, data *ColdData) (*mongo.UpdateResult, error)
+		UpdateLlmResultByKey(ctx context.Context, data *ColdData) (*mongo.UpdateResult, error)
+		FindOneByKey(ctx context.Context, key string) (*ColdData, error)
 	}
 
-	customDataModel struct {
-		*defaultDataModel
+	customColdDataModel struct {
+		*defaultColdDataModel
 	}
 )
 
-func (m customDataModel) FindOneByKey(ctx context.Context, key string) (*Data, error) {
+func (m customColdDataModel) FindOneByKey(ctx context.Context, key string) (*ColdData, error) {
 
-	var data Data
+	var data ColdData
 	err := m.conn.FindOne(ctx, &data, bson.M{"key": key})
 	switch err {
 	case nil:
@@ -41,7 +41,7 @@ func (m customDataModel) FindOneByKey(ctx context.Context, key string) (*Data, e
 	}
 }
 
-func (m customDataModel) UpdateOcrResultByKey(ctx context.Context, data *Data) (*mongo.UpdateResult, error) {
+func (m customColdDataModel) UpdateOcrResultByKey(ctx context.Context, data *ColdData) (*mongo.UpdateResult, error) {
 	// 创建filter，用于查找要更新的文档
 	filter := bson.M{"key": data.Key}
 
@@ -55,7 +55,7 @@ func (m customDataModel) UpdateOcrResultByKey(ctx context.Context, data *Data) (
 	return m.conn.UpdateOne(ctx, filter, update)
 }
 
-func (m customDataModel) UpdateLlmResultByKey(ctx context.Context, data *Data) (*mongo.UpdateResult, error) {
+func (m customColdDataModel) UpdateLlmResultByKey(ctx context.Context, data *ColdData) (*mongo.UpdateResult, error) {
 	// 创建filter，用于查找要更新的文档
 	filter := bson.M{"key": data.Key}
 
@@ -69,7 +69,7 @@ func (m customDataModel) UpdateLlmResultByKey(ctx context.Context, data *Data) (
 	return m.conn.UpdateOne(ctx, filter, update)
 }
 
-func (m customDataModel) InsertOne(ctx context.Context, data *Data) error {
+func (m customColdDataModel) InsertOne(ctx context.Context, data *ColdData) error {
 	if data.ID.IsZero() {
 		data.ID = primitive.NewObjectID()
 		data.CreateAt = time.Now()
@@ -79,12 +79,12 @@ func (m customDataModel) InsertOne(ctx context.Context, data *Data) error {
 	return err
 }
 
-// NewDataModel returns a model for the mongo.
-func NewDataModel(url string) DataModel {
+// NewColdDataModel returns a model for the mongo.
+func NewColdDataModel(url string) ColdDataModel {
 	db := "spider"
-	collection := "data"
+	collection := "cold-data"
 	conn := mon.MustNewModel(url, db, collection, mon.WithTimeout(2*time.Second))
-	return &customDataModel{
-		defaultDataModel: newDefaultDataModel(conn),
+	return &customColdDataModel{
+		defaultColdDataModel: newDefaultColdColdDataModel(conn),
 	}
 }
