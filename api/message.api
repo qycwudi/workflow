@@ -22,4 +22,8 @@ service gogogo-api {
     // 设置kv
     @handler SendMessageHandler
     post /send/message (SendMessageRequest) returns (SendMessageResponse)
+
+    // 设置kv
+    @handler SendHandler
+    post /send/xueut (SendMessageRequest) returns (SendMessageResponse)
 }

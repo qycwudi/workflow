@@ -32,6 +32,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/send/message",
 				Handler: SendMessageHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/send/xueut",
+				Handler: SendHandler(serverCtx),
+			},
 		},
 	)
 }

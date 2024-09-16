@@ -83,7 +83,8 @@ func HandleLlmTask(ctx context.Context, t *asynq.Task) error {
 }
 
 func (l LlmPayload) llm(source string) map[string]string {
-	// 调用llm接口
+	// 调用llm接口 langchain
+	// todo 超时时间长一点
 	return map[string]string{"k": "v"}
 }
 

@@ -14,9 +14,9 @@ Timeout: 50000
 #  RedisDb: 6
 #MongoDbUrl: mongodb://root:123456@127.0.0.1:27017
 Log:
-  Mode: file #file
-  Encoding: json #json
-  Path: /app/gogogo/logs
+  Mode: file
+  Encoding: json
+  Path: app/gogogo/logs
 MySqlDataSource: root:123456@tcp(127.0.0.1:3306)/col?charset=utf8mb4&parseTime=True&loc=Local
 RedisConfig:
   RedisAddr: 10.99.253.232:6379

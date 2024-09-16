@@ -54,7 +54,8 @@ func HandleOcrTask(ctx context.Context, t *asynq.Task) error {
 }
 
 func (p OcrPayload) ocrApiV1(url string) string {
-
+	// ocr 接口 传url 返回文字
+	// todo 超时时间长一点
 	return "处理结果处理结果处理结果处理结果处理结果"
 }
 
