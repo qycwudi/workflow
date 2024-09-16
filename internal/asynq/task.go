@@ -3,13 +3,10 @@ package asynq
 import (
 	"github.com/hibiken/asynq"
 	"gogogo/internal/config"
-	model2 "gogogo/internal/model/mongo"
 	"log"
 )
 
 type AsynqTask struct {
-	MGHotDataModel  model2.HotDataModel
-	MGColdDataModel model2.ColdDataModel
 	AsynqTaskClient *asynq.Client
 }
 
@@ -34,7 +31,6 @@ func NewAsynqServer(config config.RedisConfig) {
 
 	// mux maps a type to a handler
 	mux := asynq.NewServeMux()
-	mux.HandleFunc(TypeOCRRecognize, HandleOcrTask)
 	mux.HandleFunc(TypeLLMFeatureExtraction, HandleLlmTask)
 	if err := srv.Run(mux); err != nil {
 		log.Fatalf("could not run server: %v", err)

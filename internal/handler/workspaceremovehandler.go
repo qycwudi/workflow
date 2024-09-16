@@ -9,16 +9,16 @@ import (
 	"gogogo/internal/types"
 )
 
-func SendMessageHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func WorkSpaceRemoveHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.SendMessageRequest
+		var req types.WorkRemoveRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 			return
 		}
 
-		l := logic.NewSendMessageLogic(r.Context(), svcCtx)
-		resp, err := l.SendMessage(&req)
+		l := logic.NewWorkSpaceRemoveLogic(r.Context(), svcCtx)
+		resp, err := l.WorkSpaceRemove(&req)
 		if err != nil {
 			httpx.ErrorCtx(r.Context(), w, err)
 		} else {

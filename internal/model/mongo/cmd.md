@@ -1,1 +1,0 @@
-goctl model mongo --type data --dir .

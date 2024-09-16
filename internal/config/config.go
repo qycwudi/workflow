@@ -7,7 +7,6 @@ type Config struct {
 	MySqlDataSource string
 	// RocketMQNameServerAddress string
 	RedisConfig RedisConfig
-	MongoDbUrl  string
 }
 
 type RedisConfig struct {

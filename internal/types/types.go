@@ -22,17 +22,31 @@ type GetVByKResponse struct {
 	Value   string `json:"value"`
 }
 
-type SendMessageRequest struct {
-	Key        string   `json:"key"`
-	Value      string   `json:"value"`
-	SpiderName string   `json:"spiderName"`
-	NeedOcr    bool     `json:"needOcr"`
-	OcrAdds    []string `json:"ocrAdds"`
-	NeedLlm    bool     `json:"needLlm"`
-	LlmType    string   `json:"llmType"`
-}
-
-type SendMessageResponse struct {
+type Response struct {
 	Code    int    `json:"code"`
 	Message string `json:"message"`
+}
+
+type WorkSpaceRequest struct {
+	Id            string `json:"id,omitempty"`
+	WorkSpaceName string `json:"workSpaceName"`
+}
+
+type WorkSpaceNewResponse struct {
+	Response
+	Id string `json:"id"`
+}
+
+type WorkSpaceEditResponse struct {
+	Response
+	Id string `json:"id"`
+}
+
+type WorkRemoveRequest struct {
+	Id string `json:"id"`
+}
+
+type WorkSpaceRemoveResponse struct {
+	Response
+	Result bool `json:"result"`
 }

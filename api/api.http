@@ -32,62 +32,12 @@ Content-Type: application/json
   "spiderName": "ccc"
 }
 
-### 获取key
-POST http://127.0.0.1:8888/common/get/vByk
+### 编辑 workspace name
+POST http://127.0.0.1:8888/workspace/edit
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "key": "qqq11"
-}
-
-### 获取key生产
-POST http://10.99.43.88:8888/common/get/vByk
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "key": "qqq"
-}
-
-### 发送OCR消息-本地
-POST http://127.0.0.1:8888/send/message
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "key": "cd5ead5a0b53a68e5891544c6a816959",
-  "value": "{\"dataSource\": \"农林牧渔\", \"district\": \"张家界市\", \"ocrStatus\": 0, \"pdfAddress\": \"http://bidding.fgw.hunan.gov.cn/ztbPdf/project/2024-05/winBidNoticeFile/Z430800H401H00043001/c48bd472ee904d0ab568974e8b762348.pdf\", \"projectTitle\": \"桑植县2024年高标准农田建设项目第五标段中标结果公示\", \"publishTime\": \"2024-07-11 15:42:01\"}",
-  "spiderName": "hnfgw",
-  "needOcr": true,
-  "ocrAdds": [
-    "http://bidding.fgw.hunan.gov.cn/ztbPdf/project/2024-05/winBidNoticeFile/Z430800H401H00043001/c48bd472ee904d0ab568974e8b762348.pdf"
-  ],
-  "needLlm": true,
-  "llmType": "default"
-}
-
-
-### 发送特征提取消息-本地
-POST http://127.0.0.1:8888/send/message
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "key": "cd5ead5a0b53a68e5891544c6a816959",
-  "value": "{\"dataSource\": \"农林牧渔\", \"district\": \"张家界市\", \"ocrStatus\": 0, \"pdfAddress\": \"http://bidding.fgw.hunan.gov.cn/ztbPdf/project/2024-05/winBidNoticeFile/Z430800H401H00043001/c48bd472ee904d0ab568974e8b762348.pdf\", \"projectTitle\": \"桑植县2024年高标准农田建设项目第五标段中标结果公示\", \"publishTime\": \"2024-07-11 15:42:01\"}",
-  "spiderName": "hnfgw",
-  "needOcr": false,
-  "ocrAdds": [],
-  "needLlm": true,
-  "llmType": "default"
-}
-
-### OCR识别
-POST http://10.10.0.27:6007/v1/pdf_text
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "pdf_url": "http://bidding.fgw.hunan.gov.cn/ztbPdf/project/2024-06/noticeFile/Z430100H017H00384001/952669994d66438aa30dc35d75e79583.pdf"
+  "id": "111222333",
+  "workSpaceName": "namename"
 }

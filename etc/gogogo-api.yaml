@@ -2,28 +2,28 @@ Name: GoGOGO-api
 Host: 0.0.0.0
 Port: 8888
 Timeout: 50000
-#Log:
-#  Mode: console
-#  Encoding: plain
-#  Path: /Users/qiangyuecheng/GolandProjects/gogogo/logs
-#MySqlDataSource: root:Root@123@tcp(ido-mysql-headless:3306)/col?charset=utf8mb4&parseTime=True&loc=Local
-#RedisConfig:
-#  RedisAddr: 127.0.0.1:6379
-#  RedisUserName:
-#  RedisPassword:
-#  RedisDb: 6
-#MongoDbUrl: mongodb://root:123456@127.0.0.1:27017
 Log:
-  Mode: file
-  Encoding: json
-  Path: app/gogogo/logs
-MySqlDataSource: root:123456@tcp(127.0.0.1:3306)/col?charset=utf8mb4&parseTime=True&loc=Local
+  Mode: console
+  Encoding: plain
+  Path: /Users/qiangyuecheng/GolandProjects/gogogo/logs
+MySqlDataSource: root:root@tcp(192.168.49.2:31426)/flow_db?charset=utf8mb4&parseTime=True&loc=Local
 RedisConfig:
-  RedisAddr: 10.99.253.232:6379
+  RedisAddr: 192.168.49.2:31127
   RedisUserName:
-  RedisPassword: redis123
+  RedisPassword: '123456'
   RedisDb: 6
-MongoDbUrl: mongodb://root:root@10.99.253.231:27017
+
+#Log:
+#  Mode: file
+#  Encoding: json
+#  Path: app/gogogo/logs
+#MySqlDataSource: root:123456@tcp(192.168.49.2:31426)/flow?charset=utf8mb4&parseTime=True&loc=Local
+#RedisConfig:
+#  RedisAddr: 192.168.49.2:31127
+#  RedisUserName:
+#  RedisPassword: redis123
+#  RedisDb: 6
+#MongoDbUrl: mongodb://root:root@10.99.253.231:27017
 
 
 #RocketMQNameServerAddress: '127.0.0.1:9876'

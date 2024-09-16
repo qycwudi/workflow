@@ -1,0 +1,46 @@
+syntax = "v1"
+
+type Response {
+    Code int `json:"code"`
+    Message string `json:"message"`
+}
+
+type WorkSpaceRequest {
+    // 全局唯一
+    Id string `json:"id,omitempty"`
+    WorkSpaceName string `json:"workSpaceName"`
+}
+
+type WorkSpaceNewResponse {
+    Response
+    Id string `json:"id"`
+}
+
+type WorkSpaceEditResponse {
+    Response
+    Id string `json:"id"`
+}
+
+type WorkRemoveRequest {
+    // 全局唯一
+    Id string `json:"id"`
+}
+
+type WorkSpaceRemoveResponse {
+    Response
+    Result bool `json:"result"`
+}
+
+service gogogo-api {
+    @doc "创建workspace"
+    @handler WorkSpaceNewHandler
+    post /workspace/new (WorkSpaceRequest) returns (WorkSpaceNewResponse)
+
+    @doc "编辑workspace"
+    @handler WorkSpaceEditHandler
+    post /workspace/edit (WorkSpaceRequest) returns (WorkSpaceEditResponse)
+
+    @doc "删除workspace"
+    @handler WorkSpaceRemoveHandler
+    post /workspace/remove (WorkRemoveRequest) returns (WorkSpaceRemoveResponse)
+}

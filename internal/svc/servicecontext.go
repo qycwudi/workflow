@@ -5,15 +5,12 @@ import (
 	asynq2 "gogogo/internal/asynq"
 	"gogogo/internal/config"
 	"gogogo/internal/model"
-	model2 "gogogo/internal/model/mongo"
 )
 
 type ServiceContext struct {
 	Config          config.Config
 	GogogoKvModel   model.GogogoKvModel
 	AsynqTaskClient *asynq.Client
-	MGHotDataModel  model2.HotDataModel
-	MGColdDataModel model2.ColdDataModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -23,15 +20,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		asynq2.NewAsynqServer(c.RedisConfig)
 	}()
 
-	// mongoDB
-	mgHotDataModel := model2.NewHotDataModel(c.MongoDbUrl)
-	mgColdDataModel := model2.NewColdDataModel(c.MongoDbUrl)
-	asynq2.AsynqTaskContext = asynq2.AsynqTask{MGHotDataModel: mgHotDataModel, MGColdDataModel: mgColdDataModel, AsynqTaskClient: asynqClient}
+	asynq2.AsynqTaskContext = asynq2.AsynqTask{AsynqTaskClient: asynqClient}
 	return &ServiceContext{
 		Config: c,
 		// GogogoKvModel:   model.NewGogogoKvModel(conn),
 		AsynqTaskClient: asynqClient,
-		MGHotDataModel:  mgHotDataModel,
-		MGColdDataModel: mgColdDataModel,
 	}
 }

@@ -29,13 +29,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/send/message",
-				Handler: SendMessageHandler(serverCtx),
+				Path:    "/workspace/new",
+				Handler: WorkSpaceNewHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/send/xueut",
-				Handler: SendHandler(serverCtx),
+				Path:    "/workspace/edit",
+				Handler: WorkSpaceEditHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/workspace/remove",
+				Handler: WorkSpaceRemoveHandler(serverCtx),
 			},
 		},
 	)
