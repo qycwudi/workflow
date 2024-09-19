@@ -9,16 +9,16 @@ import (
 	"net/http"
 )
 
-func CommonSetKvHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func WorkSpaceEditTagHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.SetKvRequest
+		var req types.WorkSpaceEditTagRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewCommonSetKvLogic(r.Context(), svcCtx)
-		resp, err := l.CommonSetKv(&req)
+		l := logic.NewWorkSpaceEditTagLogic(r.Context(), svcCtx)
+		resp, err := l.WorkSpaceEditTag(&req)
 		response.Response(w, resp, err)
 
 	}

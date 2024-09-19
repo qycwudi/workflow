@@ -22,53 +22,83 @@ type GetVByKResponse struct {
 	Value   string `json:"value"`
 }
 
-type Response struct {
-	Code    int    `json:"code"`
-	Message string `json:"message"`
+type WorkSpaceBase struct {
+	WorkSpaceId   string   `json:"workSpaceId,optional"`
+	WorkSpaceName string   `json:"workSpaceName"`
+	WorkSpaceDesc string   `json:"workSpaceDesc,optional"`
+	WorkSpaceType string   `json:"workSpaceType"`
+	WorkSpaceTag  []string `json:"workSpaceTag,optional"`
+	WorkSpaceIcon string   `json:"workSpaceIcon,optional"`
 }
 
 type WorkSpaceNewRequest struct {
-	Id            string `json:"id,omitempty"`
-	WorkSpaceName string `json:"workSpaceName"`
+	WorkSpaceBase
 }
 
 type WorkSpaceNewResponse struct {
-	Response
-	Id string `json:"id"`
+	WorkSpaceBase
+	WorkSpaceConfig string `json:"workSpaceConfig"`
 }
 
 type WorkSpaceEditRequest struct {
-	Id            string `json:"id,omitempty"`
-	WorkSpaceName string `json:"workSpaceName"`
+	WorkSpaceBase
+	WorkSpaceConfig string `json:"workSpaceConfig,optional"`
 }
 
 type WorkSpaceEditResponse struct {
-	Response
-	Id string `json:"id"`
+	WorkSpaceBase
+	WorkSpaceConfig string `json:"workSpaceConfig"`
 }
 
 type WorkRemoveRequest struct {
-	Id string `json:"id"`
+	WorkSpaceId string `json:"workSpaceId,optional"`
 }
 
 type WorkSpaceRemoveResponse struct {
-	Response
 }
 
 type WorkSpaceListRequest struct {
-	WorkSpaceName string `json:"workSpaceName"`
+	WorkSpaceName string   `json:"workSpaceName,optional"`
+	WorkSpaceType string   `json:"workSpaceType,optional"`
+	WorkSpaceTag  []string `json:"workSpaceTag,optional"`
+	Current       int      `json:"current"`
+	PageSize      int      `json:"pageSize"`
 }
 
 type WorkSpaceListResponse struct {
-	Id            string `json:"id"`
-	WorkSpaceName string `json:"workSpaceName"`
+	Current  int             `json:"current"`
+	PageSize int             `json:"pageSize"`
+	Total    int             `json:"total"`
+	Data     []WorkSpacePage `json:"data"`
+}
+
+type WorkSpacePage struct {
+	WorkSpaceBase
+	CreateTime string `json:"createTime"`
+	UpdateTime string `json:"updateTime"`
 }
 
 type WorkSpaceDetailRequest struct {
-	Id string `json:"id"`
+	WorkSpaceId string `json:"workSpaceId"`
 }
 
 type WorkSpaceDetailResponse struct {
-	Id            string `json:"id"`
-	WorkSpaceName string `json:"workSpaceName"`
+	WorkSpaceBase
+	WorkSpaceConfig string `json:"workSpaceConfig"`
+}
+
+type WorkSpaceEditTagRequest struct {
+	WorkSpaceId  string   `json:"workSpaceId"`
+	WorkSpaceTag []string `json:"workSpaceTag"`
+}
+
+type WorkSpaceEditTagResponse struct {
+}
+
+type WorkSpaceUploadCanvasConfigTagRequest struct {
+	WorkSpaceId  string `json:"workSpaceId"`
+	CanvasConfig string `json:"canvasConfig"`
+}
+
+type WorkSpaceUploadCanvasConfigTagResponse struct {
 }

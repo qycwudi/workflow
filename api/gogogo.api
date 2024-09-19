@@ -1,7 +1,16 @@
 syntax = "v1"
 
-// goctl api go -api gogogo.api -dir ../
+// 自定义返回
+// goctl api go -api gogogo.api -dir ../ --home /Users/qiangyuecheng/.goctl/1.5.6
 
+/*
+{
+	"code": 0,
+	"msg": "OK",
+	"data": {}
+}
+
+*/
 import "kv.api"
 
 import "flow-workspace.api"

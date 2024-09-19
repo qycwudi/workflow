@@ -1,55 +1,89 @@
 syntax = "v1"
 
-type Response {
-    Code int `json:"code"`
-    Message string `json:"message"`
+type WorkSpaceBase {
+    WorkSpaceId string `json:"workSpaceId,optional"`
+    WorkSpaceName string `json:"workSpaceName"`
+    WorkSpaceDesc string `json:"workSpaceDesc,optional"`
+    WorkSpaceType string `json:"workSpaceType"`
+    WorkSpaceTag []string `json:"workSpaceTag,optional"`
+    WorkSpaceIcon string `json:"workSpaceIcon,optional"`
 }
 
 type WorkSpaceNewRequest {
-    Id string `json:"id,omitempty"`
-    WorkSpaceName string `json:"workSpaceName"`
+    WorkSpaceBase
 }
 
 type WorkSpaceNewResponse {
-    Response
-    Id string `json:"id"`
+    WorkSpaceBase
+    WorkSpaceConfig string `json:"workSpaceConfig"`
 }
 
 type WorkSpaceEditRequest {
-    Id string `json:"id,omitempty"`
-    WorkSpaceName string `json:"workSpaceName"`
+    WorkSpaceBase
+    WorkSpaceConfig string `json:"workSpaceConfig,optional"`
 }
 
 type WorkSpaceEditResponse {
-    Response
-    Id string `json:"id"`
+
+    WorkSpaceBase
+    WorkSpaceConfig string `json:"workSpaceConfig"`
 }
 
 type WorkRemoveRequest {
-    Id string `json:"id"`
+    WorkSpaceId string `json:"workSpaceId,optional"`
 }
 
 type WorkSpaceRemoveResponse {
-    Response
+
 }
 
 type WorkSpaceListRequest {
-    WorkSpaceName string `json:"workSpaceName"`
+    WorkSpaceName string `json:"workSpaceName,optional"`
+    WorkSpaceType string `json:"workSpaceType,optional"`
+    WorkSpaceTag []string `json:"workSpaceTag,optional"`
+    Current int `json:"current"`
+    PageSize int `json:"pageSize"`
 }
 
 type WorkSpaceListResponse {
-    Id string `json:"id"`
-    WorkSpaceName string `json:"workSpaceName"`
+    Current int `json:"current"`
+    PageSize int `json:"pageSize"`
+    Total int `json:"total"`
+    Data []WorkSpacePage `json:"data"`
+}
+
+type WorkSpacePage {
+    WorkSpaceBase
+    CreateTime string `json:"createTime"`
+    UpdateTime string `json:"updateTime"`
 }
 
 
 type WorkSpaceDetailRequest {
-    Id string `json:"id"`
+    WorkSpaceId string `json:"workSpaceId"`
 }
 
 type WorkSpaceDetailResponse {
-    Id string `json:"id"`
-    WorkSpaceName string `json:"workSpaceName"`
+    WorkSpaceBase
+    WorkSpaceConfig string `json:"workSpaceConfig"`
+}
+
+type WorkSpaceEditTagRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    WorkSpaceTag []string `json:"workSpaceTag"`
+}
+
+type WorkSpaceEditTagResponse {
+
+}
+
+type WorkSpaceUploadCanvasConfigTagRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    CanvasConfig string `json:"canvasConfig"`
+}
+
+type WorkSpaceUploadCanvasConfigTagResponse {
+
 }
 
 service gogogo-api {
@@ -72,4 +106,12 @@ service gogogo-api {
     @doc "详情workspace"
     @handler WorkSpaceDetailHandler
     post /workspace/detail (WorkSpaceDetailRequest) returns (WorkSpaceDetailResponse)
+
+    @doc "编辑workspace标签"
+    @handler WorkSpaceEditTagHandler
+    post /workspace/edit/tag (WorkSpaceEditTagRequest) returns (WorkSpaceEditTagResponse)
+
+    @doc "更新workspace画布配置"
+    @handler WorkSpaceEditCanvasConfigHandler
+    post /workspace/edit/canvas/config (WorkSpaceUploadCanvasConfigTagRequest) returns (WorkSpaceUploadCanvasConfigTagResponse)
 }

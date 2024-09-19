@@ -32,9 +32,9 @@ func (l *CommonSetKvLogic) CommonSetKv(req *types.SetKvRequest) (resp *types.Set
 	response := &types.SetKvResponse{}
 
 	// 查询key是否存在
-	value, err := l.svcCtx.GogogoKvModel.FindByKey(l.ctx, req.Key)
+	value, err := l.svcCtx.GoGoGoKvModel.FindByKey(l.ctx, req.Key)
 	if errors.Is(err, sqlx.ErrNotFound) {
-		_, err = l.svcCtx.GogogoKvModel.Insert(l.ctx, &model.GogogoKv{
+		_, err = l.svcCtx.GoGoGoKvModel.Insert(l.ctx, &model.GogogoKv{
 			SpiderName: req.SpiderName,
 			K:          req.Key,
 			V:          req.Value,

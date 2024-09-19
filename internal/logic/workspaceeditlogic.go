@@ -23,12 +23,9 @@ func NewWorkSpaceEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Wor
 	}
 }
 
-func (l *WorkSpaceEditLogic) WorkSpaceEdit(req *types.WorkSpaceRequest) (resp *types.WorkSpaceEditResponse, err error) {
+func (l *WorkSpaceEditLogic) WorkSpaceEdit(req *types.WorkSpaceEditRequest) (resp *types.WorkSpaceEditResponse, err error) {
 	// todo: add your logic here and delete this line
 	l.Info("---WorkSpaceEdit---")
-	resp = &types.WorkSpaceEditResponse{
-		Response: types.Response{Code: 0, Message: "SUCCESS"},
-		Id:       "abcdefg",
-	}
+	resp = &types.WorkSpaceEditResponse{}
 	return
 }

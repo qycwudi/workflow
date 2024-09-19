@@ -9,5 +9,8 @@ const (
 	SendMessageErr                  Code = 102
 	SendMessageParamFormattingError Code = 103
 
+	// SystemError 系统异常
 	SystemError Code = 500
+	// SystemStoreError 系统存储异常
+	SystemStoreError Code = 501
 )

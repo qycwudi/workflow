@@ -32,6 +32,22 @@ Content-Type: application/json
   "spiderName": "ccc"
 }
 
+### 创建 workspace
+POST http://127.0.0.1:8888/workspace/new
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceName": "工作空间名称",
+  "workSpaceDesc": "工作空间描述",
+  "workSpaceType": "workflow",
+  "workSpaceTag": [
+    "API","测试环境"
+  ],
+  "workSpaceIcon": "{'style':{'backgroundColor':'white'}}"
+}
+
+
 ### 编辑 workspace name
 POST http://127.0.0.1:8888/workspace/edit
 User-Agent: Apifox/1.0.0 (https://apifox.com)

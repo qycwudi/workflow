@@ -28,7 +28,7 @@ func NewCommonGetVByKLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Com
 func (l *CommonGetVByKLogic) CommonGetVByK(req *types.GetVByKRequest) (resp *types.GetVByKResponse, err error) {
 	response := types.GetVByKResponse{}
 
-	value, err := l.svcCtx.GogogoKvModel.FindByKey(l.ctx, req.Key)
+	value, err := l.svcCtx.GoGoGoKvModel.FindByKey(l.ctx, req.Key)
 	if errors.Is(err, sqlx.ErrNotFound) {
 		response.Code = int(KeyMiss)
 		response.Message = "miss key " + req.Key

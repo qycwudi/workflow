@@ -1,1 +1,1 @@
-goctl model mysql ddl --src user.sql --dir ..
+goctl model mysql ddl --src user.sql --dir .. -i ''
