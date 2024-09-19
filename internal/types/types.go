@@ -27,7 +27,7 @@ type Response struct {
 	Message string `json:"message"`
 }
 
-type WorkSpaceRequest struct {
+type WorkSpaceNewRequest struct {
 	Id            string `json:"id,omitempty"`
 	WorkSpaceName string `json:"workSpaceName"`
 }
@@ -35,6 +35,11 @@ type WorkSpaceRequest struct {
 type WorkSpaceNewResponse struct {
 	Response
 	Id string `json:"id"`
+}
+
+type WorkSpaceEditRequest struct {
+	Id            string `json:"id,omitempty"`
+	WorkSpaceName string `json:"workSpaceName"`
 }
 
 type WorkSpaceEditResponse struct {
@@ -48,5 +53,22 @@ type WorkRemoveRequest struct {
 
 type WorkSpaceRemoveResponse struct {
 	Response
-	Result bool `json:"result"`
+}
+
+type WorkSpaceListRequest struct {
+	WorkSpaceName string `json:"workSpaceName"`
+}
+
+type WorkSpaceListResponse struct {
+	Id            string `json:"id"`
+	WorkSpaceName string `json:"workSpaceName"`
+}
+
+type WorkSpaceDetailRequest struct {
+	Id string `json:"id"`
+}
+
+type WorkSpaceDetailResponse struct {
+	Id            string `json:"id"`
+	WorkSpaceName string `json:"workSpaceName"`
 }

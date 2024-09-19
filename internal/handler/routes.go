@@ -34,13 +34,23 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/workspace/remove",
+				Handler: WorkSpaceRemoveHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/workspace/edit",
 				Handler: WorkSpaceEditHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/workspace/remove",
-				Handler: WorkSpaceRemoveHandler(serverCtx),
+				Path:    "/workspace/list",
+				Handler: WorkSpaceListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/workspace/detail",
+				Handler: WorkSpaceDetailHandler(serverCtx),
 			},
 		},
 	)

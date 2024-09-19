@@ -1,0 +1,75 @@
+syntax = "v1"
+
+type Response {
+    Code int `json:"code"`
+    Message string `json:"message"`
+}
+
+type WorkSpaceNewRequest {
+    Id string `json:"id,omitempty"`
+    WorkSpaceName string `json:"workSpaceName"`
+}
+
+type WorkSpaceNewResponse {
+    Response
+    Id string `json:"id"`
+}
+
+type WorkSpaceEditRequest {
+    Id string `json:"id,omitempty"`
+    WorkSpaceName string `json:"workSpaceName"`
+}
+
+type WorkSpaceEditResponse {
+    Response
+    Id string `json:"id"`
+}
+
+type WorkRemoveRequest {
+    Id string `json:"id"`
+}
+
+type WorkSpaceRemoveResponse {
+    Response
+}
+
+type WorkSpaceListRequest {
+    WorkSpaceName string `json:"workSpaceName"`
+}
+
+type WorkSpaceListResponse {
+    Id string `json:"id"`
+    WorkSpaceName string `json:"workSpaceName"`
+}
+
+
+type WorkSpaceDetailRequest {
+    Id string `json:"id"`
+}
+
+type WorkSpaceDetailResponse {
+    Id string `json:"id"`
+    WorkSpaceName string `json:"workSpaceName"`
+}
+
+service gogogo-api {
+    @doc "创建workspace"
+    @handler WorkSpaceNewHandler
+    post /workspace/new (WorkSpaceNewRequest) returns (WorkSpaceNewResponse)
+
+    @doc "删除workspace"
+    @handler WorkSpaceRemoveHandler
+    post /workspace/remove (WorkRemoveRequest) returns (WorkSpaceRemoveResponse)
+
+    @doc "编辑workspace"
+    @handler WorkSpaceEditHandler
+    post /workspace/edit (WorkSpaceEditRequest) returns (WorkSpaceEditResponse)
+
+    @doc "列表workspace"
+    @handler WorkSpaceListHandler
+    post /workspace/list (WorkSpaceListRequest) returns (WorkSpaceListResponse)
+
+    @doc "详情workspace"
+    @handler WorkSpaceDetailHandler
+    post /workspace/detail (WorkSpaceDetailRequest) returns (WorkSpaceDetailResponse)
+}

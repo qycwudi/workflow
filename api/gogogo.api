@@ -4,4 +4,4 @@ syntax = "v1"
 
 import "kv.api"
 
-import "flow-admin.api"
+import "flow-workspace.api"
