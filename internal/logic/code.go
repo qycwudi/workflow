@@ -13,4 +13,6 @@ const (
 	SystemError Code = 500
 	// SystemStoreError 系统存储异常
 	SystemStoreError Code = 501
+	// SystemOrmError 系统Orm异常
+	SystemOrmError Code = 502
 )

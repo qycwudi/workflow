@@ -44,7 +44,7 @@ Content-Type: application/json
   "workSpaceTag": [
     "API","测试环境"
   ],
-  "workSpaceIcon": "{'style':{'backgroundColor':'white'}}"
+  "workSpaceIcon": "http://icon.com"
 }
 
 
@@ -56,4 +56,32 @@ Content-Type: application/json
 {
   "id": "111222333",
   "workSpaceName": "namename"
+}
+
+### 列表 workspace
+POST http://127.0.0.1:8888/workspace/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceTag": [
+    1
+  ],
+  "current": 1,
+  "pageSize": 2
+}
+
+### 列表-带条件 workspace
+POST http://127.0.0.1:8888/workspace/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceName": "demoString",
+  "workSpaceType": "demoString",
+  "workSpaceTag": [
+    "demoString"
+  ],
+  "current": 0,
+  "pageSize": 0
 }

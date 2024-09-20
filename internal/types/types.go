@@ -58,17 +58,17 @@ type WorkSpaceRemoveResponse struct {
 }
 
 type WorkSpaceListRequest struct {
-	WorkSpaceName string   `json:"workSpaceName,optional"`
-	WorkSpaceType string   `json:"workSpaceType,optional"`
-	WorkSpaceTag  []string `json:"workSpaceTag,optional"`
-	Current       int      `json:"current"`
-	PageSize      int      `json:"pageSize"`
+	WorkSpaceName string  `json:"workSpaceName,optional"`
+	WorkSpaceType string  `json:"workSpaceType,optional"`
+	WorkSpaceTag  []int64 `json:"workSpaceTag,optional"`
+	Current       int     `json:"current"`
+	PageSize      int     `json:"pageSize"`
 }
 
 type WorkSpaceListResponse struct {
 	Current  int             `json:"current"`
 	PageSize int             `json:"pageSize"`
-	Total    int             `json:"total"`
+	Total    int64           `json:"total"`
 	Data     []WorkSpacePage `json:"data"`
 }
 

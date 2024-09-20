@@ -26,5 +26,6 @@ func NewWorkSpaceRemoveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *W
 func (l *WorkSpaceRemoveLogic) WorkSpaceRemove(req *types.WorkRemoveRequest) (resp *types.WorkSpaceRemoveResponse, err error) {
 	// todo: add your logic here and delete this line
 
+	// 把mapping关系也要删掉
 	return
 }
