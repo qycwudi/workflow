@@ -85,3 +85,13 @@ Content-Type: application/json
   "current": 0,
   "pageSize": 0
 }
+
+
+### 列表-带条件 workspace
+POST http://127.0.0.1:8888/workspace/remove
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceId": "crlr0g53sjtjc4oefj80"
+}

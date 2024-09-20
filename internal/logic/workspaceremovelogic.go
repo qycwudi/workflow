@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/zeromicro/x/errors"
 
 	"gogogo/internal/svc"
 	"gogogo/internal/types"
@@ -24,8 +25,9 @@ func NewWorkSpaceRemoveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *W
 }
 
 func (l *WorkSpaceRemoveLogic) WorkSpaceRemove(req *types.WorkRemoveRequest) (resp *types.WorkSpaceRemoveResponse, err error) {
-	// todo: add your logic here and delete this line
-
-	// 把mapping关系也要删掉
+	err = l.svcCtx.WorkSpaceModel.Remove(l.ctx, req.WorkSpaceId)
+	if err != nil {
+		return nil, errors.New(int(SystemOrmError), "空间删除失败")
+	}
 	return
 }

@@ -17,6 +17,7 @@ type (
 		workspaceModel
 		FindPage(ctx context.Context, current, pageSize int, workSpaceType, workSpaceName string) ([]*Workspace, int64, error)
 		FindInWorkSpaceId(ctx context.Context, workspaceId []string) ([]*Workspace, error)
+		Remove(ctx context.Context, workSpaceId string) error
 	}
 
 	customWorkspaceModel struct {
@@ -91,6 +92,26 @@ func (c customWorkspaceModel) FindInWorkSpaceId(ctx context.Context, workspaceId
 		logc.Infov(ctx, err)
 		return nil, err
 	}
+}
+
+func (c customWorkspaceModel) Remove(ctx context.Context, workSpaceId string) error {
+	// 把mapping关系也要删掉
+	return c.conn.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
+		var err error
+		update := fmt.Sprintf("update %s set is_delete = 1 where `workspace_id` = ?", c.table)
+		_, err = session.ExecCtx(ctx, update, workSpaceId)
+		if err != nil {
+			logc.Infov(ctx, err)
+			return err
+		}
+		query := fmt.Sprintf("delete from workspace_tag_mapping where `workspace_id` = ?")
+		_, err = session.ExecCtx(ctx, query, workSpaceId)
+		if err != nil {
+			logc.Infov(ctx, err)
+			return err
+		}
+		return nil
+	})
 }
 
 // NewWorkspaceModel returns a model for the database table.
