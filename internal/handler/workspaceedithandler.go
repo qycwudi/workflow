@@ -20,6 +20,5 @@ func WorkSpaceEditHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		l := logic.NewWorkSpaceEditLogic(r.Context(), svcCtx)
 		resp, err := l.WorkSpaceEdit(&req)
 		response.Response(w, resp, err)
-
 	}
 }

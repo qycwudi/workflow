@@ -38,7 +38,18 @@ func (l *WorkSpaceEditLogic) WorkSpaceEdit(req *types.WorkSpaceEditRequest) (res
 		UpdateTime:    time.Now(),
 	})
 	if err != nil {
-		return nil, errors.New(int(SystemOrmError), "修改空间失败失败")
+		return nil, errors.New(int(SystemOrmError), "修改空间失败")
+	}
+	// 修改标签
+	// 1. 删除原来标签规则
+	err = l.svcCtx.WorkspaceTagMappingModel.DeleteByWorkSpace(l.ctx, req.WorkSpaceId)
+	if err != nil {
+		return nil, errors.New(int(SystemOrmError), "修改空间标签失败")
+	}
+	// 2. 映射标签
+	err = createTag(l.ctx, l.svcCtx, req.WorkSpaceTag, req.WorkSpaceId)
+	if err != nil {
+		return nil, err
 	}
 
 	response := types.WorkSpaceEditResponse{

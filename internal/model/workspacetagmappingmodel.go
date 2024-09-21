@@ -17,6 +17,7 @@ type (
 		workspaceTagMappingModel
 		FindByWorkSpaceId(ctx context.Context, workSpaceId []string) ([]*WorkspaceTagNameMapping, error)
 		FindPageByTagId(ctx context.Context, current int, pageSize int, tagId []int64) ([]string, int64, error)
+		DeleteByWorkSpace(ctx context.Context, workSpaceId string) error
 	}
 
 	customWorkspaceTagMappingModel struct {
@@ -36,6 +37,12 @@ func NewWorkspaceTagMappingModel(conn sqlx.SqlConn) WorkspaceTagMappingModel {
 	return &customWorkspaceTagMappingModel{
 		defaultWorkspaceTagMappingModel: newWorkspaceTagMappingModel(conn),
 	}
+}
+
+func (m *defaultWorkspaceTagMappingModel) DeleteByWorkSpace(ctx context.Context, workSpaceId string) error {
+	query := fmt.Sprintf("delete from %s where `workspace_id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, workSpaceId)
+	return err
 }
 
 func (m *defaultWorkspaceTagMappingModel) FindByWorkSpaceId(ctx context.Context, workSpaceIds []string) ([]*WorkspaceTagNameMapping, error) {

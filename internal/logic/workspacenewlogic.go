@@ -3,7 +3,6 @@ package logic
 import (
 	"context"
 	"database/sql"
-	errors2 "errors"
 	"github.com/rs/xid"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
@@ -35,33 +34,11 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 		return nil, errors.New(int(SystemStoreError), "创建空间错误")
 	}
 
-	// 创建tag映射
-	for _, tag := range req.WorkSpaceTag {
-		tagModel, err := l.svcCtx.WorkSpaceTagModel.FindOneByName(l.ctx, tag)
-		if errors2.Is(err, model.ErrNotFound) {
-			// 创建
-			tagId, err := l.svcCtx.WorkSpaceTagModel.Insert(l.ctx, &model.WorkspaceTag{
-				TagName:    tag,
-				IsDelete:   0,
-				CreateTime: time.Now(),
-				UpdateTime: time.Now(),
-			})
-			if err != nil {
-				return nil, errors.New(int(SystemStoreError), "创建标签错误")
-			}
-			tagModel.Id, _ = tagId.LastInsertId()
-		} else if err != nil {
-			return nil, errors.New(int(SystemStoreError), "查询标签错误")
-		}
-		// 设置映射
-		_, err = l.svcCtx.WorkspaceTagMappingModel.Insert(l.ctx, &model.WorkspaceTagMapping{
-			TagId:       tagModel.Id,
-			WorkspaceId: spaceModel.WorkspaceId,
-		})
-		if err != nil {
-			return nil, errors.New(int(SystemStoreError), "映射空间标签错误")
-		}
+	err = createTag(l.ctx, l.svcCtx, req.WorkSpaceTag, req.WorkSpaceId)
+	if err != nil {
+		return nil, err
 	}
+
 	resp = &types.WorkSpaceNewResponse{
 		WorkSpaceBase: types.WorkSpaceBase{
 			WorkSpaceId:   spaceModel.WorkspaceId,

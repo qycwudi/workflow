@@ -107,7 +107,7 @@ Content-Type: application/json
   "workSpaceDesc": "工作空间描述-update",
   "workSpaceType": "agent",
   "workSpaceTag": [
-    "API"
+    "API","API5"
   ],
   "workSpaceIcon": "http://iconicon.com",
   "workSpaceConfig": "{}"
