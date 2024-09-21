@@ -86,6 +86,19 @@ type WorkSpaceUploadCanvasConfigTagResponse {
 
 }
 
+type TagListRequest {
+
+}
+
+type TagListResponse {
+    Tag []TagEntity `json:"tagList"`
+}
+
+type TagEntity {
+    Id int `json:"id"`
+    Name string `json:"name"`
+}
+
 service gogogo-api {
     @doc "创建workspace"
     @handler WorkSpaceNewHandler
@@ -114,4 +127,8 @@ service gogogo-api {
     @doc "更新workspace画布配置"
     @handler WorkSpaceEditCanvasConfigHandler
     post /workspace/edit/canvas/config (WorkSpaceUploadCanvasConfigTagRequest) returns (WorkSpaceUploadCanvasConfigTagResponse)
+
+    @doc "列表tag"
+    @handler TagListHandler
+    post /tag/list (TagListRequest) returns (TagListResponse)
 }

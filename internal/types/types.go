@@ -102,3 +102,15 @@ type WorkSpaceUploadCanvasConfigTagRequest struct {
 
 type WorkSpaceUploadCanvasConfigTagResponse struct {
 }
+
+type TagListRequest struct {
+}
+
+type TagListResponse struct {
+	Tag []TagEntity `json:"tagList"`
+}
+
+type TagEntity struct {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}

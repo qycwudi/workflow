@@ -15,12 +15,25 @@ type (
 	WorkspaceTagModel interface {
 		workspaceTagModel
 		FindOneByName(ctx context.Context, tagName string) (*WorkspaceTag, error)
+		FindAll(ctx context.Context) ([]*WorkspaceTag, error)
 	}
 
 	customWorkspaceTagModel struct {
 		*defaultWorkspaceTagModel
 	}
 )
+
+func (c customWorkspaceTagModel) FindAll(ctx context.Context) ([]*WorkspaceTag, error) {
+	query := fmt.Sprintf("select %s from %s order by id desc", workspaceTagRows, c.table)
+	var resp []*WorkspaceTag
+	err := c.conn.QueryRowsCtx(ctx, &resp, query)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
 
 func (c customWorkspaceTagModel) FindOneByName(ctx context.Context, tagName string) (*WorkspaceTag, error) {
 	query := fmt.Sprintf("select %s from %s where `tag_name` = ? limit 1", workspaceTagRows, c.table)

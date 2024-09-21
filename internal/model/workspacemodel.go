@@ -18,12 +18,54 @@ type (
 		FindPage(ctx context.Context, current, pageSize int, workSpaceType, workSpaceName string) ([]*Workspace, int64, error)
 		FindInWorkSpaceId(ctx context.Context, workspaceId []string) ([]*Workspace, error)
 		Remove(ctx context.Context, workSpaceId string) error
+		UpdateByWorkspaceId(ctx context.Context, data *Workspace) error
 	}
 
 	customWorkspaceModel struct {
 		*defaultWorkspaceModel
 	}
 )
+
+func (c customWorkspaceModel) UpdateByWorkspaceId(ctx context.Context, data *Workspace) error {
+	var setters []string
+	var args []interface{}
+
+	// 检查字段是否为空，如果不为空则添加到更新列表
+	if data.WorkspaceName != "" {
+		setters = append(setters, "`workspace_name` = ?")
+		args = append(args, data.WorkspaceName)
+	}
+	if data.WorkspaceDesc.Valid {
+		setters = append(setters, "`workspace_desc` = ?")
+		args = append(args, data.WorkspaceDesc.String)
+	}
+	if data.WorkspaceType.Valid {
+		setters = append(setters, "`workspace_type` = ?")
+		args = append(args, data.WorkspaceType.String)
+	}
+	if data.WorkspaceIcon.Valid {
+		setters = append(setters, "`workspace_icon` = ?")
+		args = append(args, data.WorkspaceIcon.String)
+	}
+	if data.CanvasConfig.Valid {
+		setters = append(setters, "`canvas_config` = ?")
+		args = append(args, data.CanvasConfig.String)
+	}
+	if !data.UpdateTime.IsZero() {
+		setters = append(setters, "`update_time` = ?")
+		args = append(args, data.UpdateTime)
+	}
+
+	// 构建最终的SQL语句
+	query := fmt.Sprintf("UPDATE %s SET %s WHERE `workspace_id` = ?", c.table, strings.Join(setters, ", "))
+	args = append(args, data.WorkspaceId)
+	_, err := c.conn.ExecCtx(ctx, query, args...)
+	if err != nil {
+		logc.Infov(ctx, err)
+		return err
+	}
+	return nil
+}
 
 func (c customWorkspaceModel) FindPage(ctx context.Context, current, pageSize int, workSpaceType, workSpaceName string) ([]*Workspace, int64, error) {
 	// 初始化SQL语句和参数

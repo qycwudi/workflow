@@ -95,3 +95,28 @@ Content-Type: application/json
 {
   "workSpaceId": "crlr0g53sjtjc4oefj80"
 }
+
+### 编辑 workspace
+POST http://127.0.0.1:8888/workspace/edit
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceId": "crlr0g53sjtjc4oefj80",
+  "workSpaceName": "工作空间名称-update",
+  "workSpaceDesc": "工作空间描述-update",
+  "workSpaceType": "agent",
+  "workSpaceTag": [
+    "API"
+  ],
+  "workSpaceIcon": "http://iconicon.com",
+  "workSpaceConfig": "{}"
+}
+
+### 列表-带条件 workspace
+POST http://127.0.0.1:8888/tag/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+}
