@@ -14,3 +14,5 @@ syntax = "v1"
 import "kv.api"
 
 import "flow-workspace.api"
+
+import "open-api.api"

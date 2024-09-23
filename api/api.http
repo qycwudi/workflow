@@ -42,7 +42,8 @@ Content-Type: application/json
   "workSpaceDesc": "工作空间描述",
   "workSpaceType": "workflow",
   "workSpaceTag": [
-    "API","测试环境"
+    "API",
+    "测试环境"
   ],
   "workSpaceIcon": "http://icon.com"
 }
@@ -107,7 +108,8 @@ Content-Type: application/json
   "workSpaceDesc": "工作空间描述-update",
   "workSpaceType": "agent",
   "workSpaceTag": [
-    "API","API5"
+    "API",
+    "API5"
   ],
   "workSpaceIcon": "http://iconicon.com",
   "workSpaceConfig": "{}"
@@ -119,4 +121,13 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
+}
+
+### 列表-带条件 workspace
+POST http://127.0.0.1:8888/openapi/asbss
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "param": "123123123"
 }

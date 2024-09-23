@@ -114,3 +114,12 @@ type TagEntity struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
 }
+
+type OpenApiRequest struct {
+	Id    string      `path:"id"`
+	Param interface{} `json:"param"`
+}
+
+type OpenApiResponse struct {
+	Data interface{} `json:"data"`
+}
