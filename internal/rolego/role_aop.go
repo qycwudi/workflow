@@ -1,0 +1,66 @@
+package rolego
+
+import (
+	"context"
+	"github.com/rulego/rulego/api/types"
+	"github.com/zeromicro/go-zero/core/logx"
+	"time"
+)
+
+// 保护性检查，接口变动，在编译时中断
+var (
+	_ types.BeforeAspect = (*Trace)(nil)
+	_ types.AfterAspect  = (*Trace)(nil)
+)
+
+// Trace 节点Trace日志切面
+type Trace struct {
+}
+
+func (aspect *Trace) New() types.Aspect {
+	return &Trace{}
+}
+
+// Order 值越小越优先执行
+func (aspect *Trace) Order() int {
+	return 900
+}
+
+// PointCut 切入点 所有节点都会执行
+func (aspect *Trace) PointCut(ctx types.RuleContext, msg types.RuleMsg, relationType string) bool {
+	return true
+}
+
+func (aspect *Trace) Before(ctx types.RuleContext, msg types.RuleMsg, relationType string) types.RuleMsg {
+	// 记录开始时间
+	ctx.SetContext(context.WithValue(ctx.GetContext(), ctx.GetSelfId(), time.Now()))
+	aspect.onLog(ctx, types.In, msg, relationType, nil)
+	return msg
+}
+
+func (aspect *Trace) After(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
+	startTime, ok := ctx.GetContext().Value(ctx.GetSelfId()).(time.Time)
+	if !ok {
+		// 如果上下文中没有开始时间，则使用零值
+		startTime = time.Time{}
+	}
+
+	// 计算耗时
+	duration := time.Since(startTime).Milliseconds()
+	logx.Infof("Execution time: %d ms", duration)
+	aspect.onLog(ctx, types.Out, msg, relationType, nil)
+	return msg
+}
+
+func (aspect *Trace) onLog(ctx types.RuleContext, flowType string, msg types.RuleMsg, relationType string, err error) {
+	ctx.SubmitTack(func() {
+		// 异步记录日志
+		if ctx.Self() != nil && ctx.Self().IsDebugMode() {
+			var chainId = ""
+			if ctx.RuleChain() != nil {
+				chainId = ctx.RuleChain().GetNodeId().Id
+			}
+			logx.Infof("debug ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s,err:%v", chainId, flowType, ctx.Self().GetNodeId().Id, msg, relationType, err)
+		}
+	})
+}

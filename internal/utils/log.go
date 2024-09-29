@@ -3,6 +3,7 @@ package utils
 import (
 	"bytes"
 	"fmt"
+	"github.com/zeromicro/go-zero/core/logx"
 	"log"
 	"net/http"
 	"sync"
@@ -106,4 +107,12 @@ func (w *HTTPLogWriter) Flush() {
 
 func (w *HTTPLogWriter) Stop() {
 	close(w.done)
+}
+
+// RoleCustomLog 自定义日志输出
+type RoleCustomLog struct {
+}
+
+func (l *RoleCustomLog) Printf(format string, v ...interface{}) {
+	logx.Info(format)
 }

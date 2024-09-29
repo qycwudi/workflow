@@ -6,6 +6,7 @@ import (
 	"github.com/rulego/rulego/endpoint"
 	"github.com/rulego/rulego/endpoint/rest"
 	"github.com/zeromicro/go-zero/core/logx"
+	"gogogo/internal/utils"
 	"log"
 )
 
@@ -13,7 +14,7 @@ type RoleServer struct {
 }
 
 func InitRoleServer() {
-	config := types.Config{}
+	config := types.Config{Logger: &utils.RoleCustomLog{}}
 	restEndpoint, err := endpoint.Registry.New(rest.Type, config, rest.Config{Server: ":9999"})
 	if err != nil {
 		log.Fatal(err)

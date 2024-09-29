@@ -2,13 +2,21 @@ package rolego
 
 import (
 	"github.com/rulego/rulego"
+	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
+	"gogogo/internal/utils"
 	"os"
 )
 
 func InitRoleChain() {
 	file, _ := os.ReadFile("/Users/qiangyuecheng/GolandProjects/work-flow/internal/rolego/chain/chain1.json")
-	_, err := rulego.New("rule8848", file)
+	config := rulego.NewConfig()
+	config.Logger = &utils.RoleCustomLog{}
+	_, err := rulego.New(
+		"rule8848",
+		file,
+		rulego.WithConfig(config),
+		types.WithAspects(&Trace{}))
 	if err != nil {
 		logx.Errorf("init role chain fail,err:%v\n", err)
 		return
