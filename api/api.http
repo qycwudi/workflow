@@ -131,3 +131,14 @@ Content-Type: application/json
 {
   "param": "123123123"
 }
+
+### 列表-带条件 workspace
+POST http://127.0.0.1:9999/api/v1/msg2Chain4/rule8848
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "userName": "xue",
+  "password": "123456",
+  "role": "admin"
+}

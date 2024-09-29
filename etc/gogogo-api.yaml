@@ -22,3 +22,8 @@ Telemetry:
     Authorization: "Basic cm9vdEAxMjM0NTY3ODkuY29tOnFqb3phejdac0Nzbm9WSlU="
     organization: default
     stream-name: default
+
+OpenOB:
+  Path: 'http://192.168.49.2:31040/api/default/workflow/_json'
+  UserName: 'root@123456789.com'
+  Password: '123456789'

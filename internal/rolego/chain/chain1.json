@@ -1,0 +1,64 @@
+{
+  "ruleChain": {
+    "id": "rule8848",
+    "name": "测试规则链",
+    "root": true
+  },
+  "metadata": {
+    "nodes": [
+      {
+        "id": "s1",
+        "type": "jsFilter",
+        "name": "过滤",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return msg.role=='admin';"
+        }
+      },
+      {
+        "id": "s2",
+        "type": "jsTransform",
+        "name": "转换",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "msg.userName=msg.userName+'NO-1';\n return {'msg':msg,'metadata':metadata,'msgType':msgType};"
+        }
+      },
+      {
+        "id": "s4",
+        "type": "log",
+        "name": "日志组件",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return 's4-Success: Incoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
+        }
+      },
+      {
+        "id": "s5",
+        "type": "log",
+        "name": "日志组件",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return 's5-Failure: Incoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromId": "s1",
+        "toId": "s2",
+        "type": "True"
+      },
+      {
+        "fromId": "s2",
+        "toId": "s4",
+        "type": "Success"
+      },
+      {
+        "fromId": "s2",
+        "toId": "s5",
+        "type": "Failure"
+      }
+    ]
+  }
+}

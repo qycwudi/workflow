@@ -8,6 +8,7 @@ import (
 	"github.com/zeromicro/go-zero/rest"
 	"gogogo/internal/config"
 	"gogogo/internal/handler"
+	"gogogo/internal/rolego"
 	"gogogo/internal/svc"
 	"gogogo/internal/utils"
 	"time"
@@ -24,11 +25,15 @@ func main() {
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
 
-	httpWriter := utils.NewHTTPLogWriter("http://192.168.49.2:31040/api/default/default/_json", "root@123456789.com", "123456789", 5*time.Second)
+	httpWriter := utils.NewHTTPLogWriter(c.OpenOB.Path, c.OpenOB.UserName, c.OpenOB.Password, 5*time.Second)
 	logx.AddWriter(logx.NewWriter(httpWriter))
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
+	// 注册规则链
+	rolego.InitRoleServer()
+	rolego.InitRoleChain()
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
+
 }

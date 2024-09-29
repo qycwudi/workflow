@@ -40,7 +40,9 @@ func (w *HTTPLogWriter) startTimer() {
 	for {
 		select {
 		case <-ticker.C:
-			w.Flush()
+			go func() {
+				w.Flush()
+			}()
 		case <-w.done:
 			return
 		}
@@ -62,7 +64,9 @@ func (w *HTTPLogWriter) Write(p []byte) (n int, err error) {
 
 	w.EntryCount++
 	if w.EntryCount >= 1000 {
-		w.Flush()
+		go func() {
+			w.Flush()
+		}()
 	}
 
 	return n, nil
@@ -97,7 +101,6 @@ func (w *HTTPLogWriter) sendLogs() {
 func (w *HTTPLogWriter) Flush() {
 	w.mu.Lock()
 	defer w.mu.Unlock()
-
 	w.sendLogs()
 }
 

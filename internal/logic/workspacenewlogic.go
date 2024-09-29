@@ -34,7 +34,7 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 		return nil, errors.New(int(SystemStoreError), "创建空间错误")
 	}
 
-	err = createTag(l.ctx, l.svcCtx, req.WorkSpaceTag, req.WorkSpaceId)
+	err = createTag(l.ctx, l.svcCtx, req.WorkSpaceTag, spaceModel.WorkspaceId)
 	if err != nil {
 		return nil, err
 	}
