@@ -60,7 +60,9 @@ func (aspect *Trace) onLog(ctx types.RuleContext, flowType string, msg types.Rul
 			if ctx.RuleChain() != nil {
 				chainId = ctx.RuleChain().GetNodeId().Id
 			}
+			// 存储数据库
 			logx.Infof("debug ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s,err:%v", chainId, flowType, ctx.Self().GetNodeId().Id, msg, relationType, err)
+			// 存储 open observe
 		}
 	})
 }
