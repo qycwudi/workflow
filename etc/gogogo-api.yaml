@@ -3,13 +3,15 @@ Host: 0.0.0.0
 Port: 8899
 Timeout: 50000
 Log:
-  # console
   Mode: console
   # plain
   Encoding: json
   Path: /Users/qiangyuecheng/GolandProjects/gogogo/logs
 MySqlDataSource: work_flow_root:aff892177859de42@tcp(mysql.sqlpub.com:3306)/work_flow_db?charset=utf8mb4&parseTime=True&loc=Local
-
 Telemetry:
   Name: observe
   Batcher: otlpgrpc
+OpenOB:
+  Path: ''
+  UserName: ''
+  PassWord: ''
