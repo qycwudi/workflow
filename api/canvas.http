@@ -4,11 +4,3 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {}
-
-### 列表-画布组件 module
-POST http://10.99.43.99:8899/module/list
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{}
-

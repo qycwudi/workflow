@@ -9,7 +9,7 @@ type Config struct {
 }
 
 type OpenOB struct {
-	Path     string `json:"path"`
-	UserName string `json:"userName"`
-	Password string `json:"password"`
+	Path     string `json:"path,optional"`
+	UserName string `json:"userName,optional"`
+	Password string `json:"password,optional"`
 }
