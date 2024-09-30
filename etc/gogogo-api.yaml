@@ -3,27 +3,14 @@ Host: 0.0.0.0
 Port: 8899
 Timeout: 50000
 Log:
+  # console
   Mode: console
   # plain
   Encoding: json
   Path: /Users/qiangyuecheng/GolandProjects/gogogo/logs
 MySqlDataSource: work_flow_root:aff892177859de42@tcp(mysql.sqlpub.com:3306)/work_flow_db?charset=utf8mb4&parseTime=True&loc=Local
-RedisConfig:
-  RedisAddr: 192.168.49.2:31127
-  RedisUserName:
-  RedisPassword: '123456'
-  RedisDb: 6
 
 Telemetry:
   Name: observe
-  Endpoint: 192.168.49.2:32065
   Batcher: otlpgrpc
   OtlpHeaders:
-    Authorization: "Basic cm9vdEAxMjM0NTY3ODkuY29tOnFqb3phejdac0Nzbm9WSlU="
-    organization: default
-    stream-name: default
-
-OpenOB:
-  Path: 'http://192.168.49.2:31040/api/default/workflow/_json'
-  UserName: 'root@123456789.com'
-  Password: '123456789'
