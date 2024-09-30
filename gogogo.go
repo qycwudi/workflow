@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/trace"
 	"github.com/zeromicro/go-zero/rest"
 	"gogogo/internal/config"
 	"gogogo/internal/handler"
@@ -30,8 +31,11 @@ func main() {
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
 
-	httpWriter := utils.NewHTTPLogWriter(c.OpenOB.Path, c.OpenOB.UserName, c.OpenOB.Password, 5*time.Second)
-	logx.AddWriter(logx.NewWriter(httpWriter))
+	// 自定义日志输出
+	if c.OpenOB.Path != "" {
+		httpWriter := utils.NewHTTPLogWriter(c.OpenOB.Path, c.OpenOB.UserName, c.OpenOB.Password, 5*time.Second)
+		logx.AddWriter(logx.NewWriter(httpWriter))
+	}
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
@@ -50,8 +54,20 @@ func overrideFromEnv(c *config.Config) {
 	c.Log.Path = getEnv("LOG_PATH", c.Log.Path)
 	c.MySqlDataSource = getEnv("MYSQL_DATASOURCE", c.MySqlDataSource)
 
-	// 链路追踪配置
-
+	// 系统监控配置
+	if os.Getenv("TELEMETRY_ENDPOINT") != "" {
+		c.Telemetry.Endpoint = getEnv("TELEMETRY_ENDPOINT", "")
+		c.Telemetry.OtlpHeaders = map[string]string{"Authorization": getEnv("TELEMETRY_AUTHORIZATION", "")}
+		c.Telemetry.OtlpHeaders = map[string]string{"organization": getEnv("TELEMETRY_ORGANIZATION", "default")}
+		c.Telemetry.OtlpHeaders = map[string]string{"stream-name": getEnv("TELEMETRY_STREAM_NAME", "default")}
+	} else {
+		// 不追踪
+		c.Telemetry = trace.Config{}
+	}
+	// 自定义追踪
+	c.OpenOB.Path = getEnv("OPENOB_PATH", "")
+	c.OpenOB.Path = getEnv("OPENOB_USERNAME", "")
+	c.OpenOB.Path = getEnv("OPENOB_PASSWORD", "")
 }
 
 func getEnv(key, defaultValue string) string {
