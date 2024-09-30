@@ -51,6 +51,7 @@ func overrideFromEnv(c *config.Config) {
 	c.Host = getEnv("HOST", c.Host)
 	c.Port = int(getEnvInt("PORT", int64(c.Port)))
 	c.Timeout = getEnvInt("TIMEOUT", c.Timeout)
+	c.Log.Mode = getEnv("LOG_MODE", c.Log.Mode)
 	c.Log.Path = getEnv("LOG_PATH", c.Log.Path)
 	c.MySqlDataSource = getEnv("MYSQL_DATASOURCE", c.MySqlDataSource)
 
