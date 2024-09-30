@@ -6,11 +6,11 @@ import (
 	"github.com/rs/xid"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
-	"gogogo/internal/model"
-	"gogogo/internal/rolego"
-	"gogogo/internal/svc"
-	"gogogo/internal/types"
 	"time"
+	"workflow/internal/model"
+	"workflow/internal/rolego"
+	"workflow/internal/svc"
+	"workflow/internal/types"
 )
 
 type WorkSpaceNewLogic struct {

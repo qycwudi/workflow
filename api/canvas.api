@@ -17,7 +17,7 @@ type ModuleData {
     ModuleConfig string `json:"moduleConfig"`
 }
 
-service gogogo-api {
+service workflow-api {
     @doc "组件list"
     @handler ModuleListHandler
     post /module/list (ModuleListRequest) returns (ModuleListResponse)

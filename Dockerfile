@@ -15,7 +15,7 @@ ADD go.sum .
 RUN go mod download
 COPY . .
 COPY ./etc /app/etc
-RUN go build -ldflags="-s -w" -o /app/gogogo gogogo.go
+RUN go build -ldflags="-s -w" -o /app/workflow workflow.go
 
 
 FROM alpine
@@ -25,7 +25,7 @@ COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/S
 ENV TZ Asia/Shanghai
 
 WORKDIR /app
-COPY --from=builder /app/gogogo /app/gogogo
+COPY --from=builder /app/workflow /app/workflow
 COPY --from=builder /app/etc /app/etc
 
-CMD ["./gogogo", "-f", "etc/gogogo-api.yaml"]
+CMD ["./workflow", "-f", "etc/workflow-api.yaml"]

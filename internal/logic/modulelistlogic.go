@@ -4,8 +4,8 @@ import (
 	"context"
 	"github.com/zeromicro/x/errors"
 
-	"gogogo/internal/svc"
-	"gogogo/internal/types"
+	"workflow/internal/svc"
+	"workflow/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

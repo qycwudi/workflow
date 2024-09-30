@@ -27,7 +27,7 @@ type GetVByKResponse {
 }
 
 
-service gogogo-api {
+service workflow-api {
 
     @doc "设置kv"
     @handler CommonSetKvHandler

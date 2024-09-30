@@ -4,7 +4,7 @@ package handler
 import (
 	"net/http"
 
-	"gogogo/internal/svc"
+	"workflow/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
 )

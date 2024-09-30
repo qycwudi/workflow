@@ -2,11 +2,11 @@ package handler
 
 import (
 	"github.com/zeromicro/go-zero/rest/httpx"
-	"gogogo/internal/logic"
-	"gogogo/internal/svc"
-	"gogogo/internal/types"
-	"gogogo/response"
 	"net/http"
+	"workflow/internal/logic"
+	"workflow/internal/svc"
+	"workflow/internal/types"
+	"workflow/response"
 )
 
 func WorkSpaceEditTagHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {

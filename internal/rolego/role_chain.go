@@ -4,8 +4,8 @@ import (
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
-	"gogogo/internal/utils"
 	"os"
+	"workflow/internal/utils"
 )
 
 func InitRoleChain() {

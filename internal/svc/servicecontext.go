@@ -1,8 +1,8 @@
 package svc
 
 import (
-	"gogogo/internal/config"
-	"gogogo/internal/model"
+	"workflow/internal/config"
+	"workflow/internal/model"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )

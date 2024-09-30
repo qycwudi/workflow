@@ -7,14 +7,14 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/trace"
 	"github.com/zeromicro/go-zero/rest"
-	"gogogo/internal/config"
-	"gogogo/internal/handler"
-	"gogogo/internal/rolego"
-	"gogogo/internal/svc"
-	"gogogo/internal/utils"
 	"os"
 	"strconv"
 	"time"
+	"workflow/internal/config"
+	"workflow/internal/handler"
+	"workflow/internal/rolego"
+	"workflow/internal/svc"
+	"workflow/internal/utils"
 )
 
 var configFile = flag.String("f", "etc/gogogo-api.yaml", "the config file")

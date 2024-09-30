@@ -1,7 +1,7 @@
 syntax = "v1"
 
 // 自定义返回
-// goctl api go -api gogogo.api -dir ../ --home /Users/qiangyuecheng/.goctl/1.5.6
+// goctl api go -api workflow.api -dir ../ --home /Users/qiangyuecheng/.goctl/1.5.6
 
 /*
 {

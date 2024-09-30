@@ -99,7 +99,7 @@ type TagEntity {
     Name string `json:"name"`
 }
 
-service gogogo-api {
+service workflow-api {
     @doc "创建workspace"
     @handler WorkSpaceNewHandler
     post /workspace/new (WorkSpaceNewRequest) returns (WorkSpaceNewResponse)

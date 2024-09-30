@@ -2,7 +2,7 @@ package {{.PkgName}}
 
 import (
 	"net/http"
-    "gogogo/response"
+    "workflow/response"
 	"github.com/zeromicro/go-zero/rest/httpx"
 	{{.ImportPackages}}
 )

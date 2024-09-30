@@ -4,10 +4,10 @@ import (
 	"context"
 	"github.com/samber/lo"
 	"github.com/zeromicro/x/errors"
-	"gogogo/internal/model"
-	"gogogo/internal/svc"
-	"gogogo/internal/types"
-	"gogogo/internal/utils"
+	"workflow/internal/model"
+	"workflow/internal/svc"
+	"workflow/internal/types"
+	"workflow/internal/utils"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )

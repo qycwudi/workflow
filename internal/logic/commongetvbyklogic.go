@@ -5,8 +5,8 @@ import (
 	"errors"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 
-	"gogogo/internal/svc"
-	"gogogo/internal/types"
+	"workflow/internal/svc"
+	"workflow/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
