@@ -1,0 +1,13 @@
+stages:
+  - build-back
+
+build-back:
+  stage: build-back
+  image: 10.12.0.78:5000/cosmos/ci:latest
+  script:
+    - make gogogo
+  only:
+    - main
+    - /^dev-.*$/
+  tags:
+    - k8s-ci
