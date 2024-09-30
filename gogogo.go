@@ -57,9 +57,11 @@ func overrideFromEnv(c *config.Config) {
 	// 系统监控配置
 	if os.Getenv("TELEMETRY_ENDPOINT") != "" {
 		c.Telemetry.Endpoint = getEnv("TELEMETRY_ENDPOINT", "")
-		c.Telemetry.OtlpHeaders = map[string]string{"Authorization": getEnv("TELEMETRY_AUTHORIZATION", "")}
-		c.Telemetry.OtlpHeaders = map[string]string{"organization": getEnv("TELEMETRY_ORGANIZATION", "default")}
-		c.Telemetry.OtlpHeaders = map[string]string{"stream-name": getEnv("TELEMETRY_STREAM_NAME", "default")}
+		c.Telemetry.OtlpHeaders = map[string]string{
+			"Authorization": getEnv("TELEMETRY_AUTHORIZATION", ""),
+			"organization":  getEnv("TELEMETRY_ORGANIZATION", "default"),
+			"stream-name":   getEnv("TELEMETRY_STREAM_NAME", "default"),
+		}
 	} else {
 		// 不追踪
 		c.Telemetry = trace.Config{}
@@ -67,8 +69,8 @@ func overrideFromEnv(c *config.Config) {
 	// 自定义追踪
 	if os.Getenv("OPENOB_PATH") != "" {
 		c.OpenOB.Path = getEnv("OPENOB_PATH", "")
-		c.OpenOB.Path = getEnv("OPENOB_USERNAME", "")
-		c.OpenOB.Path = getEnv("OPENOB_PASSWORD", "")
+		c.OpenOB.UserName = getEnv("OPENOB_USERNAME", "")
+		c.OpenOB.Password = getEnv("OPENOB_PASSWORD", "")
 	}
 }
 
