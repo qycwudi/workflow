@@ -65,9 +65,11 @@ func overrideFromEnv(c *config.Config) {
 		c.Telemetry = trace.Config{}
 	}
 	// 自定义追踪
-	c.OpenOB.Path = getEnv("OPENOB_PATH", "")
-	c.OpenOB.Path = getEnv("OPENOB_USERNAME", "")
-	c.OpenOB.Path = getEnv("OPENOB_PASSWORD", "")
+	if os.Getenv("OPENOB_PATH") != "" {
+		c.OpenOB.Path = getEnv("OPENOB_PATH", "")
+		c.OpenOB.Path = getEnv("OPENOB_USERNAME", "")
+		c.OpenOB.Path = getEnv("OPENOB_PASSWORD", "")
+	}
 }
 
 func getEnv(key, defaultValue string) string {
