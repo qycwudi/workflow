@@ -11,6 +11,8 @@ import (
 	"gogogo/internal/rolego"
 	"gogogo/internal/svc"
 	"gogogo/internal/utils"
+	"os"
+	"strconv"
 	"time"
 )
 
@@ -21,6 +23,9 @@ func main() {
 
 	var c config.Config
 	conf.MustLoad(*configFile, &c)
+
+	// 读取环境变量
+	overrideFromEnv(&c)
 
 	server := rest.MustNewServer(c.RestConf)
 	defer server.Stop()
@@ -36,4 +41,35 @@ func main() {
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
 
+}
+
+func overrideFromEnv(c *config.Config) {
+	c.Host = getEnv("HOST", c.Host)
+	c.Port = int(getEnvInt("PORT", int64(c.Port)))
+	c.Timeout = getEnvInt("TIMEOUT", c.Timeout)
+	c.Log.Path = getEnv("LOG_PATH", c.Log.Path)
+	c.MySqlDataSource = getEnv("MYSQL_DATASOURCE", c.MySqlDataSource)
+
+	// 链路追踪配置
+
+}
+
+func getEnv(key, defaultValue string) string {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	return value
+}
+
+func getEnvInt(key string, defaultValue int64) int64 {
+	value := os.Getenv(key)
+	if value == "" {
+		return defaultValue
+	}
+	intValue, err := strconv.Atoi(value)
+	if err != nil {
+		return defaultValue
+	}
+	return int64(intValue)
 }
