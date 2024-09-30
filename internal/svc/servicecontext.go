@@ -13,6 +13,9 @@ type ServiceContext struct {
 	WorkSpaceModel           model.WorkspaceModel
 	WorkSpaceTagModel        model.WorkspaceTagModel
 	WorkspaceTagMappingModel model.WorkspaceTagMappingModel
+	ModuleModel              model.ModuleModel
+	NodeModel                model.NodeModel
+	EdgeModel                model.EdgeModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -23,5 +26,8 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		WorkSpaceModel:           model.NewWorkspaceModel(conn),
 		WorkSpaceTagModel:        model.NewWorkspaceTagModel(conn),
 		WorkspaceTagMappingModel: model.NewWorkspaceTagMappingModel(conn),
+		ModuleModel:              model.NewModuleModel(conn),
+		NodeModel:                model.NewNodeModel(conn),
+		EdgeModel:                model.NewEdgeModel(conn),
 	}
 }

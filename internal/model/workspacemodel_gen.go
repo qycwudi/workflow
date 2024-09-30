@@ -37,16 +37,18 @@ type (
 	}
 
 	Workspace struct {
-		Id            int64          `db:"id"`             // 自增主建
-		WorkspaceId   string         `db:"workspace_id"`   // 主建
-		WorkspaceName string         `db:"workspace_name"` // 名称
-		WorkspaceDesc sql.NullString `db:"workspace_desc"` // 描述
-		WorkspaceType sql.NullString `db:"workspace_type"` // 类型flow|agent
-		WorkspaceIcon sql.NullString `db:"workspace_icon"` // iconUrl
-		CanvasConfig  sql.NullString `db:"canvas_config"`  // 前端画布配置
-		CreateTime    time.Time      `db:"create_time"`    // 创建时间
-		UpdateTime    time.Time      `db:"update_time"`    // 修改时间
-		IsDelete      int64          `db:"is_delete"`      // 是否删除
+		Id             int64          `db:"id"`             // 自增主建
+		WorkspaceId    string         `db:"workspace_id"`   // 主建
+		WorkspaceName  string         `db:"workspace_name"` // 名称
+		WorkspaceDesc  sql.NullString `db:"workspace_desc"` // 描述
+		WorkspaceType  sql.NullString `db:"workspace_type"` // 类型flow|agent
+		WorkspaceIcon  sql.NullString `db:"workspace_icon"` // iconUrl
+		CanvasConfig   sql.NullString `db:"canvas_config"`  // 前端画布配置
+		Configuration  string         `db:"configuration"`  // 配置信息 KV
+		AdditionalInfo string         `db:"additionalInfo"` // 扩展信息
+		CreateTime     time.Time      `db:"create_time"`    // 创建时间
+		UpdateTime     time.Time      `db:"update_time"`    // 修改时间
+		IsDelete       int64          `db:"is_delete"`      // 是否删除
 	}
 )
 
@@ -99,14 +101,14 @@ func (m *defaultWorkspaceModel) FindOneByWorkspaceId(ctx context.Context, worksp
 }
 
 func (m *defaultWorkspaceModel) Insert(ctx context.Context, data *Workspace) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, workspaceRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.WorkspaceName, data.WorkspaceDesc, data.WorkspaceType, data.WorkspaceIcon, data.CanvasConfig, data.CreateTime, data.UpdateTime, data.IsDelete)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, workspaceRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.WorkspaceName, data.WorkspaceDesc, data.WorkspaceType, data.WorkspaceIcon, data.CanvasConfig, data.Configuration, data.AdditionalInfo, data.CreateTime, data.UpdateTime, data.IsDelete)
 	return ret, err
 }
 
 func (m *defaultWorkspaceModel) Update(ctx context.Context, newData *Workspace) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, workspaceRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.WorkspaceName, newData.WorkspaceDesc, newData.WorkspaceType, newData.WorkspaceIcon, newData.CanvasConfig, newData.CreateTime, newData.UpdateTime, newData.IsDelete, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.WorkspaceName, newData.WorkspaceDesc, newData.WorkspaceType, newData.WorkspaceIcon, newData.CanvasConfig, newData.Configuration, newData.AdditionalInfo, newData.CreateTime, newData.UpdateTime, newData.IsDelete, newData.Id)
 	return err
 }
 

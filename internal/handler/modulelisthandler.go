@@ -9,16 +9,16 @@ import (
 	"net/http"
 )
 
-func OpenApiHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func ModuleListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.OpenApiRequest
+		var req types.ModuleListRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := logic.NewOpenApiLogic(r.Context(), svcCtx)
-		resp, err := l.OpenApi(&req)
+		l := logic.NewModuleListLogic(r.Context(), svcCtx)
+		resp, err := l.ModuleList(&req)
 		response.Response(w, resp, err)
 
 	}

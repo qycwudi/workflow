@@ -50,6 +50,7 @@ type (
 		UpdateTime         time.Time `db:"update_time"`
 		NodeName           string    `db:"node_name"`     // 节点名称
 		Configuration      string    `db:"configuration"` // 组件通用配置
+		WorkspaceId        string    `db:"workspace_id"`  // 空间 ID
 	}
 )
 
@@ -102,14 +103,14 @@ func (m *defaultNodeModel) FindOneByNodeId(ctx context.Context, nodeId string) (
 }
 
 func (m *defaultNodeModel) Insert(ctx context.Context, data *Node) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, nodeRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.NodeId, data.NodeType, data.LabelConfig, data.CustomConfig, data.TaskConfig, data.StyleConfig, data.AnchorPointsConfig, data.Position, data.CreateTime, data.UpdateTime, data.NodeName, data.Configuration)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, nodeRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.NodeId, data.NodeType, data.LabelConfig, data.CustomConfig, data.TaskConfig, data.StyleConfig, data.AnchorPointsConfig, data.Position, data.CreateTime, data.UpdateTime, data.NodeName, data.Configuration, data.WorkspaceId)
 	return ret, err
 }
 
 func (m *defaultNodeModel) Update(ctx context.Context, newData *Node) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, nodeRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.NodeId, newData.NodeType, newData.LabelConfig, newData.CustomConfig, newData.TaskConfig, newData.StyleConfig, newData.AnchorPointsConfig, newData.Position, newData.CreateTime, newData.UpdateTime, newData.NodeName, newData.Configuration, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.NodeId, newData.NodeType, newData.LabelConfig, newData.CustomConfig, newData.TaskConfig, newData.StyleConfig, newData.AnchorPointsConfig, newData.Position, newData.CreateTime, newData.UpdateTime, newData.NodeName, newData.Configuration, newData.WorkspaceId, newData.Id)
 	return err
 }
 

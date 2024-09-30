@@ -115,11 +115,17 @@ type TagEntity struct {
 	Name string `json:"name"`
 }
 
-type OpenApiRequest struct {
-	Id    string      `path:"id"`
-	Param interface{} `json:"param"`
+type ModuleListRequest struct {
 }
 
-type OpenApiResponse struct {
-	Data interface{} `json:"data"`
+type ModuleListResponse struct {
+	Total   int          `json:"total"`
+	Modules []ModuleData `json:"modules"`
+}
+
+type ModuleData struct {
+	Index        int    `json:"index"`
+	ModuleId     string `json:"moduleId"`
+	ModuleType   string `json:"moduleType"`
+	ModuleConfig string `json:"moduleConfig"`
 }

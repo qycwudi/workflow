@@ -1,0 +1,24 @@
+syntax = "v1"
+
+
+type ModuleListRequest {
+
+}
+
+type ModuleListResponse {
+    Total int `json:"total"`
+    Modules []ModuleData `json:"modules"`
+}
+
+type ModuleData {
+    Index int `json:"index"`
+    ModuleId string `json:"moduleId"`
+    ModuleType string `json:"moduleType"`
+    ModuleConfig string `json:"moduleConfig"`
+}
+
+service gogogo-api {
+    @doc "组件list"
+    @handler ModuleListHandler
+    post /module/list (ModuleListRequest) returns (ModuleListResponse)
+}

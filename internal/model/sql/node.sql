@@ -13,6 +13,7 @@ CREATE TABLE `node`
     `update_time`          datetime                                                      NOT NULL,
     `node_name`            varchar(255)                                                  NOT NULL COMMENT '节点名称',
     `configuration`        json                                                          NOT NULL COMMENT '组件通用配置',
+    `workspace_id`         varchar(255)                                                  NOT NULL COMMENT '空间 ID',
     PRIMARY KEY (`id`),
     UNIQUE KEY `uni_node_id` (`node_id` DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

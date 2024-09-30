@@ -9,8 +9,10 @@ import (
 
 // 保护性检查，接口变动，在编译时中断
 var (
+	// 存储日志
 	_ types.BeforeAspect = (*Trace)(nil)
 	_ types.AfterAspect  = (*Trace)(nil)
+	// 链路追踪
 	_ types.AroundAspect = (*Trace)(nil)
 )
 
@@ -19,11 +21,11 @@ type Trace struct {
 }
 
 func (aspect *Trace) Around(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, bool) {
-	// logx.Infof("debug Around before ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "Around", ctx.Self().GetNodeId().Id, msg, relationType)
+	logx.Infof("debug Around before ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "Around", ctx.Self().GetNodeId().Id, msg, relationType)
 	// 执行当前节点
-	// ctx.TellNode(ctx.GetContext(), ctx.GetSelfId(), msg, true, nil, nil)
-	// logx.Infof("debug Around after ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "Around", ctx.Self().GetNodeId().Id, msg, relationType)
-	return msg, true
+	ctx.Self().OnMsg(ctx, msg)
+	logx.Infof("debug Around after ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "Around", ctx.Self().GetNodeId().Id, msg, relationType)
+	return msg, false
 }
 
 func (aspect *Trace) New() types.Aspect {

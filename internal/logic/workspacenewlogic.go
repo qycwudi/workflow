@@ -7,6 +7,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 	"gogogo/internal/model"
+	"gogogo/internal/rolego"
 	"gogogo/internal/svc"
 	"gogogo/internal/types"
 	"time"
@@ -34,9 +35,30 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 		return nil, errors.New(int(SystemStoreError), "创建空间错误")
 	}
 
+	// 创建 tag
 	err = createTag(l.ctx, l.svcCtx, req.WorkSpaceTag, spaceModel.WorkspaceId)
 	if err != nil {
 		return nil, err
+	}
+
+	// 初始化画布 创建 start node
+	_, err = l.svcCtx.NodeModel.Insert(l.ctx, &model.Node{
+		NodeId:             xid.New().String(),
+		NodeType:           rolego.Start,
+		WorkspaceId:        spaceModel.WorkspaceId,
+		LabelConfig:        "{}",
+		CustomConfig:       "{}",
+		TaskConfig:         "{}",
+		StyleConfig:        "{}",
+		AnchorPointsConfig: "[0, 0.5]",
+		Position:           `{"x":0,"y":0}`,
+		CreateTime:         time.Now(),
+		UpdateTime:         time.Now(),
+		NodeName:           "开始",
+		Configuration:      "{}",
+	})
+	if err != nil {
+		return nil, errors.New(int(SystemStoreError), "创建start节点错误")
 	}
 
 	resp = &types.WorkSpaceNewResponse{
@@ -70,7 +92,9 @@ func workSpaceNewRequest2WorkSpaceModel(req *types.WorkSpaceNewRequest) *model.W
 			String: req.WorkSpaceIcon,
 			Valid:  true,
 		},
-		CreateTime: time.Now(),
-		UpdateTime: time.Now(),
+		CreateTime:     time.Now(),
+		UpdateTime:     time.Now(),
+		AdditionalInfo: "{}",
+		Configuration:  "{}",
 	}
 }

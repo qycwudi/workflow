@@ -1,6 +1,6 @@
 ### 安装Httpx Requests插件
 ### 上传
-POST http://127.0.0.1:8888/auto/upload
+POST http://127.0.0.1:8899/auto/upload
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: multipart/form-data; boundary=WebAppBoundary
 
@@ -11,7 +11,7 @@ Content-Disposition: form-data; name="file"; filename="数产数据录入模版.
 --WebAppBoundary--
 
 ### 设置key
-POST http://127.0.0.1:8888/common/set/kv
+POST http://127.0.0.1:8899/common/set/kv
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -22,7 +22,7 @@ Content-Type: application/json
 }
 
 ### 设置key生产
-POST http://10.99.43.88:8888/common/set/kv
+POST http://10.99.43.88:8899/common/set/kv
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -33,7 +33,7 @@ Content-Type: application/json
 }
 
 ### 创建 workspace
-POST http://127.0.0.1:8888/workspace/new
+POST http://127.0.0.1:8899/workspace/new
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -50,7 +50,7 @@ Content-Type: application/json
 
 
 ### 编辑 workspace name
-POST http://127.0.0.1:8888/workspace/edit
+POST http://127.0.0.1:8899/workspace/edit
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -60,7 +60,7 @@ Content-Type: application/json
 }
 
 ### 列表 workspace
-POST http://127.0.0.1:8888/workspace/list
+POST http://127.0.0.1:8899/workspace/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -73,7 +73,7 @@ Content-Type: application/json
 }
 
 ### 列表-带条件 workspace
-POST http://127.0.0.1:8888/workspace/list
+POST http://127.0.0.1:8899/workspace/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -89,7 +89,7 @@ Content-Type: application/json
 
 
 ### 列表-带条件 workspace
-POST http://127.0.0.1:8888/workspace/remove
+POST http://127.0.0.1:8899/workspace/remove
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -98,7 +98,7 @@ Content-Type: application/json
 }
 
 ### 编辑 workspace
-POST http://127.0.0.1:8888/workspace/edit
+POST http://127.0.0.1:8899/workspace/edit
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -115,8 +115,8 @@ Content-Type: application/json
   "workSpaceConfig": "{}"
 }
 
-### 列表-带条件 workspace
-POST http://127.0.0.1:8888/tag/list
+### 列表 tag
+POST http://127.0.0.1:8899/tag/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -124,7 +124,7 @@ Content-Type: application/json
 }
 
 ### 列表-带条件 workspace
-POST http://127.0.0.1:8888/openapi/asbss
+POST http://127.0.0.1:8899/openapi/asbss
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 

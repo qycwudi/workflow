@@ -1,0 +1,7 @@
+### 列表-画布组件 module
+POST http://127.0.0.1:8899/module/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{}
+

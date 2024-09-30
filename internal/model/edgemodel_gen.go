@@ -36,14 +36,15 @@ type (
 	}
 
 	Edge struct {
-		Id         int64  `db:"id"`
-		EdgeId     string `db:"edge_id"`     // 边 ID
-		EdgeType   string `db:"edge_type"`   // 边类型
-		CustomData string `db:"custom_data"` // 自定义数据
-		Source     string `db:"source"`      // 起点
-		Target     string `db:"target"`      // 终点
-		Style      string `db:"style"`       // 样式
-		Route      string `db:"route"`       // 路由 True、False、Failure
+		Id          int64  `db:"id"`
+		EdgeId      string `db:"edge_id"`      // 边 ID
+		EdgeType    string `db:"edge_type"`    // 边类型
+		CustomData  string `db:"custom_data"`  // 自定义数据
+		Source      string `db:"source"`       // 起点
+		Target      string `db:"target"`       // 终点
+		Style       string `db:"style"`        // 样式
+		Route       string `db:"route"`        // 路由 True、False、Failure
+		WorkspaceId string `db:"workspace_id"` // 空间 ID
 	}
 )
 
@@ -96,14 +97,14 @@ func (m *defaultEdgeModel) FindOneByEdgeId(ctx context.Context, edgeId string) (
 }
 
 func (m *defaultEdgeModel) Insert(ctx context.Context, data *Edge) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, edgeRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.EdgeId, data.EdgeType, data.CustomData, data.Source, data.Target, data.Style, data.Route)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, edgeRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.EdgeId, data.EdgeType, data.CustomData, data.Source, data.Target, data.Style, data.Route, data.WorkspaceId)
 	return ret, err
 }
 
 func (m *defaultEdgeModel) Update(ctx context.Context, newData *Edge) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, edgeRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.EdgeId, newData.EdgeType, newData.CustomData, newData.Source, newData.Target, newData.Style, newData.Route, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.EdgeId, newData.EdgeType, newData.CustomData, newData.Source, newData.Target, newData.Style, newData.Route, newData.WorkspaceId, newData.Id)
 	return err
 }
 

@@ -13,6 +13,6 @@ syntax = "v1"
 */
 import "kv.api"
 
-import "flow-workspace.api"
+import "workspace.api"
 
-import "open-api.api"
+import "canvas.api"
