@@ -8,5 +8,6 @@ CREATE TABLE `edge`
     `target`      varchar(255) NOT NULL COMMENT '终点',
     `style`       json         NOT NULL COMMENT '样式',
     `route`       varchar(255) NOT NULL COMMENT '路由 True、False、Failure',
-    PRIMARY KEY (`id`, `edge_id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uni_edge_id` (`edge_id` DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -11,10 +11,19 @@ import (
 var (
 	_ types.BeforeAspect = (*Trace)(nil)
 	_ types.AfterAspect  = (*Trace)(nil)
+	_ types.AroundAspect = (*Trace)(nil)
 )
 
 // Trace 节点Trace日志切面
 type Trace struct {
+}
+
+func (aspect *Trace) Around(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, bool) {
+	// logx.Infof("debug Around before ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "Around", ctx.Self().GetNodeId().Id, msg, relationType)
+	// 执行当前节点
+	// ctx.TellNode(ctx.GetContext(), ctx.GetSelfId(), msg, true, nil, nil)
+	// logx.Infof("debug Around after ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "Around", ctx.Self().GetNodeId().Id, msg, relationType)
+	return msg, true
 }
 
 func (aspect *Trace) New() types.Aspect {

@@ -8,5 +8,6 @@ CREATE TABLE `canvas`
     `debug_mode`     tinyint(1) NOT NULL COMMENT 'debug模式',
     `configuration`  json         NOT NULL COMMENT '配置信息 KV',
     `additionalInfo` json         NOT NULL COMMENT '扩展信息',
-    PRIMARY KEY (`id`, `canvas_id`)
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uni_canvas_id` (`canvas_id` DESC)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
