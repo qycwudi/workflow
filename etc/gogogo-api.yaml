@@ -3,10 +3,11 @@ Host: 0.0.0.0
 Port: 8899
 Timeout: 50000
 Log:
+  # file console
   Mode: console
-  # plain
+  # json plain
   Encoding: json
-  Path: /Users/qiangyuecheng/GolandProjects/gogogo/logs
+  Path: ./app/logs
 MySqlDataSource: root:Root@123@tcp(10.99.43.9:3306)/workflow?charset=utf8mb4&parseTime=True&loc=Local
 Telemetry:
   Name: observe
