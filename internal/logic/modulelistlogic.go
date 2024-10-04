@@ -34,6 +34,7 @@ func (l *ModuleListLogic) ModuleList(req *types.ModuleListRequest) (resp *types.
 		data[i] = types.ModuleData{
 			Index:        int(module.ModuleIndex),
 			ModuleId:     module.ModuleId,
+			ModuleName:   module.ModuleName,
 			ModuleType:   module.ModuleType,
 			ModuleConfig: module.ModuleConfig,
 		}

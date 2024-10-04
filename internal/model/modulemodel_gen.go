@@ -36,6 +36,7 @@ type (
 
 	Module struct {
 		ModuleId     string `db:"module_id"`     // 组件ID
+		ModuleName   string `db:"module_name"`   // 组件名称
 		ModuleType   string `db:"module_type"`   // 组件类型
 		ModuleConfig string `db:"module_config"` // 组件配置
 		ModuleIndex  int64  `db:"module_index"`  // 排序desc
@@ -77,14 +78,14 @@ func (m *defaultModuleModel) FindOne(ctx context.Context, moduleId string) (*Mod
 }
 
 func (m *defaultModuleModel) Insert(ctx context.Context, data *Module) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, moduleRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.ModuleId, data.ModuleType, data.ModuleConfig, data.ModuleIndex)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, moduleRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.ModuleId, data.ModuleName, data.ModuleType, data.ModuleConfig, data.ModuleIndex)
 	return ret, err
 }
 
 func (m *defaultModuleModel) Update(ctx context.Context, data *Module) error {
 	query := fmt.Sprintf("update %s set %s where `module_id` = ?", m.table, moduleRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.ModuleType, data.ModuleConfig, data.ModuleIndex, data.ModuleId)
+	_, err := m.conn.ExecCtx(ctx, query, data.ModuleName, data.ModuleType, data.ModuleConfig, data.ModuleIndex, data.ModuleId)
 	return err
 }
 

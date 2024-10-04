@@ -3,6 +3,7 @@ package logic
 import (
 	"context"
 	"database/sql"
+	errors2 "errors"
 	"github.com/rs/xid"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
@@ -43,19 +44,19 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 
 	// 初始化画布 创建 start node
 	_, err = l.svcCtx.NodeModel.Insert(l.ctx, &model.Node{
-		NodeId:             xid.New().String(),
-		NodeType:           rolego.Start,
-		WorkspaceId:        spaceModel.WorkspaceId,
-		LabelConfig:        "{}",
-		CustomConfig:       "{}",
-		TaskConfig:         "{}",
-		StyleConfig:        "{}",
-		AnchorPointsConfig: "[0, 0.5]",
-		Position:           `{"x":0,"y":0}`,
-		CreateTime:         time.Now(),
-		UpdateTime:         time.Now(),
-		NodeName:           "开始",
-		Configuration:      "{}",
+		NodeId:        xid.New().String(),
+		NodeType:      rolego.Start,
+		WorkspaceId:   spaceModel.WorkspaceId,
+		ModuleId:      "start",
+		LabelConfig:   "{}",
+		CustomConfig:  "{}",
+		TaskConfig:    "{}",
+		StyleConfig:   "{}",
+		Position:      `{"x":0,"y":0}`,
+		CreateTime:    time.Now(),
+		UpdateTime:    time.Now(),
+		NodeName:      "开始",
+		Configuration: "{}",
 	})
 	if err != nil {
 		return nil, errors.New(int(SystemStoreError), "创建start节点错误")
@@ -97,4 +98,39 @@ func workSpaceNewRequest2WorkSpaceModel(req *types.WorkSpaceNewRequest) *model.W
 		AdditionalInfo: "{}",
 		Configuration:  "{}",
 	}
+}
+
+// createTag 创建tag映射
+func createTag(ctx context.Context, svcCtx *svc.ServiceContext, workSpaceTag []string, workspaceId string) error {
+	// 创建tag映射
+	for _, tag := range workSpaceTag {
+		var tagId int64 = 0
+		tagModel, err := svcCtx.WorkSpaceTagModel.FindOneByName(ctx, tag)
+		if errors2.Is(err, model.ErrNotFound) {
+			// 创建
+			result, err := svcCtx.WorkSpaceTagModel.Insert(ctx, &model.WorkspaceTag{
+				TagName:    tag,
+				IsDelete:   0,
+				CreateTime: time.Now(),
+				UpdateTime: time.Now(),
+			})
+			if err != nil {
+				return errors.New(int(SystemStoreError), "创建标签错误")
+			}
+			tagId, _ = result.LastInsertId()
+		} else if err != nil {
+			return errors.New(int(SystemStoreError), "查询标签错误")
+		} else {
+			tagId = tagModel.Id
+		}
+		// 设置映射
+		_, err = svcCtx.WorkspaceTagMappingModel.Insert(ctx, &model.WorkspaceTagMapping{
+			TagId:       tagId,
+			WorkspaceId: workspaceId,
+		})
+		if err != nil {
+			return errors.New(int(SystemStoreError), "映射空间标签错误")
+		}
+	}
+	return nil
 }

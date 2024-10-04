@@ -1,6 +1,15 @@
 syntax = "v1"
 
 
+type CanvasRunRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+}
+
+type CanvasRunResponse {
+    WorkSpaceId string `json:"workSpaceId"`
+    Response string `json:"response"`
+}
+
 type ModuleListRequest {
 
 }
@@ -13,12 +22,163 @@ type ModuleListResponse {
 type ModuleData {
     Index int `json:"index"`
     ModuleId string `json:"moduleId"`
+    ModuleName string `json:"moduleName"`
     ModuleType string `json:"moduleType"`
     ModuleConfig string `json:"moduleConfig"`
 }
 
+type CanvasDetailRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+}
+
+type CanvasDetailResponse {
+    Node []CanvasNode `json:"node"`
+    Edge []CanvasEdge `json:"edge"`
+}
+
+type CanvasNode {
+    NodeId string `json:"nodeId"`
+    Position NodePosition `json:"position"`
+}
+
+type CanvasEdge {
+    EdgeId string `json:"edgeId"`
+
+}
+
+type CanvasAddNodeRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    ModuleId string `json:"moduleId"`
+    Position NodePosition `json:"position"`
+}
+
+type NodePosition {
+    X float64 `json:"x"`
+    Y float64 `json:"y"`
+}
+
+type CanvasAddNodeResponse {
+    NodeId string `json:"nodeId"`
+}
+
+type CanvasAddEdgeRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    Source string `json:"source"`
+    SourcePoint int `json:"sourcePoint"`
+    Target string `json:"target"`
+    TargetPoint int `json:"targetPoint"`
+    Route string `json:"route"`
+}
+
+type CanvasAddEdgeResponse {
+    EdgeId string `json:"edgeId"`
+}
+
+type CanvasDeleteNodeRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    NodeId string `json:"nodeId"`
+}
+
+type CanvasDeleteNodeResponse {
+    WorkSpaceId string `json:"workSpaceId"`
+    NodeId string `json:"nodeId"`
+}
+
+type CanvasDeleteEdgeRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    EdgeId string `json:"edgeId"`
+}
+
+type CanvasDeleteEdgeResponse {
+    EdgeId string `json:"edgeId"`
+}
+
+type CanvasEditNodeRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    NodeId string `json:"nodeId"`
+    Position NodePosition `json:"position"`
+    ModuleConfig map[string]interface{} `json:"moduleConfig"`
+}
+
+type CanvasEditNodeResponse {
+    NodeId string `json:"nodeId"`
+}
+
+
+type CanvasEditEdgeRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    EdgeId string `json:"edgeId"`
+    FromNodeId string `json:"fromNodeId"`
+    FromNodePoint int `json:"fromNodePoint"`
+    ToNodeId string `json:"toNodeId"`
+    ToNodePoint int `json:"fromNodePoint"`
+    Route string `json:"route"`
+}
+
+type CanvasEditEdgeResponse {
+    EdgeId string `json:"edgeId"`
+}
+
+type CanvasGetNodeRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    NodeId string `json:"nodeId"`
+}
+
+type CanvasGetNodeResponse {
+    NodeId string `json:"nodeId"`
+}
+
+type CanvasGetEdgeRequest {
+    WorkSpaceId string `json:"workSpaceId"`
+    EdgeId string `json:"edgeId"`
+}
+
+type CanvasGetEdgeResponse {
+    EdgeId string `json:"edgeId"`
+}
+
 service workflow-api {
+    @doc "运行"
+    @handler CanvasRunHandler
+    post /canvas/run (CanvasRunRequest) returns (CanvasRunResponse)
+
     @doc "组件list"
     @handler ModuleListHandler
     post /module/list (ModuleListRequest) returns (ModuleListResponse)
+
+    @doc "画布链详情"
+    @handler CanvasDetailHandler
+    post /canvas/detail (CanvasDetailRequest) returns (CanvasDetailResponse)
+
+    @doc "画布新增节点"
+    @handler CanvasAddNodeHandler
+    post /canvas/add/node (CanvasAddNodeRequest) returns (CanvasAddNodeResponse)
+
+    @doc "画布新增边"
+    @handler CanvasAddEdgeHandler
+    post /canvas/add/edge (CanvasAddEdgeRequest) returns (CanvasAddEdgeResponse)
+
+    @doc "画布删除节点"
+    @handler CanvasDeleteNodeHandler
+    post /canvas/delete/node (CanvasDeleteNodeRequest) returns (CanvasDeleteNodeResponse)
+
+    @doc "画布删除边"
+    @handler CanvasDeleteEdgeHandler
+    post /canvas/delete/edge (CanvasDeleteEdgeRequest) returns (CanvasDeleteEdgeResponse)
+
+    @doc "画布修改节点"
+    @handler CanvasEditNodeHandler
+    post /canvas/edit/node (CanvasEditNodeRequest) returns (CanvasEditNodeResponse)
+
+    @doc "画布修改边"
+    @handler CanvasEditEdgeHandler
+    post /canvas/edit/edge (CanvasEditEdgeRequest) returns (CanvasEditEdgeResponse)
+
+    @doc "画布查看节点"
+    @handler CanvasGetNodeHandler
+    post /canvas/get/node (CanvasGetNodeRequest) returns (CanvasGetNodeResponse)
+
+    @doc "画布查看边"
+    @handler CanvasGetEdgeHandler
+    post /canvas/get/edge (CanvasGetEdgeRequest) returns (ModuleListResponse)
 }

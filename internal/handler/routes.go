@@ -74,8 +74,58 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
+				Path:    "/canvas/run",
+				Handler: CanvasRunHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/module/list",
 				Handler: ModuleListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/detail",
+				Handler: CanvasDetailHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/add/node",
+				Handler: CanvasAddNodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/add/edge",
+				Handler: CanvasAddEdgeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/delete/node",
+				Handler: CanvasDeleteNodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/delete/edge",
+				Handler: CanvasDeleteEdgeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/edit/node",
+				Handler: CanvasEditNodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/edit/edge",
+				Handler: CanvasEditEdgeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/get/node",
+				Handler: CanvasGetNodeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/get/edge",
+				Handler: CanvasGetEdgeHandler(serverCtx),
 			},
 		},
 	)

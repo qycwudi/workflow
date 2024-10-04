@@ -1,6 +1,11 @@
 package model
 
-import "github.com/zeromicro/go-zero/core/stores/sqlx"
+import (
+	"context"
+	"fmt"
+	"github.com/zeromicro/go-zero/core/logc"
+	"github.com/zeromicro/go-zero/core/stores/sqlx"
+)
 
 var _ NodeModel = (*customNodeModel)(nil)
 
@@ -9,12 +14,33 @@ type (
 	// and implement the added methods in customNodeModel.
 	NodeModel interface {
 		nodeModel
+		DeleteNodeByNodeIdAndWorkSpace(ctx context.Context, nodeId string, workSpaceId string) error
+		FindOneByWorkSpace(ctx context.Context, workspaceId string) ([]*Node, error)
 	}
 
 	customNodeModel struct {
 		*defaultNodeModel
 	}
 )
+
+func (c customNodeModel) FindOneByWorkSpace(ctx context.Context, workspaceId string) ([]*Node, error) {
+	var resp []*Node
+	query := fmt.Sprintf("select %s from %s where `workspace_id` = ?", nodeRows, c.table)
+	err := c.conn.QueryRowsCtx(ctx, &resp, query, workspaceId)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		logc.Infov(ctx, err)
+		return nil, err
+	}
+}
+
+func (c customNodeModel) DeleteNodeByNodeIdAndWorkSpace(ctx context.Context, nodeId string, workSpaceId string) error {
+	query := fmt.Sprintf("delete from %s where `node_id` = ? and workspace_id = ?", c.table)
+	_, err := c.conn.ExecCtx(ctx, query, nodeId, workSpaceId)
+	return err
+}
 
 // NewNodeModel returns a model for the database table.
 func NewNodeModel(conn sqlx.SqlConn) NodeModel {

@@ -37,20 +37,20 @@ type (
 	}
 
 	Node struct {
-		Id                 int64     `db:"id"`
-		NodeId             string    `db:"node_id"`
-		NodeType           string    `db:"node_type"`            // 组件类型
-		LabelConfig        string    `db:"label_config"`         // 前端字段配置
-		CustomConfig       string    `db:"custom_config"`        // 组件自定义配置
-		TaskConfig         string    `db:"task_config"`          // 任务配置
-		StyleConfig        string    `db:"style_config"`         // 样式配置
-		AnchorPointsConfig string    `db:"anchor_points_config"` // 锚点配置
-		Position           string    `db:"position"`             // 坐标配置
-		CreateTime         time.Time `db:"create_time"`
-		UpdateTime         time.Time `db:"update_time"`
-		NodeName           string    `db:"node_name"`     // 节点名称
-		Configuration      string    `db:"configuration"` // 组件通用配置
-		WorkspaceId        string    `db:"workspace_id"`  // 空间 ID
+		Id            int64     `db:"id"`
+		NodeId        string    `db:"node_id"`
+		NodeType      string    `db:"node_type"`     // 组件类型
+		LabelConfig   string    `db:"label_config"`  // 前端字段配置
+		CustomConfig  string    `db:"custom_config"` // 组件自定义配置
+		TaskConfig    string    `db:"task_config"`   // 任务配置
+		StyleConfig   string    `db:"style_config"`  // 样式配置
+		Position      string    `db:"position"`      // 坐标配置
+		CreateTime    time.Time `db:"create_time"`
+		UpdateTime    time.Time `db:"update_time"`
+		NodeName      string    `db:"node_name"`     // 节点名称
+		Configuration string    `db:"configuration"` // 组件通用配置
+		WorkspaceId   string    `db:"workspace_id"`  // 空间 ID
+		ModuleId      string    `db:"module_id"`     // 组件ID
 	}
 )
 
@@ -104,13 +104,13 @@ func (m *defaultNodeModel) FindOneByNodeId(ctx context.Context, nodeId string) (
 
 func (m *defaultNodeModel) Insert(ctx context.Context, data *Node) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, nodeRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.NodeId, data.NodeType, data.LabelConfig, data.CustomConfig, data.TaskConfig, data.StyleConfig, data.AnchorPointsConfig, data.Position, data.CreateTime, data.UpdateTime, data.NodeName, data.Configuration, data.WorkspaceId)
+	ret, err := m.conn.ExecCtx(ctx, query, data.NodeId, data.NodeType, data.LabelConfig, data.CustomConfig, data.TaskConfig, data.StyleConfig, data.Position, data.CreateTime, data.UpdateTime, data.NodeName, data.Configuration, data.WorkspaceId, data.ModuleId)
 	return ret, err
 }
 
 func (m *defaultNodeModel) Update(ctx context.Context, newData *Node) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, nodeRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.NodeId, newData.NodeType, newData.LabelConfig, newData.CustomConfig, newData.TaskConfig, newData.StyleConfig, newData.AnchorPointsConfig, newData.Position, newData.CreateTime, newData.UpdateTime, newData.NodeName, newData.Configuration, newData.WorkspaceId, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.NodeId, newData.NodeType, newData.LabelConfig, newData.CustomConfig, newData.TaskConfig, newData.StyleConfig, newData.Position, newData.CreateTime, newData.UpdateTime, newData.NodeName, newData.Configuration, newData.WorkspaceId, newData.ModuleId, newData.Id)
 	return err
 }
 
