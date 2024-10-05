@@ -190,5 +190,5 @@ service workflow-api {
 
     @doc "画布查看边"
     @handler CanvasGetEdgeHandler
-    post /canvas/get/edge (CanvasGetEdgeRequest) returns (ModuleListResponse)
+    post /canvas/get/edge (CanvasGetEdgeRequest) returns (CanvasGetEdgeResponse)
 }

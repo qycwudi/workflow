@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -23,8 +24,12 @@ func NewCanvasGetEdgeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Can
 	}
 }
 
-func (l *CanvasGetEdgeLogic) CanvasGetEdge(req *types.CanvasGetEdgeRequest) (resp *types.ModuleListResponse, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+func (l *CanvasGetEdgeLogic) CanvasGetEdge(req *types.CanvasGetEdgeRequest) (resp *types.CanvasGetEdgeResponse, err error) {
+	edge, err := l.svcCtx.EdgeModel.FindOneByEdgeId(l.ctx, req.EdgeId)
+	if err != nil {
+		return nil, errors.New(int(SystemOrmError), "边不存在")
+	}
+	resp = &types.CanvasGetEdgeResponse{EdgeId: edge.EdgeId}
+	// todo 补充
+	return resp, nil
 }

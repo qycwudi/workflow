@@ -2,6 +2,7 @@ package logic
 
 import (
 	"context"
+	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -24,7 +25,11 @@ func NewCanvasGetNodeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Can
 }
 
 func (l *CanvasGetNodeLogic) CanvasGetNode(req *types.CanvasGetNodeRequest) (resp *types.CanvasGetNodeResponse, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	node, err := l.svcCtx.NodeModel.FindOneByNodeId(l.ctx, req.NodeId)
+	if err != nil {
+		return nil, errors.New(int(SystemOrmError), "节点不存在")
+	}
+	resp = &types.CanvasGetNodeResponse{NodeId: node.NodeId}
+	// todo 补充
+	return resp, nil
 }
