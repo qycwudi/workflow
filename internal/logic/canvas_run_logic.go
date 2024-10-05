@@ -24,7 +24,13 @@ func NewCanvasRunLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CanvasR
 }
 
 func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.CanvasRunResponse, err error) {
-	// todo: add your logic here and delete this line
+	// 1. 读取点、线
+
+	// 2. 拼接 json
+
+	// 3. 加载到链池 记录 md5 新建 or 重新加载
+
+	// 4. doMsg
 
 	return
 }
