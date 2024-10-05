@@ -18,12 +18,19 @@ type (
 		CheckEdge(ctx context.Context, source string, target string) (bool, error)
 		DeleteByEdgeIdAndWorkSpaceId(ctx context.Context, edgeId string, workSpaceId string) error
 		FindOneByWorkSpace(ctx context.Context, workspaceId string) ([]*Edge, error)
+		UpdateByEdgeId(ctx context.Context, newData *Edge) error
 	}
 
 	customEdgeModel struct {
 		*defaultEdgeModel
 	}
 )
+
+func (m *defaultEdgeModel) UpdateByEdgeId(ctx context.Context, newData *Edge) error {
+	query := fmt.Sprintf("update %s set %s where `edge_id` = ?", m.table, edgeRowsWithPlaceHolder)
+	_, err := m.conn.ExecCtx(ctx, query, newData.EdgeId, newData.EdgeType, newData.CustomData, newData.Source, newData.Target, newData.Style, newData.Route, newData.WorkspaceId, newData.EdgeId)
+	return err
+}
 
 func (c customEdgeModel) FindOneByWorkSpace(ctx context.Context, workspaceId string) ([]*Edge, error) {
 	var resp []*Edge

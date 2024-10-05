@@ -69,3 +69,36 @@ Content-Type: application/json
 {
   "workSpaceId": "crvpmf53sjtsppvoiogg"
 }
+
+### 画布-修改边
+POST http://127.0.0.1:8899/canvas/edit/edge
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "edgeId": "crvpmpl3sjtsppvoioi0",
+  "workSpaceId": "crvpmf53sjtsppvoiogg",
+  "source": "crvpmf53sjtsppvoioh0",
+  "sourcePoint": 2,
+  "target": "crvpmi53sjtsppvoiohg",
+  "targetPoint": 2,
+  "route": "True"
+}
+
+### 画布-修改节点
+POST http://127.0.0.1:8899/canvas/ edit/node
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceId": "crvpmf53sjtsppvoiogg",
+  "nodeId": "crvpmf53sjtsppvoioh0",
+  "position": {
+    "x": 1.0,
+    "y": 2.0
+  },
+  "moduleConfig": {
+    "param": "x,y,z",
+    "script": "json.mars(x)"
+  }
+}

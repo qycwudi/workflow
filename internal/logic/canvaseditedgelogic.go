@@ -2,7 +2,8 @@ package logic
 
 import (
 	"context"
-
+	"github.com/rulego/rulego/utils/json"
+	"github.com/zeromicro/x/errors"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 
@@ -24,7 +25,31 @@ func NewCanvasEditEdgeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Ca
 }
 
 func (l *CanvasEditEdgeLogic) CanvasEditEdge(req *types.CanvasEditEdgeRequest) (resp *types.CanvasEditEdgeResponse, err error) {
-	// todo: add your logic here and delete this line
+	// 检查
+	if err = checkEdge(l.ctx, l.svcCtx, req.Source, req.Target); err != nil {
+		return nil, err
+	}
 
-	return
+	// 查询边
+	edge, err := l.svcCtx.EdgeModel.FindOneByEdgeId(l.ctx, req.EdgeId)
+	if err != nil {
+		return nil, errors.New(int(SystemOrmError), "查找边失败")
+	}
+
+	edgeCustomData := types.EdgeCustomData{
+		SourcePoint: req.SourcePoint,
+		TargetPoint: req.TargetPoint,
+	}
+	edgeCustomDataMar, _ := json.Marshal(edgeCustomData)
+	edge.CustomData = string(edgeCustomDataMar)
+	edge.Source = req.Source
+	edge.Target = req.Target
+	edge.Route = req.Route
+
+	err = l.svcCtx.EdgeModel.UpdateByEdgeId(l.ctx, edge)
+	if err != nil {
+		return nil, errors.New(int(SystemOrmError), "修改边错误")
+	}
+	resp = &types.CanvasEditEdgeResponse{EdgeId: req.EdgeId}
+	return resp, nil
 }

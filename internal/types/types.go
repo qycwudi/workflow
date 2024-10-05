@@ -140,6 +140,11 @@ type ModuleData struct {
 	ModuleConfig string `json:"moduleConfig"`
 }
 
+type EdgeCustomData struct {
+	SourcePoint int `json:"sourcePoint"`
+	TargetPoint int `json:"targetPoint"`
+}
+
 type CanvasDetailRequest struct {
 	WorkSpaceId string `json:"workSpaceId"`
 }
@@ -150,12 +155,18 @@ type CanvasDetailResponse struct {
 }
 
 type CanvasNode struct {
-	NodeId   string       `json:"nodeId"`
-	Position NodePosition `json:"position"`
+	NodeId       string                 `json:"nodeId"`
+	Position     NodePosition           `json:"position"`
+	ModuleConfig map[string]interface{} `json:"moduleConfig"`
 }
 
 type CanvasEdge struct {
-	EdgeId string `json:"edgeId"`
+	EdgeId      string `json:"edgeId"`
+	Source      string `json:"source"`
+	SourcePoint int    `json:"sourcePoint"`
+	Target      string `json:"target"`
+	TargetPoint int    `json:"targetPoint"`
+	Route       string `json:"route"`
 }
 
 type CanvasAddNodeRequest struct {
@@ -217,13 +228,13 @@ type CanvasEditNodeResponse struct {
 }
 
 type CanvasEditEdgeRequest struct {
-	WorkSpaceId   string `json:"workSpaceId"`
-	EdgeId        string `json:"edgeId"`
-	FromNodeId    string `json:"fromNodeId"`
-	FromNodePoint int    `json:"fromNodePoint"`
-	ToNodeId      string `json:"toNodeId"`
-	ToNodePoint   int    `json:"fromNodePoint"`
-	Route         string `json:"route"`
+	WorkSpaceId string `json:"workSpaceId"`
+	EdgeId      string `json:"edgeId"`
+	Source      string `json:"source"`
+	SourcePoint int    `json:"sourcePoint"`
+	Target      string `json:"target"`
+	TargetPoint int    `json:"targetPoint"`
+	Route       string `json:"route"`
 }
 
 type CanvasEditEdgeResponse struct {

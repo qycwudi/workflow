@@ -28,41 +28,15 @@ func NewCanvasAddEdgeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Can
 	}
 }
 
-type EdgeCustomData struct {
-	SourcePoint int `json:"sourcePoint"`
-	TargetPoint int `json:"targetPoint"`
-}
-
 func (l *CanvasAddEdgeLogic) CanvasAddEdge(req *types.CanvasAddEdgeRequest) (resp *types.CanvasAddEdgeResponse, err error) {
 	// 检查
-	// 1. 是否已经有边
-	if check, err := l.svcCtx.EdgeModel.CheckEdge(l.ctx, req.Source, req.Target); !check {
-		if err != nil && !errors2.Is(err, sqlc.ErrNotFound) {
-			return nil, errors.New(int(SystemOrmError), "查询边失败")
-		}
-		return nil, errors.New(int(SystemStoreError), "节点之间已经存在关系")
-	}
-
-	// 2. 是否形成循环
-	if check, err := l.svcCtx.EdgeModel.CheckEdge(l.ctx, req.Target, req.Source); err != nil && !check {
-		return nil, errors.New(int(SystemStoreError), "已存在关系,不允许反向连接")
-	}
-
-	// 3. Source节点是否存在
-	_, err = l.svcCtx.NodeModel.FindOneByNodeId(l.ctx, req.Source)
-	if err != nil {
-		return nil, errors.New(int(SystemStoreError), "起始节点不存在")
-	}
-
-	// 4. Target节点是否存在
-	_, err = l.svcCtx.NodeModel.FindOneByNodeId(l.ctx, req.Target)
-	if err != nil {
-		return nil, errors.New(int(SystemStoreError), "目标节点不存在")
+	if err = checkEdge(l.ctx, l.svcCtx, req.Source, req.Target); err != nil {
+		return nil, err
 	}
 
 	// 创建边
 	edgeId := xid.New().String()
-	edgeCustomData := EdgeCustomData{
+	edgeCustomData := types.EdgeCustomData{
 		SourcePoint: req.SourcePoint,
 		TargetPoint: req.TargetPoint,
 	}
@@ -86,4 +60,37 @@ func (l *CanvasAddEdgeLogic) CanvasAddEdge(req *types.CanvasAddEdgeRequest) (res
 	}
 	resp = &types.CanvasAddEdgeResponse{EdgeId: edgeId}
 	return resp, nil
+}
+
+func checkEdge(ctx context.Context, svc *svc.ServiceContext, source, target string) error {
+	// 检查起始点和终点是一个节点
+	if source == target {
+		return errors.New(int(SystemStoreError), "连接规则不允许")
+	}
+
+	// 1. 是否已经有边
+	if check, err := svc.EdgeModel.CheckEdge(ctx, source, target); !check {
+		if err != nil && !errors2.Is(err, sqlc.ErrNotFound) {
+			return errors.New(int(SystemOrmError), "查询边失败")
+		}
+		return errors.New(int(SystemStoreError), "节点之间已经存在关系")
+	}
+
+	// 2. 是否形成循环
+	if check, err := svc.EdgeModel.CheckEdge(ctx, target, source); err != nil && !check {
+		return errors.New(int(SystemStoreError), "已存在关系,不允许反向连接")
+	}
+
+	// 3. Source节点是否存在
+	_, err := svc.NodeModel.FindOneByNodeId(ctx, source)
+	if err != nil {
+		return errors.New(int(SystemStoreError), "起始节点不存在")
+	}
+
+	// 4. Target节点是否存在
+	_, err = svc.NodeModel.FindOneByNodeId(ctx, target)
+	if err != nil {
+		return errors.New(int(SystemStoreError), "目标节点不存在")
+	}
+	return nil
 }

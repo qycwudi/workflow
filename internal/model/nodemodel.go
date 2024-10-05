@@ -16,12 +16,19 @@ type (
 		nodeModel
 		DeleteNodeByNodeIdAndWorkSpace(ctx context.Context, nodeId string, workSpaceId string) error
 		FindOneByWorkSpace(ctx context.Context, workspaceId string) ([]*Node, error)
+		UpdateByNodeId(ctx context.Context, newData *Node) error
 	}
 
 	customNodeModel struct {
 		*defaultNodeModel
 	}
 )
+
+func (c customNodeModel) UpdateByNodeId(ctx context.Context, newData *Node) error {
+	query := fmt.Sprintf("update %s set %s where `node_id` = ?", c.table, nodeRowsWithPlaceHolder)
+	_, err := c.conn.ExecCtx(ctx, query, newData.NodeId, newData.NodeType, newData.LabelConfig, newData.CustomConfig, newData.TaskConfig, newData.StyleConfig, newData.Position, newData.CreateTime, newData.UpdateTime, newData.NodeName, newData.Configuration, newData.WorkspaceId, newData.ModuleId, newData.NodeId)
+	return err
+}
 
 func (c customNodeModel) FindOneByWorkSpace(ctx context.Context, workspaceId string) ([]*Node, error) {
 	var resp []*Node
