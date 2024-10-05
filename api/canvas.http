@@ -102,3 +102,12 @@ Content-Type: application/json
     "script": "json.mars(x)"
   }
 }
+
+### 画布-执行
+POST http://127.0.0.1:8899/canvas/run
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceId": "crvpmf53sjtsppvoiogg"
+}
