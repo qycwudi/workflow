@@ -42,9 +42,11 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 		if err != nil {
 			return nil, errors.New(int(SystemOrmError), "标签查询空间列表数据失败")
 		}
-		l.Infof("workspaceIds:%+v", workspaceIds)
 
 		workSpacePage, err := l.svcCtx.WorkSpaceModel.FindInWorkSpaceId(l.ctx, workspaceIds)
+		if err != nil {
+			return nil, errors.New(int(SystemOrmError), "过滤查询空间列表数据失败")
+		}
 		total = totalNum
 		page = workSpacePage
 	} else {
@@ -91,7 +93,6 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 			UpdateTime: utils.FormatDate(v.UpdateTime),
 		}
 	}
-	l.Infof("tagMap:%+v", tagMap)
 	resp.Total = total
 	resp.Data = spacePage
 	return

@@ -59,7 +59,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 		}
 		// 假设这里需要将Configuration字段转换为map[string]interface{}
 		if err := json.Unmarshal([]byte(dbNode.Configuration), &node.Configuration); err != nil {
-			return nil, errors.New(int(SystemOrmError), "配置解析失败")
+			return nil, errors.New(int(SystemOrmError), "节点配置解析失败")
 		}
 		rule.Metadata.Nodes = append(rule.Metadata.Nodes, node)
 	}
@@ -76,7 +76,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 
 	ruleJson, err := json.Marshal(rule)
 	if err != nil {
-		return nil, errors.New(int(SystemOrmError), "序列化规则失败")
+		return nil, errors.New(int(SystemOrmError), "规则序列化失败")
 	}
 	l.Info(string(ruleJson))
 	// 3. 加载到链池 记录 md5 新建 or 重新加载

@@ -42,7 +42,7 @@ func (l *CanvasDetailLogic) CanvasDetail(req *types.CanvasDetailRequest) (resp *
 	for i, n := range nodes {
 
 		configuration := make(map[string]interface{})
-		_ = json.Unmarshal([]byte(n.Configuration), configuration)
+		_ = json.Unmarshal([]byte(n.Configuration), &configuration)
 
 		position := types.NodePosition{}
 		_ = json.Unmarshal([]byte(n.Position), &position)

@@ -34,10 +34,7 @@ func (l *CanvasAddNodeLogic) CanvasAddNode(req *types.CanvasAddNodeRequest) (res
 		return nil, errors.New(int(SystemOrmError), "查询组件信息错误")
 	}
 	// 初始化画布 创建 start node
-	positionMar, err := json.Marshal(req.Position)
-	if err != nil {
-		return nil, err
-	}
+	positionMar, _ := json.Marshal(req.Position)
 	nodeId := xid.New().String()
 	_, err = l.svcCtx.NodeModel.Insert(l.ctx, &model.Node{
 		NodeId:        nodeId,

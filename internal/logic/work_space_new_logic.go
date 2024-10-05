@@ -39,7 +39,7 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 	// 创建 tag
 	err = createTag(l.ctx, l.svcCtx, req.WorkSpaceTag, spaceModel.WorkspaceId)
 	if err != nil {
-		return nil, err
+		return nil, errors.New(int(SystemStoreError), "创建标签错误")
 	}
 
 	// 初始化画布 创建 start node
