@@ -4,6 +4,9 @@ package handler
 import (
 	"net/http"
 
+	canvas "workflow/internal/handler/canvas"
+	kv "workflow/internal/handler/kv"
+	workspace "workflow/internal/handler/workspace"
 	"workflow/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
@@ -15,14 +18,15 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodPost,
 				Path:    "/common/set/kv",
-				Handler: CommonSetKvHandler(serverCtx),
+				Handler: kv.CommonSetKvHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/common/get/vByk",
-				Handler: CommonGetVByKHandler(serverCtx),
+				Handler: kv.CommonGetVByKHandler(serverCtx),
 			},
 		},
+		rest.WithPrefix("/workflow"),
 	)
 
 	server.AddRoutes(
@@ -30,44 +34,45 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodPost,
 				Path:    "/workspace/new",
-				Handler: WorkSpaceNewHandler(serverCtx),
+				Handler: workspace.WorkSpaceNewHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/workspace/remove",
-				Handler: WorkSpaceRemoveHandler(serverCtx),
+				Handler: workspace.WorkSpaceRemoveHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/workspace/edit",
-				Handler: WorkSpaceEditHandler(serverCtx),
+				Handler: workspace.WorkSpaceEditHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/workspace/list",
-				Handler: WorkSpaceListHandler(serverCtx),
+				Handler: workspace.WorkSpaceListHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/workspace/detail",
-				Handler: WorkSpaceDetailHandler(serverCtx),
+				Handler: workspace.WorkSpaceDetailHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/workspace/edit/tag",
-				Handler: WorkSpaceEditTagHandler(serverCtx),
+				Handler: workspace.WorkSpaceEditTagHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/workspace/edit/canvas/config",
-				Handler: WorkSpaceEditCanvasConfigHandler(serverCtx),
+				Handler: workspace.WorkSpaceEditCanvasConfigHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/tag/list",
-				Handler: TagListHandler(serverCtx),
+				Handler: workspace.TagListHandler(serverCtx),
 			},
 		},
+		rest.WithPrefix("/workflow"),
 	)
 
 	server.AddRoutes(
@@ -75,58 +80,59 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/run",
-				Handler: CanvasRunHandler(serverCtx),
+				Handler: canvas.CanvasRunHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/module/list",
-				Handler: ModuleListHandler(serverCtx),
+				Handler: canvas.ModuleListHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/detail",
-				Handler: CanvasDetailHandler(serverCtx),
+				Handler: canvas.CanvasDetailHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/add/node",
-				Handler: CanvasAddNodeHandler(serverCtx),
+				Handler: canvas.CanvasAddNodeHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/add/edge",
-				Handler: CanvasAddEdgeHandler(serverCtx),
+				Handler: canvas.CanvasAddEdgeHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/delete/node",
-				Handler: CanvasDeleteNodeHandler(serverCtx),
+				Handler: canvas.CanvasDeleteNodeHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/delete/edge",
-				Handler: CanvasDeleteEdgeHandler(serverCtx),
+				Handler: canvas.CanvasDeleteEdgeHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/edit/node",
-				Handler: CanvasEditNodeHandler(serverCtx),
+				Handler: canvas.CanvasEditNodeHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/edit/edge",
-				Handler: CanvasEditEdgeHandler(serverCtx),
+				Handler: canvas.CanvasEditEdgeHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/get/node",
-				Handler: CanvasGetNodeHandler(serverCtx),
+				Handler: canvas.CanvasGetNodeHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/canvas/get/edge",
-				Handler: CanvasGetEdgeHandler(serverCtx),
+				Handler: canvas.CanvasGetEdgeHandler(serverCtx),
 			},
 		},
+		rest.WithPrefix("/workflow"),
 	)
 }

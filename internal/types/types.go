@@ -116,7 +116,9 @@ type TagEntity struct {
 }
 
 type CanvasRunRequest struct {
-	WorkSpaceId string `json:"workSpaceId"`
+	WorkSpaceId string            `json:"workSpaceId" desc:"空间ID"`
+	MetaData    map[string]string `json:"metaData" desc:"元数据"`
+	Data        map[string]string `json:"data" desc:"数据"`
 }
 
 type CanvasRunResponse struct {

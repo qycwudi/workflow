@@ -19,11 +19,11 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "workSpaceId": "crvpmf53sjtsppvoiogg",
-  "moduleId": "filter_jsSwitch",
+  "workSpaceId": "cs29ujl3sjtiq4etv0c0",
+  "moduleId": "jsTransform",
   "position": {
     "x": 1.0,
-    "y": 2.0
+    "y": 1.0
   }
 }
 
@@ -105,6 +105,16 @@ Content-Type: application/json
 
 ### 画布-执行
 POST http://127.0.0.1:8899/canvas/run
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceId": "crvpmf53sjtsppvoiogg"
+}
+
+
+### 画布-更新
+POST http://127.0.0.1:8899/canvas/update
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 

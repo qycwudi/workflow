@@ -38,7 +38,7 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "workSpaceName": "工作空间名称",
+  "workSpaceName": "雪兔工作流测试-base",
   "workSpaceDesc": "工作空间描述",
   "workSpaceType": "workflow",
   "workSpaceTag": [
@@ -54,7 +54,7 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "workSpaceName": "工作空间名称",
+  "workSpaceName": "雪兔工作流测试-base",
   "workSpaceDesc": "工作空间描述",
   "workSpaceType": "workflow",
   "workSpaceTag": [

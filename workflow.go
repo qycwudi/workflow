@@ -6,6 +6,7 @@ import (
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
+	"net/http"
 	"os"
 	"time"
 	"workflow/internal/config"
@@ -26,8 +27,18 @@ func main() {
 
 	// 读取环境变量
 	overrideFromEnv(&c)
-
-	server := rest.MustNewServer(c.RestConf)
+	// # 需要通过的域名，这里可以写多个域名 或者可以写 * 全部通过
+	domains := []string{"*", "http://127.0.0.1", "http://localhost"}
+	server := rest.MustNewServer(
+		c.RestConf,
+		rest.WithCors(domains...),
+		rest.WithCustomCors(func(header http.Header) {
+			// # 这里写允许通过的header key 不区分大小写
+			header.Add("Access-Control-Allow-Headers", "Content-Type,AccessToken,X-CSRF-Token,Authorization,Token,X-Token,X-User-Id,OS,Platform, Version")
+			header.Set("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS,PATCH")
+			header.Set("Access-Control-Expose-Headers", "Content-Length, Content-Type")
+		}, nil, "*"),
+	)
 	defer server.Stop()
 
 	// 自定义日志输出
@@ -41,7 +52,7 @@ func main() {
 	// 注册链服务
 	rolego.InitRoleServer()
 	// 注册规则链
-	rolego.InitRoleChain()
+	// rolego.InitRoleChain()
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
 }
