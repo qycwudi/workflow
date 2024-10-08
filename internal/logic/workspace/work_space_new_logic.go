@@ -65,7 +65,7 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 
 	resp = &types.WorkSpaceNewResponse{
 		WorkSpaceBase: types.WorkSpaceBase{
-			WorkSpaceId:   spaceModel.WorkspaceId,
+			Id:            spaceModel.WorkspaceId,
 			WorkSpaceName: spaceModel.WorkspaceName,
 			WorkSpaceDesc: spaceModel.WorkspaceDesc.String,
 			WorkSpaceType: spaceModel.WorkspaceType.String,

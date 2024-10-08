@@ -2,15 +2,29 @@ syntax = "v1"
 
 
 type CanvasRunRequest {
-    WorkSpaceId string `json:"workSpaceId" desc:"空间ID"`
+    Id string `json:"id" desc:"空间ID"`
     MetaData map[string]string `json:"metaData" desc:"元数据"`
     Data map[string]string `json:"data" desc:"数据"`
 }
 
 type CanvasRunResponse {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     Response string `json:"response"`
 }
+
+type CanvasDraftRequest {
+    Id string `json:"id"`
+    Graph map[string]interface{} `json:"graph"`
+    Features map[string]interface{} `json:"features"`
+    EnvironmentVariables []interface{} `json:"environment_variables"`
+    ConversationVariables []interface{} `json:"conversation_variables"`
+    Hash string `json:"hash"`
+}
+
+type CanvasDraftResponse {
+
+}
+
 
 type ModuleListRequest {
 
@@ -35,12 +49,18 @@ type EdgeCustomData struct {
 }
 
 type CanvasDetailRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
 }
 
 type CanvasDetailResponse {
-    Node []CanvasNode `json:"node"`
-    Edge []CanvasEdge `json:"edge"`
+    Id string `json:"id"`
+    Graph map[string]interface{} `json:"graph"`
+    Features map[string]interface{} `json:"features"`
+    EnvironmentVariables []interface{} `json:"environment_variables"`
+    ConversationVariables []interface{} `json:"conversation_variables"`
+    Hash string `json:"hash"`
+    //    Node []CanvasNode `json:"node"`
+    //    Edge []CanvasEdge `json:"edge"`
 }
 
 type CanvasNode {
@@ -59,7 +79,7 @@ type CanvasEdge {
 }
 
 type CanvasAddNodeRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     ModuleId string `json:"moduleId"`
     Position NodePosition `json:"position"`
 }
@@ -74,7 +94,7 @@ type CanvasAddNodeResponse {
 }
 
 type CanvasAddEdgeRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     Source string `json:"source"`
     SourcePoint int `json:"sourcePoint"`
     Target string `json:"target"`
@@ -87,17 +107,17 @@ type CanvasAddEdgeResponse {
 }
 
 type CanvasDeleteNodeRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     NodeId string `json:"nodeId"`
 }
 
 type CanvasDeleteNodeResponse {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     NodeId string `json:"nodeId"`
 }
 
 type CanvasDeleteEdgeRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     EdgeId string `json:"edgeId"`
 }
 
@@ -106,7 +126,7 @@ type CanvasDeleteEdgeResponse {
 }
 
 type CanvasEditNodeRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     NodeId string `json:"nodeId"`
     Position NodePosition `json:"position"`
     ModuleConfig map[string]interface{} `json:"moduleConfig"`
@@ -118,7 +138,7 @@ type CanvasEditNodeResponse {
 
 
 type CanvasEditEdgeRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     EdgeId string `json:"edgeId"`
     Source string `json:"source"`
     SourcePoint int `json:"sourcePoint"`
@@ -132,7 +152,7 @@ type CanvasEditEdgeResponse {
 }
 
 type CanvasGetNodeRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     NodeId string `json:"nodeId"`
 }
 
@@ -141,7 +161,7 @@ type CanvasGetNodeResponse {
 }
 
 type CanvasGetEdgeRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     EdgeId string `json:"edgeId"`
 }
 
@@ -149,7 +169,7 @@ type CanvasGetEdgeResponse {
     EdgeId string `json:"edgeId"`
 }
 
-@server (
+@server(
     // 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
     group: canvas
     // 定义路由前缀为 "/v1"
@@ -160,6 +180,10 @@ service workflow-api {
     @doc "运行"
     @handler CanvasRunHandler
     post /canvas/run (CanvasRunRequest) returns (CanvasRunResponse)
+
+    @doc "画布更新"
+    @handler CanvasDraftHandler
+    post /canvas/draft (CanvasDraftRequest) returns (CanvasDraftResponse)
 
     @doc "组件list"
     @handler ModuleListHandler

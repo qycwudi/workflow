@@ -36,7 +36,7 @@ func (l *CanvasDeleteNodeLogic) CanvasDeleteNode(req *types.CanvasDeleteNodeRequ
 		return nil, errors.New(int(logic.SystemError), "开始节点不允许删除")
 	}
 
-	err = l.svcCtx.NodeModel.DeleteNodeByNodeIdAndWorkSpace(l.ctx, req.NodeId, req.WorkSpaceId)
+	err = l.svcCtx.NodeModel.DeleteNodeByNodeIdAndWorkSpace(l.ctx, req.NodeId, req.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "删除节点失败")
 	}

@@ -26,7 +26,7 @@ func NewWorkSpaceRemoveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *W
 }
 
 func (l *WorkSpaceRemoveLogic) WorkSpaceRemove(req *types.WorkRemoveRequest) (resp *types.WorkSpaceRemoveResponse, err error) {
-	err = l.svcCtx.WorkSpaceModel.Remove(l.ctx, req.WorkSpaceId)
+	err = l.svcCtx.WorkSpaceModel.Remove(l.ctx, req.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "空间删除失败")
 	}

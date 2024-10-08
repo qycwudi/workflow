@@ -54,7 +54,7 @@ func (l *CanvasAddEdgeLogic) CanvasAddEdge(req *types.CanvasAddEdgeRequest) (res
 		Target:      req.Target,
 		Style:       "{}",
 		Route:       req.Route,
-		WorkspaceId: req.WorkSpaceId,
+		WorkspaceId: req.Id,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "新增关系边错误")

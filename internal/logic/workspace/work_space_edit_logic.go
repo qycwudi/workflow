@@ -30,7 +30,7 @@ func NewWorkSpaceEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Wor
 
 func (l *WorkSpaceEditLogic) WorkSpaceEdit(req *types.WorkSpaceEditRequest) (resp *types.WorkSpaceEditResponse, err error) {
 	err = l.svcCtx.WorkSpaceModel.UpdateByWorkspaceId(l.ctx, &model.Workspace{
-		WorkspaceId:   req.WorkSpaceId,
+		WorkspaceId:   req.Id,
 		WorkspaceName: req.WorkSpaceName,
 		WorkspaceDesc: sql.NullString{String: req.WorkSpaceDesc, Valid: true},
 		WorkspaceType: sql.NullString{String: req.WorkSpaceType, Valid: true},
@@ -43,12 +43,12 @@ func (l *WorkSpaceEditLogic) WorkSpaceEdit(req *types.WorkSpaceEditRequest) (res
 	}
 	// 修改标签
 	// 1. 删除原来标签规则
-	err = l.svcCtx.WorkspaceTagMappingModel.DeleteByWorkSpace(l.ctx, req.WorkSpaceId)
+	err = l.svcCtx.WorkspaceTagMappingModel.DeleteByWorkSpace(l.ctx, req.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "修改空间标签失败")
 	}
 	// 2. 映射标签
-	err = createTag(l.ctx, l.svcCtx, req.WorkSpaceTag, req.WorkSpaceId)
+	err = createTag(l.ctx, l.svcCtx, req.WorkSpaceTag, req.Id)
 	if err != nil {
 		return nil, err
 	}

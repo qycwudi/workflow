@@ -26,7 +26,7 @@ func NewCanvasDeleteEdgeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *CanvasDeleteEdgeLogic) CanvasDeleteEdge(req *types.CanvasDeleteEdgeRequest) (resp *types.CanvasDeleteEdgeResponse, err error) {
-	err = l.svcCtx.EdgeModel.DeleteByEdgeIdAndWorkSpaceId(l.ctx, req.EdgeId, req.WorkSpaceId)
+	err = l.svcCtx.EdgeModel.DeleteByEdgeIdAndWorkSpaceId(l.ctx, req.EdgeId, req.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "删除边失败")
 	}

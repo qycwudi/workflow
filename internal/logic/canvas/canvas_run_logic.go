@@ -30,20 +30,20 @@ func NewCanvasRunLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CanvasR
 func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.CanvasRunResponse, err error) {
 	// 1. 读取点、线
 	// 查询点
-	nodes, err := l.svcCtx.NodeModel.FindOneByWorkSpace(l.ctx, req.WorkSpaceId)
+	nodes, err := l.svcCtx.NodeModel.FindOneByWorkSpace(l.ctx, req.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询节点失败")
 	}
 
 	// 查询边
-	edges, err := l.svcCtx.EdgeModel.FindOneByWorkSpace(l.ctx, req.WorkSpaceId)
+	edges, err := l.svcCtx.EdgeModel.FindOneByWorkSpace(l.ctx, req.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询边失败")
 	}
 
 	// 2. 拼接 json
 	rule := rolego.Rule{
-		RuleChain: rolego.RuleChain{Id: req.WorkSpaceId},
+		RuleChain: rolego.RuleChain{Id: req.Id},
 		Metadata: rolego.Metadata{
 			Nodes:       make([]rolego.Node, 0, len(nodes)),
 			Connections: make([]rolego.Connection, 0, len(edges)),
@@ -81,14 +81,14 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	}
 	l.Info(string(ruleJson))
 	// 3. 加载到链池 记录 md5 新建 or 重新加载
-	rolego.RoleChain.LoadChain(req.WorkSpaceId, ruleJson)
+	rolego.RoleChain.LoadChain(req.Id, ruleJson)
 	// 4. doMsg
 	dataMar, _ := json.Marshal(req.Data)
-	rolego.RoleChain.Run(req.WorkSpaceId, req.MetaData, string(dataMar))
+	rolego.RoleChain.Run(req.Id, req.MetaData, string(dataMar))
 
 	resp = &types.CanvasRunResponse{
-		WorkSpaceId: "",
-		Response:    string(ruleJson),
+		Id:       "",
+		Response: string(ruleJson),
 	}
 	return
 }

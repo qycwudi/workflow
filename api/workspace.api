@@ -1,7 +1,7 @@
 syntax = "v1"
 
 type WorkSpaceBase {
-    WorkSpaceId string `json:"workSpaceId,optional"`
+    Id string `json:"id,optional"`
     WorkSpaceName string `json:"workSpaceName"`
     WorkSpaceDesc string `json:"workSpaceDesc,optional"`
     WorkSpaceType string `json:"workSpaceType"`
@@ -30,7 +30,7 @@ type WorkSpaceEditResponse {
 }
 
 type WorkRemoveRequest {
-    WorkSpaceId string `json:"workSpaceId,optional"`
+    Id string `json:"id,optional"`
 }
 
 type WorkSpaceRemoveResponse {
@@ -60,7 +60,7 @@ type WorkSpacePage {
 
 
 type WorkSpaceDetailRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
 }
 
 type WorkSpaceDetailResponse {
@@ -69,7 +69,7 @@ type WorkSpaceDetailResponse {
 }
 
 type WorkSpaceEditTagRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     WorkSpaceTag []string `json:"workSpaceTag"`
 }
 
@@ -78,7 +78,7 @@ type WorkSpaceEditTagResponse {
 }
 
 type WorkSpaceUploadCanvasConfigTagRequest {
-    WorkSpaceId string `json:"workSpaceId"`
+    Id string `json:"id"`
     CanvasConfig string `json:"canvasConfig"`
 }
 

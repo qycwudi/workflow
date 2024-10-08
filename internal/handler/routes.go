@@ -84,6 +84,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/canvas/draft",
+				Handler: canvas.CanvasDraftHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/module/list",
 				Handler: canvas.ModuleListHandler(serverCtx),
 			},

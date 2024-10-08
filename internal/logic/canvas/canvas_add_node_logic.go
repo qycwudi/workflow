@@ -40,7 +40,7 @@ func (l *CanvasAddNodeLogic) CanvasAddNode(req *types.CanvasAddNodeRequest) (res
 	_, err = l.svcCtx.NodeModel.Insert(l.ctx, &model.Node{
 		NodeId:        nodeId,
 		NodeType:      module.ModuleType,
-		WorkspaceId:   req.WorkSpaceId,
+		WorkspaceId:   req.Id,
 		ModuleId:      module.ModuleId,
 		LabelConfig:   "{}",
 		CustomConfig:  "{}",

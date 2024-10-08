@@ -83,7 +83,7 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 		tags := tagMap[v.WorkspaceId]
 		spacePage[i] = types.WorkSpacePage{
 			WorkSpaceBase: types.WorkSpaceBase{
-				WorkSpaceId:   v.WorkspaceId,
+				Id:            v.WorkspaceId,
 				WorkSpaceName: v.WorkspaceName,
 				WorkSpaceDesc: v.WorkspaceDesc.String,
 				WorkSpaceType: v.WorkspaceType.String,
