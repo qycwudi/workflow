@@ -97,46 +97,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/canvas/detail",
 				Handler: canvas.CanvasDetailHandler(serverCtx),
 			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/add/node",
-				Handler: canvas.CanvasAddNodeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/add/edge",
-				Handler: canvas.CanvasAddEdgeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/delete/node",
-				Handler: canvas.CanvasDeleteNodeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/delete/edge",
-				Handler: canvas.CanvasDeleteEdgeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/edit/node",
-				Handler: canvas.CanvasEditNodeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/edit/edge",
-				Handler: canvas.CanvasEditEdgeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/get/node",
-				Handler: canvas.CanvasGetNodeHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/get/edge",
-				Handler: canvas.CanvasGetEdgeHandler(serverCtx),
-			},
 		},
 		rest.WithPrefix("/workflow"),
 	)
