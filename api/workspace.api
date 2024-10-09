@@ -82,15 +82,6 @@ type WorkSpaceEditTagResponse {
 
 }
 
-type WorkSpaceUploadCanvasConfigTagRequest {
-    Id string `json:"id"`
-    CanvasConfig string `json:"canvasConfig"`
-}
-
-type WorkSpaceUploadCanvasConfigTagResponse {
-
-}
-
 type TagListRequest {
 
 }
@@ -135,10 +126,6 @@ service workflow-api {
     @doc "编辑workspace标签"
     @handler WorkSpaceEditTagHandler
     post /workspace/edit/tag (WorkSpaceEditTagRequest) returns (WorkSpaceEditTagResponse)
-
-    @doc "更新workspace画布配置"
-    @handler WorkSpaceEditCanvasConfigHandler
-    post /workspace/edit/canvas/config (WorkSpaceUploadCanvasConfigTagRequest) returns (WorkSpaceUploadCanvasConfigTagResponse)
 
     @doc "列表tag"
     @handler TagListHandler

@@ -45,25 +45,6 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 	}
 
 	// 初始化画布 创建 start node
-
-	// _, err = l.svcCtx.NodeModel.Insert(l.ctx, &model.Node{
-	// 	NodeId:        xid.New().String(),
-	// 	NodeType:      rolego.Start,
-	// 	WorkspaceId:   spaceModel.WorkspaceId,
-	// 	ModuleId:      "start",
-	// 	LabelConfig:   "{}",
-	// 	CustomConfig:  "{}",
-	// 	TaskConfig:    "{}",
-	// 	StyleConfig:   "{}",
-	// 	Position:      `{"x":0,"y":0}`,
-	// 	CreateTime:    time.Now(),
-	// 	UpdateTime:    time.Now(),
-	// 	NodeName:      "开始",
-	// 	Configuration: "{}",
-	// })
-	// if err != nil {
-	// 	return nil, errors.New(int(logic.SystemStoreError), "创建start节点错误")
-	// }
 	_, err = l.svcCtx.CanvasModel.Insert(l.ctx, &model.Canvas{
 		WorkspaceId: spaceModel.WorkspaceId,
 		Draft:       fmt.Sprintf(startJson, spaceModel.WorkspaceId, strconv.Itoa(int(time.Now().UnixMilli()))),

@@ -100,14 +100,6 @@ type WorkSpaceEditTagRequest struct {
 type WorkSpaceEditTagResponse struct {
 }
 
-type WorkSpaceUploadCanvasConfigTagRequest struct {
-	Id           string `json:"id"`
-	CanvasConfig string `json:"canvasConfig"`
-}
-
-type WorkSpaceUploadCanvasConfigTagResponse struct {
-}
-
 type TagListRequest struct {
 }
 

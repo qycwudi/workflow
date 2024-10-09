@@ -15,6 +15,11 @@ type ServiceContext struct {
 	WorkspaceTagMappingModel model.WorkspaceTagMappingModel
 	ModuleModel              model.ModuleModel
 	CanvasModel              model.CanvasModel
+	ApiModel                 model.ApiModel
+	ApiRecordModel           model.ApiRecordModel
+	ApiSecretKeyModel        model.ApiSecretKeyModel
+	SpaceRecordModel         model.SpaceRecordModel
+	TraceModel               model.TraceModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -27,5 +32,10 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		WorkspaceTagMappingModel: model.NewWorkspaceTagMappingModel(conn),
 		ModuleModel:              model.NewModuleModel(conn),
 		CanvasModel:              model.NewCanvasModel(conn),
+		ApiModel:                 model.NewApiModel(conn),
+		ApiRecordModel:           model.NewApiRecordModel(conn),
+		ApiSecretKeyModel:        model.NewApiSecretKeyModel(conn),
+		SpaceRecordModel:         model.NewSpaceRecordModel(conn),
+		TraceModel:               model.NewTraceModel(conn),
 	}
 }

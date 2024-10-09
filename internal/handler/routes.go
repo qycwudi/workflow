@@ -63,11 +63,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/workspace/edit/canvas/config",
-				Handler: workspace.WorkSpaceEditCanvasConfigHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
 				Path:    "/tag/list",
 				Handler: workspace.TagListHandler(serverCtx),
 			},
