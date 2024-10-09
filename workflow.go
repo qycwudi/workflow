@@ -52,7 +52,7 @@ func main() {
 	// 注册链服务
 	rolego.InitRoleServer()
 	// 注册规则链
-	// rolego.InitRoleChain()
+	rolego.InitRoleChain()
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
 }

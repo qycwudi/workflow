@@ -25,5 +25,6 @@ func (n *StartNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 }
 
 func (n *StartNode) Destroy() {
+
 	// Do some cleanup work
 }

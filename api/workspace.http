@@ -33,7 +33,7 @@ Content-Type: application/json
 }
 
 ### 创建 workspace
-POST http://127.0.0.1:8899/workspace/new
+POST http://127.0.0.1:8899/workflow/workspace/new
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -76,14 +76,11 @@ Content-Type: application/json
 }
 
 ### 列表 workspace
-POST http://127.0.0.1:8899/workspace/list
+POST http://127.0.0.1:8899/workflow/workspace/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "workSpaceTag": [
-    1
-  ],
   "current": 1,
   "pageSize": 2
 }
@@ -159,8 +156,19 @@ Content-Type: application/json
   "role": "admin"
 }
 
-### 列表-带条件 workspace
+### API
 POST http://10.99.43.99:9999/api/v1/msg2Chain4/rule8848
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "userName": "xue",
+  "password": "123456",
+  "role": "admin"
+}
+
+### API
+POST http://127.0.0.1:9999/api/v1/msg2Chain4/rule8848
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 

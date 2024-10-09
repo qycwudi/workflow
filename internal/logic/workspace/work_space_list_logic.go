@@ -56,7 +56,7 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 		if err != nil {
 			return nil, errors.New(int(logic.SystemOrmError), "查询空间列表数据失败")
 		}
-		if len(page) == 0 {
+		if len(workSpacePage) == 0 {
 			return resp, nil
 		}
 		page = workSpacePage

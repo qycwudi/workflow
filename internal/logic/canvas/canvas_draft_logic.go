@@ -55,5 +55,10 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "更新画布草案失败")
 	}
-	return nil, nil
+	resp = &types.CanvasDraftResponse{
+		Hash:       req.Hash,
+		UpdateTime: time.Now().UnixMilli(),
+	}
+
+	return resp, nil
 }

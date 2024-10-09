@@ -92,7 +92,11 @@ func (c customWorkspaceModel) FindPage(ctx context.Context, current, pageSize in
 	// 查询total
 	// 执行查询总数的SQL
 	var total int64
-	_ = c.conn.QueryRowsCtx(ctx, &total, totalBuilder.String(), params...)
+	err := c.conn.QueryRowCtx(ctx, &total, totalBuilder.String(), params...)
+	if err != nil {
+		logc.Infov(ctx, err)
+		return nil, 0, err
+	}
 
 	// 添加排序
 	queryBuilder.WriteString(" order by id desc")
@@ -104,7 +108,7 @@ func (c customWorkspaceModel) FindPage(ctx context.Context, current, pageSize in
 	params = append(params, pageSize)
 
 	var resp []*Workspace
-	err := c.conn.QueryRowsCtx(ctx, &resp, queryBuilder.String(), params...)
+	err = c.conn.QueryRowsCtx(ctx, &resp, queryBuilder.String(), params...)
 	switch err {
 	case nil:
 		return resp, total, nil

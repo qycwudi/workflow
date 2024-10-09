@@ -14,10 +14,32 @@ var (
 	_ types.AfterAspect  = (*Trace)(nil)
 	// 链路追踪
 	_ types.AroundAspect = (*Trace)(nil)
+
+	_ types.StartAspect     = (*Trace)(nil)
+	_ types.EndAspect       = (*Trace)(nil)
+	_ types.CompletedAspect = (*Trace)(nil)
 )
 
 // Trace 节点Trace日志切面
 type Trace struct {
+}
+
+func (aspect *Trace) Completed(ctx types.RuleContext, msg types.RuleMsg) types.RuleMsg {
+	logx.Infof("AOP Completed ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Completed", ctx.Self().GetNodeId().Id, msg)
+	return msg
+}
+
+func (aspect *Trace) Start(ctx types.RuleContext, msg types.RuleMsg) types.RuleMsg {
+	logx.Infof("AOP Start ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
+	return msg
+}
+
+func (aspect *Trace) End(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
+	if err != nil {
+		logx.Info(err.Error())
+	}
+	logx.Infof("AOP End ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
+	return msg
 }
 
 func (aspect *Trace) Around(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, bool) {

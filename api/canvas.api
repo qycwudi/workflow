@@ -18,11 +18,12 @@ type CanvasDraftRequest {
     Features map[string]interface{} `json:"features"`
     EnvironmentVariables []interface{} `json:"environment_variables"`
     ConversationVariables []interface{} `json:"conversation_variables"`
-    Hash string `json:"hash"`
+    Hash string `json:"hash,optional"`
 }
 
 type CanvasDraftResponse {
-
+    Hash string `json:"hash"`
+    UpdateTime int64 `json:"updateTime"`
 }
 
 

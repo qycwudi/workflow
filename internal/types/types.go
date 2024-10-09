@@ -83,8 +83,13 @@ type WorkSpaceDetailRequest struct {
 }
 
 type WorkSpaceDetailResponse struct {
-	WorkSpaceBase
-	WorkSpaceConfig string `json:"workSpaceConfig"`
+	Id                    string                 `json:"id"`
+	Graph                 map[string]interface{} `json:"graph"`
+	Features              map[string]interface{} `json:"features"`
+	EnvironmentVariables  []interface{}          `json:"environment_variables"`
+	ConversationVariables []interface{}          `json:"conversation_variables"`
+	Hash                  string                 `json:"hash"`
+	BaseInfo              WorkSpaceBase          `json:"baseInfo"`
 }
 
 type WorkSpaceEditTagRequest struct {
@@ -132,10 +137,12 @@ type CanvasDraftRequest struct {
 	Features              map[string]interface{} `json:"features"`
 	EnvironmentVariables  []interface{}          `json:"environment_variables"`
 	ConversationVariables []interface{}          `json:"conversation_variables"`
-	Hash                  string                 `json:"hash"`
+	Hash                  string                 `json:"hash,optional"`
 }
 
 type CanvasDraftResponse struct {
+	Hash       string `json:"hash"`
+	UpdateTime int64  `json:"updateTime"`
 }
 
 type ModuleListRequest struct {

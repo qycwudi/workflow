@@ -12,7 +12,7 @@
         "name": "过滤",
         "debugMode": true,
         "configuration": {
-          "jsScript": "return msg.role=='admin';"
+          "jsScript": "let value = undefined;let num = Number(value); if (isNaN(num)) { throw new Error('Conversion to number failed');} return msg.role=='admin';"
         }
       },
       {

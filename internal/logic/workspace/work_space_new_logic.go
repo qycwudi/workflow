@@ -4,13 +4,14 @@ import (
 	"context"
 	"database/sql"
 	errors2 "errors"
+	"fmt"
 	"github.com/rs/xid"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
+	"strconv"
 	"time"
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/rolego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -44,20 +45,32 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 	}
 
 	// 初始化画布 创建 start node
-	_, err = l.svcCtx.NodeModel.Insert(l.ctx, &model.Node{
-		NodeId:        xid.New().String(),
-		NodeType:      rolego.Start,
-		WorkspaceId:   spaceModel.WorkspaceId,
-		ModuleId:      "start",
-		LabelConfig:   "{}",
-		CustomConfig:  "{}",
-		TaskConfig:    "{}",
-		StyleConfig:   "{}",
-		Position:      `{"x":0,"y":0}`,
-		CreateTime:    time.Now(),
-		UpdateTime:    time.Now(),
-		NodeName:      "开始",
-		Configuration: "{}",
+
+	// _, err = l.svcCtx.NodeModel.Insert(l.ctx, &model.Node{
+	// 	NodeId:        xid.New().String(),
+	// 	NodeType:      rolego.Start,
+	// 	WorkspaceId:   spaceModel.WorkspaceId,
+	// 	ModuleId:      "start",
+	// 	LabelConfig:   "{}",
+	// 	CustomConfig:  "{}",
+	// 	TaskConfig:    "{}",
+	// 	StyleConfig:   "{}",
+	// 	Position:      `{"x":0,"y":0}`,
+	// 	CreateTime:    time.Now(),
+	// 	UpdateTime:    time.Now(),
+	// 	NodeName:      "开始",
+	// 	Configuration: "{}",
+	// })
+	// if err != nil {
+	// 	return nil, errors.New(int(logic.SystemStoreError), "创建start节点错误")
+	// }
+	_, err = l.svcCtx.CanvasModel.Insert(l.ctx, &model.Canvas{
+		WorkspaceId: spaceModel.WorkspaceId,
+		Draft:       fmt.Sprintf(startJson, spaceModel.WorkspaceId, strconv.Itoa(int(time.Now().UnixMilli()))),
+		CreateAt:    time.Now(),
+		UpdateAt:    time.Now(),
+		CreateBy:    "system",
+		UpdateBy:    "system",
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemStoreError), "创建start节点错误")
@@ -135,3 +148,75 @@ func createTag(ctx context.Context, svcCtx *svc.ServiceContext, workSpaceTag []s
 	}
 	return nil
 }
+
+var startJson = `{
+  "id": "%s",
+  "graph": {
+    "nodes": [
+      {
+        "data": {
+          "desc": "",
+          "selected": false,
+          "title": "开始",
+          "type": "start",
+          "variables": []
+        },
+        "height": 54,
+        "id": "%s",
+        "position": {
+          "x": -109.16015795785616,
+          "y": 365.93672664215325
+        },
+        "positionAbsolute": {
+          "x": -109.16015795785616,
+          "y": 365.93672664215325
+        },
+        "selected": true,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "type": "custom",
+        "width": 244
+      }
+    ],
+    "edges": [],
+    "viewport": {
+      "x": 225.37775723890059,
+      "y": -11.389655567755426,
+      "zoom": 0.815559690757636
+    }
+  },
+  "features": {
+    "opening_statement": "",
+    "suggested_questions": [],
+    "suggested_questions_after_answer": {
+      "enabled": false
+    },
+    "text_to_speech": {
+      "enabled": false,
+      "language": "",
+      "voice": ""
+    },
+    "speech_to_text": {
+      "enabled": false
+    },
+    "retriever_resource": {
+      "enabled": true
+    },
+    "sensitive_word_avoidance": {
+      "enabled": false
+    },
+    "file_upload": {
+      "image": {
+        "enabled": false,
+        "number_limits": 3,
+        "transfer_methods": [
+          "local_file",
+          "remote_url"
+        ]
+      }
+    }
+  },
+  "environment_variables": [],
+  "conversation_variables": [],
+  "hash": ""
+}`
