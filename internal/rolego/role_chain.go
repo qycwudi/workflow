@@ -16,7 +16,7 @@ func InitRoleChain() {
 		"rule8848",
 		file,
 		rulego.WithConfig(config),
-		types.WithAspects(&Trace{}))
+		types.WithAspects(&TraceAop{}))
 	if err != nil {
 		logx.Errorf("init role chain fail,err:%v\n", err)
 		return
@@ -64,7 +64,7 @@ func (r *roleChain) LoadChain(id string, json []byte) {
 		id,
 		json,
 		rulego.WithConfig(config),
-		types.WithAspects(&Trace{}))
+		types.WithAspects(&TraceAop{}))
 	if err != nil {
 		logx.Errorf("load role chain fail,err:%v\n", err)
 		return
@@ -80,7 +80,7 @@ func (r *roleChain) getChain(id string) types.RuleEngine {
 	return chain
 }
 
-func (r *roleChain) Run(id string, metadata map[string]string, data string) types.RuleEngine {
+func (r *roleChain) Run(id string, metadata map[string]string, data string) types.RuleMsg {
 	logx.Infof("id:%s\n metadata:%+v\n data:%s\n", id, metadata, data)
 	chain, b := rulego.Get(id)
 	if !b {
@@ -91,9 +91,11 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 		metaData.PutValue(k, v)
 	}
 	msg := types.NewMsg(0, "TELEMETRY_MSG", types.JSON, metaData, data)
+	var result types.RuleMsg
 	chain.OnMsgAndWait(msg, types.WithOnEnd(func(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) {
 		println("Run-GetSelfId:", ctx.GetSelfId())
-		println("Run-msgId:", msg.Id)
+		println("Run-MsgId:", msg.Id)
+		result = msg
 	}))
-	return chain
+	return result
 }

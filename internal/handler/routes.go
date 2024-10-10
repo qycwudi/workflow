@@ -66,6 +66,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/tag/list",
 				Handler: workspace.TagListHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/mock",
+				Handler: workspace.MockHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/workflow"),
 	)

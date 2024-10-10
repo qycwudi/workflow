@@ -112,6 +112,21 @@ type TagEntity struct {
 	Name string `json:"name"`
 }
 
+type MockRequest struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
+type MockInfo struct {
+	Address   string   `json:"address"`
+	PhoneNums []string `json:"phoneNums"`
+}
+
+type MockResponse struct {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+}
+
 type CanvasRunRequest struct {
 	Id       string            `json:"id" desc:"空间ID"`
 	MetaData map[string]string `json:"metaData" desc:"元数据"`

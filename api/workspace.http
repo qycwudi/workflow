@@ -177,3 +177,13 @@ Content-Type: application/json
   "password": "123456",
   "role": "admin"
 }
+
+### API
+POST http://127.0.0.1:8899/workflow/mock
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "name": "xue",
+  "age": 10
+}
