@@ -63,7 +63,7 @@ func httpCfg(data gjson.Result) map[string]interface{} {
 		RestEndpointUrlPattern:   data.Get("url").String(),
 		RequestMethod:            data.Get("method").String(),
 		WithoutRequestBody:       false,
-		Headers:                  headers(data.Get("headers").String()),
+		Headers:                  httpParseHeaders(data.Get("headers").String()),
 		ReadTimeoutMs:            0,
 		MaxParallelRequestsCount: 200,
 		EnableProxy:              false,
@@ -80,16 +80,8 @@ func httpCfg(data gjson.Result) map[string]interface{} {
 	return config
 }
 
-func jsTransformCfg(data gjson.Result) map[string]interface{} {
-	config := map[string]interface{}{}
-	if script := data.Get("code").String(); script != "" {
-		config["jsScript"] = script
-	}
-	return config
-}
-
-// parseAuthString takes a string in the format "key:value,key1:value1" and returns a map[string]string.
-func headers(authStr string) map[string]string {
+// httpParseHeaders takes a string in the format "key:value,key1:value1" and returns a map[string]string.
+func httpParseHeaders(authStr string) map[string]string {
 	authMap := make(map[string]string)
 	pairs := strings.Split(authStr, ",")
 	for _, pair := range pairs {
@@ -99,4 +91,12 @@ func headers(authStr string) map[string]string {
 		}
 	}
 	return authMap
+}
+
+func jsTransformCfg(data gjson.Result) map[string]interface{} {
+	config := map[string]interface{}{}
+	if script := data.Get("code").String(); script != "" {
+		config["jsScript"] = script
+	}
+	return config
 }

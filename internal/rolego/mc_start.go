@@ -1,12 +1,17 @@
 package rolego
 
 import (
+	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // StartNode A plugin that flow start node ,receiving parameter
 type StartNode struct{}
+
+func init() {
+	_ = rulego.Registry.Register(&StartNode{})
+}
 
 func (n *StartNode) Type() string {
 	return Start

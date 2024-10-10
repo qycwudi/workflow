@@ -9,6 +9,7 @@ import (
 )
 
 func InitRoleChain() {
+
 	file, _ := os.ReadFile("/Users/qiangyuecheng/GolandProjects/work-flow/internal/rolego/chain/chain1.json")
 	config := rulego.NewConfig()
 	config.Logger = &utils.RoleCustomLog{}

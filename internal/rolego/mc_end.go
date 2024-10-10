@@ -1,9 +1,14 @@
 package rolego
 
 import (
+	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
 )
+
+func init() {
+	_ = rulego.Registry.Register(&EndNode{})
+}
 
 // EndNode A plugin that flow end node ,receiving parameter
 type EndNode struct{}

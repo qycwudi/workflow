@@ -10,6 +10,7 @@
           "targetType": "http-request",
           "isInIteration": false
         },
+        "relation": "Success",
         "type": "custom",
         "source": "1728466171666",
         "target": "1728545773293",
@@ -25,6 +26,7 @@
           "targetType": "code",
           "isInIteration": false
         },
+        "relation": "Success",
         "type": "custom",
         "source": "1728545773293",
         "target": "1728545776762",
@@ -40,6 +42,7 @@
           "isInIteration": false
         },
         "type": "custom",
+        "relation": "Failure",
         "source": "1728545773293",
         "target": "1728545782933",
         "zIndex": 0,
@@ -54,6 +57,7 @@
           "isInIteration": false
         },
         "type": "custom",
+        "relation": "Failure",
         "source": "1728545773293",
         "target": "1728545791400",
         "zIndex": 0,
@@ -68,6 +72,7 @@
           "isInIteration": false
         },
         "type": "custom",
+        "relation": "Failure",
         "source": "1728545776762",
         "target": "1728545968361",
         "zIndex": 0,
@@ -82,6 +87,7 @@
           "isInIteration": false
         },
         "type": "custom",
+        "relation": "Success",
         "source": "1728545968361",
         "target": "1728545974147",
         "zIndex": 0,
@@ -96,6 +102,7 @@
           "isInIteration": false
         },
         "type": "custom",
+        "relation": "Success",
         "source": "1728545782933",
         "target": "1728546004783",
         "zIndex": 0,
@@ -110,6 +117,7 @@
           "isInIteration": false
         },
         "type": "custom",
+        "relation": "Success",
         "source": "1728546004783",
         "target": "1728545974147",
         "zIndex": 0,
@@ -124,6 +132,7 @@
           "isInIteration": false
         },
         "type": "custom",
+        "relation": "Success",
         "source": "1728545791400",
         "target": "1728545974147",
         "zIndex": 0,
@@ -159,7 +168,7 @@
       {
         "id": "1728545773293",
         "data": {
-          "url": "http://10.8.0.61/workflow/mock",
+          "url": "http://127.0.0.1:8899/workflow/mock",
           "body": {
             "data": "{\n    \"name\": \"xuetu\",\n    \"age\": 11\n}",
             "type": "json"
@@ -201,7 +210,7 @@
       {
         "id": "1728545776762",
         "data": {
-          "code": "metadata['name']= 'xuetu';\nmetadata['age']= msg['age'] + 10;\n\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
+          "code": "metadata['name']= 'xuetu';\nmetadata['age']= msg.data.age + 10;\n\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
           "desc": "",
           "type": "jsTransform",
           "title": "求和（成功）",

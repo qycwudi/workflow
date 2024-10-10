@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"crypto/tls"
 	"fmt"
+	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/components/base"
 	"github.com/rulego/rulego/utils/maps"
@@ -77,6 +78,10 @@ type HttpNodeConfiguration struct {
 	ProxyPassword string
 	// 参数解析脚本
 	Script string `json:"script"`
+}
+
+func init() {
+	_ = rulego.Registry.Register(&HttpNode{})
 }
 
 // HttpNode 将通过REST API调用GET | POST | PUT | DELETE到外部REST服务。
