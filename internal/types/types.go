@@ -128,14 +128,16 @@ type MockResponse struct {
 }
 
 type CanvasRunRequest struct {
-	Id       string            `json:"id" desc:"空间ID"`
-	MetaData map[string]string `json:"metaData" desc:"元数据"`
-	Data     map[string]string `json:"data" desc:"数据"`
+	Id       string                 `json:"id" desc:"空间ID"`
+	MetaData map[string]string      `json:"metaData" desc:"元数据"`
+	Data     map[string]interface{} `json:"data" desc:"数据"`
 }
 
 type CanvasRunResponse struct {
-	Id       string `json:"id"`
-	Response string `json:"response"`
+	Ts       int64                  `json:"ts"`
+	Id       string                 `json:"id"`
+	MetaData map[string]string      `json:"metadata"`
+	Data     map[string]interface{} `json:"data"`
 }
 
 type CanvasDraftRequest struct {

@@ -4,12 +4,14 @@ syntax = "v1"
 type CanvasRunRequest {
     Id string `json:"id" desc:"空间ID"`
     MetaData map[string]string `json:"metaData" desc:"元数据"`
-    Data map[string]string `json:"data" desc:"数据"`
+    Data map[string]interface{} `json:"data" desc:"数据"`
 }
 
 type CanvasRunResponse {
+    Ts int64 `json:"ts"`
     Id string `json:"id"`
-    Response string `json:"response"`
+    MetaData map[string]string `json:"metadata"`
+    Data map[string]interface{} `json:"data"`
 }
 
 type CanvasDraftRequest {

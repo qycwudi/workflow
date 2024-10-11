@@ -86,7 +86,7 @@ Content-Type: application/json
 }
 
 ### 画布-修改节点
-POST http://127.0.0.1:8899/canvas/ edit/node
+POST http://127.0.0.1:8899/canvas/edit/node
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -104,12 +104,19 @@ Content-Type: application/json
 }
 
 ### 画布-执行
-POST http://127.0.0.1:8899/canvas/run
+POST http://127.0.0.1:8899/workflow/canvas/run
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "workSpaceId": "crvpmf53sjtsppvoiogg"
+  "id": "cs34put3sjtg42ghcf8g",
+  "metaData": {
+      "trace": "ccccccc"
+  },
+  "data": {
+    "name": "张三",
+    "age": 18
+  }
 }
 
 
