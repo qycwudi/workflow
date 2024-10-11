@@ -5,7 +5,6 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"time"
 	"workflow/internal/model"
-	"workflow/internal/svc"
 )
 
 // 画布侧运行监控 AOP
@@ -16,12 +15,11 @@ var (
 
 // RunAop 运行记录
 type RunAop struct {
-	svc *svc.ServiceContext
 }
 
 func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.RuleMsg {
 	logx.Infof("AOP START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
-	_, err := aspect.svc.SpaceRecordModel.Insert(ctx.GetContext(), &model.SpaceRecord{
+	_, err := RoleChain.svc.SpaceRecordModel.Insert(ctx.GetContext(), &model.SpaceRecord{
 		WorkspaceId:  ctx.RuleChain().GetNodeId().Id,
 		Status:       "running",
 		SerialNumber: msg.Id,
@@ -41,13 +39,13 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		status = "fail"
 		logx.Info(err.Error())
 	}
-	record, err := aspect.svc.SpaceRecordModel.FindOneBySerialNumber(ctx.GetContext(), msg.Id)
+	record, err := RoleChain.svc.SpaceRecordModel.FindOneBySerialNumber(ctx.GetContext(), msg.Id)
 	if err != nil {
 		logx.Errorf("update space find record err:%s", err.Error())
 		return msg
 	}
 	record.Status = status
-	err = aspect.svc.SpaceRecordModel.Update(ctx.GetContext(), record)
+	err = RoleChain.svc.SpaceRecordModel.Update(ctx.GetContext(), record)
 	if err != nil {
 		logx.Errorf("update space record status err:%s", err.Error())
 	}
@@ -60,7 +58,7 @@ func (aspect *RunAop) New() types.Aspect {
 
 // Order 值越小越优先执行
 func (aspect *RunAop) Order() int {
-	return 900
+	return 100
 }
 
 // PointCut 切入点 所有节点都会执行

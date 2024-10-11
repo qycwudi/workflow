@@ -7,7 +7,6 @@ import (
 	"github.com/rulego/rulego/utils/json"
 	"github.com/zeromicro/go-zero/core/logx"
 	"time"
-	"workflow/internal/svc"
 )
 
 // 链路追踪 AOP
@@ -22,7 +21,6 @@ var (
 
 // TraceAop 节点Trace日志切面
 type TraceAop struct {
-	Svc *svc.ServiceContext
 }
 
 // logx.Infof("debug Around before ruleChainId:%s,nodeName:%s,nodeType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Type, ctx.Self().GetNodeId().Id, msg, relationType)
