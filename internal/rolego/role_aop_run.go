@@ -3,6 +3,8 @@ package rolego
 import (
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
+	"time"
+	"workflow/internal/model"
 	"workflow/internal/svc"
 )
 
@@ -18,16 +20,37 @@ type RunAop struct {
 }
 
 func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.RuleMsg {
-	logx.Infof("AOP Start ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
-
+	logx.Infof("AOP START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
+	_, err := aspect.svc.SpaceRecordModel.Insert(ctx.GetContext(), &model.SpaceRecord{
+		WorkspaceId:  ctx.RuleChain().GetNodeId().Id,
+		Status:       "running",
+		SerialNumber: msg.Id,
+		RunTime:      time.Now(),
+		RecordName:   msg.Id,
+	})
+	if err != nil {
+		logx.Errorf("create space record err:%s", err.Error())
+	}
 	return msg
 }
 
 func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
+	logx.Infof("AOP END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
+	status := "success"
 	if err != nil {
+		status = "fail"
 		logx.Info(err.Error())
 	}
-	logx.Infof("AOP End ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
+	record, err := aspect.svc.SpaceRecordModel.FindOneBySerialNumber(ctx.GetContext(), msg.Id)
+	if err != nil {
+		logx.Errorf("update space find record err:%s", err.Error())
+		return msg
+	}
+	record.Status = status
+	err = aspect.svc.SpaceRecordModel.Update(ctx.GetContext(), record)
+	if err != nil {
+		logx.Errorf("update space record status err:%s", err.Error())
+	}
 	return msg
 }
 

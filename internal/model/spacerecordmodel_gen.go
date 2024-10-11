@@ -26,6 +26,7 @@ type (
 	spaceRecordModel interface {
 		Insert(ctx context.Context, data *SpaceRecord) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*SpaceRecord, error)
+		FindOneBySerialNumber(ctx context.Context, serialNumber string) (*SpaceRecord, error)
 		Update(ctx context.Context, data *SpaceRecord) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -79,15 +80,29 @@ func (m *defaultSpaceRecordModel) FindOne(ctx context.Context, id int64) (*Space
 	}
 }
 
+func (m *defaultSpaceRecordModel) FindOneBySerialNumber(ctx context.Context, serialNumber string) (*SpaceRecord, error) {
+	var resp SpaceRecord
+	query := fmt.Sprintf("select %s from %s where `serial_number` = ? limit 1", spaceRecordRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, serialNumber)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
 func (m *defaultSpaceRecordModel) Insert(ctx context.Context, data *SpaceRecord) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, spaceRecordRowsExpectAutoSet)
 	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.Status, data.SerialNumber, data.RunTime, data.RecordName)
 	return ret, err
 }
 
-func (m *defaultSpaceRecordModel) Update(ctx context.Context, data *SpaceRecord) error {
+func (m *defaultSpaceRecordModel) Update(ctx context.Context, newData *SpaceRecord) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, spaceRecordRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.Status, data.SerialNumber, data.RunTime, data.RecordName, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.Status, newData.SerialNumber, newData.RunTime, newData.RecordName, newData.Id)
 	return err
 }
 

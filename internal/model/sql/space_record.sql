@@ -7,5 +7,6 @@ CREATE TABLE `space_record`
     `run_time`      datetime     NOT NULL,
     `record_name`   varchar(255) NOT NULL,
     PRIMARY KEY (`id`),
+    UNIQUE KEY `unidx_serial_number` (`serial_number`),
     KEY             `unidx_workspace_id` (`workspace_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8

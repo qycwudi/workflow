@@ -66,7 +66,7 @@ func (r *roleChain) LoadChain(id string, json []byte) {
 		id,
 		json,
 		rulego.WithConfig(config),
-		types.WithAspects(&TraceAop{}))
+		types.WithAspects(&TraceAop{}, &RunAop{}))
 	if err != nil {
 		logx.Errorf("load role chain fail,err:%v\n", err)
 		return
