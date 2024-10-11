@@ -3,7 +3,6 @@ package rolego
 import (
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // StartNode A plugin that flow start node ,receiving parameter
@@ -25,7 +24,6 @@ func (n *StartNode) Init(ruleConfig types.Config, configuration types.Configurat
 
 // OnMsg 处理消息
 func (n *StartNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
-	logx.Info("start")
 	ctx.TellSuccess(msg)
 }
 

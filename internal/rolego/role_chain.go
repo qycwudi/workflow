@@ -5,10 +5,11 @@ import (
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
 	"os"
+	"workflow/internal/svc"
 	"workflow/internal/utils"
 )
 
-func InitRoleChain() {
+func InitRoleChain(svc *svc.ServiceContext) {
 
 	file, _ := os.ReadFile("/Users/qiangyuecheng/GolandProjects/work-flow/internal/rolego/chain/chain1.json")
 	config := rulego.NewConfig()
@@ -17,7 +18,7 @@ func InitRoleChain() {
 		"rule8848",
 		file,
 		rulego.WithConfig(config),
-		types.WithAspects(&TraceAop{}))
+		types.WithAspects(&TraceAop{svc}))
 	if err != nil {
 		logx.Errorf("init role chain fail,err:%v\n", err)
 		return
@@ -70,7 +71,7 @@ func (r *roleChain) LoadChain(id string, json []byte) {
 		logx.Errorf("load role chain fail,err:%v\n", err)
 		return
 	}
-	logx.Infof("load %s role chain success,json:%s \n", id, string(json))
+	logx.Infof("load %s role chain success,json:%s \n", id, json)
 }
 
 func (r *roleChain) getChain(id string) types.RuleEngine {
@@ -94,8 +95,6 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 	msg := types.NewMsg(0, "TELEMETRY_MSG", types.JSON, metaData, data)
 	var result types.RuleMsg
 	chain.OnMsgAndWait(msg, types.WithOnEnd(func(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) {
-		println("Run-GetSelfId:", ctx.GetSelfId())
-		println("Run-MsgId:", msg.Id)
 		result = msg
 	}))
 	return result

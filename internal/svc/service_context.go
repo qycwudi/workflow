@@ -23,7 +23,7 @@ type ServiceContext struct {
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
-	conn := sqlx.NewMysql(c.MySqlDataSource)
+	conn := sqlx.NewMysql(c.MySqlUrn)
 	return &ServiceContext{
 		Config:                   c,
 		GoGoGoKvModel:            model.NewGogogoKvModel(conn),

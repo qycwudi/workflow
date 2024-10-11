@@ -210,7 +210,7 @@
       {
         "id": "1728545776762",
         "data": {
-          "code": "metadata['name']= 'xuetu';\nmetadata['age']= msg.data.age + 10;\n\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
+          "code": "metadata['name']= 'xuetu';\nmetadata['age']= msg.data.age + 10;\nmsg.data.age=msg.data.age + 10;\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
           "desc": "",
           "type": "jsTransform",
           "title": "求和（成功）",

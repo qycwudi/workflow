@@ -4,8 +4,8 @@ import "github.com/zeromicro/go-zero/rest"
 
 type Config struct {
 	rest.RestConf
-	MySqlDataSource string
-	OpenOB          OpenOB `json:"openOB"`
+	MySqlUrn string
+	OpenOB   OpenOB `json:"openOB"`
 }
 
 type OpenOB struct {

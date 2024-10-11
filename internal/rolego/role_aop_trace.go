@@ -1,30 +1,51 @@
 package rolego
 
 import (
+	"context"
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/engine"
+	"github.com/rulego/rulego/utils/json"
 	"github.com/zeromicro/go-zero/core/logx"
+	"time"
+	"workflow/internal/svc"
 )
 
 // 链路追踪 AOP
 var (
+	// before around-before after around-after
 	// 存储日志
 	// _ types.BeforeAspect = (*TraceAop)(nil)
-	// _ types.AfterAspect  = (*TraceAop)(nil)
+	_ types.AfterAspect = (*TraceAop)(nil)
 	// 链路追踪
 	_ types.AroundAspect = (*TraceAop)(nil)
 )
 
 // TraceAop 节点Trace日志切面
 type TraceAop struct {
+	Svc *svc.ServiceContext
 }
 
+// logx.Infof("debug Around before ruleChainId:%s,nodeName:%s,nodeType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Type, ctx.Self().GetNodeId().Id, msg, relationType)
+
+// Around 计算耗时
 func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, bool) {
-	logx.Infof("debug Around before ruleChainId:%s,nodeName:%s,nodeType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Type, ctx.Self().GetNodeId().Id, msg, relationType)
+	start := time.Now() // 记录开始时间
+	// input
+	inputMar, _ := json.Marshal(msg)
+	logx.Infof("around-before:%s,%s, %s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, inputMar)
 	// 执行当前节点
 	ctx.Self().OnMsg(ctx, msg)
-	logx.Infof("debug Around after ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "Around", ctx.Self().GetNodeId().Id, msg, relationType)
+	elapsed := time.Since(start) // 计算耗时
+	logx.Infof("around-耗时: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, elapsed)
+	// input
+	outputMar, _ := json.Marshal(ctx.GetContext().Value(ctx.RuleChain().GetNodeId().Id))
+	logx.Infof("around-output: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, outputMar)
 	return msg, false
+}
+
+func (aspect *TraceAop) After(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
+	ctx.SetContext(context.WithValue(ctx.GetContext(), ctx.RuleChain().GetNodeId().Id, msg))
+	return msg
 }
 
 func (aspect *TraceAop) New() types.Aspect {
@@ -41,39 +62,17 @@ func (aspect *TraceAop) PointCut(ctx types.RuleContext, msg types.RuleMsg, relat
 	return true
 }
 
-//
-// func (aspect *TraceAop) Before(ctx types.RuleContext, msg types.RuleMsg, relationType string) types.RuleMsg {
-// 	// 记录开始时间
-// 	ctx.SetContext(context.WithValue(ctx.GetContext(), ctx.GetSelfId(), time.Now()))
-// 	aspect.onLog(ctx, types.In, msg, relationType, nil)
-// 	return msg
-// }
-//
-// func (aspect *TraceAop) After(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
-// 	startTime, ok := ctx.GetContext().Value(ctx.GetSelfId()).(time.Time)
-// 	if !ok {
-// 		// 如果上下文中没有开始时间，则使用零值
-// 		startTime = time.Time{}
-// 	}
-//
-// 	// 计算耗时
-// 	duration := time.Since(startTime).Milliseconds()
-// 	logx.Infof("Execution time: %d ms", duration)
-// 	aspect.onLog(ctx, types.Out, msg, relationType, nil)
-// 	return msg
-// }
-
-func (aspect *TraceAop) onLog(ctx types.RuleContext, flowType string, msg types.RuleMsg, relationType string, err error) {
-	ctx.SubmitTack(func() {
-		// 异步记录日志
-		if ctx.Self() != nil && ctx.Self().IsDebugMode() {
-			var chainId = ""
-			if ctx.RuleChain() != nil {
-				chainId = ctx.RuleChain().GetNodeId().Id
-			}
-			// 存储数据库
-			logx.Infof("debug ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s,err:%v", chainId, flowType, ctx.Self().GetNodeId().Id, msg, relationType, err)
-			// 存储 open observe
-		}
-	})
-}
+// insert, err := aspect.Svc.TraceModel.Insert(ctx.GetContext(), &model.Trace{
+// Id:          0,
+// WorkspaceId: "",
+// TraceId:     "",
+// Input:       "",
+// Logic:       "",
+// Output:      "",
+// Step:        0,
+// NodeId:      "",
+// NodeName:    "",
+// Status:      "",
+// ElapsedTime: 0,
+// StartTime:   time.Time{},
+// })

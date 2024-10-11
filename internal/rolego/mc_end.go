@@ -3,7 +3,6 @@ package rolego
 import (
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 func init() {
@@ -25,7 +24,6 @@ func (n *EndNode) Init(ruleConfig types.Config, configuration types.Configuratio
 
 // OnMsg 处理消息
 func (n *EndNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
-	logx.Info("end")
 	ctx.TellSuccess(msg)
 }
 
