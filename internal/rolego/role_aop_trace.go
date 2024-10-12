@@ -2,11 +2,12 @@ package rolego
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/engine"
-	"github.com/rulego/rulego/utils/json"
 	"github.com/zeromicro/go-zero/core/logx"
 	"time"
+	"workflow/internal/model"
 )
 
 // 链路追踪 AOP
@@ -29,15 +30,40 @@ type TraceAop struct {
 func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, bool) {
 	start := time.Now() // 记录开始时间
 	// input
-	inputMar, _ := json.Marshal(msg)
+	inputMar, _ := json.MarshalIndent(msg, "", "    ")
+	// logic
+	logicMar, _ := json.MarshalIndent(ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Configuration, "", "    ")
 	logx.Infof("around-before:%s,%s, %s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, inputMar)
+
+	// 新增追踪
+	trace := model.Trace{
+		WorkspaceId: ctx.RuleChain().GetNodeId().Id,
+		TraceId:     msg.Id,
+		Input:       string(inputMar),
+		Logic:       string(logicMar),
+		Output:      "{}",
+		Step:        0,
+		NodeId:      ctx.Self().GetNodeId().Id,
+		NodeName:    ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name,
+		Status:      "RUNNING",
+		ElapsedTime: 0,
+		StartTime:   time.Now(),
+	}
+	traceQueue <- &trace
+
 	// 执行当前节点
 	ctx.Self().OnMsg(ctx, msg)
 	elapsed := time.Since(start) // 计算耗时
 	logx.Infof("around-耗时: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, elapsed)
-	// input
-	outputMar, _ := json.Marshal(ctx.GetContext().Value(ctx.RuleChain().GetNodeId().Id))
+
+	// output
+	outputMar, _ := json.MarshalIndent(ctx.GetContext().Value(ctx.RuleChain().GetNodeId().Id), "", "    ")
 	logx.Infof("around-output: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, outputMar)
+	// 更新追踪
+	trace.ElapsedTime = elapsed.Milliseconds()
+	trace.Output = string(outputMar)
+	trace.Status = "FINISH"
+	traceQueue <- &trace
 	return msg, false
 }
 
@@ -59,18 +85,3 @@ func (aspect *TraceAop) Order() int {
 func (aspect *TraceAop) PointCut(ctx types.RuleContext, msg types.RuleMsg, relationType string) bool {
 	return true
 }
-
-// insert, err := aspect.Svc.TraceModel.Insert(ctx.GetContext(), &model.Trace{
-// Id:          0,
-// WorkspaceId: "",
-// TraceId:     "",
-// Input:       "",
-// Logic:       "",
-// Output:      "",
-// Step:        0,
-// NodeId:      "",
-// NodeName:    "",
-// Status:      "",
-// ElapsedTime: 0,
-// StartTime:   time.Time{},
-// })

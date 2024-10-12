@@ -1,9 +1,11 @@
 package rolego
 
 import (
+	"context"
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
+	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/utils"
 )
@@ -67,4 +69,33 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 		result = msg
 	}))
 	return result
+}
+
+var traceQueue = make(chan *model.Trace, 100) // 带缓冲的通道
+
+func asyncTraceWriter() {
+	for entry := range traceQueue {
+		go writeLogEntry(entry)
+	}
+}
+
+func writeLogEntry(trace *model.Trace) {
+	if trace.Id == 0 {
+		// 新增
+		_, err := RoleChain.svc.TraceModel.Insert(context.Background(), trace)
+		if err != nil {
+			logx.Errorf("roleChain create trace info error: %s", err.Error())
+		}
+	} else {
+		// 更新
+		err := RoleChain.svc.TraceModel.UpdateByTraceIdAndNodeId(context.Background(), trace)
+		if err != nil {
+			logx.Errorf("roleChain update trace info error: %s", err.Error())
+		}
+	}
+}
+
+func init() {
+	logx.Infov("start trace log async store")
+	go asyncTraceWriter()
 }

@@ -72,6 +72,21 @@
           "isInIteration": false
         },
         "type": "custom",
+        "relation": "Success",
+        "source": "1728545776762",
+        "target": "1728545974147",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545776762-source-1728545968361-target",
+        "data": {
+          "sourceType": "code",
+          "targetType": "parameter-extractor",
+          "isInIteration": false
+        },
+        "type": "custom",
         "relation": "Failure",
         "source": "1728545776762",
         "target": "1728545968361",
