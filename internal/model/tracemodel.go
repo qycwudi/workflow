@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 	"fmt"
-	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -47,16 +46,6 @@ func NewTraceModel(conn sqlx.SqlConn) TraceModel {
 
 func (m *defaultTraceModel) UpdateByTraceIdAndNodeId(ctx context.Context, data *Trace) error {
 	query := fmt.Sprintf("update %s set elapsed_time = ?,`output` = ?,status = ? where `trace_id` = ? and node_id = ?", m.table)
-	result, err := m.conn.ExecCtx(ctx, query, data.ElapsedTime, data.Output, data.Status, data.TraceId, data.NodeId)
-	if err != nil {
-		return err
-	}
-	affected, err := result.RowsAffected()
-	if err != nil {
-		logx.Infof("--------update-NodeName:%s-err: %s", data.NodeName, err.Error())
-
-	} else {
-		logx.Infof("--------update-NodeName: %v, Affected: %v", data.NodeName, affected)
-	}
+	_, err := m.conn.ExecCtx(ctx, query, data.ElapsedTime, data.Output, data.Status, data.TraceId, data.NodeId)
 	return err
 }
