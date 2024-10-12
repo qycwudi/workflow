@@ -75,12 +75,12 @@ var traceQueue = make(chan *model.Trace, 100) // 带缓冲的通道
 
 func asyncTraceWriter() {
 	for entry := range traceQueue {
-		go writeLogEntry(entry)
+		writeLogEntry(entry)
 	}
 }
 
 func writeLogEntry(trace *model.Trace) {
-	if trace.Id == 0 {
+	if trace.Status == "RUNNING" {
 		// 新增
 		_, err := RoleChain.svc.TraceModel.Insert(context.Background(), trace)
 		if err != nil {

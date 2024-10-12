@@ -140,6 +140,42 @@ type CanvasRunResponse struct {
 	Data     map[string]interface{} `json:"data"`
 }
 
+type CanvasRunRecordRequest struct {
+	Id string `json:"id" desc:"空间ID"`
+}
+
+type CanvasRunRecordResponse struct {
+	Records []RunRecord `json:"records"`
+}
+
+type RunRecord struct {
+	TraceId string `json:"traceId"`
+	Status  string `json:"status"`
+	RunTime string `json:"runTime" desc:"开始时间"`
+}
+
+type TraceRequest struct {
+	TraceId string `json:"traceId"`
+}
+
+type TraceResponse struct {
+	Total            int64   `json:"total"`
+	TotalElapsedTime int64   `json:"total"`
+	Traces           []Trace `json:"traces"`
+}
+
+type Trace struct {
+	TraceId     string `json:"traceId"`
+	NodeId      string `json:"nodeId" desc:"节点ID"`
+	NodeName    string `json:"nodeName" desc:"节点名称"`
+	Status      string `json:"status" desc:"运行状态"`
+	StartTime   string `json:"startTime" desc:"开始执行时间"`
+	ElapsedTime int64  `json:"elapsedTime" desc:"运行耗时"`
+	Input       string `json:"input" desc:"输出"`
+	Output      string `json:"output" desc:"输出"`
+	Logic       string `json:"logic" desc:"执行逻辑"`
+}
+
 type CanvasDraftRequest struct {
 	Id                    string                 `json:"id"`
 	Graph                 map[string]interface{} `json:"graph"`

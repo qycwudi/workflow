@@ -128,3 +128,21 @@ Content-Type: application/json
 {
   "workSpaceId": "crvpmf53sjtsppvoiogg"
 }
+
+### 画布-运行记录
+POST http://127.0.0.1:8899/workflow/canvas/run/record
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "id": "cs34put3sjtg42ghcf8g"
+}
+
+### 画布-运行记录
+POST http://127.0.0.1:8899/workflow/trace
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "traceId": "3d6a5cdc-8a81-4b36-aed0-351c4e3929f0"
+}

@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/engine"
-	"github.com/zeromicro/go-zero/core/logx"
 	"time"
 	"workflow/internal/model"
 )
@@ -33,7 +32,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 	inputMar, _ := json.MarshalIndent(msg, "", "    ")
 	// logic
 	logicMar, _ := json.MarshalIndent(ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Configuration, "", "    ")
-	logx.Infof("around-before:%s,%s, %s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, inputMar)
+	// logx.Infof("around-before:%s,%s, %s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, inputMar)
 
 	// 新增追踪
 	trace := model.Trace{
@@ -53,17 +52,20 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 
 	// 执行当前节点
 	ctx.Self().OnMsg(ctx, msg)
-	elapsed := time.Since(start) // 计算耗时
-	logx.Infof("around-耗时: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, elapsed)
+	elapsed := time.Since(start) // 计算耗时 微秒
+	// logx.Infof("around-耗时: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, elapsed)
 
 	// output
 	outputMar, _ := json.MarshalIndent(ctx.GetContext().Value(ctx.RuleChain().GetNodeId().Id), "", "    ")
-	logx.Infof("around-output: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, outputMar)
+	// logx.Infof("around-output: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, outputMar)
 	// 更新追踪
-	trace.ElapsedTime = elapsed.Milliseconds()
-	trace.Output = string(outputMar)
-	trace.Status = "FINISH"
-	traceQueue <- &trace
+	traceQueue <- &model.Trace{
+		TraceId:     msg.Id,
+		NodeId:      ctx.Self().GetNodeId().Id,
+		ElapsedTime: elapsed.Microseconds(),
+		Output:      string(outputMar),
+		Status:      "FINISH",
+	}
 	return msg, false
 }
 
