@@ -211,15 +211,12 @@ type EdgeCustomData struct {
 	TargetPoint int `json:"targetPoint"`
 }
 
-type CanvasDetailRequest struct {
-	Id string `json:"id"`
+type CanvasPublishRequest struct {
+	Id      string `json:"id" desc:"空间ID"`
+	ApiName string `json:"apiName" desc:"名称"`
+	ApiDesc string `json:"apiDesc" desc:"描述"`
 }
 
-type CanvasDetailResponse struct {
-	Id                    string                 `json:"id"`
-	Graph                 map[string]interface{} `json:"graph"`
-	Features              map[string]interface{} `json:"features"`
-	EnvironmentVariables  []interface{}          `json:"environment_variables"`
-	ConversationVariables []interface{}          `json:"conversation_variables"`
-	Hash                  string                 `json:"hash"`
+type CanvasPublishResponse struct {
+	ApiId string `json:"apiId"`
 }

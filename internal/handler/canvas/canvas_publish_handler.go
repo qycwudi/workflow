@@ -9,16 +9,16 @@ import (
 	"workflow/response"
 )
 
-func CanvasDetailHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func CanvasPublishHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.CanvasDetailRequest
+		var req types.CanvasPublishRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := canvas.NewCanvasDetailLogic(r.Context(), svcCtx)
-		resp, err := l.CanvasDetail(&req)
+		l := canvas.NewCanvasPublishLogic(r.Context(), svcCtx)
+		resp, err := l.CanvasPublish(&req)
 		response.Response(w, resp, err)
 
 	}

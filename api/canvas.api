@@ -90,20 +90,15 @@ type EdgeCustomData struct {
     TargetPoint int `json:"targetPoint"`
 }
 
-type CanvasDetailRequest {
-    Id string `json:"id"`
+type CanvasPublishRequest {
+    Id string `json:"id" desc:"空间ID"`
+    ApiName string `json:"apiName" desc:"名称"`
+    ApiDesc string `json:"apiDesc" desc:"描述"`
 }
 
-type CanvasDetailResponse {
-    Id string `json:"id"`
-    Graph map[string]interface{} `json:"graph"`
-    Features map[string]interface{} `json:"features"`
-    EnvironmentVariables []interface{} `json:"environment_variables"`
-    ConversationVariables []interface{} `json:"conversation_variables"`
-    Hash string `json:"hash"`
+type CanvasPublishResponse {
+    ApiId string  `json:"apiId"`
 }
-
-
 
 @server(
     // 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
@@ -133,7 +128,7 @@ service workflow-api {
     @handler ModuleListHandler
     post /module/list (ModuleListRequest) returns (ModuleListResponse)
 
-    @doc "画布链详情"
-    @handler CanvasDetailHandler
-    post /canvas/detail (CanvasDetailRequest) returns (CanvasDetailResponse)
+    @doc "发布"
+    @handler  CanvasPublishHandler
+    post /canvas/publish (CanvasPublishRequest) returns (CanvasPublishResponse)
 }

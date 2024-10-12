@@ -16,6 +16,11 @@ type (
 	}
 )
 
+const (
+	On  = "ON"
+	Off = "OFF"
+)
+
 // NewApiModel returns a model for the database table.
 func NewApiModel(conn sqlx.SqlConn) ApiModel {
 	return &customApiModel{

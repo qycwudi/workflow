@@ -104,8 +104,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/canvas/detail",
-				Handler: canvas.CanvasDetailHandler(serverCtx),
+				Path:    "/canvas/publish",
+				Handler: canvas.CanvasPublishHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/workflow"),
