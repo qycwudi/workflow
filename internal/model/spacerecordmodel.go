@@ -15,12 +15,19 @@ type (
 	SpaceRecordModel interface {
 		spaceRecordModel
 		FindAll(ctx context.Context, id string) ([]*SpaceRecord, error)
+		UpdateStatusBySid(ctx context.Context, sid string, status string) error
 	}
 
 	customSpaceRecordModel struct {
 		*defaultSpaceRecordModel
 	}
 )
+
+func (c customSpaceRecordModel) UpdateStatusBySid(ctx context.Context, sid string, status string) error {
+	query := fmt.Sprintf("update %s set status = ?  where `serial_number` = ?", c.table)
+	_, err := c.conn.ExecCtx(ctx, query, status, sid)
+	return err
+}
 
 func (c customSpaceRecordModel) FindAll(ctx context.Context, id string) ([]*SpaceRecord, error) {
 	query := fmt.Sprintf("select %s from %s where workspace_id = ?", spaceRecordRows, c.table)

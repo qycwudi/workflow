@@ -63,7 +63,7 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 	for k, v := range metadata {
 		metaData.PutValue(k, v)
 	}
-	msg := types.NewMsg(0, "TELEMETRY_MSG", types.JSON, metaData, data)
+	msg := types.NewMsg(0, "CANVAS_MSG", types.JSON, metaData, data)
 	var result types.RuleMsg
 	chain.OnMsgAndWait(msg, types.WithOnEnd(func(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) {
 		result = msg
