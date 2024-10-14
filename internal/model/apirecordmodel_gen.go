@@ -42,6 +42,8 @@ type (
 		Param    string    `db:"param"`  // 参数
 		Extend   string    `db:"extend"` // 扩展
 		CallTime time.Time `db:"call_time"`
+		ApiId    string    `db:"api_id"`
+		ApiName  string    `db:"api_name"`
 	}
 )
 
@@ -80,14 +82,14 @@ func (m *defaultApiRecordModel) FindOne(ctx context.Context, id int64) (*ApiReco
 }
 
 func (m *defaultApiRecordModel) Insert(ctx context.Context, data *ApiRecord) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, apiRecordRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Status, data.TraceId, data.Param, data.Extend, data.CallTime)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, apiRecordRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.Status, data.TraceId, data.Param, data.Extend, data.CallTime, data.ApiId, data.ApiName)
 	return ret, err
 }
 
 func (m *defaultApiRecordModel) Update(ctx context.Context, data *ApiRecord) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, apiRecordRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.Status, data.TraceId, data.Param, data.Extend, data.CallTime, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, data.Status, data.TraceId, data.Param, data.Extend, data.CallTime, data.ApiId, data.ApiName, data.Id)
 	return err
 }
 

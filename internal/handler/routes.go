@@ -4,6 +4,7 @@ package handler
 import (
 	"net/http"
 
+	api "workflow/internal/handler/api"
 	canvas "workflow/internal/handler/canvas"
 	kv "workflow/internal/handler/kv"
 	workspace "workflow/internal/handler/workspace"
@@ -106,6 +107,32 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/canvas/publish",
 				Handler: canvas.CanvasPublishHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/list",
+				Handler: api.ApiListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/onoff",
+				Handler: api.ApiOnOffHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/records",
+				Handler: api.ApiRecordsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretykey/list",
+				Handler: api.ApiSecretyKeyListHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/workflow"),

@@ -16,3 +16,5 @@ import "kv.api"
 import "workspace.api"
 
 import "canvas.api"
+
+import "api.api"

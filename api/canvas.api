@@ -97,7 +97,7 @@ type CanvasPublishRequest {
 }
 
 type CanvasPublishResponse {
-    ApiId string  `json:"apiId"`
+    ApiId string `json:"apiId"`
 }
 
 @server(
@@ -129,6 +129,6 @@ service workflow-api {
     post /module/list (ModuleListRequest) returns (ModuleListResponse)
 
     @doc "发布"
-    @handler  CanvasPublishHandler
+    @handler CanvasPublishHandler
     post /canvas/publish (CanvasPublishRequest) returns (CanvasPublishResponse)
 }

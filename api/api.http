@@ -1,0 +1,13 @@
+### 画布-新增节点
+POST http://127.0.0.1:8899/canvas/add/node
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceId": "cs29ujl3sjtiq4etv0c0",
+  "moduleId": "jsTransform",
+  "position": {
+    "x": 1.0,
+    "y": 1.0
+  }
+}

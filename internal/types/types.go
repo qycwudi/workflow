@@ -220,3 +220,73 @@ type CanvasPublishRequest struct {
 type CanvasPublishResponse struct {
 	ApiId string `json:"apiId"`
 }
+
+type ApiPublishListRequest struct {
+	Current  int    `json:"current"`
+	PageSize int    `json:"pageSize"`
+	Id       string `json:"id,optional" desc:"空间ID 非必填"`
+}
+
+type ApiPublishListResponse struct {
+	Current  int              `json:"current"`
+	PageSize int              `json:"pageSize"`
+	Total    int64            `json:"total"`
+	List     []ApiPublishList `json:"list"`
+}
+
+type ApiPublishList struct {
+	WorkSpaceId string `json:"workSpaceId"`
+	ApiId       string `json:"apiId"`
+	ApiName     string `json:"apiName"`
+	ApiDesc     string `json:"apiDesc"`
+	Status      string `json:"status" desc:"上下线状态ON OFF"`
+}
+
+type ApiOnOffRequest struct {
+	ApiId  string `json:"apiId"`
+	Status string `json:"status" desc:"上下线状态ON OFF"`
+}
+
+type ApiOnOffResponse struct {
+	ApiId  string `json:"apiId"`
+	Status string `json:"status" desc:"上下线状态ON OFF"`
+}
+
+type ApiRecordsRequest struct {
+	Current  int    `json:"current"`
+	PageSize int    `json:"pageSize"`
+	ApiId    string `json:"apiId,optional" desc:"apiId"`
+	ApiName  string `json:"apiName,optional" desc:"api名称"`
+}
+
+type ApiRecordsResponse struct {
+	Current  int          `json:"current"`
+	PageSize int          `json:"pageSize"`
+	Total    int64        `json:"total"`
+	List     []ApiRecords `json:"list"`
+}
+
+type ApiRecords struct {
+	ApiId    string `json:"apiId"`
+	ApiName  string `json:"apiName" desc:"名称"`
+	CallTime string `json:"callTime"`
+	Status   string `json:"status"`
+	TraceId  string `json:"traceId"`
+	Param    string `json:"param"`
+	Extend   string `json:"extend"`
+}
+
+type ApiSecretyKeyListRequest struct {
+	ApiId string `json:"apiId"`
+}
+
+type ApiSecretyKeyListResponse struct {
+	Total int64           `json:"total"`
+	List  []ApiSecretyKey `json:"list"`
+}
+
+type ApiSecretyKey struct {
+	ApiId          string `json:"apiId"`
+	SecretyKey     string `json:"secretyKey"`
+	ExpirationTime string `json:"expirationTime"`
+}
