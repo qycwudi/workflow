@@ -146,3 +146,25 @@ Content-Type: application/json
 {
   "traceId": "3d6a5cdc-8a81-4b36-aed0-351c4e3929f0"
 }
+
+
+### API-执行
+POST http://127.0.0.1:9999/api/role/v1/cs6c0il3sjtobc4avatg
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+    "name": "张三",
+    "age": 18
+}
+
+### API-发布
+POST http://127.0.0.1:8899/workflow/canvas/publish
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "id": "cs34put3sjtg42ghcf8g",
+  "apiName": "雪兔测试API-2",
+  "apiDesc": "嘻嘻嘻 哈哈哈"
+}

@@ -2,7 +2,9 @@ package canvas
 
 import (
 	"context"
+	errors2 "errors"
 	"github.com/rs/xid"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/x/errors"
 	"workflow/internal/logic"
 	"workflow/internal/model"
@@ -33,6 +35,12 @@ func (l *CanvasPublishLogic) CanvasPublish(req *types.CanvasPublishRequest) (res
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
 	}
+	// 检查画布名称重复
+	_, err = l.svcCtx.ApiModel.FindByName(l.ctx, req.ApiName)
+	if !errors2.Is(err, sqlc.ErrNotFound) {
+		return nil, errors.New(int(logic.SystemStoreError), "API 名称重复")
+	}
+
 	// 1. 解析画布 dsl
 	_, ruleChain, err := rolego.ParsingDsl(canvas.Draft)
 	if err != nil {
@@ -52,11 +60,8 @@ func (l *CanvasPublishLogic) CanvasPublish(req *types.CanvasPublishRequest) (res
 		return nil, errors.New(int(logic.SystemError), "发布 API 失败")
 	}
 
-	// 3. 加载 api 服务
-
-	// 4. 加载链服务
-
+	// 3. 加载链服务
+	rolego.RoleChain.LoadChain(apiId, ruleChain)
 	resp = &types.CanvasPublishResponse{ApiId: apiId}
-
 	return resp, nil
 }

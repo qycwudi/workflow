@@ -39,7 +39,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
 	// 运行文件
-	rolego.RoleChain.LoadChain(canvasId, ruleChain)
+	rolego.RoleChain.LoadChain(canvasId, []byte(ruleChain))
 	dataMar, _ := json.Marshal(req.Data)
 	result := rolego.RoleChain.Run(canvasId, req.MetaData, string(dataMar))
 	l.Infof("chain run result:%+v", result)
