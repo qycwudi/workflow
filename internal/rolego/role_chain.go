@@ -54,7 +54,7 @@ func (r *roleChain) getChain(id string) types.RuleEngine {
 }
 
 func (r *roleChain) Run(id string, metadata map[string]string, data string) types.RuleMsg {
-	logx.Infof("id:%s\n metadata:%+v\n data:%s\n", id, metadata, data)
+	logx.Infof("id:%s metadata:%+v data:%s", id, metadata, data)
 	chain, b := rulego.Get(id)
 	if !b {
 		logx.Errorf("get role chain fail,id:%s\n", id)

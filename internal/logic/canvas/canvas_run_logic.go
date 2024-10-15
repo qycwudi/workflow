@@ -3,6 +3,7 @@ package canvas
 import (
 	"context"
 	"github.com/rulego/rulego/utils/json"
+	"github.com/tidwall/gjson"
 	"github.com/zeromicro/x/errors"
 	"workflow/internal/logic"
 	"workflow/internal/rolego"
@@ -38,10 +39,27 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
+	// 读取请求参数
+	draft := gjson.Parse(canvas.Draft)
+	startNode := draft.Get("graph.nodes").Array()[0]
+	code := startNode.Get("data.code")
+	if code.String() == "" {
+		return nil, errors.New(int(logic.SystemError), "开始节点运行参数为空")
+	}
+	param := gjson.Parse(code.String())
+	metaData := param.Get("metaData").String()
+	if metaData == "" {
+		return nil, errors.New(int(logic.SystemError), "开始节点运行参数 metaData 为空")
+	}
+	metadata := make(map[string]string)
+	_ = json.Unmarshal([]byte(metaData), &metadata)
+	data := param.Get("data").String()
+	if data == "" {
+		return nil, errors.New(int(logic.SystemError), "开始节点运行参数 data 为空")
+	}
 	// 运行文件
-	rolego.RoleChain.LoadChain(canvasId, []byte(ruleChain))
-	dataMar, _ := json.Marshal(req.Data)
-	result := rolego.RoleChain.Run(canvasId, req.MetaData, string(dataMar))
+	rolego.RoleChain.LoadChain(canvasId, ruleChain)
+	result := rolego.RoleChain.Run(canvasId, metadata, data)
 	l.Infof("chain run result:%+v", result)
 
 	respData := make(map[string]interface{})

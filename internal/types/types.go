@@ -128,9 +128,7 @@ type MockResponse struct {
 }
 
 type CanvasRunRequest struct {
-	Id       string                 `json:"id" desc:"空间ID"`
-	MetaData map[string]string      `json:"metaData" desc:"元数据"`
-	Data     map[string]interface{} `json:"data" desc:"数据"`
+	Id string `json:"id" desc:"空间ID"`
 }
 
 type CanvasRunResponse struct {
