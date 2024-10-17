@@ -22,7 +22,7 @@ func main() {
 	conf.MustLoad(*configFile, &c)
 
 	// # 需要通过的域名，这里可以写多个域名 或者可以写 * 全部通过
-	domains := []string{"*", "http://127.0.0.1", "http://localhost"}
+	domains := []string{"*", "http://workflow", "http://127.0.0.1", "http://localhost"}
 	server := rest.MustNewServer(
 		c.RestConf,
 		rest.WithCors(domains...),

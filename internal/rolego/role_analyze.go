@@ -34,7 +34,7 @@ func ParsingDsl(draft string) (string, []byte, error) {
 		r := Connection{
 			FromId: edge.Get("source").String(),
 			ToId:   edge.Get("target").String(),
-			Type:   edge.Get("relation").String(),
+			Type:   edge.Get("sourceHandle").String(),
 		}
 		edges[i] = r
 	}
