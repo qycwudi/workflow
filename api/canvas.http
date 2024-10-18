@@ -164,7 +164,7 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "id": "cs34put3sjtg42ghcf8g",
-  "apiName": "雪兔测试API-2",
+  "id": "cs8vfql3sjtkvhkubulg",
+  "apiName": "雪兔测试并行1",
   "apiDesc": "嘻嘻嘻 哈哈哈"
 }

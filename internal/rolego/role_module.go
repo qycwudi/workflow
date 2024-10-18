@@ -22,6 +22,8 @@ const (
 	JsTransform string = "jsTransform"
 
 	Http string = "http"
+	Fork string = "fork"
+	Join string = "join"
 )
 
 var RoleModel = map[string]*JsFilterModule{
@@ -45,6 +47,10 @@ func ModuleReadConfig(data gjson.Result) map[string]interface{} {
 		return httpCfg(data)
 	case JsTransform:
 		return jsTransformCfg(data)
+	case Fork:
+		return ForkCfg(data)
+	case Join:
+		return JoinCfg(data)
 	}
 	return nil
 }
@@ -98,5 +104,16 @@ func jsTransformCfg(data gjson.Result) map[string]interface{} {
 	if script := data.Get("code").String(); script != "" {
 		config["jsScript"] = script
 	}
+	return config
+}
+
+func ForkCfg(data gjson.Result) map[string]interface{} {
+	config := map[string]interface{}{}
+	return config
+}
+
+func JoinCfg(data gjson.Result) map[string]interface{} {
+	config := map[string]interface{}{}
+	config["timeout"] = 10
 	return config
 }

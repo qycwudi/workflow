@@ -47,7 +47,7 @@ func ParsingDsl(draft string) (string, []byte, error) {
 			Connections: edges,
 		},
 	}
-	//
+
 	ruleChainMar, err := json.Marshal(ruleChain)
 	if err != nil {
 		return "", nil, err

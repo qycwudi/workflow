@@ -1,0 +1,250 @@
+{
+  "metadata": {
+    "nodes": [
+      {
+        "id": "1729230826680",
+        "name": "开始",
+        "type": "start",
+        "configuration": {}
+      },
+      {
+        "id": "1729230851220",
+        "name": "参数整理",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "metadata['cs'] = 'xuetu-参数整理';\nmetadata['step'] = 1;\nmsg.age=msg.age + 10;\nreturn {\n    'msg': msg,\n    'metadata': metadata,\n    'msgType': msgType\n};"
+        }
+      },
+      {
+        "id": "1729230923562",
+        "name": "参数加密",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "metadata['sys'] = 'xuetu-三要素';\nmetadata['step-sys'] = 1;\nmsg.age=msg.age + 1;\nreturn {\n    'msg': msg,\n    'metadata': metadata,\n    'msgType': msgType\n};"
+        }
+      },
+      {
+        "id": "1729230933300",
+        "name": "参数加密",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "metadata['hy'] = 'xuetu-婚姻';\nmetadata['step-hy'] = 2;\nmsg.age=msg.age + 2;\nreturn {\n    'msg': msg,\n    'metadata': metadata,\n    'msgType': msgType\n};"
+        }
+      },
+      {
+        "id": "1729230942301",
+        "name": "参数加密",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "metadata['cc'] = 'xuetu-财产';\nmetadata['step-cc'] = 3;\nmsg.age=msg.age + 3;\nreturn {\n    'msg': msg,\n    'metadata': metadata,\n    'msgType': msgType\n};"
+        }
+      },
+      {
+        "id": "1729230979556",
+        "name": "三要素",
+        "type": "http",
+        "configuration": {
+          "script": "",
+          "Headers": {
+            "auth": "xxxx"
+          },
+          "ProxyHost": "",
+          "ProxyPort": 0,
+          "ProxyUser": "",
+          "EnableProxy": false,
+          "ProxyScheme": "",
+          "ProxyPassword": "",
+          "ReadTimeoutMs": 0,
+          "RequestMethod": "post",
+          "WithoutRequestBody": false,
+          "RestEndpointUrlPattern": "http://127.0.0.1:8899/workflow/mock",
+          "MaxParallelRequestsCount": 200,
+          "UseSystemProxyProperties": false
+        }
+      },
+      {
+        "id": "1729230981221",
+        "name": " 婚姻",
+        "type": "http",
+        "configuration": {
+          "script": "",
+          "Headers": {
+            "auth": "xxxx2"
+          },
+          "ProxyHost": "",
+          "ProxyPort": 0,
+          "ProxyUser": "",
+          "EnableProxy": false,
+          "ProxyScheme": "",
+          "ProxyPassword": "",
+          "ReadTimeoutMs": 0,
+          "RequestMethod": "post",
+          "WithoutRequestBody": false,
+          "RestEndpointUrlPattern": "http://127.0.0.1:8899/workflow/mock",
+          "MaxParallelRequestsCount": 200,
+          "UseSystemProxyProperties": false
+        }
+      },
+      {
+        "id": "1729230983131",
+        "name": "财产",
+        "type": "http",
+        "configuration": {
+          "script": "",
+          "Headers": {
+            "auth": "xxxx3"
+          },
+          "ProxyHost": "",
+          "ProxyPort": 0,
+          "ProxyUser": "",
+          "EnableProxy": false,
+          "ProxyScheme": "",
+          "ProxyPassword": "",
+          "ReadTimeoutMs": 0,
+          "RequestMethod": "post",
+          "WithoutRequestBody": false,
+          "RestEndpointUrlPattern": "http://127.0.0.1:8899/workflow/mock",
+          "MaxParallelRequestsCount": 200,
+          "UseSystemProxyProperties": false
+        }
+      },
+      {
+        "id": "1729230986339",
+        "name": "三要素信息提取",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "msg.data.name=msg.data.name + \"三要素提取\";\nmsg.data.age=msg.data.age + 1;\nmsg.data.type= \"SYS\";return {\n    'msg': msg.data,\n    'metadata': metadata,\n    'msgType': msgType\n};"
+        }
+      },
+      {
+        "id": "1729230988354",
+        "name": "婚姻信息结果提取",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "msg.data.name=msg.data.name + \"婚姻信息提取\";\nmsg.data.age=msg.data.age + 2;\nmsg.data.type= \"HY\";return {\n    'msg': msg.data,\n    'metadata': metadata,\n    'msgType': msgType\n};"
+        }
+      },
+      {
+        "id": "1729230990782",
+        "name": "财产信息提取",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "msg.data.name=msg.data.name + \"财产信息提取\";\nmsg.data.age=msg.data.age + 3;\nmsg.data.type= \"CC\";return {\n    'msg': msg.data,\n    'metadata': metadata,\n    'msgType': msgType\n};"
+        }
+      },
+      {
+        "id": "1729230993436",
+        "name": "聚合",
+        "type": "join",
+        "configuration": {
+          "timeout": 1000
+        }
+      },
+      {
+        "id": "1729232902445",
+        "name": "网关并行",
+        "type": "fork",
+        "configuration": {}
+      },
+      {
+        "id": "1729233809531",
+        "name": "报告生成",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "return {   'msg': msg[0],\n    'metadata': metadata,\n    'msgType': msgType\n};"
+        }
+      },
+      {
+        "id": "1729233817420",
+        "name": "结束",
+        "type": "end",
+        "configuration": {}
+      }
+    ],
+    "connections": [
+      {
+        "toId": "1729230851220",
+        "type": "Success",
+        "fromId": "1729230826680"
+      },
+      {
+        "toId": "1729230979556",
+        "type": "Success",
+        "fromId": "1729230923562"
+      },
+      {
+        "toId": "1729230981221",
+        "type": "Success",
+        "fromId": "1729230933300"
+      },
+      {
+        "toId": "1729230983131",
+        "type": "Success",
+        "fromId": "1729230942301"
+      },
+      {
+        "toId": "1729230986339",
+        "type": "Success",
+        "fromId": "1729230979556"
+      },
+      {
+        "toId": "1729230988354",
+        "type": "Success",
+        "fromId": "1729230981221"
+      },
+      {
+        "toId": "1729230990782",
+        "type": "Success",
+        "fromId": "1729230983131"
+      },
+      {
+        "toId": "1729230993436",
+        "type": "Success",
+        "fromId": "1729230986339"
+      },
+      {
+        "toId": "1729230993436",
+        "type": "Success",
+        "fromId": "1729230988354"
+      },
+      {
+        "toId": "1729230993436",
+        "type": "Success",
+        "fromId": "1729230990782"
+      },
+      {
+        "toId": "1729232902445",
+        "type": "Success",
+        "fromId": "1729230851220"
+      },
+      {
+        "toId": "1729230923562",
+        "type": "Success",
+        "fromId": "1729232902445"
+      },
+      {
+        "toId": "1729230933300",
+        "type": "Success",
+        "fromId": "1729232902445"
+      },
+      {
+        "toId": "1729230942301",
+        "type": "Success",
+        "fromId": "1729232902445"
+      },
+      {
+        "toId": "1729233809531",
+        "type": "Success",
+        "fromId": "1729230993436"
+      },
+      {
+        "toId": "1729233817420",
+        "type": "Success",
+        "fromId": "1729233809531"
+      }
+    ]
+  },
+  "ruleChain": {
+    "id": "cs8vfql3sjtkvhkubulg"
+  }
+}

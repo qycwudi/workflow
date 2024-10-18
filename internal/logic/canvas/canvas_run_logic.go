@@ -64,8 +64,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 
 	respData := make(map[string]interface{})
 
-	_ = json.Unmarshal([]byte(result.Data), &respData)
-
+	err = json.Unmarshal([]byte(result.Data), &respData)
 	resp = &types.CanvasRunResponse{
 		Id:       result.Id,
 		Ts:       result.Ts,
