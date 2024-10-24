@@ -19,4 +19,6 @@ export default function () {
   };
 
   http.post(url, payload, params);
+  // const resp = http.post(url, payload, params);
+  // console.log(resp);
 }
