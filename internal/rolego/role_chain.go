@@ -37,7 +37,8 @@ func (r *roleChain) LoadChain(id string, json []byte) {
 		id,
 		json,
 		rulego.WithConfig(config),
-		types.WithAspects(&TraceAop{}, &RunAop{}))
+		types.WithAspects(&TraceAop{}, &RunAop{}),
+	)
 	if err != nil {
 		logx.Errorf("load role chain fail,err:%v\n", err)
 		return
@@ -71,7 +72,7 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 	return result
 }
 
-var traceQueue = make(chan *model.Trace, 100) // 带缓冲的通道
+var traceQueue = make(chan *model.Trace, 10000) // 带缓冲的通道
 
 func asyncTraceWriter() {
 	for entry := range traceQueue {
