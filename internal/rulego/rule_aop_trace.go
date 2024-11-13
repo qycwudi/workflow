@@ -34,7 +34,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 	logicMar, _ := json.MarshalIndent(ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Configuration, "", "    ")
 	// logx.Infof("around-before:%s,%s, %s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, inputMar)
 
-	// 新增追踪
+	// 新增追踪 todo 加开关
 	trace := model.Trace{
 		WorkspaceId: ctx.RuleChain().GetNodeId().Id,
 		TraceId:     msg.Id,
