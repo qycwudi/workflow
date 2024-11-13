@@ -5,7 +5,7 @@ import (
 	"github.com/tidwall/gjson"
 	"os"
 	"testing"
-	"workflow/internal/rolego"
+	"workflow/internal/rulego"
 )
 
 func TestCanvasRunLogic_CanvasRun(t *testing.T) {
@@ -22,14 +22,14 @@ func TestCanvasRunLogic_CanvasRun(t *testing.T) {
 
 	// 2. 构造点
 	graphNodes := canvasJson.Get("graph.nodes").Array()
-	nodes := make([]rolego.Node, len(graphNodes))
+	nodes := make([]rulego.Node, len(graphNodes))
 	for i, node := range graphNodes {
-		r := rolego.Node{
+		r := rulego.Node{
 			Id:   node.Get("id").String(),
 			Type: node.Get("data.type").String(),
 			Name: node.Get("data.title").String(),
 			// 不同组件配置读取逻辑不同
-			Configuration: rolego.ModuleReadConfig(node.Get("data")),
+			Configuration: rulego.ModuleReadConfig(node.Get("data")),
 		}
 		nodes[i] = r
 	}
@@ -41,9 +41,9 @@ func TestCanvasRunLogic_CanvasRun(t *testing.T) {
 
 	// 3. 构造线
 	graphEdges := canvasJson.Get("graph.edges").Array()
-	edges := make([]rolego.Connection, len(graphEdges))
+	edges := make([]rulego.Connection, len(graphEdges))
 	for i, edge := range graphEdges {
-		r := rolego.Connection{
+		r := rulego.Connection{
 			FromId: edge.Get("source").String(),
 			ToId:   edge.Get("target").String(),
 			Type:   edge.Get("relation").String(),
@@ -57,9 +57,9 @@ func TestCanvasRunLogic_CanvasRun(t *testing.T) {
 	t.Logf("\n")
 
 	// 4. 构造执行实体
-	ruleChain := rolego.Rule{
-		RuleChain: rolego.RuleChain{Id: canvasId},
-		Metadata: rolego.Metadata{
+	ruleChain := rulego.Rule{
+		RuleChain: rulego.RuleChain{Id: canvasId},
+		Metadata: rulego.Metadata{
 			Nodes:       nodes,
 			Connections: edges,
 		},
@@ -71,9 +71,9 @@ func TestCanvasRunLogic_CanvasRun(t *testing.T) {
 	}
 	t.Logf("%s\n", string(ruleChainMar))
 	// 运行文件
-	rolego.RoleChain.LoadChain(canvasId, ruleChainMar)
+	rulego.RoleChain.LoadChain(canvasId, ruleChainMar)
 	matadata := make(map[string]string)
 	data := "{\"name\":\"雪兔\",\"age\":18}"
-	result := rolego.RoleChain.Run(canvasId, matadata, data)
+	result := rulego.RoleChain.Run(canvasId, matadata, data)
 	t.Logf("chain run result:%+v", result)
 }

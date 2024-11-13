@@ -1,4 +1,4 @@
-package rolego
+package rulego
 
 type Rule struct {
 	RuleChain RuleChain `json:"ruleChain"`

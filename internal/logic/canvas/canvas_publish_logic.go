@@ -8,7 +8,7 @@ import (
 	"github.com/zeromicro/x/errors"
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/rolego"
+	"workflow/internal/rulego"
 
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -42,7 +42,7 @@ func (l *CanvasPublishLogic) CanvasPublish(req *types.CanvasPublishRequest) (res
 	}
 
 	// 1. 解析画布 dsl
-	_, ruleChain, err := rolego.ParsingDsl(canvas.Draft)
+	_, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
@@ -61,7 +61,7 @@ func (l *CanvasPublishLogic) CanvasPublish(req *types.CanvasPublishRequest) (res
 	}
 
 	// 3. 加载链服务
-	rolego.RoleChain.LoadChain(apiId, ruleChain)
+	rulego.RoleChain.LoadChain(apiId, ruleChain)
 	resp = &types.CanvasPublishResponse{ApiId: apiId}
 	return resp, nil
 }

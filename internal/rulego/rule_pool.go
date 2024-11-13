@@ -1,4 +1,4 @@
-package rolego
+package rulego
 
 import (
 	"errors"

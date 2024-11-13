@@ -6,7 +6,7 @@ import (
 	"github.com/tidwall/gjson"
 	"github.com/zeromicro/x/errors"
 	"workflow/internal/logic"
-	"workflow/internal/rolego"
+	"workflow/internal/rulego"
 
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -35,7 +35,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
 	}
 
-	canvasId, ruleChain, err := rolego.ParsingDsl(canvas.Draft)
+	canvasId, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
@@ -58,8 +58,8 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 		return nil, errors.New(int(logic.SystemError), "开始节点运行参数 data 为空")
 	}
 	// 运行文件
-	rolego.RoleChain.LoadChain(canvasId, ruleChain)
-	result := rolego.RoleChain.Run(canvasId, metadata, data)
+	rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	result := rulego.RoleChain.Run(canvasId, metadata, data)
 	l.Infof("chain run result:%+v", result)
 
 	respData := make(map[string]interface{})

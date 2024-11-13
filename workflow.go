@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"workflow/internal/config"
 	"workflow/internal/handler"
-	"workflow/internal/rolego"
+	"workflow/internal/rulego"
 	"workflow/internal/svc"
 )
 
@@ -38,9 +38,9 @@ func main() {
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
 	// 注册规则链
-	rolego.InitRoleChain(ctx)
+	rulego.InitRoleChain(ctx)
 	// 注册链服务
-	rolego.InitRoleServer()
+	rulego.InitRoleServer()
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
 }

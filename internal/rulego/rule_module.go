@@ -1,4 +1,4 @@
-package rolego
+package rulego
 
 import (
 	"github.com/rulego/rulego/utils/json"
