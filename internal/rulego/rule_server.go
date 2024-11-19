@@ -2,12 +2,14 @@ package rulego
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/rulego/rulego/api/types"
 	endpoint2 "github.com/rulego/rulego/api/types/endpoint"
 	"github.com/rulego/rulego/endpoint"
 	"github.com/rulego/rulego/endpoint/rest"
 	"github.com/zeromicro/go-zero/core/logx"
 	"log"
+	"net/http"
 	"workflow/internal/utils"
 )
 
@@ -48,6 +50,19 @@ func Route() endpoint2.Router {
 	// 如果需要把规则链执行结果同步响应给客户端，则增加wait语义
 	router := endpoint.NewRouter().From("/api/role/v1/:chainId").
 		To("chain:${chainId}").
+		Transform(func(router endpoint2.Router, exchange *endpoint.Exchange) bool {
+			// 检查请求体大小  1*1024*1024  1MB
+			if len(exchange.In.Body()) > 40 { // 1MB = 1024 * 1024 bytes
+				response := make(map[string]interface{})
+				response["code"] = 413
+				response["message"] = "状态请求实体太大"
+				marshal, _ := json.Marshal(response)
+				exchange.Out.SetStatusCode(http.StatusRequestEntityTooLarge)
+				exchange.Out.SetBody(marshal)
+				return false
+			}
+			return true
+		}).
 		// 必须增加Wait，异步转同步，http才能正常响应，如果不响应同步响应，不要加这一句，会影响吞吐量
 		Wait().
 		Process(func(router endpoint2.Router, exchange *endpoint.Exchange) bool {
