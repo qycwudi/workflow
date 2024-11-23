@@ -37,6 +37,7 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 	var page []*model.Workspace
 	var total int64
 	// 标签过滤,走in逻辑
+	// todo 这里有问题，要修改下 sql 改错标签和名称混合查询，数据量不会太大 不考虑性能问题
 	if len(req.WorkSpaceTag) > 0 {
 		// 查询满足条件的workspace
 		workspaceIds, totalNum, err := l.svcCtx.WorkspaceTagMappingModel.FindPageByTagId(l.ctx, req.Current, req.PageSize, req.WorkSpaceTag)

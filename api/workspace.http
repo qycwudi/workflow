@@ -1,38 +1,4 @@
-### 安装Httpx Requests插件
-### 上传
-POST http://127.0.0.1:8899/auto/upload
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="file"; filename="数产数据录入模版.xlsx""
-
-< "/Users/qiangyuecheng/Downloads/数产数据录入模版.xlsx"
---WebAppBoundary--
-
-### 设置key
-POST http://127.0.0.1:8899/common/set/kv
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "key": "qqq",
-  "value": "vvv",
-  "spiderName": "ccc"
-}
-
-### 设置key生产
-POST http://10.99.43.88:8899/common/set/kv
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "key": "qqq",
-  "value": "vvv",
-  "spiderName": "ccc"
-}
-
-### 创建 workspace
+### workspace创建, 会把新输入的 tag 也创建出来
 POST http://127.0.0.1:8899/workflow/workspace/new
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
@@ -48,45 +14,8 @@ Content-Type: application/json
   "workSpaceIcon": "http://icon.com"
 }
 
-### 创建 workspace
-POST http://10.99.43.99:8899/workspace/new
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "workSpaceName": "雪兔工作流测试-base",
-  "workSpaceDesc": "工作空间描述",
-  "workSpaceType": "workflow",
-  "workSpaceTag": [
-    "API",
-    "测试环境"
-  ],
-  "workSpaceIcon": "http://icon.com"
-}
-
-
-### 编辑 workspace name
-POST http://127.0.0.1:8899/workspace/edit
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "id": "111222333",
-  "workSpaceName": "namename"
-}
-
-### 列表 workspace
+### workspace列表-带条件
 POST http://127.0.0.1:8899/workflow/workspace/list
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "current": 1,
-  "pageSize": 2
-}
-
-### 列表-带条件 workspace
-POST http://127.0.0.1:8899/workspace/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -94,15 +23,16 @@ Content-Type: application/json
   "workSpaceName": "demoString",
   "workSpaceType": "demoString",
   "workSpaceTag": [
-    "demoString"
+    1,
+    2
   ],
   "current": 0,
   "pageSize": 0
 }
 
 
-### 列表-带条件 workspace
-POST http://127.0.0.1:8899/workspace/remove
+### 删除 workspace
+POST http://127.0.0.1:8899/workflow/workspace/remove
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -111,7 +41,7 @@ Content-Type: application/json
 }
 
 ### 编辑 workspace
-POST http://127.0.0.1:8899/workspace/edit
+POST http://127.0.0.1:8899/workflow/workspace/edit
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -129,61 +59,9 @@ Content-Type: application/json
 }
 
 ### 列表 tag
-POST http://127.0.0.1:8899/tag/list
+POST http://127.0.0.1:8899/workflow/tag/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-}
-
-### 列表-带条件 workspace
-POST http://127.0.0.1:8899/openapi/asbss
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "param": "123123123"
-}
-
-### 列表-带条件 workspace
-POST http://127.0.0.1:9999/api/v1/msg2Chain4/rule8848
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "userName": "xue",
-  "password": "123456",
-  "role": "admin"
-}
-
-### API
-POST http://127.0.0.1:9999/api/v1/msg2Chain4/rule8848
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "userName": "xue",
-  "password": "123456",
-  "role": "admin"
-}
-
-### API
-POST http://127.0.0.1:9999/api/v1/msg2Chain4/rule8848
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "userName": "xue",
-  "password": "123456",
-  "role": "admin"
-}
-
-### API
-POST http://127.0.0.1:8899/workflow/mock
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "name": "xue",
-  "age": 10
 }
