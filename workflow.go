@@ -3,13 +3,14 @@ package main
 import (
 	"flag"
 	"fmt"
-	"github.com/zeromicro/go-zero/core/conf"
-	"github.com/zeromicro/go-zero/rest"
 	"net/http"
 	"workflow/internal/config"
 	"workflow/internal/handler"
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
+
+	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/rest"
 )
 
 var configFile = flag.String("f", "etc/workflow-api.yaml", "the config file")
@@ -43,4 +44,6 @@ func main() {
 	rulego.InitRoleServer()
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
+
+
 }

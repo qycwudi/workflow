@@ -1,0 +1,4 @@
+{"@timestamp":"2024-10-01T23:25:43.167+08:00","caller":"utils/log.go:117","content":"started rest server on :%s","level":"info"}
+{"@timestamp":"2024-10-01T23:25:43.167+08:00","caller":"rolego/role_server.go:30","content":"init role server success","level":"info"}
+{"@timestamp":"2024-10-01T23:25:43.167+08:00","caller":"rolego/role_chain.go:24","content":"init role chain success","level":"info"}
+{"@timestamp":"2024-10-01T23:25:53.241+08:00","caller":"proc/shutdown.go:58","content":"Got signal 2, shutting down...","level":"info"}
