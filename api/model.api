@@ -1,0 +1,63 @@
+syntax = "v1"
+
+type ModuleListRequest {
+
+}
+
+type ModuleListResponse {
+    Total int `json:"total"`
+    Modules []ModuleData `json:"modules"`
+}
+
+type ModuleData {
+    Index int `json:"index"`
+    ModuleId string `json:"moduleId"`
+    ModuleName string `json:"moduleName"`
+    ModuleType string `json:"moduleType"`
+    ModuleConfig string `json:"moduleConfig"`
+}
+
+type ModuleNewRequest {
+    Index int `json:"index"`
+    ModuleName string `json:"moduleName"`
+    ModuleType string `json:"moduleType"`
+    ModuleConfig string `json:"moduleConfig"`
+}
+
+type ModuleNewResponse {
+    ModuleId string `json:"moduleId"`
+}
+
+type ModuleEditRequest {
+    Index int `json:"index"`
+    ModuleId string `json:"moduleId"`
+    ModuleName string `json:"moduleName"`
+    ModuleType string `json:"moduleType"`
+    ModuleConfig string `json:"moduleConfig"`
+}
+
+type ModuleEditResponse {
+    ModuleId string `json:"moduleId"`
+}
+
+
+@server(
+    // 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+    group: model
+    // 定义路由前缀为 "/v1"
+    prefix: /workflow
+)
+
+service workflow-api {
+    @doc "组件list"
+    @handler ModuleListHandler
+    post /module/list (ModuleListRequest) returns (ModuleListResponse)
+
+    @doc "组件新建"
+    @handler ModuleNewHandler
+    post /module/new (ModuleNewRequest) returns (ModuleNewResponse)
+
+    @doc "组件编辑"
+    @handler ModuleEditHandler
+    post /module/edit (ModuleEditRequest) returns (ModuleEditResponse)
+}

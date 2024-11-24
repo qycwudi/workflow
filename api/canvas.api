@@ -54,33 +54,11 @@ type Trace {
 type CanvasDraftRequest {
     Id string `json:"id"`
     Graph map[string]interface{} `json:"graph"`
-    Features map[string]interface{} `json:"features"`
-    EnvironmentVariables []interface{} `json:"environment_variables"`
-    ConversationVariables []interface{} `json:"conversation_variables"`
-    Hash string `json:"hash,optional"`
 }
 
 type CanvasDraftResponse {
     Hash string `json:"hash"`
     UpdateTime int64 `json:"updateTime"`
-}
-
-
-type ModuleListRequest {
-
-}
-
-type ModuleListResponse {
-    Total int `json:"total"`
-    Modules []ModuleData `json:"modules"`
-}
-
-type ModuleData {
-    Index int `json:"index"`
-    ModuleId string `json:"moduleId"`
-    ModuleName string `json:"moduleName"`
-    ModuleType string `json:"moduleType"`
-    ModuleConfig string `json:"moduleConfig"`
 }
 
 type EdgeCustomData struct {
@@ -98,6 +76,15 @@ type CanvasPublishResponse {
     ApiId string `json:"apiId"`
 }
 
+type CanvasDetailRequest {
+    Id string `json:"id"`
+}
+
+type CanvasDetailResponse {
+    Id string `json:"id"`
+    Graph map[string]interface{} `json:"graph"`
+}
+
 @server(
     // 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
     group: canvas
@@ -106,6 +93,15 @@ type CanvasPublishResponse {
 )
 
 service workflow-api {
+
+    @doc "画布更新"
+    @handler CanvasDraftHandler
+    post /canvas/draft (CanvasDraftRequest) returns (CanvasDraftResponse)
+
+    @doc "画布详情"
+    @handler  CanvasDetailHandler
+    post /canvas/detail (CanvasDetailRequest) returns (CanvasDetailResponse)
+
     @doc "运行"
     @handler CanvasRunHandler
     post /canvas/run (CanvasRunRequest) returns (CanvasRunResponse)
@@ -117,14 +113,6 @@ service workflow-api {
     @doc "结果追踪"
     @handler TraceHandler
     post /trace (TraceRequest) returns (TraceResponse)
-
-    @doc "画布更新"
-    @handler CanvasDraftHandler
-    post /canvas/draft (CanvasDraftRequest) returns (CanvasDraftResponse)
-
-    @doc "组件list"
-    @handler ModuleListHandler
-    post /module/list (ModuleListRequest) returns (ModuleListResponse)
 
     @doc "发布"
     @handler CanvasPublishHandler

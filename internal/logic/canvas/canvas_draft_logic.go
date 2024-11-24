@@ -5,6 +5,7 @@ import (
 	errors2 "errors"
 	"github.com/rulego/rulego/utils/json"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
+	"github.com/zeromicro/go-zero/core/utils"
 	"github.com/zeromicro/x/errors"
 	"time"
 	"workflow/internal/logic"
@@ -56,7 +57,7 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 		return nil, errors.New(int(logic.SystemOrmError), "更新画布草案失败")
 	}
 	resp = &types.CanvasDraftResponse{
-		Hash:       req.Hash,
+		Hash:       utils.NewUuid(),
 		UpdateTime: time.Now().UnixMilli(),
 	}
 

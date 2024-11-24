@@ -58,21 +58,6 @@ type WorkSpacePage {
     UpdateTime string `json:"updateTime"`
 }
 
-
-type WorkSpaceDetailRequest {
-    Id string `json:"id"`
-}
-
-type WorkSpaceDetailResponse {
-    Id string `json:"id"`
-    Graph map[string]interface{} `json:"graph"`
-    Features map[string]interface{} `json:"features"`
-    EnvironmentVariables []interface{} `json:"environment_variables"`
-    ConversationVariables []interface{} `json:"conversation_variables"`
-    Hash string `json:"hash"`
-    BaseInfo WorkSpaceBase `json:"baseInfo"`
-}
-
 type WorkSpaceEditTagRequest {
     Id string `json:"id"`
     WorkSpaceTag []string `json:"workSpaceTag"`
@@ -135,10 +120,6 @@ service workflow-api {
     @doc "列表workspace"
     @handler WorkSpaceListHandler
     post /workspace/list (WorkSpaceListRequest) returns (WorkSpaceListResponse)
-
-    @doc "详情workspace"
-    @handler WorkSpaceDetailHandler
-    post /workspace/detail (WorkSpaceDetailRequest) returns (WorkSpaceDetailResponse)
 
     @doc "编辑workspace标签"
     @handler WorkSpaceEditTagHandler

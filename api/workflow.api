@@ -18,3 +18,5 @@ import "workspace.api"
 import "canvas.api"
 
 import "api.api"
+
+import "model.api"

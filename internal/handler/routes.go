@@ -7,6 +7,7 @@ import (
 	api "workflow/internal/handler/api"
 	canvas "workflow/internal/handler/canvas"
 	kv "workflow/internal/handler/kv"
+	model "workflow/internal/handler/model"
 	workspace "workflow/internal/handler/workspace"
 	"workflow/internal/svc"
 
@@ -54,11 +55,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
-				Path:    "/workspace/detail",
-				Handler: workspace.WorkSpaceDetailHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
 				Path:    "/workspace/edit/tag",
 				Handler: workspace.WorkSpaceEditTagHandler(serverCtx),
 			},
@@ -80,6 +76,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
+				Path:    "/canvas/draft",
+				Handler: canvas.CanvasDraftHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/detail",
+				Handler: canvas.CanvasDetailHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/canvas/run",
 				Handler: canvas.CanvasRunHandler(serverCtx),
 			},
@@ -92,16 +98,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/trace",
 				Handler: canvas.TraceHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/draft",
-				Handler: canvas.CanvasDraftHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/module/list",
-				Handler: canvas.ModuleListHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
@@ -133,6 +129,27 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/api/secretykey/list",
 				Handler: api.ApiSecretyKeyListHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/module/list",
+				Handler: model.ModuleListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/module/new",
+				Handler: model.ModuleNewHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/module/edit",
+				Handler: model.ModuleEditHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/workflow"),

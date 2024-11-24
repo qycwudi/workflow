@@ -78,20 +78,6 @@ type WorkSpacePage struct {
 	UpdateTime string `json:"updateTime"`
 }
 
-type WorkSpaceDetailRequest struct {
-	Id string `json:"id"`
-}
-
-type WorkSpaceDetailResponse struct {
-	Id                    string                 `json:"id"`
-	Graph                 map[string]interface{} `json:"graph"`
-	Features              map[string]interface{} `json:"features"`
-	EnvironmentVariables  []interface{}          `json:"environment_variables"`
-	ConversationVariables []interface{}          `json:"conversation_variables"`
-	Hash                  string                 `json:"hash"`
-	BaseInfo              WorkSpaceBase          `json:"baseInfo"`
-}
-
 type WorkSpaceEditTagRequest struct {
 	Id           string   `json:"id"`
 	WorkSpaceTag []string `json:"workSpaceTag"`
@@ -175,33 +161,13 @@ type Trace struct {
 }
 
 type CanvasDraftRequest struct {
-	Id                    string                 `json:"id"`
-	Graph                 map[string]interface{} `json:"graph"`
-	Features              map[string]interface{} `json:"features"`
-	EnvironmentVariables  []interface{}          `json:"environment_variables"`
-	ConversationVariables []interface{}          `json:"conversation_variables"`
-	Hash                  string                 `json:"hash,optional"`
+	Id    string                 `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
 }
 
 type CanvasDraftResponse struct {
 	Hash       string `json:"hash"`
 	UpdateTime int64  `json:"updateTime"`
-}
-
-type ModuleListRequest struct {
-}
-
-type ModuleListResponse struct {
-	Total   int          `json:"total"`
-	Modules []ModuleData `json:"modules"`
-}
-
-type ModuleData struct {
-	Index        int    `json:"index"`
-	ModuleId     string `json:"moduleId"`
-	ModuleName   string `json:"moduleName"`
-	ModuleType   string `json:"moduleType"`
-	ModuleConfig string `json:"moduleConfig"`
 }
 
 type EdgeCustomData struct {
@@ -217,6 +183,15 @@ type CanvasPublishRequest struct {
 
 type CanvasPublishResponse struct {
 	ApiId string `json:"apiId"`
+}
+
+type CanvasDetailRequest struct {
+	Id string `json:"id"`
+}
+
+type CanvasDetailResponse struct {
+	Id    string                 `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
 }
 
 type ApiPublishListRequest struct {
@@ -287,4 +262,43 @@ type ApiSecretyKey struct {
 	ApiId          string `json:"apiId"`
 	SecretyKey     string `json:"secretyKey"`
 	ExpirationTime string `json:"expirationTime"`
+}
+
+type ModuleListRequest struct {
+}
+
+type ModuleListResponse struct {
+	Total   int          `json:"total"`
+	Modules []ModuleData `json:"modules"`
+}
+
+type ModuleData struct {
+	Index        int    `json:"index"`
+	ModuleId     string `json:"moduleId"`
+	ModuleName   string `json:"moduleName"`
+	ModuleType   string `json:"moduleType"`
+	ModuleConfig string `json:"moduleConfig"`
+}
+
+type ModuleNewRequest struct {
+	Index        int    `json:"index"`
+	ModuleName   string `json:"moduleName"`
+	ModuleType   string `json:"moduleType"`
+	ModuleConfig string `json:"moduleConfig"`
+}
+
+type ModuleNewResponse struct {
+	ModuleId string `json:"moduleId"`
+}
+
+type ModuleEditRequest struct {
+	Index        int    `json:"index"`
+	ModuleId     string `json:"moduleId"`
+	ModuleName   string `json:"moduleName"`
+	ModuleType   string `json:"moduleType"`
+	ModuleConfig string `json:"moduleConfig"`
+}
+
+type ModuleEditResponse struct {
+	ModuleId string `json:"moduleId"`
 }

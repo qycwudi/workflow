@@ -1,66 +1,3 @@
-### 列表-画布组件 module
-POST http://127.0.0.1:8899/module/list
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{}
-
-### 列表-画布组件 module
-POST http://10.99.43.99:8899/module/list
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{}
-
-
-### 画布-新增节点
-POST http://127.0.0.1:8899/canvas/add/node
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "workSpaceId": "cs29ujl3sjtiq4etv0c0",
-  "moduleId": "jsTransform",
-  "position": {
-    "x": 1.0,
-    "y": 1.0
-  }
-}
-
-### 画布-新增边
-POST http://127.0.0.1:8899/canvas/add/edge
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-"workSpaceId": "crvpmf53sjtsppvoiogg",
-"source": "crvpmf53sjtsppvoioh0",
-"sourcePoint": 1,
-"target": "crvpmi53sjtsppvoiohg",
-"targetPoint": 2,
-"route": "True"
-}
-
-### 画布-删除边
-POST http://127.0.0.1:8899/canvas/delete/edge
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "workSpaceId": "crvpmf53sjtsppvoiogg",
-  "edgeId": "crvq9g53sjtt7r5mc22g"
-}
-
-### 画布-删除节点
-POST http://127.0.0.1:8899/canvas/delete/node
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "workSpaceId": "crvpmf53sjtsppvoiogg",
-  "nodeId": "crvpmf53sjtsppvoioh0"
-}
-
 ### 画布-详情
 POST http://127.0.0.1:8899/canvas/detail
 User-Agent: Apifox/1.0.0 (https://apifox.com)
@@ -68,39 +5,6 @@ Content-Type: application/json
 
 {
   "workSpaceId": "crvpmf53sjtsppvoiogg"
-}
-
-### 画布-修改边
-POST http://127.0.0.1:8899/canvas/edit/edge
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "edgeId": "crvpmpl3sjtsppvoioi0",
-  "workSpaceId": "crvpmf53sjtsppvoiogg",
-  "source": "crvpmf53sjtsppvoioh0",
-  "sourcePoint": 2,
-  "target": "crvpmi53sjtsppvoiohg",
-  "targetPoint": 2,
-  "route": "True"
-}
-
-### 画布-修改节点
-POST http://127.0.0.1:8899/canvas/edit/node
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "workSpaceId": "crvpmf53sjtsppvoiogg",
-  "nodeId": "crvpmf53sjtsppvoioh0",
-  "position": {
-    "x": 1.0,
-    "y": 2.0
-  },
-  "moduleConfig": {
-    "param": "x,y,z",
-    "script": "json.mars(x)"
-  }
 }
 
 ### 画布-执行
@@ -138,24 +42,13 @@ Content-Type: application/json
   "id": "cs34put3sjtg42ghcf8g"
 }
 
-### 画布-运行记录
+### 画布-运行记录详情
 POST http://127.0.0.1:8899/workflow/trace
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
   "traceId": "3d6a5cdc-8a81-4b36-aed0-351c4e3929f0"
-}
-
-
-### API-执行
-POST http://127.0.0.1:9999/api/role/v1/cs6c0il3sjtobc4avatg
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-    "name": "张三",
-    "age": 18
 }
 
 ### API-发布

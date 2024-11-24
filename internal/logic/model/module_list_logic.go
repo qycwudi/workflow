@@ -1,4 +1,4 @@
-package canvas
+package model
 
 import (
 	"context"
@@ -45,6 +45,5 @@ func (l *ModuleListLogic) ModuleList(req *types.ModuleListRequest) (resp *types.
 		Total:   len(modules),
 		Modules: data,
 	}
-
 	return resp, nil
 }
