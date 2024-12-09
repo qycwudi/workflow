@@ -1,5 +1,5 @@
 ### 画布-详情
-POST http://127.0.0.1:8899/canvas/detail
+POST http://127.0.0.1:8899/workflow/canvas/detail
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -18,7 +18,7 @@ Content-Type: application/json
 
 
 ### 画布-更新
-POST http://127.0.0.1:8899/canvas/draft
+POST http://127.0.0.1:8899/workflow/canvas/draft
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -26,23 +26,13 @@ Content-Type: application/json
   "workSpaceId": "crvpmf53sjtsppvoiogg"
 }
 
-### 画布-运行记录
-POST http://127.0.0.1:8899/workflow/canvas/run/record
+### 画布-执行记录
+GET http://127.0.0.1:8899/workflow/canvas/run/history/asdasd
 User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
 
-{
-  "id": "cs34put3sjtg42ghcf8g"
-}
-
-### 画布-运行记录详情
-POST http://127.0.0.1:8899/workflow/trace
+### 画布-执行记录详情
+GET http://127.0.0.1:8899/workflow/canvas/run/detail/22222
 User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "traceId": "3d6a5cdc-8a81-4b36-aed0-351c4e3929f0"
-}
 
 ### API-发布
 POST http://127.0.0.1:8899/workflow/canvas/publish

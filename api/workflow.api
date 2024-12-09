@@ -11,7 +11,6 @@ syntax = "v1"
 }
 
 */
-import "kv.api"
 
 import "workspace.api"
 
@@ -20,3 +19,5 @@ import "canvas.api"
 import "api.api"
 
 import "model.api"
+
+import "datasource.api"

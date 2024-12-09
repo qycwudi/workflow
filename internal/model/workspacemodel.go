@@ -3,9 +3,10 @@ package model
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/zeromicro/go-zero/core/logc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"strings"
 )
 
 var _ WorkspaceModel = (*customWorkspaceModel)(nil)
@@ -150,7 +151,7 @@ func (c customWorkspaceModel) Remove(ctx context.Context, workSpaceId string) er
 			logc.Infov(ctx, err)
 			return err
 		}
-		query := fmt.Sprintf("delete from workspace_tag_mapping where `workspace_id` = ?")
+		query := "delete from workspace_tag_mapping where `workspace_id` = ?"
 		_, err = session.ExecCtx(ctx, query, workSpaceId)
 		if err != nil {
 			logc.Infov(ctx, err)

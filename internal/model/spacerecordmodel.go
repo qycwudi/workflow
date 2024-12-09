@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -15,7 +16,9 @@ type (
 	SpaceRecordModel interface {
 		spaceRecordModel
 		FindAll(ctx context.Context, id string) ([]*SpaceRecord, error)
-		UpdateStatusBySid(ctx context.Context, sid string, status string) error
+		FindHistory(ctx context.Context, id string) ([]*SpaceRecord, error)
+		FindBySerialNumber(ctx context.Context, id string) (*SpaceRecord, error)
+		UpdateStatusBySid(ctx context.Context, sid string, status string, duration int64) error
 	}
 
 	customSpaceRecordModel struct {
@@ -23,9 +26,9 @@ type (
 	}
 )
 
-func (c customSpaceRecordModel) UpdateStatusBySid(ctx context.Context, sid string, status string) error {
-	query := fmt.Sprintf("update %s set status = ?  where `serial_number` = ?", c.table)
-	_, err := c.conn.ExecCtx(ctx, query, status, sid)
+func (c customSpaceRecordModel) UpdateStatusBySid(ctx context.Context, sid string, status string, duration int64) error {
+	query := fmt.Sprintf("update %s set status = ?, duration = ?  where `serial_number` = ?", c.table)
+	_, err := c.conn.ExecCtx(ctx, query, status, duration, sid)
 	return err
 }
 
@@ -41,6 +44,20 @@ func (c customSpaceRecordModel) FindAll(ctx context.Context, id string) ([]*Spac
 	default:
 		return nil, err
 	}
+}
+
+func (c customSpaceRecordModel) FindHistory(ctx context.Context, id string) ([]*SpaceRecord, error) {
+	query := fmt.Sprintf("select %s from %s where workspace_id = ? order by id desc", spaceRecordRows, c.table)
+	var resp []*SpaceRecord
+	err := c.conn.QueryRowsCtx(ctx, &resp, query, id)
+	return resp, err
+}
+
+func (c customSpaceRecordModel) FindBySerialNumber(ctx context.Context, id string) (*SpaceRecord, error) {
+	query := fmt.Sprintf("select %s from %s where serial_number = ?", spaceRecordRows, c.table)
+	var resp SpaceRecord
+	err := c.conn.QueryRowCtx(ctx, &resp, query, id)
+	return &resp, err
 }
 
 // NewSpaceRecordModel returns a model for the database table.

@@ -1,24 +1,24 @@
-package canvas
+package datasource
 
 import (
 	"github.com/zeromicro/go-zero/rest/httpx"
 	"net/http"
-	"workflow/internal/logic/canvas"
+	"workflow/internal/logic/datasource"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 	"workflow/response"
 )
 
-func CanvasRunRecordHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func DatasourceDeleteHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.CanvasRunRecordRequest
+		var req types.DatasourceDeleteRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := canvas.NewCanvasRunRecordLogic(r.Context(), svcCtx)
-		resp, err := l.CanvasRunRecord(&req)
+		l := datasource.NewDatasourceDeleteLogic(r.Context(), svcCtx)
+		resp, err := l.DatasourceDelete(&req)
 		response.Response(w, resp, err)
 
 	}

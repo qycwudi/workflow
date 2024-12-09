@@ -1,187 +1,143 @@
 syntax = "v1"
 
-
 type CanvasRunRequest {
-    Id string `json:"id" desc:"空间ID"`
+	Id string `json:"id" desc:"空间ID"`
 }
 
 type CanvasRunResponse {
-    Ts int64 `json:"ts"`
-    Id string `json:"id"`
-    MetaData map[string]string `json:"metadata"`
-    Data map[string]interface{} `json:"data"`
+	Ts       int64                  `json:"ts"`
+	Id       string                 `json:"id"`
+	MetaData map[string]string      `json:"metadata"`
+	Data     map[string]interface{} `json:"data"`
 }
 
-
 type CanvasRunSingleRequest {
-    Id string `json:"id" desc:"空间ID"`
-    NodeId string `json:"nodeId" desc:"节点ID"`
+	Id     string `json:"id" desc:"空间ID"`
+	NodeId string `json:"nodeId" desc:"节点ID"`
 }
 
 type CanvasRunSingleResponse {
-    Ts int64 `json:"ts"`
-    Id string `json:"id"`
-    MetaData map[string]string `json:"metadata"`
-    Data map[string]interface{} `json:"data"`
+	Ts       int64                  `json:"ts"`
+	Id       string                 `json:"id"`
+	MetaData map[string]string      `json:"metadata"`
+	Data     map[string]interface{} `json:"data"`
 }
 
-
-type CanvasRunRecordRequest {
-    Id string `json:"id" desc:"空间ID"`
+type GetCanvasRunHistoryReq {
+	WorkSpaceId string `path:"workSpaceId"`
 }
 
-type CanvasRunRecordResponse {
-    Records []RunRecord `json:"records"`
+type RunHistoryRecord {
+	Id             string `json:"id"`             // 运行记录ID
+	StartTime      string `json:"startTime"`      // 开始时间，ISO格式
+	Duration       int64  `json:"duration"`       // 总耗时(ms)
+	Status         string `json:"status"`         // 运行状态
+	ComponentCount int64  `json:"componentCount"` // 组件数量
 }
 
-type RunRecord {
-    TraceId string `json:"traceId"`
-    Status string `json:"status"`
-    RunTime string `json:"runTime" desc:"开始时间"`
+type GetCanvasRunHistoryResp {
+	Records []RunHistoryRecord `json:"records"`
+	Total   int64              `json:"total"` // 总记录数
 }
 
+type (
+	// 请求
+	GetCanvasRunDetailReq {
+		RecordId string `path:"recordId"` // 运行记录ID
+	}
 
+	// 响应
+	GetCanvasRunDetailResp {
+		Id         string            `json:"id"`         // 运行记录ID
+		StartTime  string            `json:"startTime"`  // 开始时间
+		Duration   int64             `json:"duration"`   // 总耗时(ms)
+		Status     string            `json:"status"`     // 运行状态 success/failed
+		Error      string            `json:"error"`      // 错误信息
+		Components []ComponentDetail `json:"components"` // 组件列表
+	}
 
-type TraceRequest {
-    TraceId string `json:"traceId"`
-}
-
-type TraceResponse {
-    Total int64 `json:"total"`
-    TotalElapsedTime int64 `json:"total"`
-    Traces []Trace `json:"traces"`
-}
-
-type Trace {
-    TraceId string `json:"traceId"`
-    NodeId string `json:"nodeId" desc:"节点ID"`
-    NodeName string `json:"nodeName" desc:"节点名称"`
-    Status string `json:"status" desc:"运行状态"`
-    StartTime string `json:"startTime" desc:"开始执行时间"`
-    ElapsedTime int64 `json:"elapsedTime" desc:"运行耗时"`
-    Input string `json:"input" desc:"输出"`
-    Output string `json:"output" desc:"输出"`
-    Logic string `json:"logic" desc:"执行逻辑"`
-}
+	// 组件详情
+	ComponentDetail {
+		Id        string                 `json:"id"`        // 组件ID
+		Name      string                 `json:"name"`      // 组件名称
+		Logic     string                 `json:"logic"`     // 组件类型
+		StartTime int64                  `json:"startTime"` // 开始时间戳
+		Duration  int64                  `json:"duration"`  // 耗时(ms)
+		Status    string                 `json:"status"`    // 组件运行状态 success/failed
+		Error     string                 `json:"error"`     // 组件错误信息
+		Input     map[string]interface{} `json:"input"`     // 输入参数
+		Output    map[string]interface{} `json:"output"`    // 输出结果
+	}
+)
 
 type CanvasDraftRequest {
-    Id string `json:"id"`
-    Graph map[string]interface{} `json:"graph"`
+	Id    string                 `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
 }
 
 type CanvasDraftResponse {
-    Hash string `json:"hash"`
-    UpdateTime int64 `json:"updateTime"`
+	Hash       string `json:"hash"`
+	UpdateTime int64  `json:"updateTime"`
 }
 
-type EdgeCustomData struct {
-    SourcePoint int `json:"sourcePoint"`
-    TargetPoint int `json:"targetPoint"`
+type EdgeCustomData {
+	SourcePoint int `json:"sourcePoint"`
+	TargetPoint int `json:"targetPoint"`
 }
 
 type CanvasPublishRequest {
-    Id string `json:"id" desc:"空间ID"`
-    ApiName string `json:"apiName" desc:"名称"`
-    ApiDesc string `json:"apiDesc" desc:"描述"`
+	Id      string `json:"id" desc:"空间ID"`
+	ApiName string `json:"apiName" desc:"名称"`
+	ApiDesc string `json:"apiDesc" desc:"描述"`
 }
 
 type CanvasPublishResponse {
-    ApiId string `json:"apiId"`
+	ApiId string `json:"apiId"`
 }
 
 type CanvasDetailRequest {
-    Id string `json:"id"`
+	Id string `json:"id"`
 }
 
 type CanvasDetailResponse {
-    Id string `json:"id"`
-    Graph map[string]interface{} `json:"graph"`
+	Id    string                 `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
 }
 
 @server(
-    // 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
-    group: canvas
-    // 定义路由前缀为 "/v1"
-    prefix: /workflow
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: canvas
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
 )
 
 service workflow-api {
 
-    @doc "画布更新"
-    @handler CanvasDraftHandler
-    post /canvas/draft (CanvasDraftRequest) returns (CanvasDraftResponse)
+	@doc "画布更新"
+	@handler CanvasDraftHandler
+	post /canvas/draft (CanvasDraftRequest) returns (CanvasDraftResponse)
 
-    @doc "画布详情"
-    @handler  CanvasDetailHandler
-    post /canvas/detail (CanvasDetailRequest) returns (CanvasDetailResponse)
+	@doc "画布详情"
+	@handler  CanvasDetailHandler
+	post /canvas/detail (CanvasDetailRequest) returns (CanvasDetailResponse)
 
-    @doc "运行"
-    @handler CanvasRunHandler
-    post /canvas/run (CanvasRunRequest) returns (CanvasRunResponse)
+	@doc "全部运行"
+	@handler CanvasRunHandler
+	post /canvas/run (CanvasRunRequest) returns (CanvasRunResponse)
 
-        @doc "运行"
-    @handler CanvasRunSingleHandler
-    post /canvas/run/single (CanvasRunSingleRequest) returns (CanvasRunSingleResponse)
+	@doc "单组件运行"
+	@handler CanvasRunSingleHandler
+	post /canvas/run/single (CanvasRunSingleRequest) returns (CanvasRunSingleResponse)
 
+	@doc "获取画布运行历史"
+	@handler getCanvasRunHistory
+	get /canvas/run/history/:workSpaceId (GetCanvasRunHistoryReq) returns (GetCanvasRunHistoryResp)
 
-    @doc "历史运行记录"
-    @handler CanvasRunRecordHandler
-    post /canvas/run/record (CanvasRunRecordRequest) returns (CanvasRunRecordResponse)
+	@doc "获取画布运行详情"
+	@handler getCanvasRunDetail
+	get /canvas/run/detail/:recordId (GetCanvasRunDetailReq) returns (GetCanvasRunDetailResp)
 
-    @doc "结果追踪"
-    @handler TraceHandler
-    post /trace (TraceRequest) returns (TraceResponse)
-
-    @doc "发布"
-    @handler CanvasPublishHandler
-    post /canvas/publish (CanvasPublishRequest) returns (CanvasPublishResponse)
+	@doc "发布"
+	@handler CanvasPublishHandler
+	post /canvas/publish (CanvasPublishRequest) returns (CanvasPublishResponse)
 }
-
-
-// // 请求
-// GET /workflow/canvas/run/history/{canvasId}
-
-// // 响应
-// interface RunHistoryResponse {
-//   code: number;
-//   data: {
-//     records: {
-//       id: string;           // 运行记录ID
-//       startTime: string;    // 开始时间，ISO格式
-//       duration: number;     // 总耗时(ms)
-//       status: 'success' | 'failed';  // 运行状态
-//       componentCount: number;  // 组件数量
-//     }[];
-//     total: number;         // 总记录数
-//   }
-// }
-
-// // 请求
-// GET /workflow/canvas/run/detail/{recordId}
-
-// // 响应
-// interface RunDetailResponse {
-//   code: number;
-//   data: {
-//     id: string;           // 运行记录ID
-//     startTime: string;    // 开始时间
-//     duration: number;     // 总耗时(ms)
-//     status: 'success' | 'failed';  // 运行状态
-//     error?: string;       // 如果失败，错误信息
-//     components: {
-//       id: string;        // 组件ID
-//       name: string;      // 组件名称
-//       type: string;      // 组件类型
-//       startTime: number; // 开始时间戳
-//       duration: number;  // 耗时(ms)
-//       status: 'success' | 'failed';  // 组件运行状态
-//       error?: string;    // 组件错误信息
-//       input: {          // 输入参数
-//         [key: string]: any;
-//       };
-//       output: {         // 输出结果
-//         [key: string]: any;
-//       };
-//     }[];
-//   }
-// }

@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -29,6 +30,9 @@ func (c customTraceModel) FindByTraceId(ctx context.Context, id string) ([]*Trac
 	err := c.conn.QueryRowsCtx(ctx, &resp, query, id)
 	switch err {
 	case nil:
+		if len(resp) == 0 {
+			return nil, ErrNotFound
+		}
 		return resp, nil
 	case sqlc.ErrNotFound:
 		return nil, ErrNotFound

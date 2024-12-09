@@ -27,10 +27,11 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 		logx.Infof("CANVAS START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
 		_, err := RoleChain.svc.SpaceRecordModel.Insert(ctx.GetContext(), &model.SpaceRecord{
 			WorkspaceId:  ctx.RuleChain().GetNodeId().Id,
-			Status:       enums.RecordStatusRunning,
+			Status:       enums.TraceStatusRunning,
 			SerialNumber: msg.Id,
 			RunTime:      time.Now(),
 			RecordName:   msg.Id,
+			Other:        "{}",
 		})
 		if err != nil {
 			logx.Errorf("create space record err:%s", err.Error())
@@ -61,7 +62,15 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 	}
 	if msg.Type == enums.CanvasMsg {
 		logx.Infof("CANVAS END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
-		err = RoleChain.svc.SpaceRecordModel.UpdateStatusBySid(ctx.GetContext(), msg.Id, status)
+		// 获取开始时间
+		startTime := msg.Metadata.Values()["startTime"]
+		if startTime == "" {
+			logx.Errorf("start time is empty")
+			startTime = time.Now().Format("2006-01-02 15:04:05")
+		}
+		start, _ := time.Parse("2006-01-02 15:04:05", startTime)
+		duration := time.Since(start).Milliseconds()
+		err = RoleChain.svc.SpaceRecordModel.UpdateStatusBySid(ctx.GetContext(), msg.Id, status, duration)
 		if err != nil {
 			logx.Errorf("update space record status err:%s", err.Error())
 		}
