@@ -19,6 +19,7 @@ type ServiceContext struct {
 	ApiSecretKeyModel        model.ApiSecretKeyModel
 	SpaceRecordModel         model.SpaceRecordModel
 	TraceModel               model.TraceModel
+	DatasourceModel          model.DatasourceModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -35,5 +36,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		ApiSecretKeyModel:        model.NewApiSecretKeyModel(conn),
 		SpaceRecordModel:         model.NewSpaceRecordModel(conn),
 		TraceModel:               model.NewTraceModel(conn),
+		DatasourceModel:          model.NewDatasourceModel(conn),
 	}
 }

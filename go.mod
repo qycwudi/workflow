@@ -1,12 +1,20 @@
 module workflow
 
-go 1.22.0
+go 1.23
+
+toolchain go1.23.0
 
 require (
+	github.com/denisenkom/go-mssqldb v0.12.3
+	github.com/go-sql-driver/mysql v1.8.1
+	github.com/google/uuid v1.6.0
 	github.com/rs/xid v1.6.0
 	github.com/rulego/rulego v0.25.3
 	github.com/samber/lo v1.47.0
 	github.com/tidwall/gjson v1.18.0
+	github.com/uptrace/bun v1.2.6
+	github.com/uptrace/bun/dialect/mssqldialect v1.2.6
+	github.com/uptrace/bun/dialect/mysqldialect v1.2.6
 	github.com/zeromicro/go-zero v1.7.2
 	github.com/zeromicro/x v0.0.0-20240408115609-8224c482b07e
 )
@@ -25,13 +33,14 @@ require (
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
-	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/gofrs/uuid/v5 v5.3.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
+	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
+	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/pprof v0.0.0-20241017200806-017d972448fc // indirect
-	github.com/google/uuid v1.6.0 // indirect
 	github.com/gorilla/websocket v1.5.3 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.20.0 // indirect
+	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
 	github.com/klauspost/compress v1.17.9 // indirect
 	github.com/lib/pq v1.10.9 // indirect
@@ -45,11 +54,15 @@ require (
 	github.com/prometheus/client_model v0.6.1 // indirect
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
+	github.com/puzpuzpuz/xsync/v3 v3.4.0 // indirect
 	github.com/redis/go-redis/v9 v9.6.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
+	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
+	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
+	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.opentelemetry.io/otel v1.28.0 // indirect
 	go.opentelemetry.io/otel/exporters/jaeger v1.17.0 // indirect
 	go.opentelemetry.io/otel/exporters/otlp/otlptrace v1.28.0 // indirect
@@ -63,9 +76,10 @@ require (
 	go.opentelemetry.io/proto/otlp v1.3.1 // indirect
 	go.uber.org/automaxprocs v1.5.3 // indirect
 	golang.org/x/crypto v0.28.0 // indirect
+	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.30.0 // indirect
 	golang.org/x/sync v0.8.0 // indirect
-	golang.org/x/sys v0.26.0 // indirect
+	golang.org/x/sys v0.27.0 // indirect
 	golang.org/x/text v0.19.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240711142825-46eb208f015d // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240711142825-46eb208f015d // indirect

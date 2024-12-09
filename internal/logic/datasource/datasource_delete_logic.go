@@ -3,10 +3,12 @@ package datasource
 import (
 	"context"
 
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type DatasourceDeleteLogic struct {
@@ -24,7 +26,12 @@ func NewDatasourceDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *DatasourceDeleteLogic) DatasourceDelete(req *types.DatasourceDeleteRequest) (resp *types.DatasourceDeleteResponse, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	err = l.svcCtx.DatasourceModel.Delete(l.ctx, int64(req.Id))
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "删除数据源失败")
+	}
+	resp = &types.DatasourceDeleteResponse{
+		Id: req.Id,
+	}
+	return resp, nil
 }

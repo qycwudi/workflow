@@ -2,11 +2,14 @@ package datasource
 
 import (
 	"context"
-
-	"workflow/internal/svc"
-	"workflow/internal/types"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
+	"workflow/internal/svc"
+	"workflow/internal/types"
 )
 
 type DatasourceEditLogic struct {
@@ -24,7 +27,27 @@ func NewDatasourceEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Da
 }
 
 func (l *DatasourceEditLogic) DatasourceEdit(req *types.DatasourceEditRequest) (resp *types.DatasourceEditResponse, err error) {
-	// todo: add your logic here and delete this line
+	// 查询数据源是否存在
+	datasource, err := l.svcCtx.DatasourceModel.FindOne(l.ctx, int64(req.Id))
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "数据源不存在")
+	}
 
-	return
+	// 更新数据源信息
+	datasource.Type = req.Type
+	datasource.Config = req.Config
+	datasource.Switch = int64(req.Switch)
+	datasource.Hash = req.Hash
+	datasource.Status = req.Status
+	datasource.UpdateTime = time.Now()
+
+	err = l.svcCtx.DatasourceModel.Update(l.ctx, datasource)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "修改数据源失败")
+	}
+
+	resp = &types.DatasourceEditResponse{
+		Id: req.Id,
+	}
+	return resp, nil
 }

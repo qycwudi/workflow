@@ -4,14 +4,14 @@ package handler
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest"
-
 	api "workflow/internal/handler/api"
 	canvas "workflow/internal/handler/canvas"
 	datasource "workflow/internal/handler/datasource"
 	model "workflow/internal/handler/model"
 	workspace "workflow/internal/handler/workspace"
 	"workflow/internal/svc"
+
+	"github.com/zeromicro/go-zero/rest"
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
@@ -165,6 +165,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Method:  http.MethodPost,
 				Path:    "/datasource/delete",
 				Handler: datasource.DatasourceDeleteHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/datasource/test",
+				Handler: datasource.DatasourceTestHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/workflow"),

@@ -2,11 +2,15 @@ package datasource
 
 import (
 	"context"
-
-	"workflow/internal/svc"
-	"workflow/internal/types"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
+	"workflow/internal/model"
+	"workflow/internal/svc"
+	"workflow/internal/types"
 )
 
 type DatasourceAddLogic struct {
@@ -24,7 +28,24 @@ func NewDatasourceAddLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Dat
 }
 
 func (l *DatasourceAddLogic) DatasourceAdd(req *types.DatasourceAddRequest) (resp *types.DatasourceAddResponse, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	result, err := l.svcCtx.DatasourceModel.Insert(l.ctx, &model.Datasource{
+		Type:       req.Type,
+		Config:     req.Config,
+		Switch:     int64(req.Switch),
+		Hash:       req.Hash,
+		Status:     req.Status,
+		CreateTime: time.Now(),
+		UpdateTime: time.Now(),
+	})
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "新增数据源失败")
+	}
+	id, err := result.LastInsertId()
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "新增数据源失败")
+	}
+	resp = &types.DatasourceAddResponse{
+		Id: int(id),
+	}
+	return resp, nil
 }

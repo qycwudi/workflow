@@ -1,0 +1,52 @@
+### 数据源-列表
+POST http://127.0.0.1:8899/workflow/datasource/list
+Content-Type: application/json
+
+{
+  "current": 2,
+  "pageSize": 4,
+  "type": "",
+  "status": "enable",
+  "switch": 1
+}
+
+### 数据源-新增
+POST http://127.0.0.1:8899/workflow/datasource/add
+Content-Type: application/json
+
+{
+  "type": "pg",
+  "config": "{\"host\":\"localhost\",\"port\":3306,\"username\":\"root\",\"password\":\"123456\",\"database\":\"test\"}",
+  "switch": 1,
+  "hash": "abcd1234",
+  "status": "enable"
+}
+
+### 数据源-编辑
+POST http://127.0.0.1:8899/workflow/datasource/edit
+Content-Type: application/json
+
+{
+  "id": 3,
+  "type": "mysq",
+  "config": "{\"sss\":\"localhost\",\"port\":3306,\"username\":\"root\",\"password\":\"123456\",\"database\":\"test\"}",
+  "switch": 0,
+  "hash": "efgh567",
+  "status": "disabl"
+}
+
+### 数据源-删除
+POST http://127.0.0.1:8899/workflow/datasource/delete
+Content-Type: application/json
+
+{
+  "id": 2
+}
+
+### 数据源-测试
+POST http://127.0.0.1:8899/workflow/datasource/test
+Content-Type: application/json
+
+{
+  "type": "mysl"
+}

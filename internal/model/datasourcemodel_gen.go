@@ -18,7 +18,7 @@ import (
 var (
 	datasourceFieldNames          = builder.RawFieldNames(&Datasource{})
 	datasourceRows                = strings.Join(datasourceFieldNames, ",")
-	datasourceRowsExpectAutoSet   = strings.Join(stringx.Remove(datasourceFieldNames), ",")
+	datasourceRowsExpectAutoSet   = strings.Join(stringx.Remove(datasourceFieldNames, "`id`"), ",")
 	datasourceRowsWithPlaceHolder = strings.Join(stringx.Remove(datasourceFieldNames, "`id`"), "=?,") + "=?"
 )
 
@@ -82,8 +82,8 @@ func (m *defaultDatasourceModel) FindOne(ctx context.Context, id int64) (*Dataso
 }
 
 func (m *defaultDatasourceModel) Insert(ctx context.Context, data *Datasource) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, datasourceRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Id, data.Type, data.Config, data.Switch, data.Hash, data.Status, data.CreateTime, data.UpdateTime)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, datasourceRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.Type, data.Config, data.Switch, data.Hash, data.Status, data.CreateTime, data.UpdateTime)
 	return ret, err
 }
 
