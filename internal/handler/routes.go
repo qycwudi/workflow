@@ -91,6 +91,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/canvas/run/single",
+				Handler: canvas.CanvasRunSingleHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/canvas/run/record",
 				Handler: canvas.CanvasRunRecordHandler(serverCtx),
 			},

@@ -3,10 +3,13 @@ package rulego
 import (
 	"context"
 	"encoding/json"
+	"time"
+
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/engine"
-	"time"
+
 	"workflow/internal/model"
+	enums "workflow/internal/types"
 )
 
 // 链路追踪 AOP
@@ -44,7 +47,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 		Step:        0,
 		NodeId:      ctx.Self().GetNodeId().Id,
 		NodeName:    ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name,
-		Status:      "RUNNING",
+		Status:      enums.TraceStatusPending,
 		ElapsedTime: 0,
 		StartTime:   time.Now(),
 	}
@@ -64,7 +67,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 		NodeId:      ctx.Self().GetNodeId().Id,
 		ElapsedTime: elapsed.Microseconds(),
 		Output:      string(outputMar),
-		Status:      "FINISH",
+		Status:      enums.TraceStatusFinish,
 	}
 	return msg, false
 }

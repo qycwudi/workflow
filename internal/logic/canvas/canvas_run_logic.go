@@ -2,16 +2,18 @@ package canvas
 
 import (
 	"context"
+	"time"
+
+	"github.com/google/uuid"
 	"github.com/rulego/rulego/utils/json"
 	"github.com/tidwall/gjson"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
+
 	"workflow/internal/logic"
 	"workflow/internal/rulego"
-
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type CanvasRunLogic struct {
@@ -39,24 +41,19 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
-	// 读取请求参数
-	draft := gjson.Parse(canvas.Draft)
-	startNode := draft.Get("graph.nodes").Array()[0]
-	code := startNode.Get("data.code")
-	if code.String() == "" {
-		return nil, errors.New(int(logic.SystemError), "开始节点运行参数为空")
+
+	// 读取 metadata
+	metadata, err := l.readMetadata(canvasId)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "初始化 metadata 失败")
 	}
-	param := gjson.Parse(code.String())
-	metaData := param.Get("metaData").String()
-	if metaData == "" {
-		return nil, errors.New(int(logic.SystemError), "开始节点运行参数 metaData 为空")
+
+	// 读取 data
+	data, err := l.readData(gjson.Parse(canvas.Draft))
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "读取 data 失败")
 	}
-	metadata := make(map[string]string)
-	_ = json.Unmarshal([]byte(metaData), &metadata)
-	data := param.Get("data").String()
-	if data == "" {
-		return nil, errors.New(int(logic.SystemError), "开始节点运行参数 data 为空")
-	}
+
 	// 运行文件
 	rulego.RoleChain.LoadChain(canvasId, ruleChain)
 	result := rulego.RoleChain.Run(canvasId, metadata, data)
@@ -72,4 +69,19 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 		Data:     respData,
 	}
 	return
+}
+
+func (l *CanvasRunLogic) readMetadata(canvasId string) (map[string]string, error) {
+	// 读取环境变量
+
+	// 初始化值
+	metadata := make(map[string]string)
+	metadata["traceId"] = uuid.New().String()
+	metadata["startTime"] = time.Now().Format("2006-01-02 15:04:05")
+	return metadata, nil
+}
+
+func (l *CanvasRunLogic) readData(result gjson.Result) (string, error) {
+	param := result.Get("data.custom.param").String()
+	return param, nil
 }

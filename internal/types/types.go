@@ -124,6 +124,18 @@ type CanvasRunResponse struct {
 	Data     map[string]interface{} `json:"data"`
 }
 
+type CanvasRunSingleRequest struct {
+	Id     string `json:"id" desc:"空间ID"`
+	NodeId string `json:"nodeId" desc:"节点ID"`
+}
+
+type CanvasRunSingleResponse struct {
+	Ts       int64                  `json:"ts"`
+	Id       string                 `json:"id"`
+	MetaData map[string]string      `json:"metadata"`
+	Data     map[string]interface{} `json:"data"`
+}
+
 type CanvasRunRecordRequest struct {
 	Id string `json:"id" desc:"空间ID"`
 }

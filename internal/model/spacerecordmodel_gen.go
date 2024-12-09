@@ -38,11 +38,13 @@ type (
 
 	SpaceRecord struct {
 		Id           int64     `db:"id"`
-		WorkspaceId  string    `db:"workspace_id"`
-		Status       string    `db:"status"`
-		SerialNumber string    `db:"serial_number"`
-		RunTime      time.Time `db:"run_time"`
-		RecordName   string    `db:"record_name"`
+		WorkspaceId  string    `db:"workspace_id"`  // 空间 ID
+		Status       string    `db:"status"`        // 运行状态
+		SerialNumber string    `db:"serial_number"` // 流水号
+		RunTime      time.Time `db:"run_time"`      // 运行开始时间
+		RecordName   string    `db:"record_name"`   // 运行记录名称
+		Duration     int64     `db:"duration"`      // 耗时 ms
+		Other        string    `db:"other"`         // 其他配置
 	}
 )
 
@@ -95,14 +97,14 @@ func (m *defaultSpaceRecordModel) FindOneBySerialNumber(ctx context.Context, ser
 }
 
 func (m *defaultSpaceRecordModel) Insert(ctx context.Context, data *SpaceRecord) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, spaceRecordRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.Status, data.SerialNumber, data.RunTime, data.RecordName)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?)", m.table, spaceRecordRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.Status, data.SerialNumber, data.RunTime, data.RecordName, data.Duration, data.Other)
 	return ret, err
 }
 
 func (m *defaultSpaceRecordModel) Update(ctx context.Context, newData *SpaceRecord) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, spaceRecordRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.Status, newData.SerialNumber, newData.RunTime, newData.RecordName, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.Status, newData.SerialNumber, newData.RunTime, newData.RecordName, newData.Duration, newData.Other, newData.Id)
 	return err
 }
 

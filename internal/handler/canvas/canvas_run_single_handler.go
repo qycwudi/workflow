@@ -1,26 +1,25 @@
-package api
+package canvas
 
 import (
-	"net/http"
-
 	"github.com/zeromicro/go-zero/rest/httpx"
-
-	"workflow/internal/logic/api"
+	"net/http"
+	"workflow/internal/logic/canvas"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 	"workflow/response"
 )
 
-func ApiListHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func CanvasRunSingleHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.ApiPublishListRequest
+		var req types.CanvasRunSingleRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := api.NewApiListLogic(r.Context(), svcCtx)
-		resp, err := l.ApiList(&req)
+		l := canvas.NewCanvasRunSingleLogic(r.Context(), svcCtx)
+		resp, err := l.CanvasRunSingle(&req)
 		response.Response(w, resp, err)
+
 	}
 }

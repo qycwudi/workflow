@@ -2,10 +2,13 @@ package rulego
 
 import (
 	"encoding/json"
+	"time"
+
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
-	"time"
+
 	"workflow/internal/model"
+	enums "workflow/internal/types"
 )
 
 // 画布侧运行监控 AOP
@@ -24,7 +27,7 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 		logx.Infof("CANVAS START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
 		_, err := RoleChain.svc.SpaceRecordModel.Insert(ctx.GetContext(), &model.SpaceRecord{
 			WorkspaceId:  ctx.RuleChain().GetNodeId().Id,
-			Status:       "running",
+			Status:       enums.RecordStatusRunning,
 			SerialNumber: msg.Id,
 			RunTime:      time.Now(),
 			RecordName:   msg.Id,
@@ -37,7 +40,7 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 		logx.Infof("API START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
 		msgMar, _ := json.Marshal(msg)
 		_, err := RoleChain.svc.ApiRecordModel.Insert(ctx.GetContext(), &model.ApiRecord{
-			Status:   "running",
+			Status:   enums.RecordStatusRunning,
 			TraceId:  msg.Id,
 			Param:    string(msgMar),
 			Extend:   "{}",
@@ -51,9 +54,9 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 }
 
 func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
-	status := "success"
+	status := enums.RecordStatusSuccess
 	if err != nil {
-		status = "fail"
+		status = enums.RecordStatusFail
 		logx.Info(err.Error())
 	}
 	if msg.Type == "CANVAS_MSG" {

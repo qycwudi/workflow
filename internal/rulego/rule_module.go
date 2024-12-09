@@ -1,9 +1,10 @@
 package rulego
 
 import (
+	"strings"
+
 	"github.com/rulego/rulego/utils/json"
 	"github.com/tidwall/gjson"
-	"strings"
 )
 
 /*
@@ -44,13 +45,13 @@ func ModuleReadConfig(data gjson.Result) map[string]interface{} {
 	case End:
 		return endCfg()
 	case Http:
-		return httpCfg(data)
+		return httpCfg(data.Get("custom"))
 	case JsTransform:
-		return jsTransformCfg(data)
+		return jsTransformCfg(data.Get("custom"))
 	case Fork:
-		return ForkCfg(data)
+		return ForkCfg(data.Get("custom"))
 	case Join:
-		return JoinCfg(data)
+		return JoinCfg(data.Get("custom"))
 	}
 	return nil
 }
@@ -101,8 +102,8 @@ func httpParseHeaders(authStr string) map[string]string {
 
 func jsTransformCfg(data gjson.Result) map[string]interface{} {
 	config := map[string]interface{}{}
-	if script := data.Get("code").String(); script != "" {
-		config["jsScript"] = script
+	if script := data.Get("script").String(); script != "" {
+		config["script"] = script
 	}
 	return config
 }

@@ -13,14 +13,7 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "id": "cs34put3sjtg42ghcf8g",
-  "metaData": {
-      "trace": "ccccccc"
-  },
-  "data": {
-    "name": "张三",
-    "age": 18
-  }
+  "id": "cs34put3sjtg42ghcf8g"
 }
 
 
