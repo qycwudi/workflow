@@ -22,7 +22,7 @@ type RunAop struct {
 }
 
 func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.RuleMsg {
-	if msg.Type == "CANVAS_MSG" {
+	if msg.Type == enums.CanvasMsg {
 		// 画布运行
 		logx.Infof("CANVAS START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
 		_, err := RoleChain.svc.SpaceRecordModel.Insert(ctx.GetContext(), &model.SpaceRecord{
@@ -59,7 +59,7 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		status = enums.RecordStatusFail
 		logx.Info(err.Error())
 	}
-	if msg.Type == "CANVAS_MSG" {
+	if msg.Type == enums.CanvasMsg {
 		logx.Infof("CANVAS END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
 		err = RoleChain.svc.SpaceRecordModel.UpdateStatusBySid(ctx.GetContext(), msg.Id, status)
 		if err != nil {
