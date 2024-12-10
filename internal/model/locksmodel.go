@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -38,12 +39,13 @@ func (c *customLocksModel) AcquireLock(ctx context.Context, lockName string, own
 	var acquired bool
 	err := c.conn.TransactCtx(ctx, func(ctx context.Context, session sqlx.Session) error {
 		var locks Locks
+		now := time.Now()
 		query := fmt.Sprintf("SELECT %s FROM %s WHERE lock_name = ? FOR UPDATE", locksRows, c.table)
 		err := session.QueryRowCtx(ctx, &locks, query, lockName)
 		if err == sqlc.ErrNotFound {
 			// 如果不存在锁，则直接创建一条锁记录并标记为加锁
-			_, err = session.ExecCtx(ctx, fmt.Sprintf("INSERT INTO %s (lock_name, is_locked, held_by, locked_time, timeout, updated_time) VALUES (?, 1, ?, NOW(), ?, NOW())", c.table),
-				lockName, ownerId, timeout)
+			_, err = session.ExecCtx(ctx, fmt.Sprintf("INSERT INTO %s (lock_name, is_locked, held_by, locked_time, timeout, updated_time) VALUES (?, 1, ?, ?, ?, ?)", c.table),
+				lockName, ownerId, now, timeout, now)
 			if err != nil {
 				return fmt.Errorf("%w: %v", ErrLockAcquireFail, err)
 			}
@@ -52,15 +54,20 @@ func (c *customLocksModel) AcquireLock(ctx context.Context, lockName string, own
 		} else if err == nil {
 			// 如果锁记录存在，需要判断是否超时
 			elapsed := time.Since(locks.LockedTime).Seconds()
-			if locks.IsLocked == 1 || elapsed < float64(locks.Timeout) {
-				// 锁被其他持有者持有，或未超时，返回获取失败
-				acquired = false
-				return nil
+			logx.Debugf("locks record: %v", locks)
+			if locks.IsLocked == 1 {
+				// 如果锁被持有，检查是否超时
+				if elapsed < float64(locks.Timeout) {
+					// 锁未超时，返回获取失败
+					acquired = false
+					return nil
+				}
+				// 锁已超时，可以重新获取
 			}
 
-			// 如果锁已超时或未锁定，则重新加锁
-			_, err = session.ExecCtx(ctx, fmt.Sprintf("UPDATE %s SET is_locked = 1, held_by = ?, locked_time = NOW(), timeout = ?, updated_time = NOW() WHERE lock_name = ?", c.table),
-				ownerId, timeout, lockName)
+			// 如果锁未被持有或已超时，则重新加锁
+			_, err = session.ExecCtx(ctx, fmt.Sprintf("UPDATE %s SET is_locked = 1, held_by = ?, locked_time = ?, timeout = ?, updated_time = ? WHERE lock_name = ?", c.table),
+				ownerId, now, timeout, now, lockName)
 			if err != nil {
 				return fmt.Errorf("%w: %v", ErrLockAcquireFail, err)
 			}
