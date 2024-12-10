@@ -1,7 +1,7 @@
 {
   "ruleChain": {
     "id": "rule8848",
-    "name": "测试规则链",
+    "name": "测试规则链-base",
     "root": true
   },
   "metadata": {

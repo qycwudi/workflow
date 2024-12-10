@@ -3,7 +3,7 @@
     "nodes": [
       {
         "id": "1729230826680",
-        "name": "开始",
+        "name": "开始-测试聚合",
         "type": "start",
         "configuration": {}
       },

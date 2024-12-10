@@ -33,5 +33,6 @@ func RunScheduledTask(elector gocron.Elector, corn string, jobFunc JobFunc, args
 	if err = s.Shutdown(); err != nil {
 		return fmt.Errorf("failed to shutdown scheduler: %v", err)
 	}
+	fmt.Println("job shutdown")
 	return nil
 }

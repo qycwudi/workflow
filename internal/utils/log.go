@@ -7,5 +7,5 @@ type RoleCustomLog struct {
 }
 
 func (l *RoleCustomLog) Printf(format string, v ...interface{}) {
-	logx.Infof(format)
+	logx.Infof(format, v...)
 }
