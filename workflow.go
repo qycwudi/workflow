@@ -4,13 +4,16 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
-	"workflow/internal/config"
-	"workflow/internal/handler"
-	"workflow/internal/rulego"
-	"workflow/internal/svc"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
+
+	"workflow/internal/config"
+	"workflow/internal/corn"
+	"workflow/internal/handler"
+	"workflow/internal/locks"
+	"workflow/internal/rulego"
+	"workflow/internal/svc"
 )
 
 var configFile = flag.String("f", "etc/workflow-api.yaml", "the config file")
@@ -42,8 +45,12 @@ func main() {
 	rulego.InitRoleChain(ctx)
 	// 注册链服务
 	rulego.InitRoleServer()
+	// 初始化锁
+	locks.CustomLock = locks.NewMysqlLock(ctx.LocksModel)
+	// 初始化Job
+	corn.NewJob(ctx)
+
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()
-
 
 }

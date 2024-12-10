@@ -20,10 +20,12 @@ type ServiceContext struct {
 	SpaceRecordModel         model.SpaceRecordModel
 	TraceModel               model.TraceModel
 	DatasourceModel          model.DatasourceModel
+	LocksModel               model.LocksModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.MySqlUrn)
+
 	return &ServiceContext{
 		Config:                   c,
 		WorkSpaceModel:           model.NewWorkspaceModel(conn),
@@ -37,5 +39,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		SpaceRecordModel:         model.NewSpaceRecordModel(conn),
 		TraceModel:               model.NewTraceModel(conn),
 		DatasourceModel:          model.NewDatasourceModel(conn),
+		LocksModel:               model.NewLocksModel(conn),
 	}
 }

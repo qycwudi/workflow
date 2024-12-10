@@ -50,7 +50,14 @@ func (c customSpaceRecordModel) FindHistory(ctx context.Context, id string) ([]*
 	query := fmt.Sprintf("select %s from %s where workspace_id = ? order by id desc", spaceRecordRows, c.table)
 	var resp []*SpaceRecord
 	err := c.conn.QueryRowsCtx(ctx, &resp, query, id)
-	return resp, err
+	switch err {
+	case nil:
+		return resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }
 
 func (c customSpaceRecordModel) FindBySerialNumber(ctx context.Context, id string) (*SpaceRecord, error) {
