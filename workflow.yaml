@@ -11,7 +11,7 @@ metadata:
     group: middleware
   name: workflow
   namespace: uat-43
-  resourceVersion: '461639088'
+  resourceVersion: '497376722'
 spec:
   progressDeadlineSeconds: 600
   replicas: 1
@@ -95,7 +95,7 @@ spec:
               value: root@123456789.com
             - name: OPENOB_PASSWORD
               value: '123456789'
-          image: '10.12.0.78:5000/middleware-dev/workflow:dev-1.0.0-c3febd2'
+          image: '10.12.0.78:5000/middleware-dev/workflow:dev-2.0.0-ccad156'
           imagePullPolicy: Always
           livenessProbe:
             failureThreshold: 24
@@ -127,6 +127,8 @@ spec:
             - mountPath: /glite/data/
               name: data
               subPath: middleware-gaia_lite
+            - mountPath: /app/etc
+              name: workflow-api
       dnsPolicy: ClusterFirst
       restartPolicy: Always
       schedulerName: default-scheduler
@@ -136,24 +138,27 @@ spec:
         - name: data
           persistentVolumeClaim:
             claimName: gaia
+        - configMap:
+            defaultMode: 420
+            name: workflow-api.yaml
+          name: workflow-api
 status:
-  availableReplicas: 1
   conditions:
-    - lastTransitionTime: '2024-09-30T14:59:32Z'
-      lastUpdateTime: '2024-09-30T14:59:32Z'
-      message: Deployment has minimum availability.
-      reason: MinimumReplicasAvailable
-      status: 'True'
+    - lastTransitionTime: '2024-12-10T10:47:47Z'
+      lastUpdateTime: '2024-12-10T10:47:47Z'
+      message: Deployment does not have minimum availability.
+      reason: MinimumReplicasUnavailable
+      status: 'False'
       type: Available
-    - lastTransitionTime: '2024-09-30T14:55:46Z'
-      lastUpdateTime: '2024-09-30T16:16:10Z'
-      message: ReplicaSet "workflow-7fc8dcb7d6" has successfully progressed.
-      reason: NewReplicaSetAvailable
+    - lastTransitionTime: '2024-12-10T10:02:28Z'
+      lastUpdateTime: '2024-12-10T11:06:03Z'
+      message: ReplicaSet "workflow-778b8b4b77" is progressing.
+      reason: ReplicaSetUpdated
       status: 'True'
       type: Progressing
-  observedGeneration: 6
-  readyReplicas: 1
-  replicas: 1
+  observedGeneration: 34
+  replicas: 2
+  unavailableReplicas: 2
   updatedReplicas: 1
 
 ---
@@ -237,3 +242,23 @@ spec:
   type: NodePort
 status:
   loadBalancer: {}
+
+---
+apiVersion: v1
+data:
+  workflow-api.yaml: |
+    Name: workflow
+    Host: 0.0.0.0
+    Port: 8899
+    Timeout: 50000
+    Log:
+       Level: debug
+       Mode: file
+       Encoding: plain
+       Path: /app/logs
+    MySqlUrn: root:Root@123@tcp(10.99.43.9:3306)/workflow?charset=utf8mb4&parseTime=True&loc=Local
+kind: ConfigMap
+metadata:
+  name: workflow-api.yaml
+  namespace: uat-43
+  resourceVersion: '408925842'

@@ -3,6 +3,8 @@ package servicecheck
 import (
 	"context"
 	"fmt"
+	"os"
+	"strconv"
 	"time"
 
 	"github.com/go-co-op/gocron/v2"
@@ -22,7 +24,8 @@ type datasourceClientCheckElector struct{}
 var datasourceClientCheckLockName = "datasource_client_check_lock"
 
 func (m *datasourceClientCheckElector) IsLeader(ctx context.Context) error {
-	has, err := locks.CustomLock.Acquire(ctx, datasourceClientCheckLockName, "system", 10)
+	pid := strconv.Itoa(os.Getpid())
+	has, err := locks.CustomLock.Acquire(ctx, datasourceClientCheckLockName, pid, 10)
 	// logx.Infof("has: %v, err: %v", has, err)
 	if err != nil {
 		logx.Errorf(err.Error())
@@ -36,6 +39,7 @@ func (m *datasourceClientCheckElector) IsLeader(ctx context.Context) error {
 
 func Dispatch(ctx *svc.ServiceContext, corn string) error {
 	elector := &datasourceClientCheckElector{}
+	ownerId := strconv.Itoa(os.Getpid())
 	// Example task
 	jobFunc := func(args ...interface{}) {
 		context := context.Background()
@@ -48,7 +52,7 @@ func Dispatch(ctx *svc.ServiceContext, corn string) error {
 		if err != nil {
 			logx.Error("Failed to get datasource list", err)
 			// 释放锁
-			if err = locks.CustomLock.Release(context, datasourceClientCheckLockName, "system"); err != nil {
+			if err = locks.CustomLock.Release(context, datasourceClientCheckLockName, ownerId); err != nil {
 				logx.Errorf("Failed to release lock: %v", err)
 			}
 			return
@@ -61,7 +65,7 @@ func Dispatch(ctx *svc.ServiceContext, corn string) error {
 
 		logx.Info("Datasource check completed at: ", time.Now().Format("2006-01-02 15:04:05"))
 		// 释放锁
-		if err = locks.CustomLock.Release(context, "datasource_client_check_lock", "system"); err != nil {
+		if err = locks.CustomLock.Release(context, "datasource_client_check_lock", ownerId); err != nil {
 			logx.Errorf("Failed to release lock: %v", err)
 		}
 	}

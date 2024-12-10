@@ -10,6 +10,18 @@ Content-Type: application/json
   "switch": 1
 }
 
+### 数据源-列表
+POST http://10.99.43.99:8899/workflow/datasource/list
+Content-Type: application/json
+
+{
+  "current": 1,
+  "pageSize": 4,
+  "type": "",
+  "status": "enable",
+  "switch": 1
+}
+
 ### 数据源-新增
 POST http://127.0.0.1:8899/workflow/datasource/add
 Content-Type: application/json
