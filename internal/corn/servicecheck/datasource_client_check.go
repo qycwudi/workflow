@@ -23,6 +23,7 @@ var datasourceClientCheckLockName = "datasource_client_check_lock"
 
 func (m *datasourceClientCheckElector) IsLeader(ctx context.Context) error {
 	has, err := locks.CustomLock.Acquire(ctx, datasourceClientCheckLockName, "system", 10)
+	// logx.Infof("has: %v, err: %v", has, err)
 	if err != nil {
 		logx.Errorf(err.Error())
 		return err

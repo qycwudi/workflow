@@ -40,7 +40,6 @@ func (c *customLocksModel) AcquireLock(ctx context.Context, lockName string, own
 		var locks Locks
 		query := fmt.Sprintf("SELECT %s FROM %s WHERE lock_name = ? FOR UPDATE", locksRows, c.table)
 		err := session.QueryRowCtx(ctx, &locks, query, lockName)
-
 		if err == sqlc.ErrNotFound {
 			// 如果不存在锁，则直接创建一条锁记录并标记为加锁
 			_, err = session.ExecCtx(ctx, fmt.Sprintf("INSERT INTO %s (lock_name, is_locked, held_by, locked_time, timeout, updated_time) VALUES (?, 1, ?, NOW(), ?, NOW())", c.table),
@@ -53,8 +52,8 @@ func (c *customLocksModel) AcquireLock(ctx context.Context, lockName string, own
 		} else if err == nil {
 			// 如果锁记录存在，需要判断是否超时
 			elapsed := time.Since(locks.LockedTime).Seconds()
-			if locks.IsLocked == 1 && elapsed < float64(locks.Timeout) {
-				// 锁被其他持有者持有，且未超时，返回获取失败
+			if locks.IsLocked == 1 || elapsed < float64(locks.Timeout) {
+				// 锁被其他持有者持有，或未超时，返回获取失败
 				acquired = false
 				return nil
 			}
