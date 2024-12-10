@@ -1,4 +1,4 @@
-FROM golang:1.23-alpine AS builder
+FROM m.daocloud.io/golang:1.23-alpine AS builder
 
 LABEL stage=gobuilder
 
