@@ -247,18 +247,66 @@ type ApiRecords struct {
 }
 
 type ApiSecretyKeyListRequest struct {
-	ApiId string `json:"apiId"`
+	ApiId    string `json:"apiId"`
+	Current  int    `json:"current"`
+	PageSize int    `json:"pageSize"`
 }
 
 type ApiSecretyKeyListResponse struct {
-	Total int64           `json:"total"`
-	List  []ApiSecretyKey `json:"list"`
+	Current  int             `json:"current"`
+	PageSize int             `json:"pageSize"`
+	Total    int64           `json:"total"`
+	List     []ApiSecretyKey `json:"list"`
 }
 
 type ApiSecretyKey struct {
 	ApiId          string `json:"apiId"`
+	Name           string `json:"name"`
 	SecretyKey     string `json:"secretyKey"`
 	ExpirationTime string `json:"expirationTime"`
+}
+
+type ApiSecretyKeyCreateRequest struct {
+	ApiId          string `json:"apiId"`
+	Name           string `json:"name"`
+	ExpirationTime int64  `json:"expirationTime"`
+}
+
+type ApiSecretyKeyCreateResponse struct {
+	ApiId          string `json:"apiId"`
+	Name           string `json:"name"`
+	SecretyKey     string `json:"secretyKey"`
+	ExpirationTime string `json:"expirationTime"`
+}
+
+type ApiSecretyKeyUpdateStatusRequest struct {
+	ApiId  string `json:"apiId"`
+	Status string `json:"status" desc:"状态 ON OFF"`
+}
+
+type ApiSecretyKeyUpdateStatusResponse struct {
+	ApiId  string `json:"apiId"`
+	Status string `json:"status" desc:"状态 ON OFF"`
+}
+
+type ApiSecretyKeyUpdateExpirationTimeRequest struct {
+	ApiId          string `json:"apiId"`
+	ExpirationTime int64  `json:"expirationTime"`
+}
+
+type ApiSecretyKeyUpdateExpirationTimeResponse struct {
+	ApiId          string `json:"apiId"`
+	ExpirationTime string `json:"expirationTime"`
+}
+
+type ApiSecretyKeyDeleteRequest struct {
+	ApiId      string `json:"apiId"`
+	SecretyKey string `json:"secretyKey"`
+}
+
+type ApiSecretyKeyDeleteResponse struct {
+	ApiId      string `json:"apiId"`
+	SecretyKey string `json:"secretyKey"`
 }
 
 type ModuleListRequest struct {

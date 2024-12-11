@@ -63,15 +63,6 @@ Content-Type: application/json
   "apiName": "测试API"
 }
 
-### API密钥列表
-POST http://127.0.0.1:8899/workflow/api/secretykey/list
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "apiId": "api_001"
-}
-
 ### API调用
 POST http://127.0.0.1:9999/api/role/v1/asdasdasd
 User-Agent: Apifox/1.0.0 (https://apifox.com)
@@ -90,3 +81,55 @@ Authorization: Bearer 123456
     }
   ]
 }
+
+### 创建API密钥
+POST http://127.0.0.1:8899/workflow/api/secretykey/create
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "apiId": "asdasdasd",
+  "name": "测试密钥",
+  "expirationTime": 1752410828282
+} 
+
+### API密钥列表
+POST http://127.0.0.1:8899/workflow/api/secretykey/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "apiId": "asdasdasd",
+  "current": 2,
+  "pageSize": 4
+}
+
+### 修改API密钥状态
+POST http://127.0.0.1:8899/workflow/api/secretykey/update/status
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "apiId": "asdasdasd",
+  "status": "OFF"
+} 
+
+### 修改API密钥到期时间
+POST http://127.0.0.1:8899/workflow/api/secretykey/update/expirationtime
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "apiId": "asdasdasd",
+  "expirationTime": 1752410828282
+} 
+
+### 删除API密钥
+POST http://127.0.0.1:8899/workflow/api/secretykey/delete
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "apiId": "asdasdasd",
+  "secretyKey": "aacb67e882034f03bb5cd8da2afb1487"
+} 

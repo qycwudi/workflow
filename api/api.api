@@ -68,17 +68,69 @@ type ApiRecords {
 
 type ApiSecretyKeyListRequest {
     ApiId string `json:"apiId"`
+    Current int `json:"current"`
+    PageSize int `json:"pageSize"`
 }
 
 type ApiSecretyKeyListResponse {
+    Current int `json:"current"`
+    PageSize int `json:"pageSize"`
     Total int64 `json:"total"`
     List []ApiSecretyKey `json:"list"`
 }
 
 type ApiSecretyKey {
     ApiId string `json:"apiId"`
+    Name string `json:"name"`
     SecretyKey string `json:"secretyKey"`
     ExpirationTime string `json:"expirationTime"`
+}
+
+// 创建API密钥
+type ApiSecretyKeyCreateRequest {
+    ApiId string `json:"apiId"`
+    Name string `json:"name"`
+    ExpirationTime int64 `json:"expirationTime"`
+}
+
+type ApiSecretyKeyCreateResponse {
+    ApiId string `json:"apiId"`
+    Name string `json:"name"`
+    SecretyKey string `json:"secretyKey"`
+    ExpirationTime string `json:"expirationTime"`
+}
+
+// 修改API密钥状态
+type ApiSecretyKeyUpdateStatusRequest {
+    ApiId string `json:"apiId"`
+    Status string `json:"status" desc:"状态 ON OFF"`
+}
+
+type ApiSecretyKeyUpdateStatusResponse {
+    ApiId string `json:"apiId"`
+    Status string `json:"status" desc:"状态 ON OFF"`
+}
+
+// 修改API密钥到期时间
+type ApiSecretyKeyUpdateExpirationTimeRequest {
+    ApiId string `json:"apiId"`
+    ExpirationTime int64 `json:"expirationTime"`
+}
+
+type ApiSecretyKeyUpdateExpirationTimeResponse {
+    ApiId string `json:"apiId"`
+    ExpirationTime string `json:"expirationTime"`
+}
+
+// 删除API密钥
+type ApiSecretyKeyDeleteRequest {
+    ApiId string `json:"apiId"`
+    SecretyKey string `json:"secretyKey"`
+}
+
+type ApiSecretyKeyDeleteResponse {
+    ApiId string `json:"apiId"`
+    SecretyKey string `json:"secretyKey"`
 }
 
 @server(
@@ -108,4 +160,20 @@ service workflow-api {
     @doc "secretyKeyList"
     @handler ApiSecretyKeyListHandler
     post /api/secretykey/list (ApiSecretyKeyListRequest) returns (ApiSecretyKeyListResponse)
+
+    @doc "创建API密钥"
+    @handler ApiSecretyKeyCreateHandler
+    post /api/secretykey/create (ApiSecretyKeyCreateRequest) returns (ApiSecretyKeyCreateResponse)
+
+    @doc "修改API密钥状态"
+    @handler ApiSecretyKeyUpdateStatusHandler
+    post /api/secretykey/update/status (ApiSecretyKeyUpdateStatusRequest) returns (ApiSecretyKeyUpdateStatusResponse)
+
+    @doc "修改API密钥到期时间"
+    @handler ApiSecretyKeyUpdateExpirationTimeHandler
+    post /api/secretykey/update/expirationtime (ApiSecretyKeyUpdateExpirationTimeRequest) returns (ApiSecretyKeyUpdateExpirationTimeResponse)
+
+    @doc "删除API密钥"
+    @handler ApiSecretyKeyDeleteHandler
+    post /api/secretykey/delete (ApiSecretyKeyDeleteRequest) returns (ApiSecretyKeyDeleteResponse)
 }

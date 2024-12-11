@@ -119,6 +119,26 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/api/secretykey/list",
 				Handler: api.ApiSecretyKeyListHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretykey/create",
+				Handler: api.ApiSecretyKeyCreateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretykey/update/status",
+				Handler: api.ApiSecretyKeyUpdateStatusHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretykey/update/expirationtime",
+				Handler: api.ApiSecretyKeyUpdateExpirationTimeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretykey/delete",
+				Handler: api.ApiSecretyKeyDeleteHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/workflow"),
 	)

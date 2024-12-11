@@ -2,14 +2,14 @@ package api
 
 import (
 	"context"
-	"github.com/zeromicro/x/errors"
-	"workflow/internal/logic"
-	"workflow/internal/utils"
-
-	"workflow/internal/svc"
-	"workflow/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
+	"workflow/internal/svc"
+	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type ApiSecretyKeyListLogic struct {
@@ -27,7 +27,7 @@ func NewApiSecretyKeyListLogic(ctx context.Context, svcCtx *svc.ServiceContext) 
 }
 
 func (l *ApiSecretyKeyListLogic) ApiSecretyKeyList(req *types.ApiSecretyKeyListRequest) (resp *types.ApiSecretyKeyListResponse, err error) {
-	secretKey, err := l.svcCtx.ApiSecretKeyModel.FindByApiId(l.ctx, req.ApiId)
+	total, secretKey, err := l.svcCtx.ApiSecretKeyModel.FindByApiIdPage(l.ctx, req.ApiId, req.Current, req.PageSize)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询 API Secret Key 记录失败")
 	}
@@ -42,8 +42,10 @@ func (l *ApiSecretyKeyListLogic) ApiSecretyKeyList(req *types.ApiSecretyKeyListR
 	}
 
 	resp = &types.ApiSecretyKeyListResponse{
-		Total: int64(len(secretKey)),
-		List:  keys,
+		Current:  req.Current,
+		PageSize: req.PageSize,
+		Total:    total,
+		List:     keys,
 	}
 	return resp, nil
 }

@@ -37,9 +37,12 @@ type (
 
 	ApiSecretKey struct {
 		Id             int64     `db:"id"`
+		Name           string    `db:"name"`
 		SecretKey      string    `db:"secret_key"`
 		ApiId          string    `db:"api_id"`
 		ExpirationTime time.Time `db:"expiration_time"`
+		Status         string    `db:"status"` // ON、OFF
+		IsDeleted      int64     `db:"is_deleted"`
 	}
 )
 
@@ -78,14 +81,14 @@ func (m *defaultApiSecretKeyModel) FindOne(ctx context.Context, id int64) (*ApiS
 }
 
 func (m *defaultApiSecretKeyModel) Insert(ctx context.Context, data *ApiSecretKey) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?)", m.table, apiSecretKeyRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.SecretKey, data.ApiId, data.ExpirationTime)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, apiSecretKeyRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.Name, data.SecretKey, data.ApiId, data.ExpirationTime, data.Status, data.IsDeleted)
 	return ret, err
 }
 
 func (m *defaultApiSecretKeyModel) Update(ctx context.Context, data *ApiSecretKey) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, apiSecretKeyRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.SecretKey, data.ApiId, data.ExpirationTime, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, data.Name, data.SecretKey, data.ApiId, data.ExpirationTime, data.Status, data.IsDeleted, data.Id)
 	return err
 }
 
