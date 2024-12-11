@@ -3,20 +3,11 @@ package locks
 import (
 	"context"
 
-	"github.com/zeromicro/go-zero/core/logx"
-
 	"workflow/internal/model"
 )
 
 type MysqlLock struct {
 	model model.LocksModel
-}
-
-func NewMysqlLock(model model.LocksModel) Lock {
-	logx.Info("init mysql lock")
-	return &MysqlLock{
-		model: model,
-	}
 }
 
 func (l *MysqlLock) Acquire(ctx context.Context, lockName string, ownerId string, timeout int) (bool, error) {

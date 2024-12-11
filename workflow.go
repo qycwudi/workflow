@@ -46,7 +46,7 @@ func main() {
 	// 注册链服务
 	rulego.InitRoleServer()
 	// 初始化锁
-	locks.CustomLock = locks.NewMysqlLock(ctx.LocksModel)
+	locks.CustomLock = locks.NewLock("mysql", ctx)
 	// 初始化Job
 	corn.NewJob(ctx)
 

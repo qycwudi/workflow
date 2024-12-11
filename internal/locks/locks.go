@@ -2,6 +2,10 @@ package locks
 
 import (
 	"context"
+
+	"github.com/zeromicro/go-zero/core/logx"
+
+	"workflow/internal/svc"
 )
 
 var CustomLock Lock
@@ -20,4 +24,13 @@ type Lock interface {
 	// ownerId: 锁持有者标识
 	// 返回错误信息
 	Release(ctx context.Context, lockName string, ownerId string) error
+}
+
+func NewLock(lockType string, ctx *svc.ServiceContext) Lock {
+	logx.Info("init mysql lock")
+	switch lockType {
+	case "mysql":
+		return &MysqlLock{model: ctx.LocksModel}
+	}
+	return nil
 }
