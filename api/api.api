@@ -1,5 +1,15 @@
 syntax = "v1"
 
+type ApiPublishRequest {
+	Id      string `json:"id" desc:"空间ID"`
+	ApiName string `json:"apiName" desc:"名称"`
+	ApiDesc string `json:"apiDesc" desc:"描述"`
+}
+
+type ApiPublishResponse {
+	ApiId string `json:"apiId"`
+}
+
 type ApiPublishListRequest {
     Current int `json:"current"`
     PageSize int `json:"pageSize"`
@@ -79,6 +89,10 @@ type ApiSecretyKey {
 )
 
 service workflow-api {
+    @doc "API发布"
+	@handler ApiPublishHandler
+	post /api/publish (ApiPublishRequest) returns (ApiPublishResponse)
+
     @doc "API发布列表"
     @handler ApiListHandler
     post /api/list (ApiPublishListRequest) returns (ApiPublishListResponse)

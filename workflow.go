@@ -48,7 +48,7 @@ func main() {
 	// 初始化锁
 	locks.CustomLock = locks.NewLock("mysql", ctx)
 	// 初始化Job
-	corn.NewJob(ctx)
+	corn.NewJob(c.Job, ctx)
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

@@ -85,16 +85,6 @@ type EdgeCustomData {
 	TargetPoint int `json:"targetPoint"`
 }
 
-type CanvasPublishRequest {
-	Id      string `json:"id" desc:"空间ID"`
-	ApiName string `json:"apiName" desc:"名称"`
-	ApiDesc string `json:"apiDesc" desc:"描述"`
-}
-
-type CanvasPublishResponse {
-	ApiId string `json:"apiId"`
-}
-
 type CanvasDetailRequest {
 	Id string `json:"id"`
 }
@@ -136,8 +126,4 @@ service workflow-api {
 	@doc "获取画布运行详情"
 	@handler getCanvasRunDetail
 	get /canvas/run/detail/:recordId (GetCanvasRunDetailReq) returns (GetCanvasRunDetailResp)
-
-	@doc "发布"
-	@handler CanvasPublishHandler
-	post /canvas/publish (CanvasPublishRequest) returns (CanvasPublishResponse)
 }

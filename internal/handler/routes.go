@@ -88,17 +88,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/canvas/run/detail/:recordId",
 				Handler: canvas.GetCanvasRunDetailHandler(serverCtx),
 			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/canvas/publish",
-				Handler: canvas.CanvasPublishHandler(serverCtx),
-			},
 		},
 		rest.WithPrefix("/workflow"),
 	)
 
 	server.AddRoutes(
 		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/publish",
+				Handler: api.ApiPublishHandler(serverCtx),
+			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/api/list",

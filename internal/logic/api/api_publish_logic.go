@@ -1,36 +1,36 @@
-package canvas
+package api
 
 import (
 	"context"
 	errors2 "errors"
+
 	"github.com/rs/xid"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/x/errors"
+
 	"workflow/internal/logic"
 	"workflow/internal/model"
 	"workflow/internal/rulego"
-
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type CanvasPublishLogic struct {
+type ApiPublishLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewCanvasPublishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CanvasPublishLogic {
-	return &CanvasPublishLogic{
+func NewApiPublishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiPublishLogic {
+	return &ApiPublishLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *CanvasPublishLogic) CanvasPublish(req *types.CanvasPublishRequest) (resp *types.CanvasPublishResponse, err error) {
+func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.ApiPublishResponse, err error) {
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
@@ -62,6 +62,6 @@ func (l *CanvasPublishLogic) CanvasPublish(req *types.CanvasPublishRequest) (res
 
 	// 3. 加载链服务
 	rulego.RoleChain.LoadChain(apiId, ruleChain)
-	resp = &types.CanvasPublishResponse{ApiId: apiId}
+	resp = &types.ApiPublishResponse{ApiId: apiId}
 	return resp, nil
 }
