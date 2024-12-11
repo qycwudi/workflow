@@ -96,41 +96,39 @@ type ApiSecretyKeyCreateRequest {
 type ApiSecretyKeyCreateResponse {
     ApiId string `json:"apiId"`
     Name string `json:"name"`
-    SecretyKey string `json:"secretyKey"`
+    SecretKey string `json:"secretKey"`
     ExpirationTime string `json:"expirationTime"`
 }
 
 // 修改API密钥状态
 type ApiSecretyKeyUpdateStatusRequest {
-    ApiId string `json:"apiId"`
+    SecretKey string `json:"secretKey"`
     Status string `json:"status" desc:"状态 ON OFF"`
 }
 
 type ApiSecretyKeyUpdateStatusResponse {
-    ApiId string `json:"apiId"`
+    SecretKey string `json:"secretKey"`
     Status string `json:"status" desc:"状态 ON OFF"`
 }
 
 // 修改API密钥到期时间
 type ApiSecretyKeyUpdateExpirationTimeRequest {
-    ApiId string `json:"apiId"`
+    SecretKey string `json:"secretKey"`
     ExpirationTime int64 `json:"expirationTime"`
 }
 
 type ApiSecretyKeyUpdateExpirationTimeResponse {
-    ApiId string `json:"apiId"`
+    SecretKey string `json:"secretKey"`
     ExpirationTime string `json:"expirationTime"`
 }
 
 // 删除API密钥
 type ApiSecretyKeyDeleteRequest {
-    ApiId string `json:"apiId"`
-    SecretyKey string `json:"secretyKey"`
+    SecretKey string `json:"secretKey"`
 }
 
 type ApiSecretyKeyDeleteResponse {
-    ApiId string `json:"apiId"`
-    SecretyKey string `json:"secretyKey"`
+    SecretKey string `json:"secretKey"`
 }
 
 @server(

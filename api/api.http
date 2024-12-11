@@ -67,7 +67,7 @@ Content-Type: application/json
 POST http://127.0.0.1:9999/api/role/v1/asdasdasd
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 123456
+Authorization: Bearer cf34266901974f67bae4f0f3510271c8
 
 {
   "slice": [
@@ -110,8 +110,8 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "apiId": "asdasdasd",
-  "status": "OFF"
+  "secretKey": "cf34266901974f67bae4f0f3510271c8",
+  "status": "ON"
 } 
 
 ### 修改API密钥到期时间
@@ -120,7 +120,7 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "apiId": "asdasdasd",
+  "secretKey": "aacb67e882034f03bb5cd8da2afb1487",
   "expirationTime": 1752410828282
 } 
 
@@ -130,6 +130,5 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "apiId": "asdasdasd",
-  "secretyKey": "aacb67e882034f03bb5cd8da2afb1487"
+  "secretKey": "aacb67e882034f03bb5cd8da2afb1487"
 } 

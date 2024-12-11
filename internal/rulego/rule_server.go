@@ -3,6 +3,7 @@ package rulego
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"log"
 	"net/http"
 	"strings"
@@ -13,6 +14,7 @@ import (
 	"github.com/rulego/rulego/endpoint/rest"
 	"github.com/zeromicro/go-zero/core/logx"
 
+	"workflow/internal/model"
 	"workflow/internal/utils"
 )
 
@@ -76,23 +78,17 @@ func Route() endpoint2.Router {
 
 			// 检查 token 是否正确
 			token = strings.TrimPrefix(token, "Bearer ")
-			if token != "123456" {
+			if err := checkToken(token); err != nil {
 				exchange.Out.SetStatusCode(http.StatusUnauthorized)
-				exchange.Out.SetBody([]byte("token is invalid"))
+				exchange.Out.SetBody([]byte(err.Error()))
 				return false
 			}
 
 			// 检查 api 状态
 			chainId := exchange.In.GetParam("chainId")
-			api, err := RoleChain.svc.ApiModel.FindOneByApiId(context.Background(), chainId)
-			if err != nil {
+			if err := checkApi(chainId); err != nil {
 				exchange.Out.SetStatusCode(http.StatusNotFound)
-				exchange.Out.SetBody([]byte("api not found"))
-				return false
-			}
-			if api.Status != api.Status {
-				exchange.Out.SetStatusCode(http.StatusNotFound)
-				exchange.Out.SetBody([]byte("api not found"))
+				exchange.Out.SetBody([]byte(err.Error()))
 				return false
 			}
 			return true
@@ -114,4 +110,28 @@ func Route() endpoint2.Router {
 			return true
 		}).End()
 	return router
+}
+
+// 检查token
+func checkToken(secretKey string) error {
+	api, err := RoleChain.svc.ApiSecretKeyModel.FindOneBySecretKey(context.Background(), secretKey)
+	if err != nil {
+		return errors.New("this token is not found")
+	}
+	if api.Status != model.ApiSecretKeyStatusOn {
+		return errors.New("this token status is off")
+	}
+	return nil
+}
+
+// 检查api是否存在且状态正常
+func checkApi(apiId string) error {
+	api, err := RoleChain.svc.ApiModel.FindOneByApiId(context.Background(), apiId)
+	if err != nil {
+		return errors.New("api not found")
+	}
+	if api.Status != model.ApiStatusOn {
+		return errors.New("api status is off")
+	}
+	return nil
 }

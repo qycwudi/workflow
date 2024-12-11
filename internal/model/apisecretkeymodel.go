@@ -18,9 +18,10 @@ type (
 		apiSecretKeyModel
 		FindByApiId(ctx context.Context, apiId string) ([]*ApiSecretKey, error)
 		FindByApiIdPage(ctx context.Context, apiId string, current, pageSize int) (int64, []*ApiSecretKey, error)
-		LogicalDelete(ctx context.Context, apiId string, secretyKey string) error
-		UpdateExpirationTime(ctx context.Context, apiId string, expirationTime time.Time) error
-		UpdateStatus(ctx context.Context, apiId string, status string) error
+		FindOneBySecretKey(ctx context.Context, secretKey string) (*ApiSecretKey, error)
+		LogicalDelete(ctx context.Context, secretKey string) error
+		UpdateExpirationTime(ctx context.Context, secretKey string, expirationTime time.Time) error
+		UpdateStatus(ctx context.Context, secretKey string, status string) error
 	}
 
 	customApiSecretKeyModel struct {
@@ -42,21 +43,21 @@ func (c customApiSecretKeyModel) FindByApiId(ctx context.Context, apiId string) 
 	}
 }
 
-func (m *customApiSecretKeyModel) LogicalDelete(ctx context.Context, apiId string, secretyKey string) error {
-	query := fmt.Sprintf("update %s set is_deleted = 1 where api_id = ? and secret_key = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, apiId, secretyKey)
+func (m *customApiSecretKeyModel) LogicalDelete(ctx context.Context, secretKey string) error {
+	query := fmt.Sprintf("update %s set is_deleted = 1 where secret_key = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, secretKey)
 	return err
 }
 
-func (m *customApiSecretKeyModel) UpdateExpirationTime(ctx context.Context, apiId string, expirationTime time.Time) error {
-	query := fmt.Sprintf("update %s set expiration_time = ? where api_id = ? and is_deleted = 0", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, expirationTime, apiId)
+func (m *customApiSecretKeyModel) UpdateExpirationTime(ctx context.Context, secretKey string, expirationTime time.Time) error {
+	query := fmt.Sprintf("update %s set expiration_time = ? where secret_key = ? and is_deleted = 0", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, expirationTime, secretKey)
 	return err
 }
 
-func (m *customApiSecretKeyModel) UpdateStatus(ctx context.Context, apiId string, status string) error {
-	query := fmt.Sprintf("update %s set status = ? where api_id = ? and is_deleted = 0", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, status, apiId)
+func (m *customApiSecretKeyModel) UpdateStatus(ctx context.Context, secretKey string, status string) error {
+	query := fmt.Sprintf("update %s set status = ? where secret_key = ? and is_deleted = 0", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, status, secretKey)
 	return err
 }
 
@@ -75,6 +76,20 @@ func (m *customApiSecretKeyModel) FindByApiIdPage(ctx context.Context, apiId str
 		return 0, nil, err
 	}
 	return total, resp, nil
+}
+
+func (m *customApiSecretKeyModel) FindOneBySecretKey(ctx context.Context, secretKey string) (*ApiSecretKey, error) {
+	query := fmt.Sprintf("select %s from %s where secret_key = ? and is_deleted = 0 limit 1", apiSecretKeyRows, m.table)
+	var resp ApiSecretKey
+	err := m.conn.QueryRowCtx(ctx, &resp, query, secretKey)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
 }
 
 // NewApiSecretKeyModel returns a model for the database table.

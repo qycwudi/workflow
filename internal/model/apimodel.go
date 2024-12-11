@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -67,7 +68,7 @@ func (c customApiModel) FindByWorkSpaceId(ctx context.Context, id string, curren
 func (c customApiModel) FindByOn(ctx context.Context) ([]*Api, error) {
 	query := fmt.Sprintf("select %s from %s where `status` = ? ", apiRows, c.table)
 	var resp []*Api
-	err := c.conn.QueryRowsCtx(ctx, &resp, query, On)
+	err := c.conn.QueryRowsCtx(ctx, &resp, query, ApiStatusOn)
 	switch err {
 	case nil:
 		return resp, nil
@@ -93,8 +94,8 @@ func (c customApiModel) FindByName(ctx context.Context, name string) (*Api, erro
 }
 
 const (
-	On  = "ON"
-	Off = "OFF"
+	ApiStatusOn  = "ON"
+	ApiStatusOff = "OFF"
 )
 
 // NewApiModel returns a model for the database table.

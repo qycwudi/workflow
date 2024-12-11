@@ -275,38 +275,36 @@ type ApiSecretyKeyCreateRequest struct {
 type ApiSecretyKeyCreateResponse struct {
 	ApiId          string `json:"apiId"`
 	Name           string `json:"name"`
-	SecretyKey     string `json:"secretyKey"`
+	SecretKey      string `json:"secretKey"`
 	ExpirationTime string `json:"expirationTime"`
 }
 
 type ApiSecretyKeyUpdateStatusRequest struct {
-	ApiId  string `json:"apiId"`
-	Status string `json:"status" desc:"状态 ON OFF"`
+	SecretKey string `json:"secretKey"`
+	Status    string `json:"status" desc:"状态 ON OFF"`
 }
 
 type ApiSecretyKeyUpdateStatusResponse struct {
-	ApiId  string `json:"apiId"`
-	Status string `json:"status" desc:"状态 ON OFF"`
+	SecretKey string `json:"secretKey"`
+	Status    string `json:"status" desc:"状态 ON OFF"`
 }
 
 type ApiSecretyKeyUpdateExpirationTimeRequest struct {
-	ApiId          string `json:"apiId"`
+	SecretKey      string `json:"secretKey"`
 	ExpirationTime int64  `json:"expirationTime"`
 }
 
 type ApiSecretyKeyUpdateExpirationTimeResponse struct {
-	ApiId          string `json:"apiId"`
+	SecretKey      string `json:"secretKey"`
 	ExpirationTime string `json:"expirationTime"`
 }
 
 type ApiSecretyKeyDeleteRequest struct {
-	ApiId      string `json:"apiId"`
-	SecretyKey string `json:"secretyKey"`
+	SecretKey string `json:"secretKey"`
 }
 
 type ApiSecretyKeyDeleteResponse struct {
-	ApiId      string `json:"apiId"`
-	SecretyKey string `json:"secretyKey"`
+	SecretKey string `json:"secretKey"`
 }
 
 type ModuleListRequest struct {

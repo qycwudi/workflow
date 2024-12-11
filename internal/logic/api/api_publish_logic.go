@@ -54,7 +54,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		ApiName:     req.ApiName,
 		ApiDesc:     req.ApiDesc,
 		Dsl:         string(ruleChain),
-		Status:      model.On,
+		Status:      model.ApiStatusOn,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "发布 API 失败")

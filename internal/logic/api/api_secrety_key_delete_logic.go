@@ -26,20 +26,14 @@ func NewApiSecretyKeyDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext
 }
 
 func (l *ApiSecretyKeyDeleteLogic) ApiSecretyKeyDelete(req *types.ApiSecretyKeyDeleteRequest) (resp *types.ApiSecretyKeyDeleteResponse, err error) {
-	// 检查API是否存在
-	_, err = l.svcCtx.ApiModel.FindOneByApiId(l.ctx, req.ApiId)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "API 不存在")
-	}
 
 	// 逻辑删除
-	err = l.svcCtx.ApiSecretKeyModel.LogicalDelete(l.ctx, req.ApiId, req.SecretyKey)
+	err = l.svcCtx.ApiSecretKeyModel.LogicalDelete(l.ctx, req.SecretKey)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "删除 API Secret Key 记录失败")
 	}
 	resp = &types.ApiSecretyKeyDeleteResponse{
-		ApiId:      req.ApiId,
-		SecretyKey: req.SecretyKey,
+		SecretKey: req.SecretKey,
 	}
 	return resp, nil
 }

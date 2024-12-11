@@ -27,11 +27,6 @@ func NewApiSecretyKeyUpdateExpirationTimeLogic(ctx context.Context, svcCtx *svc.
 }
 
 func (l *ApiSecretyKeyUpdateExpirationTimeLogic) ApiSecretyKeyUpdateExpirationTime(req *types.ApiSecretyKeyUpdateExpirationTimeRequest) (resp *types.ApiSecretyKeyUpdateExpirationTimeResponse, err error) {
-	// 检查API是否存在
-	_, err = l.svcCtx.ApiModel.FindOneByApiId(l.ctx, req.ApiId)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "API 不存在")
-	}
 
 	// 检查过期时间
 	if req.ExpirationTime <= time.Now().UnixMilli() {
@@ -40,12 +35,11 @@ func (l *ApiSecretyKeyUpdateExpirationTimeLogic) ApiSecretyKeyUpdateExpirationTi
 
 	// 修改过期时间
 	expirationTime := time.UnixMilli(req.ExpirationTime)
-	err = l.svcCtx.ApiSecretKeyModel.UpdateExpirationTime(l.ctx, req.ApiId, expirationTime)
+	err = l.svcCtx.ApiSecretKeyModel.UpdateExpirationTime(l.ctx, req.SecretKey, expirationTime)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "修改 API Secret Key 过期时间失败")
 	}
 	resp = &types.ApiSecretyKeyUpdateExpirationTimeResponse{
-		ApiId:          req.ApiId,
 		ExpirationTime: expirationTime.Format(time.DateTime),
 	}
 	return resp, nil

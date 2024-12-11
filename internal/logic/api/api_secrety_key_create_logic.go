@@ -60,7 +60,7 @@ func (l *ApiSecretyKeyCreateLogic) ApiSecretyKeyCreate(req *types.ApiSecretyKeyC
 	resp = &types.ApiSecretyKeyCreateResponse{
 		ApiId:          req.ApiId,
 		Name:           req.Name,
-		SecretyKey:     secretKey,
+		SecretKey:      secretKey,
 		ExpirationTime: expirationTime.Format(time.DateTime),
 	}
 	return resp, nil
