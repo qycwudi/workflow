@@ -40,7 +40,7 @@ func (r *roleChain) LoadChain(id string, json []byte) {
 		id,
 		json,
 		rulego.WithConfig(config),
-		types.WithAspects(&TraceAop{}, &RunAop{}),
+		// types.WithAspects(&TraceAop{}, &RunAop{}),
 	)
 	if err != nil {
 		logx.Errorf("load role chain fail,err:%v\n", err)
@@ -61,7 +61,7 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 	logx.Infof("id:%s metadata:%+v data:%s", id, metadata, data)
 	chain, b := rulego.Get(id)
 	if !b {
-		logx.Errorf("get role chain fail,id:%s\n", id)
+		logx.Errorf("get role chain fail,id:%s", id)
 	}
 	metaData := types.NewMetadata()
 	for k, v := range metadata {

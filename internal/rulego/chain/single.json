@@ -1,0 +1,23 @@
+{
+    "ruleChain": {
+        "id": "ctcmh2qflvknu5pe3tqg"
+    },
+    "metadata": {
+        "nodes": [
+            {
+                "id": "custom-19a4692c-92fa-4540-8b43-792d4a7af5ad",
+                "type": "start",
+                "name": "开始😄",
+                "configuration": {
+                    "Index": 120,
+                    "Indexes": null,
+                    "Num": 0,
+                    "Raw": "{\n              \"param\": \"{\\n  \\\"name\\\": \\\"zhangsan\\\",\\n  \\\"age\\\": 18\\n}\"\n            }",
+                    "Str": "",
+                    "Type": 5
+                }
+            }
+        ],
+        "connections": []
+    }
+}

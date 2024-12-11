@@ -1,6 +1,7 @@
 package rulego
 
 import (
+	"regexp"
 	"strings"
 
 	"github.com/rulego/rulego/utils/json"
@@ -27,37 +28,33 @@ const (
 	Join string = "join"
 )
 
-var RoleModel = map[string]*JsFilterModule{
-	JsFilter: new(JsFilterModule),
-}
-
-type JsFilterModule struct {
-	Configuration struct {
-		JsScript string `json:"jsScript"`
-	} `json:"configuration"`
-}
-
 func ModuleReadConfig(data gjson.Result) map[string]interface{} {
+	moduleType := data.Get("type").String()
+	custom := data.Get("custom")
 
-	switch data.Get("type").String() {
-	case Start:
-		return startCfg()
-	case End:
-		return endCfg()
-	case Http:
-		return httpCfg(data.Get("custom"))
-	case JsTransform:
-		return jsTransformCfg(data.Get("custom"))
-	case Fork:
-		return ForkCfg(data.Get("custom"))
-	case Join:
-		return JoinCfg(data.Get("custom"))
+	// 使用映射表来避免大量的 switch case
+	configHandlers := map[string]func(gjson.Result) map[string]interface{}{
+		Start:       startCfg,
+		End:         func(gjson.Result) map[string]interface{} { return endCfg() },
+		Http:        httpCfg,
+		JsTransform: jsTransformCfg,
+		Fork:        forkCfg,
+		Join:        JoinCfg,
 	}
+
+	// 查找对应的处理函数
+	if handler, ok := configHandlers[moduleType]; ok {
+		return handler(custom)
+	}
+
 	return nil
 }
 
-func startCfg() map[string]interface{} {
-	return map[string]interface{}{}
+func startCfg(custom gjson.Result) map[string]interface{} {
+	config := map[string]interface{}{}
+	marshal, _ := json.Marshal(custom)
+	_ = json.Unmarshal(marshal, &config)
+	return config
 }
 
 func endCfg() map[string]interface{} {
@@ -103,12 +100,19 @@ func httpParseHeaders(authStr string) map[string]string {
 func jsTransformCfg(data gjson.Result) map[string]interface{} {
 	config := map[string]interface{}{}
 	if script := data.Get("script").String(); script != "" {
-		config["script"] = script
+		// 使用正则表达式匹配函数体内容
+		re := regexp.MustCompile(`(?s)function\s+Filter\s*\(\s*msg\s*,\s*metadata\s*,\s*msgType\s*\)\s*{(.*)}`)
+		matches := re.FindStringSubmatch(script)
+		if len(matches) > 1 {
+			// 提取函数体内容并去除首尾空白
+			script = strings.TrimSpace(matches[1])
+			config["script"] = script
+		}
 	}
 	return config
 }
 
-func ForkCfg(data gjson.Result) map[string]interface{} {
+func forkCfg(data gjson.Result) map[string]interface{} {
 	config := map[string]interface{}{}
 	return config
 }

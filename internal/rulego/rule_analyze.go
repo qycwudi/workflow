@@ -19,8 +19,8 @@ func ParsingDsl(draft string) (string, []byte, error) {
 	for i, node := range graphNodes {
 		r := Node{
 			Id:   node.Get("id").String(),
-			Type: node.Get("data.name").String(),
-			Name: node.Get("data.moduleConfig.type").String(),
+			Type: node.Get("data.type").String(),
+			Name: node.Get("data.name").String(),
 			// 不同组件配置读取逻辑不同
 			Configuration: ModuleReadConfig(node.Get("data")),
 		}
