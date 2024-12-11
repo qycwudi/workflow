@@ -15,4 +15,6 @@ const (
 	SystemStoreError Code = 501
 	// SystemOrmError 系统Orm异常
 	SystemOrmError Code = 502
+	// ParamError 参数异常
+	ParamError Code = 503
 )

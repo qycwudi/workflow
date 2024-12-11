@@ -34,6 +34,7 @@ func (l *DatasourceEditLogic) DatasourceEdit(req *types.DatasourceEditRequest) (
 	}
 
 	// 更新数据源信息
+	datasource.Name = req.Name
 	datasource.Type = req.Type
 	datasource.Config = req.Config
 	datasource.Switch = int64(req.Switch)

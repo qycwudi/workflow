@@ -363,6 +363,7 @@ type DatasourceListResponse struct {
 
 type DatasourceInfo struct {
 	Id         int    `json:"id"`
+	Name       string `json:"name"`
 	Type       string `json:"type"`
 	Config     string `json:"config"`
 	Switch     int    `json:"switch"`
@@ -373,6 +374,7 @@ type DatasourceInfo struct {
 }
 
 type DatasourceAddRequest struct {
+	Name   string `json:"name"`
 	Type   string `json:"type"`
 	Config string `json:"config"`
 	Switch int    `json:"switch"`
@@ -386,6 +388,7 @@ type DatasourceAddResponse struct {
 
 type DatasourceEditRequest struct {
 	Id     int    `json:"id"`
+	Name   string `json:"name"`
 	Type   string `json:"type,optional"`
 	Config string `json:"config,optional"`
 	Switch int    `json:"switch,optional"`

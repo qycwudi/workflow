@@ -35,6 +35,12 @@ func (l *DatasourceListLogic) DatasourceList(req *types.DatasourceListRequest) (
 	}
 	count, list, err := l.svcCtx.DatasourceModel.FindDataSourcePageList(l.ctx, param, int64(req.Current), int64(req.PageSize))
 	if err != nil {
+		if err == model.ErrNotFound {
+			return &types.DatasourceListResponse{
+				Total: 0,
+				List:  []types.DatasourceInfo{},
+			}, nil
+		}
 		return nil, errors.New(int(logic.SystemError), "查询数据源失败")
 	}
 
@@ -43,6 +49,7 @@ func (l *DatasourceListLogic) DatasourceList(req *types.DatasourceListRequest) (
 	for _, item := range list {
 		datasourceList = append(datasourceList, types.DatasourceInfo{
 			Id:     int(item.Id),
+			Name:   item.Name,
 			Type:   item.Type,
 			Config: item.Config,
 			Switch: int(item.Switch),
