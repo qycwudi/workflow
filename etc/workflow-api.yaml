@@ -15,4 +15,4 @@ MySqlUrn: root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&lo
 Job:
   DatasourceClientCheck:
     Enable: true
-    Cron: '*/60 * * * * *'
+    Cron: '0 0 */1 * * *'

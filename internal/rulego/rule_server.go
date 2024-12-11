@@ -3,13 +3,16 @@ package rulego
 import (
 	"context"
 	"encoding/json"
+	"log"
+	"net/http"
+	"strings"
+
 	"github.com/rulego/rulego/api/types"
 	endpoint2 "github.com/rulego/rulego/api/types/endpoint"
 	"github.com/rulego/rulego/endpoint"
 	"github.com/rulego/rulego/endpoint/rest"
 	"github.com/zeromicro/go-zero/core/logx"
-	"log"
-	"net/http"
+
 	"workflow/internal/utils"
 )
 
@@ -51,14 +54,45 @@ func Route() endpoint2.Router {
 	router := endpoint.NewRouter().From("/api/role/v1/:chainId").
 		To("chain:${chainId}").
 		Transform(func(router endpoint2.Router, exchange *endpoint.Exchange) bool {
+
 			// 检查请求体大小  1*1024*1024  1MB
-			if len(exchange.In.Body()) > 40 { // 1MB = 1024 * 1024 bytes
+			if len(exchange.In.Body()) > 1*1024*1024 { // 1MB = 1024 * 1024 bytes
 				response := make(map[string]interface{})
 				response["code"] = 413
 				response["message"] = "状态请求实体太大"
 				marshal, _ := json.Marshal(response)
 				exchange.Out.SetStatusCode(http.StatusRequestEntityTooLarge)
 				exchange.Out.SetBody(marshal)
+				return false
+			}
+
+			// 检查 token
+			token := exchange.In.Headers().Get("Authorization")
+			if token == "" {
+				exchange.Out.SetStatusCode(http.StatusUnauthorized)
+				exchange.Out.SetBody([]byte("token is required"))
+				return false
+			}
+
+			// 检查 token 是否正确
+			token = strings.TrimPrefix(token, "Bearer ")
+			if token != "123456" {
+				exchange.Out.SetStatusCode(http.StatusUnauthorized)
+				exchange.Out.SetBody([]byte("token is invalid"))
+				return false
+			}
+
+			// 检查 api 状态
+			chainId := exchange.In.GetParam("chainId")
+			api, err := RoleChain.svc.ApiModel.FindOneByApiId(context.Background(), chainId)
+			if err != nil {
+				exchange.Out.SetStatusCode(http.StatusNotFound)
+				exchange.Out.SetBody([]byte("api not found"))
+				return false
+			}
+			if api.Status != api.Status {
+				exchange.Out.SetStatusCode(http.StatusNotFound)
+				exchange.Out.SetBody([]byte("api not found"))
 				return false
 			}
 			return true
