@@ -8,7 +8,6 @@ import (
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
-	"github.com/tidwall/gjson"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mssqldialect"
 	"github.com/uptrace/bun/dialect/mysqldialect"
@@ -41,8 +40,8 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 	}
 	for _, v := range datasource {
 		// 读取dsn
-		dsn := gjson.Get(v.Config, "dsn").String()
-		err := pool.UpdateDataSource(v.Id, dsn, v.Type, v.Hash)
+		//dsn := gjson.Get(v.Config, "dsn").String()
+		err := pool.UpdateDataSource(v.Id, v.Config, v.Type, v.Hash)
 		logx.Infof("datasource init: %+v", v)
 		if err != nil {
 			logx.Errorf("datasource init failed: %s", err.Error())
@@ -70,8 +69,9 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 	DataSourcePool = pool
 }
 
-func (manager *DataSourceManager) addDataSource(id int64, dsn string, dbType enum.DBType) error {
+func (manager *DataSourceManager) addDataSource(id int64, config string, dbType enum.DBType) error {
 	// 根据提供的 dbType 创建数据库连接
+	dsn := GenDataSourceDSN(dbType, config)
 	sqlDB, err := sql.Open(dbType.String(), dsn)
 	if err != nil {
 		return err
@@ -100,7 +100,7 @@ func (manager *DataSourceManager) addDataSource(id int64, dsn string, dbType enu
 }
 
 // UpdateDataSource 更新数据源连接
-func (manager *DataSourceManager) UpdateDataSource(id int64, dsn, dbType, hash string) error {
+func (manager *DataSourceManager) UpdateDataSource(id int64, config, dbType, hash string) error {
 	// 检查hash是否变化
 	if oldHash, exists := manager.hash[id]; exists && oldHash == hash {
 		return nil // hash未变化,无需更新
@@ -115,7 +115,7 @@ func (manager *DataSourceManager) UpdateDataSource(id int64, dsn, dbType, hash s
 	}
 
 	// 创建新连接
-	if err := manager.addDataSource(id, dsn, enum.DBType(dbType)); err != nil {
+	if err := manager.addDataSource(id, config, enum.DBType(dbType)); err != nil {
 		return err
 	}
 

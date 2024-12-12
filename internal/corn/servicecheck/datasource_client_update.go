@@ -5,7 +5,6 @@ import (
 	"time"
 
 	"github.com/go-co-op/gocron/v2"
-	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/corn/job"
@@ -40,9 +39,9 @@ func UpdateDatasourceClient(ctx *svc.ServiceContext, corn string) error {
 		successCount := 0
 		failCount := 0
 		for _, ds := range datasourceList {
-			dsn := gjson.Get(ds.Config, "dsn").String()
-			logx.Infof("Updating datasource: %s,%s", ds.Name, dsn)
-			err := datasource.DataSourcePool.UpdateDataSource(ds.Id, dsn, ds.Type, ds.Hash)
+			//dsn := gjson.Get(ds.Config, "dsn").String()
+			//logx.Infof("Updating datasource: %s,%s", ds.Name, dsn)
+			err := datasource.DataSourcePool.UpdateDataSource(ds.Id, ds.Config, ds.Type, ds.Hash)
 			if err != nil {
 				logx.Errorf("Datasource %d update failed: %s", ds.Id, err.Error())
 				failCount++
