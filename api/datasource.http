@@ -28,7 +28,7 @@ Content-Type: application/json
 
 {
   "type": "mysql",
-  "name": "test",
+  "name": "test-1",
   "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local\"}",
   "switch": 1
 }
@@ -38,12 +38,11 @@ POST http://127.0.0.1:8899/workflow/datasource/edit
 Content-Type: application/json
 
 {
-  "id": 3,
-  "type": "mysq",
-  "config": "{\"sss\":\"localhost\",\"port\":3306,\"username\":\"root\",\"password\":\"123456\",\"database\":\"test\"}",
-  "switch": 0,
-  "hash": "efgh567",
-  "status": "disabl"
+  "id": 33,
+  "name": "test-1",
+  "type": "mysql",
+  "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/wk\"}",
+  "switch": 1
 }
 
 ### 数据源-删除
@@ -51,7 +50,7 @@ POST http://127.0.0.1:8899/workflow/datasource/delete
 Content-Type: application/json
 
 {
-  "id": 2
+  "id": 33
 }
 
 ### 数据源-测试
@@ -59,5 +58,6 @@ POST http://127.0.0.1:8899/workflow/datasource/test
 Content-Type: application/json
 
 {
-  "type": "mysl"
+  "type": "mysql",
+  "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local\"}"
 }

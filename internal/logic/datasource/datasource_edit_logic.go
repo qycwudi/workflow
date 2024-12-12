@@ -87,13 +87,7 @@ func (l *DatasourceEditLogic) DatasourceEdit(req *types.DatasourceEditRequest) (
 		return nil, errors.New(int(logic.SystemError), "修改数据源失败")
 	}
 
-	if status == model.DatasourceStatusConnected {
-		// 加载到连接池
-		err := datasource.DataSourcePool.UpdateDataSource(int64(req.Id), dsn, req.Type, hash)
-		if err != nil {
-			return nil, errors.New(int(logic.SystemError), "修改数据源失败,请重试")
-		}
-	}
+	// 异步JOB更新 internal/corn/servicecheck/datasource_client_update.go
 
 	resp = &types.DatasourceEditResponse{
 		Id: req.Id,

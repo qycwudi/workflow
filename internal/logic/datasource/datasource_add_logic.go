@@ -84,14 +84,7 @@ func (l *DatasourceAddLogic) DatasourceAdd(req *types.DatasourceAddRequest) (res
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "新增数据源失败")
 	}
-
-	if status == model.DatasourceStatusConnected {
-		// 加载到连接池
-		err := datasource.DataSourcePool.UpdateDataSource(id, dsn, req.Type, hash)
-		if err != nil {
-			return nil, errors.New(int(logic.SystemError), "新增数据源失败,请编辑后重试")
-		}
-	}
+	// 异步JOB更新 internal/corn/servicecheck/datasource_client_update.go
 
 	resp = &types.DatasourceAddResponse{
 		Id: int(id),

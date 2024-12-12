@@ -10,10 +10,15 @@ type Config struct {
 
 // 任务配置
 type JobConfig struct {
-	DatasourceClientCheck JobConfigDatasourceClientCheck `json:"DatasourceClientCheck"`
+	DatasourceClientCheck  JobConfigDatasourceClientCheck  `json:"DatasourceClientCheck"`
+	DatasourceClientUpdate JobConfigDatasourceClientUpdate `json:"DatasourceClientUpdate"`
 }
 
 type JobConfigDatasourceClientCheck struct {
+	JobBase
+}
+
+type JobConfigDatasourceClientUpdate struct {
 	JobBase
 }
 

@@ -29,6 +29,10 @@ type DataSourceManager struct {
 
 var DataSourcePool *DataSourceManager
 
+func (manager *DataSourceManager) GetHash() map[int64]string {
+	return manager.hash
+}
+
 func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 	pool := &DataSourceManager{
 		dbs:  make(map[int64]*bun.DB),
@@ -119,6 +123,17 @@ func (manager *DataSourceManager) UpdateDataSource(id int64, dsn, dbType, hash s
 
 	// 更新hash
 	manager.hash[id] = hash
+	return nil
+}
+
+// 清理链接
+func (manager *DataSourceManager) ClearDataSource(id int64) error {
+	if oldDB, exists := manager.dbs[id]; exists {
+		err := oldDB.Close()
+		logx.Infof("clear datasource: %d, err: %v", id, err)
+		delete(manager.dbs, id)
+		delete(manager.hash, id)
+	}
 	return nil
 }
 

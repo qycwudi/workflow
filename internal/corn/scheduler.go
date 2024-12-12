@@ -14,11 +14,21 @@ import (
 type Job struct{}
 
 func NewJob(jobConfig config.JobConfig, ctx *svc.ServiceContext) {
-	// Initialize scheduling task
+	// 探活数据源
 	if jobConfig.DatasourceClientCheck.Enable {
 		go func() {
 			logx.Info("initialize servicecheck")
-			err := servicecheck.Dispatch(ctx, jobConfig.DatasourceClientCheck.Cron)
+			err := servicecheck.ProbeDatasourceClient(ctx, jobConfig.DatasourceClientCheck.Cron)
+			if err != nil {
+				logx.Error("scheduling servicecheck task failed", err)
+			}
+		}()
+	}
+	// 更新数据源状态
+	if jobConfig.DatasourceClientUpdate.Enable {
+		go func() {
+			logx.Info("initialize servicecheck")
+			err := servicecheck.UpdateDatasourceClient(ctx, jobConfig.DatasourceClientUpdate.Cron)
 			if err != nil {
 				logx.Error("scheduling servicecheck task failed", err)
 			}
