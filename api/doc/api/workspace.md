@@ -183,52 +183,7 @@ type WorkSpaceListResponse struct {
 }
 ```
 
-### 5. "详情workspace"
-
-1. route definition
-
-- Url: /workflow/workspace/detail
-- Method: POST
-- Request: `WorkSpaceDetailRequest`
-- Response: `WorkSpaceDetailResponse`
-
-2. request definition
-
-
-
-```golang
-type WorkSpaceDetailRequest struct {
-	Id string `json:"id"`
-}
-```
-
-
-3. response definition
-
-
-
-```golang
-type WorkSpaceDetailResponse struct {
-	Id string `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
-	Features map[string]interface{} `json:"features"`
-	EnvironmentVariables []interface{} `json:"environment_variables"`
-	ConversationVariables []interface{} `json:"conversation_variables"`
-	Hash string `json:"hash"`
-	BaseInfo WorkSpaceBase `json:"baseInfo"`
-}
-
-type WorkSpaceBase struct {
-	Id string `json:"id,optional"`
-	WorkSpaceName string `json:"workSpaceName"`
-	WorkSpaceDesc string `json:"workSpaceDesc,optional"`
-	WorkSpaceType string `json:"workSpaceType"`
-	WorkSpaceTag []string `json:"workSpaceTag,optional"`
-	WorkSpaceIcon string `json:"workSpaceIcon,optional"`
-}
-```
-
-### 6. "编辑workspace标签"
+### 5. "编辑workspace标签"
 
 1. route definition
 
@@ -258,7 +213,7 @@ type WorkSpaceEditTagResponse struct {
 }
 ```
 
-### 7. "列表tag"
+### 6. "列表tag"
 
 1. route definition
 
@@ -287,7 +242,7 @@ type TagListResponse struct {
 }
 ```
 
-### 8. "Mock接口"
+### 7. "Mock接口"
 
 1. route definition
 

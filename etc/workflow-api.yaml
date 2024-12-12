@@ -15,8 +15,8 @@ MySqlUrn: root:12345678@tcp(127.0.0.1:3306)/workflow?charset=utf8mb4&parseTime=T
 Job:
   DatasourceClientCheck:
     Enable: true
-    Cron: '0 0/1 * * * *'
+    Cron: '0 0/10 * * * *'
   DatasourceClientUpdate:
     Enable: true
-    Cron: '0 0/1 * * * *'
+    Cron: '0 0/10 * * * *'
 

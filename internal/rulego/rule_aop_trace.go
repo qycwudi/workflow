@@ -47,7 +47,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 		Step:        0,
 		NodeId:      ctx.Self().GetNodeId().Id,
 		NodeName:    ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name,
-		Status:      enums.TraceStatusPending,
+		Status:      enums.TraceStatusRunning,
 		ElapsedTime: 0,
 		StartTime:   time.Now(),
 	}

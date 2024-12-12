@@ -7,13 +7,23 @@ Content-Type: application/json
   "workSpaceId": "crvpmf53sjtsppvoiogg"
 }
 
-### 画布-执行
+### 画布-执行-全部
 POST http://127.0.0.1:8899/workflow/canvas/run
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
   "id": "ctcnvjl3sjtg1ku5p220"
+}
+
+### 画布-执行-单组件
+POST http://127.0.0.1:8899/workflow/canvas/run/single
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "id": "ctcnvjl3sjtg1ku5p220",
+  "nodeId": "ctcnvjl3sjtg1ku5p220"
 }
 
 

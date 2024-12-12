@@ -1,4 +1,67 @@
-### 1. "运行"
+### 1. "画布更新"
+
+1. route definition
+
+- Url: /workflow/canvas/draft
+- Method: POST
+- Request: `CanvasDraftRequest`
+- Response: `CanvasDraftResponse`
+
+2. request definition
+
+
+
+```golang
+type CanvasDraftRequest struct {
+	Id string `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CanvasDraftResponse struct {
+	Hash string `json:"hash"`
+	UpdateTime int64 `json:"updateTime"`
+}
+```
+
+### 2. "画布详情"
+
+1. route definition
+
+- Url: /workflow/canvas/detail
+- Method: POST
+- Request: `CanvasDetailRequest`
+- Response: `CanvasDetailResponse`
+
+2. request definition
+
+
+
+```golang
+type CanvasDetailRequest struct {
+	Id string `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CanvasDetailResponse struct {
+	Id string `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
+}
+```
+
+### 3. "全部运行"
 
 1. route definition
 
@@ -31,22 +94,23 @@ type CanvasRunResponse struct {
 }
 ```
 
-### 2. "历史运行记录"
+### 4. "单组件运行"
 
 1. route definition
 
-- Url: /workflow/canvas/run/record
+- Url: /workflow/canvas/run/single
 - Method: POST
-- Request: `CanvasRunRecordRequest`
-- Response: `CanvasRunRecordResponse`
+- Request: `CanvasRunSingleRequest`
+- Response: `CanvasRunSingleResponse`
 
 2. request definition
 
 
 
 ```golang
-type CanvasRunRecordRequest struct {
+type CanvasRunSingleRequest struct {
 	Id string `json:"id" desc:"空间ID"`
+	NodeId string `json:"nodeId" desc:"节点ID"`
 }
 ```
 
@@ -56,94 +120,30 @@ type CanvasRunRecordRequest struct {
 
 
 ```golang
-type CanvasRunRecordResponse struct {
-	Records []RunRecord `json:"records"`
-}
-```
-
-### 3. "结果追踪"
-
-1. route definition
-
-- Url: /workflow/trace
-- Method: POST
-- Request: `TraceRequest`
-- Response: `TraceResponse`
-
-2. request definition
-
-
-
-```golang
-type TraceRequest struct {
-	TraceId string `json:"traceId"`
-}
-```
-
-
-3. response definition
-
-
-
-```golang
-type TraceResponse struct {
-	Total int64 `json:"total"`
-	TotalElapsedTime int64 `json:"total"`
-	Traces []Trace `json:"traces"`
-}
-```
-
-### 4. "画布更新"
-
-1. route definition
-
-- Url: /workflow/canvas/draft
-- Method: POST
-- Request: `CanvasDraftRequest`
-- Response: `CanvasDraftResponse`
-
-2. request definition
-
-
-
-```golang
-type CanvasDraftRequest struct {
+type CanvasRunSingleResponse struct {
+	Ts int64 `json:"ts"`
 	Id string `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
-	Features map[string]interface{} `json:"features"`
-	EnvironmentVariables []interface{} `json:"environment_variables"`
-	ConversationVariables []interface{} `json:"conversation_variables"`
-	Hash string `json:"hash,optional"`
+	MetaData map[string]string `json:"metadata"`
+	Data map[string]interface{} `json:"data"`
 }
 ```
 
-
-3. response definition
-
-
-
-```golang
-type CanvasDraftResponse struct {
-	Hash string `json:"hash"`
-	UpdateTime int64 `json:"updateTime"`
-}
-```
-
-### 5. "组件list"
+### 5. "获取画布运行历史"
 
 1. route definition
 
-- Url: /workflow/module/list
-- Method: POST
-- Request: `ModuleListRequest`
-- Response: `ModuleListResponse`
+- Url: /workflow/canvas/run/history/:workSpaceId
+- Method: GET
+- Request: `GetCanvasRunHistoryReq`
+- Response: `GetCanvasRunHistoryResp`
 
 2. request definition
 
 
 
 ```golang
-type ModuleListRequest struct {
+type GetCanvasRunHistoryReq struct {
+	WorkSpaceId string `path:"workSpaceId"`
 }
 ```
 
@@ -153,30 +153,28 @@ type ModuleListRequest struct {
 
 
 ```golang
-type ModuleListResponse struct {
-	Total int `json:"total"`
-	Modules []ModuleData `json:"modules"`
+type GetCanvasRunHistoryResp struct {
+	Records []RunHistoryRecord `json:"records"`
+	Total int64 `json:"total"` // 总记录数
 }
 ```
 
-### 6. "发布"
+### 6. "获取画布运行详情"
 
 1. route definition
 
-- Url: /workflow/canvas/publish
-- Method: POST
-- Request: `CanvasPublishRequest`
-- Response: `CanvasPublishResponse`
+- Url: /workflow/canvas/run/detail/:recordId
+- Method: GET
+- Request: `GetCanvasRunDetailReq`
+- Response: `GetCanvasRunDetailResp`
 
 2. request definition
 
 
 
 ```golang
-type CanvasPublishRequest struct {
-	Id string `json:"id" desc:"空间ID"`
-	ApiName string `json:"apiName" desc:"名称"`
-	ApiDesc string `json:"apiDesc" desc:"描述"`
+type GetCanvasRunDetailReq struct {
+	RecordId string `path:"recordId"` // 运行记录ID
 }
 ```
 
@@ -186,8 +184,13 @@ type CanvasPublishRequest struct {
 
 
 ```golang
-type CanvasPublishResponse struct {
-	ApiId string `json:"apiId"`
+type GetCanvasRunDetailResp struct {
+	Id string `json:"id"` // 运行记录ID
+	StartTime string `json:"startTime"` // 开始时间
+	Duration int64 `json:"duration"` // 总耗时(ms)
+	Status string `json:"status"` // 运行状态 success/failed
+	Error string `json:"error"` // 错误信息
+	Components []ComponentDetail `json:"components"` // 组件列表
 }
 ```
 

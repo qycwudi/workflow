@@ -1,69 +1,4 @@
-### 1. "设置kv"
-
-1. route definition
-
-- Url: /workflow/common/set/kv
-- Method: POST
-- Request: `SetKvRequest`
-- Response: `SetKvResponse`
-
-2. request definition
-
-
-
-```golang
-type SetKvRequest struct {
-	SpiderName string `json:"spiderName"`
-	Key string `json:"key"`
-	Value string `json:"value"`
-}
-```
-
-
-3. response definition
-
-
-
-```golang
-type SetKvResponse struct {
-	Code int `json:"code" common:"0-成功|100-key存在|500-系统错误"`
-	Message string `json:"message"`
-}
-```
-
-### 2. "根据key获取value"
-
-1. route definition
-
-- Url: /workflow/common/get/vByk
-- Method: POST
-- Request: `GetVByKRequest`
-- Response: `GetVByKResponse`
-
-2. request definition
-
-
-
-```golang
-type GetVByKRequest struct {
-	Key string `json:"key"`
-}
-```
-
-
-3. response definition
-
-
-
-```golang
-type GetVByKResponse struct {
-	Code int `json:"code" common:"0-成功|101-key不存在|500-系统错误"`
-	Message string `json:"message"`
-	Value string `json:"value"`
-}
-```
-
-### 3. "创建workspace"
+### 1. "创建workspace"
 
 1. route definition
 
@@ -122,7 +57,7 @@ type WorkSpaceBase struct {
 }
 ```
 
-### 4. "删除workspace"
+### 2. "删除workspace"
 
 1. route definition
 
@@ -151,7 +86,7 @@ type WorkSpaceRemoveResponse struct {
 }
 ```
 
-### 5. "编辑workspace"
+### 3. "编辑workspace"
 
 1. route definition
 
@@ -211,7 +146,7 @@ type WorkSpaceBase struct {
 }
 ```
 
-### 6. "列表workspace"
+### 4. "列表workspace"
 
 1. route definition
 
@@ -248,52 +183,7 @@ type WorkSpaceListResponse struct {
 }
 ```
 
-### 7. "详情workspace"
-
-1. route definition
-
-- Url: /workflow/workspace/detail
-- Method: POST
-- Request: `WorkSpaceDetailRequest`
-- Response: `WorkSpaceDetailResponse`
-
-2. request definition
-
-
-
-```golang
-type WorkSpaceDetailRequest struct {
-	Id string `json:"id"`
-}
-```
-
-
-3. response definition
-
-
-
-```golang
-type WorkSpaceDetailResponse struct {
-	Id string `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
-	Features map[string]interface{} `json:"features"`
-	EnvironmentVariables []interface{} `json:"environment_variables"`
-	ConversationVariables []interface{} `json:"conversation_variables"`
-	Hash string `json:"hash"`
-	BaseInfo WorkSpaceBase `json:"baseInfo"`
-}
-
-type WorkSpaceBase struct {
-	Id string `json:"id,optional"`
-	WorkSpaceName string `json:"workSpaceName"`
-	WorkSpaceDesc string `json:"workSpaceDesc,optional"`
-	WorkSpaceType string `json:"workSpaceType"`
-	WorkSpaceTag []string `json:"workSpaceTag,optional"`
-	WorkSpaceIcon string `json:"workSpaceIcon,optional"`
-}
-```
-
-### 8. "编辑workspace标签"
+### 5. "编辑workspace标签"
 
 1. route definition
 
@@ -323,7 +213,7 @@ type WorkSpaceEditTagResponse struct {
 }
 ```
 
-### 9. "列表tag"
+### 6. "列表tag"
 
 1. route definition
 
@@ -352,7 +242,7 @@ type TagListResponse struct {
 }
 ```
 
-### 10. "Mock接口"
+### 7. "Mock接口"
 
 1. route definition
 
@@ -384,7 +274,70 @@ type MockResponse struct {
 }
 ```
 
-### 11. "运行"
+### 8. "画布更新"
+
+1. route definition
+
+- Url: /workflow/canvas/draft
+- Method: POST
+- Request: `CanvasDraftRequest`
+- Response: `CanvasDraftResponse`
+
+2. request definition
+
+
+
+```golang
+type CanvasDraftRequest struct {
+	Id string `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CanvasDraftResponse struct {
+	Hash string `json:"hash"`
+	UpdateTime int64 `json:"updateTime"`
+}
+```
+
+### 9. "画布详情"
+
+1. route definition
+
+- Url: /workflow/canvas/detail
+- Method: POST
+- Request: `CanvasDetailRequest`
+- Response: `CanvasDetailResponse`
+
+2. request definition
+
+
+
+```golang
+type CanvasDetailRequest struct {
+	Id string `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CanvasDetailResponse struct {
+	Id string `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
+}
+```
+
+### 10. "全部运行"
 
 1. route definition
 
@@ -417,22 +370,23 @@ type CanvasRunResponse struct {
 }
 ```
 
-### 12. "历史运行记录"
+### 11. "单组件运行"
 
 1. route definition
 
-- Url: /workflow/canvas/run/record
+- Url: /workflow/canvas/run/single
 - Method: POST
-- Request: `CanvasRunRecordRequest`
-- Response: `CanvasRunRecordResponse`
+- Request: `CanvasRunSingleRequest`
+- Response: `CanvasRunSingleResponse`
 
 2. request definition
 
 
 
 ```golang
-type CanvasRunRecordRequest struct {
+type CanvasRunSingleRequest struct {
 	Id string `json:"id" desc:"空间ID"`
+	NodeId string `json:"nodeId" desc:"节点ID"`
 }
 ```
 
@@ -442,64 +396,30 @@ type CanvasRunRecordRequest struct {
 
 
 ```golang
-type CanvasRunRecordResponse struct {
-	Records []RunRecord `json:"records"`
-}
-```
-
-### 13. "结果追踪"
-
-1. route definition
-
-- Url: /workflow/trace
-- Method: POST
-- Request: `TraceRequest`
-- Response: `TraceResponse`
-
-2. request definition
-
-
-
-```golang
-type TraceRequest struct {
-	TraceId string `json:"traceId"`
-}
-```
-
-
-3. response definition
-
-
-
-```golang
-type TraceResponse struct {
-	Total int64 `json:"total"`
-	TotalElapsedTime int64 `json:"total"`
-	Traces []Trace `json:"traces"`
-}
-```
-
-### 14. "画布更新"
-
-1. route definition
-
-- Url: /workflow/canvas/draft
-- Method: POST
-- Request: `CanvasDraftRequest`
-- Response: `CanvasDraftResponse`
-
-2. request definition
-
-
-
-```golang
-type CanvasDraftRequest struct {
+type CanvasRunSingleResponse struct {
+	Ts int64 `json:"ts"`
 	Id string `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
-	Features map[string]interface{} `json:"features"`
-	EnvironmentVariables []interface{} `json:"environment_variables"`
-	ConversationVariables []interface{} `json:"conversation_variables"`
-	Hash string `json:"hash,optional"`
+	MetaData map[string]string `json:"metadata"`
+	Data map[string]interface{} `json:"data"`
+}
+```
+
+### 12. "获取画布运行历史"
+
+1. route definition
+
+- Url: /workflow/canvas/run/history/:workSpaceId
+- Method: GET
+- Request: `GetCanvasRunHistoryReq`
+- Response: `GetCanvasRunHistoryResp`
+
+2. request definition
+
+
+
+```golang
+type GetCanvasRunHistoryReq struct {
+	WorkSpaceId string `path:"workSpaceId"`
 }
 ```
 
@@ -509,27 +429,28 @@ type CanvasDraftRequest struct {
 
 
 ```golang
-type CanvasDraftResponse struct {
-	Hash string `json:"hash"`
-	UpdateTime int64 `json:"updateTime"`
+type GetCanvasRunHistoryResp struct {
+	Records []RunHistoryRecord `json:"records"`
+	Total int64 `json:"total"` // 总记录数
 }
 ```
 
-### 15. "组件list"
+### 13. "获取画布运行详情"
 
 1. route definition
 
-- Url: /workflow/module/list
-- Method: POST
-- Request: `ModuleListRequest`
-- Response: `ModuleListResponse`
+- Url: /workflow/canvas/run/detail/:recordId
+- Method: GET
+- Request: `GetCanvasRunDetailReq`
+- Response: `GetCanvasRunDetailResp`
 
 2. request definition
 
 
 
 ```golang
-type ModuleListRequest struct {
+type GetCanvasRunDetailReq struct {
+	RecordId string `path:"recordId"` // 运行记录ID
 }
 ```
 
@@ -539,27 +460,31 @@ type ModuleListRequest struct {
 
 
 ```golang
-type ModuleListResponse struct {
-	Total int `json:"total"`
-	Modules []ModuleData `json:"modules"`
+type GetCanvasRunDetailResp struct {
+	Id string `json:"id"` // 运行记录ID
+	StartTime string `json:"startTime"` // 开始时间
+	Duration int64 `json:"duration"` // 总耗时(ms)
+	Status string `json:"status"` // 运行状态 success/failed
+	Error string `json:"error"` // 错误信息
+	Components []ComponentDetail `json:"components"` // 组件列表
 }
 ```
 
-### 16. "发布"
+### 14. "API发布"
 
 1. route definition
 
-- Url: /workflow/canvas/publish
+- Url: /workflow/api/publish
 - Method: POST
-- Request: `CanvasPublishRequest`
-- Response: `CanvasPublishResponse`
+- Request: `ApiPublishRequest`
+- Response: `ApiPublishResponse`
 
 2. request definition
 
 
 
 ```golang
-type CanvasPublishRequest struct {
+type ApiPublishRequest struct {
 	Id string `json:"id" desc:"空间ID"`
 	ApiName string `json:"apiName" desc:"名称"`
 	ApiDesc string `json:"apiDesc" desc:"描述"`
@@ -572,12 +497,12 @@ type CanvasPublishRequest struct {
 
 
 ```golang
-type CanvasPublishResponse struct {
+type ApiPublishResponse struct {
 	ApiId string `json:"apiId"`
 }
 ```
 
-### 17. "API发布列表"
+### 15. "API发布列表"
 
 1. route definition
 
@@ -612,7 +537,7 @@ type ApiPublishListResponse struct {
 }
 ```
 
-### 18. "APIOnOff"
+### 16. "APIOnOff"
 
 1. route definition
 
@@ -644,7 +569,7 @@ type ApiOnOffResponse struct {
 }
 ```
 
-### 19. "API调用记录"
+### 17. "API调用记录"
 
 1. route definition
 
@@ -680,7 +605,7 @@ type ApiRecordsResponse struct {
 }
 ```
 
-### 20. "secretyKeyList"
+### 18. "secretyKeyList"
 
 1. route definition
 
@@ -696,6 +621,8 @@ type ApiRecordsResponse struct {
 ```golang
 type ApiSecretyKeyListRequest struct {
 	ApiId string `json:"apiId"`
+	Current int `json:"current"`
+	PageSize int `json:"pageSize"`
 }
 ```
 
@@ -706,8 +633,402 @@ type ApiSecretyKeyListRequest struct {
 
 ```golang
 type ApiSecretyKeyListResponse struct {
+	Current int `json:"current"`
+	PageSize int `json:"pageSize"`
 	Total int64 `json:"total"`
 	List []ApiSecretyKey `json:"list"`
+}
+```
+
+### 19. "创建API密钥"
+
+1. route definition
+
+- Url: /workflow/api/secretykey/create
+- Method: POST
+- Request: `ApiSecretyKeyCreateRequest`
+- Response: `ApiSecretyKeyCreateResponse`
+
+2. request definition
+
+
+
+```golang
+type ApiSecretyKeyCreateRequest struct {
+	ApiId string `json:"apiId"`
+	Name string `json:"name"`
+	ExpirationTime int64 `json:"expirationTime"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ApiSecretyKeyCreateResponse struct {
+	ApiId string `json:"apiId"`
+	Name string `json:"name"`
+	SecretKey string `json:"secretKey"`
+	ExpirationTime string `json:"expirationTime"`
+}
+```
+
+### 20. "修改API密钥状态"
+
+1. route definition
+
+- Url: /workflow/api/secretykey/update/status
+- Method: POST
+- Request: `ApiSecretyKeyUpdateStatusRequest`
+- Response: `ApiSecretyKeyUpdateStatusResponse`
+
+2. request definition
+
+
+
+```golang
+type ApiSecretyKeyUpdateStatusRequest struct {
+	SecretKey string `json:"secretKey"`
+	Status string `json:"status" desc:"状态 ON OFF"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ApiSecretyKeyUpdateStatusResponse struct {
+	SecretKey string `json:"secretKey"`
+	Status string `json:"status" desc:"状态 ON OFF"`
+}
+```
+
+### 21. "修改API密钥到期时间"
+
+1. route definition
+
+- Url: /workflow/api/secretykey/update/expirationtime
+- Method: POST
+- Request: `ApiSecretyKeyUpdateExpirationTimeRequest`
+- Response: `ApiSecretyKeyUpdateExpirationTimeResponse`
+
+2. request definition
+
+
+
+```golang
+type ApiSecretyKeyUpdateExpirationTimeRequest struct {
+	SecretKey string `json:"secretKey"`
+	ExpirationTime int64 `json:"expirationTime"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ApiSecretyKeyUpdateExpirationTimeResponse struct {
+	SecretKey string `json:"secretKey"`
+	ExpirationTime string `json:"expirationTime"`
+}
+```
+
+### 22. "删除API密钥"
+
+1. route definition
+
+- Url: /workflow/api/secretykey/delete
+- Method: POST
+- Request: `ApiSecretyKeyDeleteRequest`
+- Response: `ApiSecretyKeyDeleteResponse`
+
+2. request definition
+
+
+
+```golang
+type ApiSecretyKeyDeleteRequest struct {
+	SecretKey string `json:"secretKey"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ApiSecretyKeyDeleteResponse struct {
+	SecretKey string `json:"secretKey"`
+}
+```
+
+### 23. "组件list"
+
+1. route definition
+
+- Url: /workflow/module/list
+- Method: POST
+- Request: `ModuleListRequest`
+- Response: `ModuleListResponse`
+
+2. request definition
+
+
+
+```golang
+type ModuleListRequest struct {
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ModuleListResponse struct {
+	Total int `json:"total"`
+	Modules []ModuleData `json:"modules"`
+}
+```
+
+### 24. "组件新建"
+
+1. route definition
+
+- Url: /workflow/module/new
+- Method: POST
+- Request: `ModuleNewRequest`
+- Response: `ModuleNewResponse`
+
+2. request definition
+
+
+
+```golang
+type ModuleNewRequest struct {
+	Index int `json:"index"`
+	ModuleName string `json:"moduleName"`
+	ModuleType string `json:"moduleType"`
+	ModuleConfig string `json:"moduleConfig"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ModuleNewResponse struct {
+	ModuleId string `json:"moduleId"`
+}
+```
+
+### 25. "组件编辑"
+
+1. route definition
+
+- Url: /workflow/module/edit
+- Method: POST
+- Request: `ModuleEditRequest`
+- Response: `ModuleEditResponse`
+
+2. request definition
+
+
+
+```golang
+type ModuleEditRequest struct {
+	Index int `json:"index"`
+	ModuleId string `json:"moduleId"`
+	ModuleName string `json:"moduleName"`
+	ModuleType string `json:"moduleType"`
+	ModuleConfig string `json:"moduleConfig"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ModuleEditResponse struct {
+	ModuleId string `json:"moduleId"`
+}
+```
+
+### 26. "数据源列表"
+
+1. route definition
+
+- Url: /workflow/datasource/list
+- Method: POST
+- Request: `DatasourceListRequest`
+- Response: `DatasourceListResponse`
+
+2. request definition
+
+
+
+```golang
+type DatasourceListRequest struct {
+	Current int `json:"current"`
+	PageSize int `json:"pageSize"`
+	Type string `json:"type,optional"`
+	Status string `json:"status,optional"`
+	Switch int `json:"switch,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type DatasourceListResponse struct {
+	Current int `json:"current"`
+	PageSize int `json:"pageSize"`
+	Total int64 `json:"total"`
+	List []DatasourceInfo `json:"list"`
+}
+```
+
+### 27. "新增数据源"
+
+1. route definition
+
+- Url: /workflow/datasource/add
+- Method: POST
+- Request: `DatasourceAddRequest`
+- Response: `DatasourceAddResponse`
+
+2. request definition
+
+
+
+```golang
+type DatasourceAddRequest struct {
+	Name string `json:"name"`
+	Type string `json:"type"`
+	Config string `json:"config"`
+	Switch int `json:"switch"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type DatasourceAddResponse struct {
+	Id int `json:"id"`
+}
+```
+
+### 28. "编辑数据源"
+
+1. route definition
+
+- Url: /workflow/datasource/edit
+- Method: POST
+- Request: `DatasourceEditRequest`
+- Response: `DatasourceEditResponse`
+
+2. request definition
+
+
+
+```golang
+type DatasourceEditRequest struct {
+	Id int `json:"id"`
+	Name string `json:"name"`
+	Type string `json:"type,optional"`
+	Config string `json:"config,optional"`
+	Switch int `json:"switch,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type DatasourceEditResponse struct {
+	Id int `json:"id"`
+}
+```
+
+### 29. "删除数据源"
+
+1. route definition
+
+- Url: /workflow/datasource/delete
+- Method: POST
+- Request: `DatasourceDeleteRequest`
+- Response: `DatasourceDeleteResponse`
+
+2. request definition
+
+
+
+```golang
+type DatasourceDeleteRequest struct {
+	Id int `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type DatasourceDeleteResponse struct {
+	Id int `json:"id"`
+}
+```
+
+### 30. "测试数据源"
+
+1. route definition
+
+- Url: /workflow/datasource/test
+- Method: POST
+- Request: `DatasourceTestRequest`
+- Response: `DatasourceTestResponse`
+
+2. request definition
+
+
+
+```golang
+type DatasourceTestRequest struct {
+	Type string `json:"type,optional"`
+	Config string `json:"config,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type DatasourceTestResponse struct {
+	Status string `json:"status"`
+	Message string `json:"message"`
 }
 ```
 
