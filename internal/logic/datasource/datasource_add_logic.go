@@ -57,7 +57,7 @@ func (l *DatasourceAddLogic) DatasourceAdd(req *types.DatasourceAddRequest) (res
 		// 检查链接
 		err = datasource.CheckDataSourceClient(req.Type, dsn)
 		if err != nil {
-			l.Error("connect to datasource failed: %s", err.Error())
+			l.Errorf("connect to datasource failed: %s", err.Error())
 			status = model.DatasourceStatusClosed
 		}
 	}

@@ -3,10 +3,10 @@ POST http://127.0.0.1:8899/workflow/datasource/list
 Content-Type: application/json
 
 {
-  "current": 2,
+  "current": 1,
   "pageSize": 4,
   "type": "",
-  "status": "enable",
+  "status": "connected",
   "switch": 1
 }
 
@@ -16,9 +16,8 @@ Content-Type: application/json
 
 {
   "current": 1,
-  "pageSize": 4,
+  "pageSize": 100,
   "type": "",
-  "status": "enable",
   "switch": 1
 }
 
@@ -38,10 +37,10 @@ POST http://127.0.0.1:8899/workflow/datasource/edit
 Content-Type: application/json
 
 {
-  "id": 33,
+  "id": 26,
   "name": "test-1",
   "type": "mysql",
-  "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/wk\"}",
+  "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/w\"}",
   "switch": 1
 }
 
