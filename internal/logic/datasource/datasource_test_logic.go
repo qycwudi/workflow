@@ -2,8 +2,8 @@ package datasource
 
 import (
 	"context"
+	"workflow/internal/enum"
 
-	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -29,9 +29,10 @@ func NewDatasourceTestLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Da
 
 func (l *DatasourceTestLogic) DatasourceTest(req *types.DatasourceTestRequest) (resp *types.DatasourceTestResponse, err error) {
 	// mysql {"dsn": "root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local"}
-	// sqlserver {"dsn": "sqlserver://username:password@localhost:1433?database=dbname"}
+	// sqlserver {"dsn": "server=127.0.0.1;port=1433;user id=SA;password=1qa2ws#ED;database=test"}
+	// oracle {"dsn": "oracle://test:test@10.99.220.223:32760/helowin"}
 
-	err = datasource.CheckDataSourceClient(req.Type, gjson.Get(req.Config, "dsn").String())
+	err = datasource.CheckDataSourceClient(enum.DBType(req.Type), req.Config)
 	if err != nil {
 		l.Infof("connect to datasource failed: %s", err.Error())
 		return nil, errors.New(int(logic.SystemError), "连接数据源失败")

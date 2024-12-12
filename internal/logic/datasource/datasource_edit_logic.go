@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"workflow/internal/enum"
 
 	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -45,10 +46,10 @@ func (l *DatasourceEditLogic) DatasourceEdit(req *types.DatasourceEditRequest) (
 	if !gjson.Valid(req.Config) {
 		return nil, errors.New(int(logic.ParamError), "数据源配置格式错误")
 	}
-	dsn := gjson.Get(req.Config, "dsn").String()
-	if dsn == "" {
-		return nil, errors.New(int(logic.ParamError), "数据源DSN不能为空")
-	}
+	//dsn := gjson.Get(req.Config, "dsn").String()
+	//if dsn == "" {
+	//	return nil, errors.New(int(logic.ParamError), "数据源DSN不能为空")
+	//}
 
 	// 查询数据源是否存在
 	resource, err := l.svcCtx.DatasourceModel.FindOne(l.ctx, int64(req.Id))
@@ -61,13 +62,14 @@ func (l *DatasourceEditLogic) DatasourceEdit(req *types.DatasourceEditRequest) (
 		status = model.DatasourceStatusClosed
 	} else if req.Switch == 1 {
 		// 检查链接
-		err = datasource.CheckDataSourceClient(req.Type, dsn)
+		err = datasource.CheckDataSourceClient(enum.DBType(req.Type), req.Config)
 		if err != nil {
 			l.Error("connect to datasource failed: %s", err.Error())
 			status = model.DatasourceStatusClosed
 		}
 	}
 
+	dsn := datasource.GenDataSourceDSN(enum.DBType(req.Type), req.Config)
 	hash := fmt.Sprintf("%x", md5.Sum([]byte(strings.ReplaceAll(dsn, " ", ""))))
 
 	// 更新数据源信息

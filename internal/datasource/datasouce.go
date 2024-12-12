@@ -4,6 +4,7 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"workflow/internal/enum"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
@@ -15,11 +16,6 @@ import (
 
 	"workflow/internal/model"
 	"workflow/internal/svc"
-)
-
-const (
-	MysqlType     = "mysql"
-	SqlServerType = "sqlserver"
 )
 
 type DataSourceManager struct {
@@ -74,9 +70,9 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 	DataSourcePool = pool
 }
 
-func (manager *DataSourceManager) addDataSource(id int64, dsn, dbType string) error {
+func (manager *DataSourceManager) addDataSource(id int64, dsn string, dbType enum.DBType) error {
 	// 根据提供的 dbType 创建数据库连接
-	sqlDB, err := sql.Open(dbType, dsn)
+	sqlDB, err := sql.Open(dbType.String(), dsn)
 	if err != nil {
 		return err
 	}
@@ -88,9 +84,11 @@ func (manager *DataSourceManager) addDataSource(id int64, dsn, dbType string) er
 
 	var bunDB *bun.DB
 	switch dbType {
-	case MysqlType:
+	case enum.MysqlType:
 		bunDB = bun.NewDB(sqlDB, mysqldialect.New())
-	case SqlServerType:
+	case enum.SqlServerType:
+		bunDB = bun.NewDB(sqlDB, mssqldialect.New())
+	case enum.OracleType:
 		bunDB = bun.NewDB(sqlDB, mssqldialect.New())
 	default:
 		return errors.New("unsupported database type")
@@ -117,7 +115,7 @@ func (manager *DataSourceManager) UpdateDataSource(id int64, dsn, dbType, hash s
 	}
 
 	// 创建新连接
-	if err := manager.addDataSource(id, dsn, dbType); err != nil {
+	if err := manager.addDataSource(id, dsn, enum.DBType(dbType)); err != nil {
 		return err
 	}
 

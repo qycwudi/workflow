@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"workflow/internal/enum"
 
 	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -45,23 +46,24 @@ func (l *DatasourceAddLogic) DatasourceAdd(req *types.DatasourceAddRequest) (res
 	if !gjson.Valid(req.Config) {
 		return nil, errors.New(int(logic.ParamError), "数据源配置格式错误")
 	}
-	dsn := gjson.Get(req.Config, "dsn").String()
-	if dsn == "" {
-		return nil, errors.New(int(logic.ParamError), "数据源DSN不能为空")
-	}
+	//dsn := gjson.Get(req.Config, "dsn").String()
+	//if dsn == "" {
+	//	return nil, errors.New(int(logic.ParamError), "数据源DSN不能为空")
+	//}
 
 	status := model.DatasourceStatusConnected
 	if req.Switch == 0 {
 		status = model.DatasourceStatusClosed
 	} else if req.Switch == 1 {
 		// 检查链接
-		err = datasource.CheckDataSourceClient(req.Type, dsn)
+		err = datasource.CheckDataSourceClient(enum.DBType(req.Type), req.Config)
 		if err != nil {
 			l.Errorf("connect to datasource failed: %s", err.Error())
 			status = model.DatasourceStatusClosed
 		}
 	}
 
+	dsn := datasource.GenDataSourceDSN(enum.DBType(req.Type), req.Config)
 	hash := fmt.Sprintf("%x", md5.Sum([]byte(strings.ReplaceAll(dsn, " ", ""))))
 	result, err := l.svcCtx.DatasourceModel.Insert(l.ctx, &model.Datasource{
 		Type:       req.Type,

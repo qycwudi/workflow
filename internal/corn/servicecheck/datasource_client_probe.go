@@ -6,9 +6,9 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"workflow/internal/enum"
 
 	"github.com/go-co-op/gocron/v2"
-	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/corn/job"
@@ -62,9 +62,9 @@ func ProbeDatasourceClient(ctx *svc.ServiceContext, corn string) error {
 		successCount := 0
 		failCount := 0
 		for _, ds := range datasourceList {
-			dsn := gjson.Get(ds.Config, "dsn").String()
-			logx.Infof("Checking datasource: %s,%s", ds.Name, dsn)
-			err := datasource.CheckDataSourceClient(ds.Type, dsn)
+			//dsn := gjson.Get(ds.Config, "dsn").String()
+			//logx.Infof("Checking datasource: %s,%s", ds.Name, dsn)
+			err := datasource.CheckDataSourceClient(enum.DBType(ds.Type), ds.Config)
 			nowStatus := model.DatasourceStatusConnected
 			if err != nil {
 				nowStatus = model.DatasourceStatusClosed
