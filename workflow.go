@@ -10,6 +10,7 @@ import (
 
 	"workflow/internal/config"
 	"workflow/internal/corn"
+	"workflow/internal/datasource"
 	"workflow/internal/handler"
 	"workflow/internal/locks"
 	"workflow/internal/rulego"
@@ -49,6 +50,8 @@ func main() {
 	locks.CustomLock = locks.NewLock("mysql", ctx)
 	// 初始化Job
 	corn.NewJob(c.Job, ctx)
+	// 初始化数据源连接池
+	datasource.InitDataSourceManager(ctx)
 
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 	server.Start()

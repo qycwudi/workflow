@@ -378,8 +378,6 @@ type DatasourceAddRequest struct {
 	Type   string `json:"type"`
 	Config string `json:"config"`
 	Switch int    `json:"switch"`
-	Hash   string `json:"hash,optional"`
-	Status string `json:"status,optional"`
 }
 
 type DatasourceAddResponse struct {
@@ -392,8 +390,6 @@ type DatasourceEditRequest struct {
 	Type   string `json:"type,optional"`
 	Config string `json:"config,optional"`
 	Switch int    `json:"switch,optional"`
-	Hash   string `json:"hash,optional"`
-	Status string `json:"status,optional"`
 }
 
 type DatasourceEditResponse struct {
@@ -411,7 +407,6 @@ type DatasourceDeleteResponse struct {
 type DatasourceTestRequest struct {
 	Type   string `json:"type,optional"`
 	Config string `json:"config,optional"`
-	Switch int    `json:"switch,optional"`
 }
 
 type DatasourceTestResponse struct {

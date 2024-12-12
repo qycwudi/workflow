@@ -32,8 +32,6 @@ type DatasourceAddRequest {
 	Type   string `json:"type"`
 	Config string `json:"config"`
 	Switch int    `json:"switch"`
-	Hash   string `json:"hash,optional"`
-	Status string `json:"status,optional"`
 }
 
 type DatasourceAddResponse {
@@ -46,8 +44,6 @@ type DatasourceEditRequest {
 	Type   string `json:"type,optional"`
 	Config string `json:"config,optional"`
 	Switch int    `json:"switch,optional"`
-	Hash   string `json:"hash,optional"`
-	Status string `json:"status,optional"`
 }
 
 type DatasourceEditResponse {
@@ -65,7 +61,6 @@ type DatasourceDeleteResponse {
 type DatasourceTestRequest {
 	Type   string `json:"type,optional"`
 	Config string `json:"config,optional"`
-	Switch int    `json:"switch,optional"`
 }
 
 type DatasourceTestResponse {

@@ -15,6 +15,8 @@ type (
 	DatasourceModel interface {
 		datasourceModel
 		FindDataSourcePageList(ctx context.Context, param PageListBuilder, current int64, pageSize int64) (int64, []*Datasource, error)
+		FindBySwitch(ctx context.Context, switchStatus int64) ([]*Datasource, error)
+		UpdateStatus(ctx context.Context, id int64, status string) error
 	}
 
 	customDatasourceModel struct {
@@ -89,3 +91,26 @@ func (m *defaultDatasourceModel) FindDataSourcePageList(ctx context.Context, par
 
 	return count, list, nil
 }
+
+func (m *defaultDatasourceModel) FindBySwitch(ctx context.Context, switchStatus int64) ([]*Datasource, error) {
+	var result []*Datasource
+	err := m.conn.QueryRowsCtx(ctx, &result, "SELECT "+datasourceRows+" FROM "+m.table+" WHERE switch = ?", switchStatus)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (m *defaultDatasourceModel) UpdateStatus(ctx context.Context, id int64, status string) error {
+	query := fmt.Sprintf("update %s set status = ? where id = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, status, id)
+	return err
+}
+
+const (
+	DatasourceSwitchOn  = 1
+	DatasourceSwitchOff = 0
+
+	DatasourceStatusConnected = "connected"
+	DatasourceStatusClosed    = "closed"
+)

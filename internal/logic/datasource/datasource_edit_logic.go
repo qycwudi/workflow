@@ -2,12 +2,18 @@ package datasource
 
 import (
 	"context"
+	"crypto/md5"
+	"fmt"
+	"strings"
 	"time"
 
+	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
+	"workflow/internal/datasource"
 	"workflow/internal/logic"
+	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -25,26 +31,68 @@ func NewDatasourceEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Da
 		svcCtx: svcCtx,
 	}
 }
-
 func (l *DatasourceEditLogic) DatasourceEdit(req *types.DatasourceEditRequest) (resp *types.DatasourceEditResponse, err error) {
+	// 参数校验
+	if req.Name == "" {
+		return nil, errors.New(int(logic.ParamError), "数据源名称不能为空")
+	}
+	if req.Type == "" {
+		return nil, errors.New(int(logic.ParamError), "数据源类型不能为空")
+	}
+	if req.Config == "" {
+		return nil, errors.New(int(logic.ParamError), "数据源配置不能为空")
+	}
+	if !gjson.Valid(req.Config) {
+		return nil, errors.New(int(logic.ParamError), "数据源配置格式错误")
+	}
+	dsn := gjson.Get(req.Config, "dsn").String()
+	if dsn == "" {
+		return nil, errors.New(int(logic.ParamError), "数据源DSN不能为空")
+	}
+
 	// 查询数据源是否存在
-	datasource, err := l.svcCtx.DatasourceModel.FindOne(l.ctx, int64(req.Id))
+	resource, err := l.svcCtx.DatasourceModel.FindOne(l.ctx, int64(req.Id))
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "数据源不存在")
 	}
 
-	// 更新数据源信息
-	datasource.Name = req.Name
-	datasource.Type = req.Type
-	datasource.Config = req.Config
-	datasource.Switch = int64(req.Switch)
-	datasource.Hash = req.Hash
-	datasource.Status = req.Status
-	datasource.UpdateTime = time.Now()
+	status := model.DatasourceStatusConnected
+	if req.Switch == 0 {
+		status = model.DatasourceStatusClosed
+	} else if req.Switch == 1 {
+		// 检查链接
+		err = datasource.CheckDataSourceClient(req.Type, dsn)
+		if err != nil {
+			l.Error("connect to datasource failed: %s", err.Error())
+			status = model.DatasourceStatusClosed
+		}
+	}
 
-	err = l.svcCtx.DatasourceModel.Update(l.ctx, datasource)
+	hash := fmt.Sprintf("%x", md5.Sum([]byte(strings.ReplaceAll(dsn, " ", ""))))
+
+	// 更新数据源信息
+	resource.Name = req.Name
+	resource.Type = req.Type
+	resource.Config = req.Config
+	resource.Switch = int64(req.Switch)
+	resource.Hash = hash
+	resource.Status = status
+	resource.UpdateTime = time.Now()
+
+	err = l.svcCtx.DatasourceModel.Update(l.ctx, resource)
 	if err != nil {
+		if strings.Contains(err.Error(), "Duplicate entry") {
+			return nil, errors.New(int(logic.ParamError), "数据源名称已存在")
+		}
 		return nil, errors.New(int(logic.SystemError), "修改数据源失败")
+	}
+
+	if status == model.DatasourceStatusConnected {
+		// 加载到连接池
+		err := datasource.DataSourcePool.UpdateDataSource(int64(req.Id), dsn, req.Type, hash)
+		if err != nil {
+			return nil, errors.New(int(logic.SystemError), "修改数据源失败,请重试")
+		}
 	}
 
 	resp = &types.DatasourceEditResponse{

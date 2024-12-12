@@ -7,76 +7,126 @@ import (
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
+	"github.com/tidwall/gjson"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mssqldialect"
 	"github.com/uptrace/bun/dialect/mysqldialect"
+	"github.com/zeromicro/go-zero/core/logx"
+
+	"workflow/internal/model"
+	"workflow/internal/svc"
+)
+
+const (
+	MysqlType     = "mysql"
+	SqlServerType = "sqlserver"
 )
 
 type DataSourceManager struct {
-	dbs  map[string]*bun.DB
-	hash map[string]string // 存储每个数据源的hash值
+	dbs  map[int64]*bun.DB
+	hash map[int64]string // 存储每个数据源的hash值
 }
 
-func NewDataSourceManager() *DataSourceManager {
-	return &DataSourceManager{
-		dbs:  make(map[string]*bun.DB),
-		hash: make(map[string]string),
+var DataSourcePool *DataSourceManager
+
+func InitDataSourceManager(svcCtx *svc.ServiceContext) {
+	pool := &DataSourceManager{
+		dbs:  make(map[int64]*bun.DB),
+		hash: make(map[int64]string),
 	}
+	// 加载 datasource
+	datasource, err := svcCtx.DatasourceModel.FindBySwitch(context.Background(), model.DatasourceSwitchOn)
+	if err != nil {
+		panic(err)
+	}
+	for _, v := range datasource {
+		// 读取dsn
+		dsn := gjson.Get(v.Config, "dsn").String()
+		err := pool.UpdateDataSource(v.Id, dsn, v.Type, v.Hash)
+		logx.Infof("datasource init: %+v", v)
+		if err != nil {
+			logx.Errorf("datasource init failed: %s", err.Error())
+			continue
+		}
+		// 更新数据源状态
+		err = svcCtx.DatasourceModel.UpdateStatus(context.Background(), v.Id, model.DatasourceStatusConnected)
+		if err != nil {
+			logx.Errorf("datasource update status failed: %s", err.Error())
+			continue
+		}
+	}
+	// 统计加载成功和失败的数量
+	successCount := 0
+	failCount := 0
+	for _, v := range datasource {
+		if _, ok := pool.hash[v.Id]; ok {
+			successCount++
+		} else {
+			failCount++
+		}
+	}
+	logx.Infof("datasource init success: %d, failed: %d", successCount, failCount)
+
+	DataSourcePool = pool
 }
 
-func (manager *DataSourceManager) AddDataSource(name, dsn, dbType string) error {
+func (manager *DataSourceManager) addDataSource(id int64, dsn, dbType string) error {
 	// 根据提供的 dbType 创建数据库连接
 	sqlDB, err := sql.Open(dbType, dsn)
+	if err != nil {
+		return err
+	}
+	// 测试连接
+	err = sqlDB.Ping()
 	if err != nil {
 		return err
 	}
 
 	var bunDB *bun.DB
 	switch dbType {
-	case "mysql":
+	case MysqlType:
 		bunDB = bun.NewDB(sqlDB, mysqldialect.New())
-	case "sqlserver":
+	case SqlServerType:
 		bunDB = bun.NewDB(sqlDB, mssqldialect.New())
 	default:
 		return errors.New("unsupported database type")
 	}
 
-	manager.dbs[name] = bunDB
+	manager.dbs[id] = bunDB
 
 	return nil
 }
 
 // UpdateDataSource 更新数据源连接
-func (manager *DataSourceManager) UpdateDataSource(name, dsn, dbType, hash string) error {
+func (manager *DataSourceManager) UpdateDataSource(id int64, dsn, dbType, hash string) error {
 	// 检查hash是否变化
-	if oldHash, exists := manager.hash[name]; exists && oldHash == hash {
+	if oldHash, exists := manager.hash[id]; exists && oldHash == hash {
 		return nil // hash未变化,无需更新
 	}
 
 	// 关闭旧连接
-	if oldDB, exists := manager.dbs[name]; exists {
+	if oldDB, exists := manager.dbs[id]; exists {
 		if err := oldDB.Close(); err != nil {
 			return err
 		}
-		delete(manager.dbs, name)
+		delete(manager.dbs, id)
 	}
 
 	// 创建新连接
-	if err := manager.AddDataSource(name, dsn, dbType); err != nil {
+	if err := manager.addDataSource(id, dsn, dbType); err != nil {
 		return err
 	}
 
 	// 更新hash
-	manager.hash[name] = hash
+	manager.hash[id] = hash
 	return nil
 }
 
-func (manager *DataSourceManager) Query(name string, sql string, args ...interface{}) (*sql.Rows, error) {
-	db, ok := manager.dbs[name]
+func (manager *DataSourceManager) Query(id int64, sql string, args ...interface{}) (*sql.Rows, error) {
+	db, ok := manager.dbs[id]
 	if !ok {
 		return nil, errors.New("data source not found")
 	}
-
 	return db.QueryContext(context.Background(), sql, args...)
 }
 
