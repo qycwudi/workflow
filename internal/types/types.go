@@ -209,6 +209,7 @@ type ApiPublishList struct {
 	ApiId       string `json:"apiId"`
 	ApiName     string `json:"apiName"`
 	ApiDesc     string `json:"apiDesc"`
+	PublishTime string `json:"publishTime"`
 	Status      string `json:"status" desc:"上下线状态ON OFF"`
 }
 

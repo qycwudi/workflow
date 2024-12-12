@@ -5,8 +5,10 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+
 	goora "github.com/sijms/go-ora/v2"
 	"github.com/zeromicro/go-zero/core/logx"
+
 	"workflow/internal/enum"
 )
 
@@ -32,10 +34,14 @@ func CheckDataSourceClient(t enum.DBType, config string) error {
 		db, err = sql.Open("sqlserver", dsn)
 	}
 
-	if err != nil {
+	if err != nil || db == nil {
 		return errors.New("connect to datasource failed")
 	}
-	defer func() { _ = db.Close() }()
+	defer func() {
+		if db != nil {
+			_ = db.Close()
+		}
+	}()
 
 	err = db.Ping()
 	if err != nil {

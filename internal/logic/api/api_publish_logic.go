@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	errors2 "errors"
+	"time"
 
 	"github.com/rs/xid"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -55,6 +56,8 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		ApiDesc:     req.ApiDesc,
 		Dsl:         string(ruleChain),
 		Status:      model.ApiStatusOn,
+		CreateTime:  time.Now(),
+		UpdateTime:  time.Now(),
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "发布 API 失败")

@@ -1,63 +1,49 @@
 {
   "ruleChain": {
-    "id": "rule8848",
-    "name": "测试规则链-base",
+    "id": "ctdbgr2flvkk9k4q7t7g",
+    "name":"xxx",
     "root": true
   },
   "metadata": {
     "nodes": [
       {
-        "id": "s1",
-        "type": "jsFilter",
-        "name": "过滤",
-        "debugMode": true,
+        "id": "start-0fe785b4-55be-46f0-ad9e-f54b13424014",
+        "type": "start",
+        "name": "开始😄",
         "configuration": {
-          "jsScript": "let value = undefined;let num = Number(value); if (isNaN(num)) { throw new Error('Conversion to number failed');} return msg.role=='admin';"
+          "Index": 867,
+          "Indexes": null,
+          "Num": 0,
+          "Raw": "{\"param\": \"{\\\"Accept\\\": \\\"application/json\\\",\\\"Content-Type\\\": \\\"application/json\\\"}\"}",
+          "Str": "",
+          "Type": 5
         }
       },
       {
-        "id": "s2",
-        "type": "jsTransform",
-        "name": "转换",
-        "debugMode": true,
-        "configuration": {
-          "jsScript": "msg.userName=msg.userName+'NO-1';\n return {'msg':msg,'metadata':metadata,'msgType':msgType};"
-        }
+        "id": "end-b5a4ca11-65dd-4279-86b4-84cfe2a8ecb5",
+        "type": "end",
+        "name": "结束🩷",
+        "configuration": {}
       },
       {
-        "id": "s4",
-        "type": "log",
-        "name": "日志组件",
-        "debugMode": true,
+        "id": "code-execution-js-dec52a51-8bef-43db-914b-ca0753f36caf",
+        "type": "code-execution-js",
+        "name": "代码执行💻",
         "configuration": {
-          "jsScript": "return 's4-Success: Incoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
-        }
-      },
-      {
-        "id": "s5",
-        "type": "log",
-        "name": "日志组件",
-        "debugMode": true,
-        "configuration": {
-          "jsScript": "return 's5-Failure: Incoming message:\\n' + JSON.stringify(msg) + '\\nIncoming metadata:\\n' + JSON.stringify(metadata);"
+          "script": "return { msg: msg, metadata: metadata, msgType: msgType };"
         }
       }
     ],
     "connections": [
       {
-        "fromId": "s1",
-        "toId": "s2",
-        "type": "True"
-      },
-      {
-        "fromId": "s2",
-        "toId": "s4",
+        "fromId": "start-0fe785b4-55be-46f0-ad9e-f54b13424014",
+        "toId": "code-execution-js-dec52a51-8bef-43db-914b-ca0753f36caf",
         "type": "Success"
       },
       {
-        "fromId": "s2",
-        "toId": "s5",
-        "type": "Failure"
+        "fromId": "code-execution-js-dec52a51-8bef-43db-914b-ca0753f36caf",
+        "toId": "end-b5a4ca11-65dd-4279-86b4-84cfe2a8ecb5",
+        "type": "Success"
       }
     ]
   }

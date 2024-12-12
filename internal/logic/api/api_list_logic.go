@@ -45,6 +45,7 @@ func (l *ApiListLogic) ApiList(req *types.ApiPublishListRequest) (resp *types.Ap
 			ApiName:     api.ApiName,
 			ApiDesc:     api.ApiDesc,
 			Status:      api.Status,
+			PublishTime: api.CreateTime.Format("2006-01-02 15:04:05"),
 		}
 	}
 

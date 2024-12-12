@@ -16,10 +16,11 @@ func Test_roleChain_Run_Join(t *testing.T) {
 	config := rulego.NewConfig()
 	config.Logger = &utils.RoleCustomLog{}
 	chain, err := rulego.New(
-		"cs8vfql3sjtkvhkubul",
+		"ctdbgr2flvkk9k4q7t7g",
 		file,
 		rulego.WithConfig(config),
-		types.WithAspects(&DebugAop{}))
+		// types.WithAspects(&DebugAop{})
+	)
 	if err != nil {
 		logx.Errorf("load role chain fail,err:%v\n", err)
 		return
@@ -44,7 +45,8 @@ func Test_roleChain_Run_Single(t *testing.T) {
 		"cs8vfql3sjtkvhkubul",
 		file,
 		rulego.WithConfig(config),
-		types.WithAspects(&DebugAop{}))
+		// types.WithAspects(&DebugAop{})
+	)
 	if err != nil {
 		logx.Errorf("load role chain fail,err:%v\n", err)
 		return

@@ -7,6 +7,7 @@ import (
 	"database/sql"
 	"fmt"
 	"strings"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/builder"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
@@ -36,13 +37,15 @@ type (
 	}
 
 	Api struct {
-		Id          int64  `db:"id"`
-		WorkspaceId string `db:"workspace_id"`
-		ApiId       string `db:"api_id"`
-		ApiName     string `db:"api_name"`
-		ApiDesc     string `db:"api_desc"`
-		Dsl         string `db:"dsl"`
-		Status      string `db:"status"`
+		Id          int64     `db:"id"`
+		WorkspaceId string    `db:"workspace_id"`
+		ApiId       string    `db:"api_id"`
+		ApiName     string    `db:"api_name"`
+		ApiDesc     string    `db:"api_desc"`
+		Dsl         string    `db:"dsl"`
+		Status      string    `db:"status"`
+		CreateTime  time.Time `db:"create_time"`
+		UpdateTime  time.Time `db:"update_time"`
 	}
 )
 
@@ -95,14 +98,14 @@ func (m *defaultApiModel) FindOneByApiId(ctx context.Context, apiId string) (*Ap
 }
 
 func (m *defaultApiModel) Insert(ctx context.Context, data *Api) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?)", m.table, apiRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.ApiId, data.ApiName, data.ApiDesc, data.Dsl, data.Status)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, apiRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.ApiId, data.ApiName, data.ApiDesc, data.Dsl, data.Status, data.CreateTime, data.UpdateTime)
 	return ret, err
 }
 
 func (m *defaultApiModel) Update(ctx context.Context, newData *Api) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, apiRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.ApiId, newData.ApiName, newData.ApiDesc, newData.Dsl, newData.Status, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.ApiId, newData.ApiName, newData.ApiDesc, newData.Dsl, newData.Status, newData.CreateTime, newData.UpdateTime, newData.Id)
 	return err
 }
 
