@@ -59,15 +59,14 @@ Content-Type: application/json
 {
   "current": 1,
   "pageSize": 10,
-  "apiId": "api_001",
-  "apiName": "测试API"
+  "apiId": "ctdder53sjtn9c6t20j0"
 }
 
 ### API调用
-POST http://127.0.0.1:9999/api/role/v1/asdasdasd
+POST http://127.0.0.1:9999/api/role/v1/ctdder53sjtn9c6t20j0
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer cf34266901974f67bae4f0f3510271c8
+Authorization: Bearer 162286c137a44a0eb65d6960910fe73d
 
 {
   "slice": [
@@ -88,8 +87,8 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "apiId": "asdasdasd",
-  "name": "测试密钥",
+  "apiId": "ctdder53sjtn9c6t20j0",
+  "name": "测试密钥1",
   "expirationTime": 1752410828282
 } 
 

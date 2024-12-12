@@ -27,9 +27,9 @@ type (
 func (c customApiRecordModel) FindByApiId(ctx context.Context, apiId string, current int, pageSize int) (int64, []*ApiRecord, error) {
 	totalQuery := fmt.Sprintf("select count(*) from %s where api_id = ?", c.table)
 	var total int64
-	_ = c.conn.QueryRowsCtx(ctx, &total, totalQuery, apiId)
+	_ = c.conn.QueryRowCtx(ctx, &total, totalQuery, apiId)
 
-	query := fmt.Sprintf("select %s from %s where api_id = ? order by id desc limit ?, ?", apiRows, c.table)
+	query := fmt.Sprintf("select %s from %s where api_id = ? order by id desc limit ?, ?", apiRecordRows, c.table)
 	var resp []*ApiRecord
 	err := c.conn.QueryRowsCtx(ctx, &resp, query, apiId, (current-1)*pageSize, pageSize)
 	switch err {
@@ -45,7 +45,7 @@ func (c customApiRecordModel) FindByApiName(ctx context.Context, apiName string,
 	var total int64
 	_ = c.conn.QueryRowsCtx(ctx, &total, totalQuery, apiName)
 
-	query := fmt.Sprintf("select %s from %s where api_name like CONCAT('%%', ?, '%%') order by id desc limit ?, ?", apiRows, c.table)
+	query := fmt.Sprintf("select %s from %s where api_name like CONCAT('%%', ?, '%%') order by id desc limit ?, ?", apiRecordRows, c.table)
 	var resp []*ApiRecord
 	err := c.conn.QueryRowsCtx(ctx, &resp, query, apiName, (current-1)*pageSize, pageSize)
 	switch err {
