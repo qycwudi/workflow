@@ -82,6 +82,12 @@ func (l *CanvasRunLogic) readMetadata(canvasId string) (map[string]string, error
 }
 
 func (l *CanvasRunLogic) readData(result gjson.Result) (string, error) {
-	param := result.Get("data.custom.param").String()
-	return param, nil
+	nodes := result.Get("graph.nodes").Array()
+	for _, node := range nodes {
+		if node.Get("data.type").String() == "start" {
+			param := node.Get("data.custom.param").String()
+			return param, nil
+		}
+	}
+	return "", errors.New(int(logic.SystemError), "未找到开始节点")
 }

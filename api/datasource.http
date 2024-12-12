@@ -27,7 +27,7 @@ Content-Type: application/json
 
 {
   "type": "mysql",
-  "name": "test-1",
+  "name": "test-2",
   "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local\"}",
   "switch": 1
 }
