@@ -2,12 +2,21 @@ package datasource
 
 import (
 	"database/sql"
+	"encoding/json"
 	"errors"
 	"fmt"
 	goora "github.com/sijms/go-ora/v2"
-	"github.com/tidwall/gjson"
+	"github.com/zeromicro/go-zero/core/logx"
 	"workflow/internal/enum"
 )
+
+type DataSourceConfig struct {
+	Host     string `json:"host"`
+	Port     int    `json:"port"`
+	User     string `json:"user"`
+	Password string `json:"password"`
+	Database string `json:"database"`
+}
 
 func CheckDataSourceClient(t enum.DBType, config string) error {
 	dsn := GenDataSourceDSN(t, config)
@@ -36,20 +45,21 @@ func CheckDataSourceClient(t enum.DBType, config string) error {
 }
 
 func GenDataSourceDSN(t enum.DBType, config string) string {
-	host := gjson.Get(config, "host").String()
-	port := gjson.Get(config, "port").Int()
-	user := gjson.Get(config, "user").String()
-	password := gjson.Get(config, "password").String()
-	database := gjson.Get(config, "database").String()
+	c := DataSourceConfig{}
+	err := json.Unmarshal([]byte(config), &c)
+	if err != nil {
+		logx.Errorf("unmarshal datasource config failed, err:%v", err)
+		return ""
+	}
 
 	var dsn string
 	switch t {
 	case enum.MysqlType:
-		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", user, password, host, port, database)
+		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.User, c.Password, c.Host, c.Port, c.Database)
 	case enum.OracleType:
-		dsn = goora.BuildUrl(host, int(port), database, user, password, nil)
+		dsn = goora.BuildUrl(c.Host, c.Port, c.Database, c.User, c.Password, nil)
 	case enum.SqlServerType:
-		dsn = fmt.Sprintf("server=%s;port=%d;user id=%s;password=%s;database=%s", host, port, user, password, database)
+		dsn = fmt.Sprintf("server=%s;port=%d;user id=%s;password=%s;database=%s", c.Host, c.Port, c.User, c.Password, c.Database)
 	}
 
 	return dsn
