@@ -5,10 +5,9 @@ import (
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
-
+	"workflow/internal/enum"
 	"workflow/internal/model"
 	"workflow/internal/svc"
-	enums "workflow/internal/types"
 	"workflow/internal/utils"
 )
 
@@ -95,7 +94,7 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 	for k, v := range metadata {
 		metaData.PutValue(k, v)
 	}
-	msg := types.NewMsg(0, enums.CanvasMsg, types.JSON, metaData, data)
+	msg := types.NewMsg(0, enum.CanvasMsg, types.JSON, metaData, data)
 	var result types.RuleMsg
 	chain.OnMsgAndWait(msg, types.WithOnEnd(func(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) {
 		result = msg
@@ -112,7 +111,7 @@ func asyncTraceWriter() {
 }
 
 func writeLogEntry(trace *model.Trace) {
-	if trace.Status == enums.TraceStatusRunning {
+	if trace.Status == enum.TraceStatusRunning {
 		// 新增
 		_, err := RoleChain.svc.TraceModel.Insert(context.Background(), trace)
 		if err != nil {
@@ -120,7 +119,7 @@ func writeLogEntry(trace *model.Trace) {
 		}
 		return
 	}
-	if trace.Status == enums.TraceStatusFinish {
+	if trace.Status == enum.TraceStatusFinish {
 		// 更新
 		err := RoleChain.svc.TraceModel.UpdateByTraceIdAndNodeId(context.Background(), trace)
 		if err != nil {

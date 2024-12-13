@@ -3,12 +3,12 @@ package rulego
 import (
 	"encoding/json"
 	"time"
+	enums "workflow/internal/enum"
 
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/model"
-	enums "workflow/internal/types"
 )
 
 // 画布侧运行监控 AOP
@@ -35,6 +35,7 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 		})
 		if err != nil {
 			logx.Errorf("create space record err:%s", err.Error())
+			ctx.TellFailure(msg, err)
 		}
 	} else {
 		// API 调用
@@ -46,6 +47,8 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 			Param:    string(msgMar),
 			Extend:   "{}",
 			CallTime: time.Now(),
+			ApiId:    msg.Metadata["ApiId"],
+			ApiName:  msg.Metadata["ApiName"],
 		})
 		if err != nil {
 			logx.Errorf("create api record err:%s", err.Error())
@@ -73,12 +76,14 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		err = RoleChain.svc.SpaceRecordModel.UpdateStatusBySid(ctx.GetContext(), msg.Id, status, duration)
 		if err != nil {
 			logx.Errorf("update space record status err:%s", err.Error())
+			ctx.TellFailure(msg, err)
 		}
 	} else {
 		logx.Infof("API END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
 		err = RoleChain.svc.ApiRecordModel.UpdateStatusByTraceId(ctx.GetContext(), msg.Id, status)
 		if err != nil {
 			logx.Errorf("update api record status err:%s", err.Error())
+			ctx.TellFailure(msg, err)
 		}
 	}
 	return msg

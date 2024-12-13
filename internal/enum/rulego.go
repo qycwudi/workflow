@@ -1,4 +1,4 @@
-package types
+package enum
 
 // 记录运行状态 Space、Api
 const (
