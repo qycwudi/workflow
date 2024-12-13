@@ -2,7 +2,6 @@ package rulego
 
 import (
 	"context"
-
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -14,13 +13,21 @@ import (
 )
 
 func InitRoleChain(svc *svc.ServiceContext) {
-	RoleChain = &roleChain{svc: svc}
+	config := rulego.NewConfig()
+	config.Logger = &utils.RoleCustomLog{}
+	opts := []types.RuleEngineOption{
+		rulego.WithConfig(config),
+		types.WithAspects(&TraceAop{}, &RunAop{}),
+	}
+
+	RoleChain = &roleChain{svc: svc, opts: opts}
 }
 
 var RoleChain *roleChain
 
 type roleChain struct {
-	svc *svc.ServiceContext
+	svc  *svc.ServiceContext
+	opts []types.RuleEngineOption
 }
 
 // 获取当前节点的父节点
@@ -56,18 +63,17 @@ func (r *roleChain) LoadChain(id string, json []byte) {
 		logx.Infof("reload self role chain %s success,json: %s \n", id, string(json))
 		return
 	}
-	config := rulego.NewConfig()
-	config.Logger = &utils.RoleCustomLog{}
+
 	_, err := rulego.New(
 		id,
 		json,
-		rulego.WithConfig(config),
-		types.WithAspects(&TraceAop{}, &RunAop{}),
+		r.opts...,
 	)
 	if err != nil {
 		logx.Errorf("load role chain fail,err:%v\n", err)
 		return
 	}
+
 	logx.Infof("load %s role chain success,json:%s \n", id, json)
 }
 

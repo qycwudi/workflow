@@ -7,7 +7,6 @@ import (
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/logic"
-	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -27,18 +26,12 @@ func NewApiListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiListLo
 }
 
 func (l *ApiListLogic) ApiList(req *types.ApiPublishListRequest) (resp *types.ApiPublishListResponse, err error) {
-	var apis []*model.Api
-	var total int64
-	if req.Id == "" {
-		total, apis, err = l.svcCtx.ApiModel.FindAll(l.ctx, req.Current, req.PageSize)
-	} else {
-		total, apis, err = l.svcCtx.ApiModel.FindByWorkSpaceId(l.ctx, req.Id, req.Current, req.PageSize)
-	}
+	pagin, err := l.svcCtx.ApiModel.Page(l.ctx, req.Current, req.PageSize, req.Id, req.Name)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询API失败")
 	}
-	lists := make([]types.ApiPublishList, len(apis))
-	for i, api := range apis {
+	lists := make([]types.ApiPublishList, len(pagin.List))
+	for i, api := range pagin.List {
 		lists[i] = types.ApiPublishList{
 			WorkSpaceId: api.WorkspaceId,
 			ApiId:       api.ApiId,
@@ -52,7 +45,7 @@ func (l *ApiListLogic) ApiList(req *types.ApiPublishListRequest) (resp *types.Ap
 	resp = &types.ApiPublishListResponse{
 		Current:  req.Current,
 		PageSize: req.PageSize,
-		Total:    total,
+		Total:    pagin.Total,
 		List:     lists,
 	}
 	return resp, nil

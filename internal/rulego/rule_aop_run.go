@@ -66,9 +66,9 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		startTime := msg.Metadata.Values()["startTime"]
 		if startTime == "" {
 			logx.Errorf("start time is empty")
-			startTime = time.Now().Format("2006-01-02 15:04:05")
+			startTime = time.Now().Format(time.DateTime)
 		}
-		start, _ := time.Parse("2006-01-02 15:04:05", startTime)
+		start, _ := time.ParseInLocation(time.DateTime, startTime, time.Local)
 		duration := time.Since(start).Milliseconds()
 		err = RoleChain.svc.SpaceRecordModel.UpdateStatusBySid(ctx.GetContext(), msg.Id, status, duration)
 		if err != nil {

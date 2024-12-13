@@ -3,7 +3,6 @@ package model
 import (
 	"context"
 	"fmt"
-
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -17,9 +16,8 @@ type (
 		apiModel
 		FindByName(ctx context.Context, name string) (*Api, error)
 		FindByOn(ctx context.Context) ([]*Api, error)
-		FindAll(ctx context.Context, current int, pageSize int) (int64, []*Api, error)
-		FindByWorkSpaceId(ctx context.Context, id string, current int, pageSize int) (int64, []*Api, error)
 		UpdateStatusByApiId(ctx context.Context, apiId string, status string) error
+		Page(ctx context.Context, current, size int, apiId, name string) (*PageResponse[Api], error)
 	}
 
 	customApiModel struct {
@@ -33,35 +31,28 @@ func (c customApiModel) UpdateStatusByApiId(ctx context.Context, apiId string, s
 	return err
 }
 
-func (c customApiModel) FindAll(ctx context.Context, current int, pageSize int) (int64, []*Api, error) {
-	totalQuery := fmt.Sprintf("select count(*) from %s", c.table)
-	var total int64
-	_ = c.conn.QueryRowsCtx(ctx, &total, totalQuery)
-
-	query := fmt.Sprintf("select %s from %s order by id desc limit ?, ?", apiRows, c.table)
-	var resp []*Api
-	err := c.conn.QueryRowsCtx(ctx, &resp, query, (current-1)*pageSize, pageSize)
-	switch err {
-	case nil:
-		return total, resp, nil
-	default:
-		return 0, nil, err
+func (c customApiModel) Page(ctx context.Context, current, size int, id, name string) (*PageResponse[Api], error) {
+	conditions := make([]string, 0)
+	if id != "" {
+		conditions = append(conditions, fmt.Sprintf("api_id = '%s'", id))
 	}
-}
 
-func (c customApiModel) FindByWorkSpaceId(ctx context.Context, id string, current int, pageSize int) (int64, []*Api, error) {
-	totalQuery := fmt.Sprintf("select count(*) from %s where workspace_id = ?", c.table)
-	var total int64
-	_ = c.conn.QueryRowsCtx(ctx, &total, totalQuery, id)
+	if name != "" {
+		conditions = append(conditions, fmt.Sprintf("api_name LIKE '%s'", "%"+name+"%"))
+	}
 
-	query := fmt.Sprintf("select %s from %s where workspace_id = ? order by id desc limit ?, ?", apiRows, c.table)
-	var resp []*Api
-	err := c.conn.QueryRowsCtx(ctx, &resp, query, id, (current-1)*pageSize, pageSize)
+	resp, err := Paginate[Api](ctx, PageRequest{
+		Current:    current,
+		Size:       size,
+		Table:      c.table,
+		Conn:       c.conn,
+		Conditions: conditions,
+	})
 	switch err {
 	case nil:
-		return total, resp, nil
+		return resp, nil
 	default:
-		return 0, nil, err
+		return nil, err
 	}
 }
 

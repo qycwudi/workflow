@@ -32,15 +32,16 @@ func CheckDataSourceClient(t enum.DBType, config string) error {
 		db, err = sql.Open("oracle", dsn)
 	case enum.SqlServerType:
 		db, err = sql.Open("sqlserver", dsn)
+	default:
+		err = errors.New("unknown data source type")
 	}
 
-	if err != nil || db == nil {
+	if err != nil {
 		return errors.New("connect to datasource failed")
 	}
+
 	defer func() {
-		if db != nil {
-			_ = db.Close()
-		}
+		_ = db.Close()
 	}()
 
 	err = db.Ping()
