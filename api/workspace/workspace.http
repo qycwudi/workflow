@@ -1,0 +1,67 @@
+### workspace创建, 会把新输入的 tag 也创建出来
+POST http://127.0.0.1:8899/workflow/workspace/new
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceName": "雪兔工作流测试-base",
+  "workSpaceDesc": "工作空间描述",
+  "workSpaceType": "workflow",
+  "workSpaceTag": [
+    "API",
+    "测试环境"
+  ],
+  "workSpaceIcon": "http://icon.com"
+}
+
+### workspace列表-带条件
+POST http://127.0.0.1:8899/workflow/workspace/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceName": "demoString",
+  "workSpaceType": "demoString",
+  "workSpaceTag": [
+    1,
+    2
+  ],
+  "current": 0,
+  "pageSize": 0
+}
+
+
+### 删除 workspace
+POST http://127.0.0.1:8899/workflow/workspace/remove
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceId": "crlr0g53sjtjc4oefj80"
+}
+
+### 编辑 workspace
+POST http://127.0.0.1:8899/workflow/workspace/edit
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workSpaceId": "crlr0g53sjtjc4oefj80",
+  "workSpaceName": "工作空间名称-update",
+  "workSpaceDesc": "工作空间描述-update",
+  "workSpaceType": "agent",
+  "workSpaceTag": [
+    "API",
+    "API5"
+  ],
+  "workSpaceIcon": "http://iconicon.com",
+  "workSpaceConfig": "{}"
+}
+
+### 列表 tag
+POST http://127.0.0.1:8899/workflow/tag/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+}
