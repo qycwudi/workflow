@@ -42,16 +42,16 @@ func (l *CanvasRunSingleDetailLogic) CanvasRunSingleDetail(req *types.CanvasRunS
 		return nil, errors.New(int(logic.SystemError), "解析输出结果失败")
 	}
 
-	// resp = &types.CanvasRunSingleDetailResponse{
-	// 	NodeId:    trace.NodeId,
-	// 	NodeName:  trace.NodeName,
-	// 	StartTime: trace.StartTime.UnixMilli(),
-	// 	Duration:  trace.EndTime.Sub(trace.StartTime).Milliseconds(),
-	// 	Status:    trace.Status,
-	// 	Error:     trace.Error,
-	// 	Input:     input,
-	// 	Output:    output,
-	// }
+	resp = &types.CanvasRunSingleDetailResponse{
+		NodeId:    trace.NodeId,
+		NodeName:  trace.NodeName,
+		StartTime: trace.StartTime.UnixMilli(),
+		Duration:  trace.ElapsedTime,
+		Status:    trace.Status,
+		Error:     trace.ErrorMsg,
+		Input:     input,
+		Output:    output,
+	}
 
 	return resp, nil
 }

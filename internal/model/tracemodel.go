@@ -56,7 +56,7 @@ func (m *defaultTraceModel) UpdateByTraceIdAndNodeId(ctx context.Context, data *
 }
 
 func (m *customTraceModel) FindOneByNodeIdAndWorkspaceId(ctx context.Context, traceId, nodeId string) (*Trace, error) {
-	query := fmt.Sprintf("select %s from %s where trace_id = ? and node_id = ? limit 1", traceRows, m.table)
+	query := fmt.Sprintf("select %s from %s where workspace_id = ? and node_id = ? limit 1", traceRows, m.table)
 	var resp Trace
 	err := m.conn.QueryRowCtx(ctx, &resp, query, traceId, nodeId)
 	switch err {

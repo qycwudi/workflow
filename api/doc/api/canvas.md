@@ -128,7 +128,45 @@ type CanvasRunSingleResponse struct {
 }
 ```
 
-### 5. "获取画布运行历史"
+### 5. "组件运行详情"
+
+1. route definition
+
+- Url: /workflow/canvas/run/single/detail
+- Method: POST
+- Request: `CanvasRunSingleDetailRequest`
+- Response: `CanvasRunSingleDetailResponse`
+
+2. request definition
+
+
+
+```golang
+type CanvasRunSingleDetailRequest struct {
+	Id string `json:"id"` // 空间ID
+	NodeId string `json:"nodeId"` // 节点ID
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CanvasRunSingleDetailResponse struct {
+	NodeId string `json:"nodeId"`
+	NodeName string `json:"nodeName"`
+	StartTime int64 `json:"startTime"`
+	Duration int64 `json:"duration"`
+	Status string `json:"status"`
+	Error string `json:"error"`
+	Input map[string]interface{} `json:"input"`
+	Output map[string]interface{} `json:"output"`
+}
+```
+
+### 6. "获取画布运行历史"
 
 1. route definition
 
@@ -159,7 +197,7 @@ type GetCanvasRunHistoryResp struct {
 }
 ```
 
-### 6. "获取画布运行详情"
+### 7. "获取画布运行详情"
 
 1. route definition
 

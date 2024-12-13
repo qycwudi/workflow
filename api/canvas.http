@@ -54,3 +54,14 @@ Content-Type: application/json
   "apiName": "雪兔测试并行1",
   "apiDesc": "嘻嘻嘻 哈哈哈"
 }
+
+
+### 画布-执行-单组件详情
+POST http://127.0.0.1:8899/workflow/canvas/run/single/detail
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "id": "ctdp4353sjtrlkhmrvb0",
+  "nodeId": "jsTransform-af381ef9-cc1c-4419-89d7-a632482c9132"
+}

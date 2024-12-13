@@ -404,7 +404,45 @@ type CanvasRunSingleResponse struct {
 }
 ```
 
-### 12. "获取画布运行历史"
+### 12. "组件运行详情"
+
+1. route definition
+
+- Url: /workflow/canvas/run/single/detail
+- Method: POST
+- Request: `CanvasRunSingleDetailRequest`
+- Response: `CanvasRunSingleDetailResponse`
+
+2. request definition
+
+
+
+```golang
+type CanvasRunSingleDetailRequest struct {
+	Id string `json:"id"` // 空间ID
+	NodeId string `json:"nodeId"` // 节点ID
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CanvasRunSingleDetailResponse struct {
+	NodeId string `json:"nodeId"`
+	NodeName string `json:"nodeName"`
+	StartTime int64 `json:"startTime"`
+	Duration int64 `json:"duration"`
+	Status string `json:"status"`
+	Error string `json:"error"`
+	Input map[string]interface{} `json:"input"`
+	Output map[string]interface{} `json:"output"`
+}
+```
+
+### 13. "获取画布运行历史"
 
 1. route definition
 
@@ -435,7 +473,7 @@ type GetCanvasRunHistoryResp struct {
 }
 ```
 
-### 13. "获取画布运行详情"
+### 14. "获取画布运行详情"
 
 1. route definition
 
@@ -470,7 +508,7 @@ type GetCanvasRunDetailResp struct {
 }
 ```
 
-### 14. "API发布"
+### 15. "API发布"
 
 1. route definition
 
@@ -502,7 +540,7 @@ type ApiPublishResponse struct {
 }
 ```
 
-### 15. "API发布列表"
+### 16. "API发布列表"
 
 1. route definition
 
@@ -537,7 +575,7 @@ type ApiPublishListResponse struct {
 }
 ```
 
-### 16. "APIOnOff"
+### 17. "APIOnOff"
 
 1. route definition
 
@@ -569,7 +607,7 @@ type ApiOnOffResponse struct {
 }
 ```
 
-### 17. "API调用记录"
+### 18. "API调用记录"
 
 1. route definition
 
@@ -605,7 +643,7 @@ type ApiRecordsResponse struct {
 }
 ```
 
-### 18. "secretyKeyList"
+### 19. "secretyKeyList"
 
 1. route definition
 
@@ -640,7 +678,7 @@ type ApiSecretyKeyListResponse struct {
 }
 ```
 
-### 19. "创建API密钥"
+### 20. "创建API密钥"
 
 1. route definition
 
@@ -675,7 +713,7 @@ type ApiSecretyKeyCreateResponse struct {
 }
 ```
 
-### 20. "修改API密钥状态"
+### 21. "修改API密钥状态"
 
 1. route definition
 
@@ -707,7 +745,7 @@ type ApiSecretyKeyUpdateStatusResponse struct {
 }
 ```
 
-### 21. "修改API密钥到期时间"
+### 22. "修改API密钥到期时间"
 
 1. route definition
 
@@ -739,7 +777,7 @@ type ApiSecretyKeyUpdateExpirationTimeResponse struct {
 }
 ```
 
-### 22. "删除API密钥"
+### 23. "删除API密钥"
 
 1. route definition
 
@@ -769,7 +807,7 @@ type ApiSecretyKeyDeleteResponse struct {
 }
 ```
 
-### 23. "组件list"
+### 24. "组件list"
 
 1. route definition
 
@@ -799,7 +837,7 @@ type ModuleListResponse struct {
 }
 ```
 
-### 24. "组件新建"
+### 25. "组件新建"
 
 1. route definition
 
@@ -832,7 +870,7 @@ type ModuleNewResponse struct {
 }
 ```
 
-### 25. "组件编辑"
+### 26. "组件编辑"
 
 1. route definition
 
@@ -866,7 +904,7 @@ type ModuleEditResponse struct {
 }
 ```
 
-### 26. "数据源列表"
+### 27. "数据源列表"
 
 1. route definition
 
@@ -903,7 +941,7 @@ type DatasourceListResponse struct {
 }
 ```
 
-### 27. "新增数据源"
+### 28. "新增数据源"
 
 1. route definition
 
@@ -936,7 +974,7 @@ type DatasourceAddResponse struct {
 }
 ```
 
-### 28. "编辑数据源"
+### 29. "编辑数据源"
 
 1. route definition
 
@@ -970,7 +1008,7 @@ type DatasourceEditResponse struct {
 }
 ```
 
-### 29. "删除数据源"
+### 30. "删除数据源"
 
 1. route definition
 
@@ -1000,7 +1038,7 @@ type DatasourceDeleteResponse struct {
 }
 ```
 
-### 30. "测试数据源"
+### 31. "测试数据源"
 
 1. route definition
 
