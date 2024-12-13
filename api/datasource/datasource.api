@@ -64,37 +64,6 @@ type DatasourceTestRequest {
 }
 
 type DatasourceTestResponse {
-	Status string `json:"status"`
+	Status  string `json:"status"`
 	Message string `json:"message"`
-}
-
-@server (
-	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
-	group: datasource
-	// 定义路由前缀为 "/v1"
-	prefix: /workflow
-)
-
-service workflow-api {
-
-	@doc "数据源列表"
-	@handler DatasourceListHandler
-	post /datasource/list (DatasourceListRequest) returns (DatasourceListResponse)
-
-	@doc "新增数据源"
-	@handler DatasourceAddHandler
-	post /datasource/add (DatasourceAddRequest) returns (DatasourceAddResponse)
-
-	@doc "编辑数据源"
-	@handler DatasourceEditHandler
-	post /datasource/edit (DatasourceEditRequest) returns (DatasourceEditResponse)
-
-	@doc "删除数据源"
-	@handler DatasourceDeleteHandler
-	post /datasource/delete (DatasourceDeleteRequest) returns (DatasourceDeleteResponse)
-
-	@doc "测试数据源"
-	@handler DatasourceTestHandler
-	post /datasource/test (DatasourceTestRequest) returns (DatasourceTestResponse)
-
 }

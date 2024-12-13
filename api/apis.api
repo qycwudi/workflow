@@ -1,0 +1,176 @@
+syntax = "v1"
+
+import (
+	"./workflow/workspace.api"
+	"./model/model.api"
+	"./datasource/datasource.api"
+	"./canvas/canvas.api"
+	"./api/api.api"
+)
+
+type Base {}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: model
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+)
+service workflow-api {
+	@doc "组件list"
+	@handler ModuleListHandler
+	post /module/list (ModuleListRequest) returns (ModuleListResponse)
+
+	@doc "组件新建"
+	@handler ModuleNewHandler
+	post /module/new (ModuleNewRequest) returns (ModuleNewResponse)
+
+	@doc "组件编辑"
+	@handler ModuleEditHandler
+	post /module/edit (ModuleEditRequest) returns (ModuleEditResponse)
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: datasource
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+)
+service workflow-api {
+	@doc "数据源列表"
+	@handler DatasourceListHandler
+	post /datasource/list (DatasourceListRequest) returns (DatasourceListResponse)
+
+	@doc "新增数据源"
+	@handler DatasourceAddHandler
+	post /datasource/add (DatasourceAddRequest) returns (DatasourceAddResponse)
+
+	@doc "编辑数据源"
+	@handler DatasourceEditHandler
+	post /datasource/edit (DatasourceEditRequest) returns (DatasourceEditResponse)
+
+	@doc "删除数据源"
+	@handler DatasourceDeleteHandler
+	post /datasource/delete (DatasourceDeleteRequest) returns (DatasourceDeleteResponse)
+
+	@doc "测试数据源"
+	@handler DatasourceTestHandler
+	post /datasource/test (DatasourceTestRequest) returns (DatasourceTestResponse)
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: workspace
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+)
+service workflow-api {
+	@doc "创建workspace"
+	@handler WorkSpaceNewHandler
+	post /workspace/new (WorkSpaceNewRequest) returns (WorkSpaceNewResponse)
+
+	@doc "删除workspace"
+	@handler WorkSpaceRemoveHandler
+	post /workspace/remove (WorkRemoveRequest) returns (WorkSpaceRemoveResponse)
+
+	@doc "编辑workspace"
+	@handler WorkSpaceEditHandler
+	post /workspace/edit (WorkSpaceEditRequest) returns (WorkSpaceEditResponse)
+
+	@doc "列表workspace"
+	@handler WorkSpaceListHandler
+	post /workspace/list (WorkSpaceListRequest) returns (WorkSpaceListResponse)
+
+	@doc "编辑workspace标签"
+	@handler WorkSpaceEditTagHandler
+	post /workspace/edit/tag (WorkSpaceEditTagRequest) returns (WorkSpaceEditTagResponse)
+
+	@doc "列表tag"
+	@handler TagListHandler
+	post /tag/list (TagListRequest) returns (TagListResponse)
+
+	@doc "Mock接口"
+	@handler MockHandler
+	post /mock (MockRequest) returns (MockResponse)
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: canvas
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+)
+service workflow-api {
+	@doc "画布更新"
+	@handler CanvasDraftHandler
+	post /canvas/draft (CanvasDraftRequest) returns (CanvasDraftResponse)
+
+	@doc "画布详情"
+	@handler CanvasDetailHandler
+	post /canvas/detail (CanvasDetailRequest) returns (CanvasDetailResponse)
+
+	@doc "全部运行"
+	@handler CanvasRunHandler
+	post /canvas/run (CanvasRunRequest) returns (CanvasRunResponse)
+
+	@doc "单组件运行"
+	@handler CanvasRunSingleHandler
+	post /canvas/run/single (CanvasRunSingleRequest) returns (CanvasRunSingleResponse)
+
+	@doc "组件运行详情"
+	@handler CanvasRunSingleDetailHandler
+	post /canvas/run/single/detail (CanvasRunSingleDetailRequest) returns (CanvasRunSingleDetailResponse)
+
+	@doc "获取画布运行历史"
+	@handler getCanvasRunHistory
+	get /canvas/run/history/:workSpaceId (GetCanvasRunHistoryReq) returns (GetCanvasRunHistoryResp)
+
+	@doc "获取画布运行详情"
+	@handler getCanvasRunDetail
+	get /canvas/run/detail/:recordId (GetCanvasRunDetailReq) returns (GetCanvasRunDetailResp)
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: api
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+)
+service workflow-api {
+	@doc "API发布"
+	@handler ApiPublishHandler
+	post /api/publish (ApiPublishRequest) returns (ApiPublishResponse)
+
+	@doc "API发布列表"
+	@handler ApiListHandler
+	post /api/list (ApiPublishListRequest) returns (ApiPublishListResponse)
+
+	@doc "APIOnOff"
+	@handler ApiOnOffHandler
+	post /api/onoff (ApiOnOffRequest) returns (ApiOnOffResponse)
+
+	@doc "API调用记录"
+	@handler ApiRecordsHandler
+	post /api/records (ApiRecordsRequest) returns (ApiRecordsResponse)
+
+	@doc "secretyKeyList"
+	@handler ApiSecretyKeyListHandler
+	post /api/secretykey/list (ApiSecretyKeyListRequest) returns (ApiSecretyKeyListResponse)
+
+	@doc "创建API密钥"
+	@handler ApiSecretyKeyCreateHandler
+	post /api/secretykey/create (ApiSecretyKeyCreateRequest) returns (ApiSecretyKeyCreateResponse)
+
+	@doc "修改API密钥状态"
+	@handler ApiSecretyKeyUpdateStatusHandler
+	post /api/secretykey/update/status (ApiSecretyKeyUpdateStatusRequest) returns (ApiSecretyKeyUpdateStatusResponse)
+
+	@doc "修改API密钥到期时间"
+	@handler ApiSecretyKeyUpdateExpirationTimeHandler
+	post /api/secretykey/update/expirationtime (ApiSecretyKeyUpdateExpirationTimeRequest) returns (ApiSecretyKeyUpdateExpirationTimeResponse)
+
+	@doc "删除API密钥"
+	@handler ApiSecretyKeyDeleteHandler
+	post /api/secretykey/delete (ApiSecretyKeyDeleteRequest) returns (ApiSecretyKeyDeleteResponse)
+}
+
