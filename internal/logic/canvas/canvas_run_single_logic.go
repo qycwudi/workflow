@@ -2,15 +2,15 @@ package canvas
 
 import (
 	"context"
-	"time"
+	"encoding/json"
 
-	"github.com/google/uuid"
-	"github.com/rulego/rulego/utils/json"
+	rulego2 "github.com/rulego/rulego"
+	type2 "github.com/rulego/rulego/api/types"
+	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/logic"
-	"workflow/internal/model"
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -31,36 +31,43 @@ func NewCanvasRunSingleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *C
 }
 
 func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest) (resp *types.CanvasRunSingleResponse, err error) {
-	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
+	parentNodes := rulego.RoleChain.GetParentNode(req.Id, req.NodeId)
+	trace, err := l.svcCtx.TraceModel.FindOneByNodeId(l.ctx, parentNodes[0])
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
+		return nil, errors.New(int(logic.SystemOrmError), "查询 trace 失败")
 	}
 
-	canvasId, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
+	// 构造参数
+	metadata := make(map[string]string)
+	data := ""
+	// 读取 trace 的 metadata
+	if trace.Input != "" {
+		metadataValue := gjson.Get(trace.Input, "metadata")
+		if metadataValue.Exists() {
+			// 将 gjson.Result 转换为 map[string]string
+			metadataMap := metadataValue.Map()
+			for k, v := range metadataMap {
+				metadata[k] = v.String()
+			}
+		}
+		dataValue := gjson.Get(trace.Input, "data")
+		if dataValue.Exists() {
+			data = dataValue.String()
+		}
 	}
 
-	// 读取 metadata
-	metadata, err := l.readMetadata(canvasId)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "初始化 metadata 失败")
+	msg := type2.NewMsg(0, "CANVAS_MSG", type2.JSON, metadata, data)
+	var result type2.RuleMsg
+	chain, _ := rulego2.Get(req.Id)
+	chain.OnMsgAndWait(msg, type2.WithTellNext(req.NodeId), type2.WithOnEnd(func(ctx type2.RuleContext, msg type2.RuleMsg, err error, relationType string) {
+		result = msg
+	}))
+
+	var respData map[string]interface{}
+	if err := json.Unmarshal([]byte(result.Data), &respData); err != nil {
+		return nil, errors.New(int(logic.SystemError), "解析结果失败")
 	}
 
-	// 读取 data
-	data, err := l.readData(l.svcCtx.TraceModel, req.NodeId)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "读取 data 失败")
-	}
-
-	// 运行文件
-	rulego.RoleChain.LoadChain(canvasId, ruleChain)
-	result := rulego.RoleChain.Run(canvasId, metadata, data)
-	l.Infof("chain run result:%+v", result)
-
-	respData := make(map[string]interface{})
-
-	err = json.Unmarshal([]byte(result.Data), &respData)
 	resp = &types.CanvasRunSingleResponse{
 		Id:       result.Id,
 		Ts:       result.Ts,
@@ -68,19 +75,4 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 		Data:     respData,
 	}
 	return
-}
-
-func (l *CanvasRunSingleLogic) readMetadata(canvasId string) (map[string]string, error) {
-	// 读取环境变量
-
-	// 初始化值
-	metadata := make(map[string]string)
-	metadata["traceId"] = uuid.New().String()
-	metadata["startTime"] = time.Now().Format("2006-01-02 15:04:05")
-	return metadata, nil
-}
-
-func (l *CanvasRunSingleLogic) readData(traceModel model.TraceModel, nodeId string) (string, error) {
-	// 查找上一个节点
-	return "", errors.New(int(logic.SystemError), "未找到开始节点")
 }

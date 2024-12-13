@@ -23,6 +23,28 @@ type roleChain struct {
 	svc *svc.ServiceContext
 }
 
+// 获取当前节点的父节点
+func (r *roleChain) GetParentNode(id string, nodeId string) []string {
+	chain, b := rulego.Get(id)
+	if !b {
+		logx.Errorf("get role chain fail,id:%s", id)
+	}
+	// 获取规则链定义
+	def := chain.Definition()
+	// 遍历所有连接关系
+	var parentNodes []string
+	for _, conn := range def.Metadata.Connections {
+		// 如果目标节点是当前节点,添加源节点ID到数组
+		if conn.ToId == nodeId {
+			parentNodes = append(parentNodes, conn.FromId)
+		}
+	}
+	if len(parentNodes) == 0 {
+		return []string{}
+	}
+	return parentNodes
+}
+
 func (r *roleChain) LoadChain(id string, json []byte) {
 	chain, b := rulego.Get(id)
 	if b {

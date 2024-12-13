@@ -18,6 +18,7 @@ type (
 		UpdateByTraceIdAndNodeId(ctx context.Context, data *Trace) error
 		FindByTraceId(ctx context.Context, id string) ([]*Trace, error)
 		FindOneByNodeIdAndWorkspaceId(ctx context.Context, traceId, nodeId string) (*Trace, error)
+		FindOneByNodeId(ctx context.Context, nodeId string) (*Trace, error)
 	}
 
 	customTraceModel struct {
@@ -59,6 +60,20 @@ func (m *customTraceModel) FindOneByNodeIdAndWorkspaceId(ctx context.Context, tr
 	query := fmt.Sprintf("select %s from %s where workspace_id = ? and node_id = ? limit 1", traceRows, m.table)
 	var resp Trace
 	err := m.conn.QueryRowCtx(ctx, &resp, query, traceId, nodeId)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (m *customTraceModel) FindOneByNodeId(ctx context.Context, nodeId string) (*Trace, error) {
+	query := fmt.Sprintf("select %s from %s where node_id = ? order by id desc limit 1", traceRows, m.table)
+	var resp Trace
+	err := m.conn.QueryRowCtx(ctx, &resp, query, nodeId)
 	switch err {
 	case nil:
 		return &resp, nil
