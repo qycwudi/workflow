@@ -81,5 +81,6 @@ func (l *CanvasRunSingleLogic) readMetadata(canvasId string) (map[string]string,
 }
 
 func (l *CanvasRunSingleLogic) readData(traceModel model.TraceModel, nodeId string) (string, error) {
+	// 查找上一个节点
 	return "", errors.New(int(logic.SystemError), "未找到开始节点")
 }

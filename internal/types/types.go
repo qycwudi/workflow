@@ -115,6 +115,22 @@ type CanvasRunSingleResponse struct {
 	Data     map[string]interface{} `json:"data"`
 }
 
+type CanvasRunSingleDetailRequest struct {
+	Id     string `json:"id"`     // 空间ID
+	NodeId string `json:"nodeId"` // 节点ID
+}
+
+type CanvasRunSingleDetailResponse struct {
+	NodeId    string                 `json:"nodeId"`
+	NodeName  string                 `json:"nodeName"`
+	StartTime int64                  `json:"startTime"`
+	Duration  int64                  `json:"duration"`
+	Status    string                 `json:"status"`
+	Error     string                 `json:"error"`
+	Input     map[string]interface{} `json:"input"`
+	Output    map[string]interface{} `json:"output"`
+}
+
 type GetCanvasRunHistoryReq struct {
 	WorkSpaceId string `path:"workSpaceId"`
 }

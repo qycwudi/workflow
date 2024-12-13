@@ -10,9 +10,9 @@ type RuleChain struct {
 }
 
 type Metadata struct {
-	// Endpoints   []interface{} `json:"endpoints"`
-	Nodes       []Node       `json:"nodes"`
-	Connections []Connection `json:"connections"`
+	FirstNodeIndex int          `json:"firstNodeIndex"`
+	Nodes          []Node       `json:"nodes"`
+	Connections    []Connection `json:"connections"`
 }
 
 type Node struct {

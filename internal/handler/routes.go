@@ -79,6 +79,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Handler: canvas.CanvasRunSingleHandler(serverCtx),
 			},
 			{
+				Method:  http.MethodPost,
+				Path:    "/canvas/run/single/detail",
+				Handler: canvas.CanvasRunSingleDetailHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodGet,
 				Path:    "/canvas/run/history/:workSpaceId",
 				Handler: canvas.GetCanvasRunHistoryHandler(serverCtx),

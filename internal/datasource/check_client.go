@@ -61,6 +61,7 @@ func GenDataSourceDSN(t enum.DBType, config string) string {
 	var dsn string
 	switch t {
 	case enum.MysqlType:
+		// {"host": "192.168.49.2", "port": 31426, "database": "wk", "password": "root", "user": "root"}
 		dsn = fmt.Sprintf("%s:%s@tcp(%s:%d)/%s?charset=utf8mb4&parseTime=True&loc=Local", c.User, c.Password, c.Host, c.Port, c.Database)
 	case enum.OracleType:
 		dsn = goora.BuildUrl(c.Host, c.Port, c.Database, c.User, c.Password, nil)

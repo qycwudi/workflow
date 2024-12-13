@@ -37,6 +37,32 @@ func Test_roleChain_Run_Join(t *testing.T) {
 	t.Logf("chain run result:%+v", result)
 }
 
+func Test_roleChain_Run_Base_Test(t *testing.T) {
+	file, _ := os.ReadFile("./chain/btest.json")
+	config := rulego.NewConfig()
+	config.Logger = &utils.RoleCustomLog{}
+	chain, err := rulego.New(
+		"ctdp4353sjtrlkhmrvb0",
+		file,
+		rulego.WithConfig(config),
+		// types.WithAspects(&DebugAop{})
+	)
+	if err != nil {
+		logx.Errorf("load role chain fail,err:%v\n", err)
+		return
+	}
+	matadata := make(map[string]string)
+	matadata["env"] = "jlhalsjdhfoisdbv"
+	data := "{\"name\": \"张三\",  \"age\": 10}"
+
+	msg := types.NewMsg(0, "CANVAS_MSG", types.JSON, matadata, data)
+	var result types.RuleMsg
+	chain.OnMsgAndWait(msg, types.WithOnEnd(func(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) {
+		result = msg
+	}))
+	t.Logf("chain run result:%+v", result)
+}
+
 func Test_roleChain_Run_Single(t *testing.T) {
 	file, _ := os.ReadFile("./chain/join.json")
 	config := rulego.NewConfig()

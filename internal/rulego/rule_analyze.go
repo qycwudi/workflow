@@ -39,12 +39,22 @@ func ParsingDsl(draft string) (string, []byte, error) {
 		edges[i] = r
 	}
 
+	// 4. 读取开始节点索引
+	firstNodeIndex := 0
+	for i, node := range nodes {
+		if node.Type == Start {
+			firstNodeIndex = i
+			break
+		}
+	}
+
 	// 4. 构造执行实体
 	ruleChain := Rule{
 		RuleChain: RuleChain{Id: canvasId},
 		Metadata: Metadata{
-			Nodes:       nodes,
-			Connections: edges,
+			FirstNodeIndex: firstNodeIndex,
+			Nodes:          nodes,
+			Connections:    edges,
 		},
 	}
 

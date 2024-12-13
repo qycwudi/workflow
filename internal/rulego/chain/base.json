@@ -8,14 +8,7 @@
         "id": "start-4e2582e1-8caa-438a-ad5a-601206cabe4b",
         "type": "start",
         "name": "开始😄",
-        "configuration": {
-          "Index": 843,
-          "Indexes": null,
-          "Num": 0,
-          "Raw": "{\"param\": \"{\\n  \\\"name\\\":\\\"xuetu\\\",\\n  \\\"age\\\":18\\n}\"}",
-          "Str": "",
-          "Type": 5
-        }
+        "configuration": {}
       },
       {
         "id": "end-4d36472e-fbeb-4767-8d1b-e9e7dd736755",

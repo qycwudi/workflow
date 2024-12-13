@@ -1,0 +1,42 @@
+{
+    "ruleChain": {
+        "id": "ctdp4353sjtrlkhmrvb0"
+    },
+    "metadata": {
+        "firstNodeIndex":1,
+        "nodes": [
+            {
+                "id": "end-4d36472e-fbeb-4767-8d1b-e9e7dd736755",
+                "name": "结束🩷",
+                "type": "end",
+                "configuration": {}
+            },
+            {
+                "id": "start-4e2582e1-8caa-438a-ad5a-601206cabe4b",
+                "name": "开始😄",
+                "type": "start",
+                "configuration": {}
+            },
+            {
+                "id": "jsTransform-530910c6-950d-4bda-b68d-90b0b4f4ddb0",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "msg.name = msg.name + '-处理';\n  msg.age = msg.age + 2;\n  return { msg: msg, metadata: metadata, msgType: msgType };"
+                }
+            }
+        ],
+        "connections": [
+            {
+                "toId": "jsTransform-530910c6-950d-4bda-b68d-90b0b4f4ddb0",
+                "type": "Success",
+                "fromId": "start-4e2582e1-8caa-438a-ad5a-601206cabe4b"
+            },
+            {
+                "toId": "end-4d36472e-fbeb-4767-8d1b-e9e7dd736755",
+                "type": "Success",
+                "fromId": "jsTransform-530910c6-950d-4bda-b68d-90b0b4f4ddb0"
+            }
+        ]
+    }
+}
