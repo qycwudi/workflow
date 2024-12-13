@@ -99,14 +99,14 @@ func httpParseHeaders(authStr string) map[string]string {
 
 func jsTransformCfg(data gjson.Result) map[string]interface{} {
 	config := map[string]interface{}{}
-	if script := data.Get("script").String(); script != "" {
+	if script := data.Get("jsScript").String(); script != "" {
 		// 使用正则表达式匹配函数体内容
 		re := regexp.MustCompile(`(?s)function\s+Filter\s*\(\s*msg\s*,\s*metadata\s*,\s*msgType\s*\)\s*{(.*)}`)
 		matches := re.FindStringSubmatch(script)
 		if len(matches) > 1 {
 			// 提取函数体内容并去除首尾空白
 			script = strings.TrimSpace(matches[1])
-			config["script"] = script
+			config["jsScript"] = script
 		}
 	}
 	return config

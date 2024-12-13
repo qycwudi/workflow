@@ -1,48 +1,46 @@
 {
   "ruleChain": {
-    "id": "ctdbgr2flvkk9k4q7t7g",
-    "name":"xxx",
-    "root": true
+    "id": "ctdp4353sjtrlkhmrvb0"
   },
   "metadata": {
     "nodes": [
       {
-        "id": "start-0fe785b4-55be-46f0-ad9e-f54b13424014",
+        "id": "start-4e2582e1-8caa-438a-ad5a-601206cabe4b",
         "type": "start",
         "name": "开始😄",
         "configuration": {
-          "Index": 867,
+          "Index": 843,
           "Indexes": null,
           "Num": 0,
-          "Raw": "{\"param\": \"{\\\"Accept\\\": \\\"application/json\\\",\\\"Content-Type\\\": \\\"application/json\\\"}\"}",
+          "Raw": "{\"param\": \"{\\n  \\\"name\\\":\\\"xuetu\\\",\\n  \\\"age\\\":18\\n}\"}",
           "Str": "",
           "Type": 5
         }
       },
       {
-        "id": "end-b5a4ca11-65dd-4279-86b4-84cfe2a8ecb5",
+        "id": "end-4d36472e-fbeb-4767-8d1b-e9e7dd736755",
         "type": "end",
         "name": "结束🩷",
         "configuration": {}
       },
       {
-        "id": "code-execution-js-dec52a51-8bef-43db-914b-ca0753f36caf",
-        "type": "code-execution-js",
+        "id": "jsTransform-530910c6-950d-4bda-b68d-90b0b4f4ddb0",
+        "type": "jsTransform",
         "name": "代码执行💻",
         "configuration": {
-          "script": "return { msg: msg, metadata: metadata, msgType: msgType };"
+          "jsScript": "msg.name = msg.name + '-处理';\n  msg.age = msg.age + 2;\n  return { msg: msg, metadata: metadata, msgType: msgType };"
         }
       }
     ],
     "connections": [
       {
-        "fromId": "start-0fe785b4-55be-46f0-ad9e-f54b13424014",
-        "toId": "code-execution-js-dec52a51-8bef-43db-914b-ca0753f36caf",
+        "fromId": "start-4e2582e1-8caa-438a-ad5a-601206cabe4b",
+        "toId": "jsTransform-530910c6-950d-4bda-b68d-90b0b4f4ddb0",
         "type": "Success"
       },
       {
-        "fromId": "code-execution-js-dec52a51-8bef-43db-914b-ca0753f36caf",
-        "toId": "end-b5a4ca11-65dd-4279-86b4-84cfe2a8ecb5",
+        "fromId": "jsTransform-530910c6-950d-4bda-b68d-90b0b4f4ddb0",
+        "toId": "end-4d36472e-fbeb-4767-8d1b-e9e7dd736755",
         "type": "Success"
       }
     ]

@@ -16,7 +16,7 @@ func Test_roleChain_Run_Join(t *testing.T) {
 	config := rulego.NewConfig()
 	config.Logger = &utils.RoleCustomLog{}
 	chain, err := rulego.New(
-		"ctdbgr2flvkk9k4q7t7g",
+		"ctdp4353sjtrlkhmrvb0",
 		file,
 		rulego.WithConfig(config),
 		// types.WithAspects(&DebugAop{})
