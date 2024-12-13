@@ -29,185 +29,11 @@ type ApiPublishListRequest struct {
 	Name     string `json:"name,optional"`
 }
 
-<<<<<<< HEAD
 type ApiPublishListResponse struct {
 	Current  int              `json:"current"`
 	PageSize int              `json:"pageSize"`
 	Total    int64            `json:"total"`
 	List     []ApiPublishList `json:"list"`
-=======
-type WorkSpaceEditResponse struct {
-	WorkSpaceBase
-	WorkSpaceConfig string `json:"workSpaceConfig"`
-}
-
-type WorkRemoveRequest struct {
-	Id string `json:"id,optional"`
-}
-
-type WorkSpaceRemoveResponse struct {
-}
-
-type WorkSpaceListRequest struct {
-	WorkSpaceName string  `json:"workSpaceName,optional"`
-	WorkSpaceType string  `json:"workSpaceType,optional"`
-	WorkSpaceTag  []int64 `json:"workSpaceTag,optional"`
-	Current       int     `json:"current"`
-	PageSize      int     `json:"pageSize"`
-}
-
-type WorkSpaceListResponse struct {
-	Current  int             `json:"current"`
-	PageSize int             `json:"pageSize"`
-	Total    int64           `json:"total"`
-	Data     []WorkSpacePage `json:"data"`
-}
-
-type WorkSpacePage struct {
-	WorkSpaceBase
-	CreateTime string `json:"createTime"`
-	UpdateTime string `json:"updateTime"`
-}
-
-type WorkSpaceEditTagRequest struct {
-	Id           string   `json:"id"`
-	WorkSpaceTag []string `json:"workSpaceTag"`
-}
-
-type WorkSpaceEditTagResponse struct {
-}
-
-type TagListRequest struct {
-}
-
-type TagListResponse struct {
-	Tag []TagEntity `json:"tagList"`
-}
-
-type TagEntity struct {
-	Id   int    `json:"id"`
-	Name string `json:"name"`
-}
-
-type MockRequest struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-}
-
-type MockInfo struct {
-	Address   string   `json:"address"`
-	PhoneNums []string `json:"phoneNums"`
-}
-
-type MockResponse struct {
-	Name string `json:"name"`
-	Age  int    `json:"age"`
-}
-
-type CanvasRunRequest struct {
-	Id string `json:"id" desc:"空间ID"`
-}
-
-type CanvasRunResponse struct {
-	Ts       int64                  `json:"ts"`
-	Id       string                 `json:"id"`
-	MetaData map[string]string      `json:"metadata"`
-	Data     map[string]interface{} `json:"data"`
-}
-
-type CanvasRunSingleRequest struct {
-	Id     string `json:"id" desc:"空间ID"`
-	NodeId string `json:"nodeId" desc:"节点ID"`
-}
-
-type CanvasRunSingleResponse struct {
-	Ts       int64                  `json:"ts"`
-	Id       string                 `json:"id"`
-	MetaData map[string]string      `json:"metadata"`
-	Data     map[string]interface{} `json:"data"`
-}
-
-type CanvasRunSingleDetailRequest struct {
-	Id     string `json:"id"`     // 空间ID
-	NodeId string `json:"nodeId"` // 节点ID
-}
-
-type CanvasRunSingleDetailResponse struct {
-	NodeId    string `json:"nodeId"`
-	NodeName  string `json:"nodeName"`
-	StartTime int64  `json:"startTime"`
-	Duration  int64  `json:"duration"`
-	Status    string `json:"status"`
-	Error     string `json:"error"`
-	Input     string `json:"input"`
-	Output    string `json:"output"`
-}
-
-type GetCanvasRunHistoryReq struct {
-	WorkSpaceId string `path:"workSpaceId"`
-}
-
-type RunHistoryRecord struct {
-	Id             string `json:"id"`             // 运行记录ID
-	StartTime      string `json:"startTime"`      // 开始时间，ISO格式
-	Duration       int64  `json:"duration"`       // 总耗时(ms)
-	Status         string `json:"status"`         // 运行状态
-	ComponentCount int64  `json:"componentCount"` // 组件数量
-}
-
-type GetCanvasRunHistoryResp struct {
-	Records []RunHistoryRecord `json:"records"`
-	Total   int64              `json:"total"` // 总记录数
-}
-
-type GetCanvasRunDetailReq struct {
-	RecordId string `path:"recordId"` // 运行记录ID
-}
-
-type GetCanvasRunDetailResp struct {
-	Id         string            `json:"id"`         // 运行记录ID
-	StartTime  string            `json:"startTime"`  // 开始时间
-	Duration   int64             `json:"duration"`   // 总耗时(ms)
-	Status     string            `json:"status"`     // 运行状态 success/failed
-	Error      string            `json:"error"`      // 错误信息
-	Components []ComponentDetail `json:"components"` // 组件列表
-}
-
-type ComponentDetail struct {
-	Id        string                 `json:"id"`        // 组件ID
-	Name      string                 `json:"name"`      // 组件名称
-	Logic     string                 `json:"logic"`     // 组件类型
-	StartTime int64                  `json:"startTime"` // 开始时间戳
-	Duration  int64                  `json:"duration"`  // 耗时(ms)
-	Status    string                 `json:"status"`    // 组件运行状态 success/failed
-	Error     string                 `json:"error"`     // 组件错误信息
-	Input     map[string]interface{} `json:"input"`     // 输入参数
-	Output    map[string]interface{} `json:"output"`    // 输出结果
-}
-
-type CanvasDraftRequest struct {
-	Id    string                 `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
-}
-
-type CanvasDraftResponse struct {
-	Hash       string `json:"hash"`
-	UpdateTime int64  `json:"updateTime"`
-}
-
-type EdgeCustomData struct {
-	SourcePoint int `json:"sourcePoint"`
-	TargetPoint int `json:"targetPoint"`
-}
-
-type CanvasDetailRequest struct {
-	Id string `json:"id"`
-}
-
-type CanvasDetailResponse struct {
-	Id    string                 `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
->>>>>>> 4fa7668 (feat single run result format)
 }
 
 type ApiPublishRequest struct {
@@ -305,9 +131,6 @@ type ApiSecretyKeyUpdateStatusResponse struct {
 	Status    string `json:"status" desc:"状态 ON OFF"`
 }
 
-type Base struct {
-}
-
 type CanvasDetailRequest struct {
 	Id string `json:"id"`
 }
@@ -344,14 +167,14 @@ type CanvasRunSingleDetailRequest struct {
 }
 
 type CanvasRunSingleDetailResponse struct {
-	NodeId    string                 `json:"nodeId"`
-	NodeName  string                 `json:"nodeName"`
-	StartTime int64                  `json:"startTime"`
-	Duration  int64                  `json:"duration"`
-	Status    string                 `json:"status"`
-	Error     string                 `json:"error"`
-	Input     map[string]interface{} `json:"input"`
-	Output    map[string]interface{} `json:"output"`
+	NodeId    string `json:"nodeId"`
+	NodeName  string `json:"nodeName"`
+	StartTime int64  `json:"startTime"`
+	Duration  int64  `json:"duration"`
+	Status    string `json:"status"`
+	Error     string `json:"error"`
+	Input     string `json:"input"`
+	Output    string `json:"output"`
 }
 
 type CanvasRunSingleRequest struct {
