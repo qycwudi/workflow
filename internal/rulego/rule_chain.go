@@ -2,9 +2,11 @@ package rulego
 
 import (
 	"context"
+
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
+
 	"workflow/internal/enum"
 	"workflow/internal/model"
 	"workflow/internal/svc"
@@ -51,16 +53,17 @@ func (r *roleChain) GetParentNode(id string, nodeId string) []string {
 	return parentNodes
 }
 
-func (r *roleChain) LoadChain(id string, json []byte) {
+func (r *roleChain) LoadChain(id string, json []byte) error {
 	chain, b := rulego.Get(id)
 	if b {
 		// 重新加载
 		err := chain.ReloadSelf(json)
 		if err != nil {
 			logx.Errorf("reload self role chain %s fail,err:%v\n", id, err)
+			return err
 		}
 		logx.Infof("reload self role chain %s success,json: %s \n", id, string(json))
-		return
+		return nil
 	}
 
 	_, err := rulego.New(
@@ -70,10 +73,11 @@ func (r *roleChain) LoadChain(id string, json []byte) {
 	)
 	if err != nil {
 		logx.Errorf("load role chain fail,err:%v\n", err)
-		return
+		return err
 	}
 
 	logx.Infof("load %s role chain success,json:%s \n", id, json)
+	return nil
 }
 
 // func (r *roleChain) getChain(id string) types.RuleEngine {

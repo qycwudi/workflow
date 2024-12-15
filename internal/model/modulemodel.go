@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -30,7 +31,7 @@ func NewModuleModel(conn sqlx.SqlConn) ModuleModel {
 }
 
 func (m *defaultModuleModel) FindAll(ctx context.Context) ([]*Module, error) {
-	query := fmt.Sprintf("select %s from %s", moduleRows, m.table)
+	query := fmt.Sprintf("select %s from %s order by module_index desc", moduleRows, m.table)
 	var resp []*Module
 	err := m.conn.QueryRowsCtx(ctx, &resp, query)
 	switch err {

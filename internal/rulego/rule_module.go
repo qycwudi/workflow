@@ -26,31 +26,33 @@ const (
 	Http string = "http"
 	Fork string = "fork"
 	Join string = "join"
+	For  string = "for"
 )
 
-func ModuleReadConfig(data gjson.Result) map[string]interface{} {
+func ModuleReadConfig(data gjson.Result, baseInfo map[string]string) map[string]interface{} {
 	moduleType := data.Get("type").String()
 	custom := data.Get("custom")
 
 	// 使用映射表来避免大量的 switch case
-	configHandlers := map[string]func(gjson.Result) map[string]interface{}{
+	configHandlers := map[string]func(gjson.Result, map[string]string) map[string]interface{}{
 		Start:       startCfg,
-		End:         func(gjson.Result) map[string]interface{} { return endCfg() },
+		End:         func(gjson.Result, map[string]string) map[string]interface{} { return endCfg() },
 		Http:        httpCfg,
 		JsTransform: jsTransformCfg,
 		Fork:        forkCfg,
 		Join:        JoinCfg,
+		For:         forCfg,
 	}
 
 	// 查找对应的处理函数
 	if handler, ok := configHandlers[moduleType]; ok {
-		return handler(custom)
+		return handler(custom, baseInfo)
 	}
 
 	return nil
 }
 
-func startCfg(custom gjson.Result) map[string]interface{} {
+func startCfg(custom gjson.Result, baseInfo map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
 	marshal, _ := json.Marshal(custom)
 	_ = json.Unmarshal(marshal, &config)
@@ -61,13 +63,13 @@ func endCfg() map[string]interface{} {
 	return map[string]interface{}{}
 }
 
-func httpCfg(data gjson.Result) map[string]interface{} {
+func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
 	configuration := HttpNodeConfiguration{
 		RestEndpointUrlPattern:   data.Get("url").String(),
 		RequestMethod:            data.Get("method").String(),
 		WithoutRequestBody:       false,
-		Headers:                  httpParseHeaders(data.Get("headers").String()),
+		Headers:                  httpParseHeaders(data.Get("header").Array()),
 		ReadTimeoutMs:            0,
 		MaxParallelRequestsCount: 200,
 		EnableProxy:              false,
@@ -77,7 +79,7 @@ func httpCfg(data gjson.Result) map[string]interface{} {
 		ProxyPort:                0,
 		ProxyUser:                "",
 		ProxyPassword:            "",
-		Script:                   data.Get("code").String(),
+		// Script:                   data.Get("code").String(),
 	}
 	marshal, _ := json.Marshal(configuration)
 	_ = json.Unmarshal(marshal, &config)
@@ -85,19 +87,19 @@ func httpCfg(data gjson.Result) map[string]interface{} {
 }
 
 // httpParseHeaders takes a string in the format "key:value,key1:value1" and returns a map[string]string.
-func httpParseHeaders(authStr string) map[string]string {
+func httpParseHeaders(authStr []gjson.Result) map[string]string {
 	authMap := make(map[string]string)
-	pairs := strings.Split(authStr, ",")
-	for _, pair := range pairs {
-		keyValue := strings.Split(pair, ":")
-		if len(keyValue) == 2 {
-			authMap[keyValue[0]] = keyValue[1]
+	for _, header := range authStr {
+		label := header.Get("label").String()
+		value := header.Get("value").String()
+		if label != "" && value != "" {
+			authMap[label] = value
 		}
 	}
 	return authMap
 }
 
-func jsTransformCfg(data gjson.Result) map[string]interface{} {
+func jsTransformCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
 	if script := data.Get("jsScript").String(); script != "" {
 		// 使用正则表达式匹配函数体内容
@@ -112,13 +114,21 @@ func jsTransformCfg(data gjson.Result) map[string]interface{} {
 	return config
 }
 
-func forkCfg(data gjson.Result) map[string]interface{} {
+func forkCfg(data gjson.Result, baseInfo map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
 	return config
 }
 
-func JoinCfg(data gjson.Result) map[string]interface{} {
+func JoinCfg(data gjson.Result, baseInfo map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
 	config["timeout"] = 10
+	return config
+}
+
+func forCfg(data gjson.Result, baseInfo map[string]string) map[string]interface{} {
+	config := map[string]interface{}{}
+	config["range"] = data.Get("range").String()
+	config["mode"] = 1
+	config["do"] = baseInfo[baseInfo["id"]]
 	return config
 }

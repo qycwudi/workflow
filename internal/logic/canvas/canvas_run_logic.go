@@ -55,7 +55,10 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	}
 
 	// 运行文件
-	rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	err = rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "加载画布失败,错误原因:"+err.Error())
+	}
 	result := rulego.RoleChain.Run(canvasId, metadata, data)
 	l.Infof("chain run result:%+v", result)
 

@@ -1,5 +1,15 @@
 goctl model mysql ddl --src user.sql --dir .. -i ''
 
+brew install ariga/tap/atlas
+
+atlas schema diff \
+  --from mysql://root:root@192.168.49.2:31426/wk \
+  --to mysql://root:Root@123@10.99.43.9:3306/workflow
+
+atlas schema inspect -u "mysql://root:root@192.168.49.2:31426/wk" > schema.hcl
+
+
+
 dump库表
 kubectl exec -it xuetu-db-cc774ff4b-pd6pf  -- sh -c 'mysqldump -u root -proot wk' > mydb_dump.sql
 

@@ -3,10 +3,10 @@ package workspace
 import (
 	"context"
 
+	"github.com/zeromicro/go-zero/core/logx"
+
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type MockLogic struct {
@@ -24,5 +24,6 @@ func NewMockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MockLogic {
 }
 
 func (l *MockLogic) Mock(req *types.MockRequest) (resp *types.MockResponse, err error) {
+	// logx.Infof("request headers: %+v", r.Header)
 	return &types.MockResponse{Name: req.Name + "mock", Age: req.Age + 10}, nil
 }

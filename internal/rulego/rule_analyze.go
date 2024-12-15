@@ -13,30 +13,39 @@ func ParsingDsl(draft string) (string, []byte, error) {
 	canvasId := canvasJson.Get("id").String()
 	logx.Infof("canvasId:%s\n", canvasId)
 
-	// 2. 构造点
-	graphNodes := canvasJson.Get("graph.nodes").Array()
-	nodes := make([]Node, len(graphNodes))
-	for i, node := range graphNodes {
-		r := Node{
-			Id:   node.Get("id").String(),
-			Type: node.Get("data.type").String(),
-			Name: node.Get("data.name").String(),
-			// 不同组件配置读取逻辑不同
-			Configuration: ModuleReadConfig(node.Get("data")),
-		}
-		nodes[i] = r
-	}
+	// 特殊关系[迭代的处理节点]
+	baseInfo := make(map[string]string, 0)
 
-	// 3. 构造线
+	// 2. 构造线
 	graphEdges := canvasJson.Get("graph.edges").Array()
 	edges := make([]Connection, len(graphEdges))
 	for i, edge := range graphEdges {
+		if edge.Get("sourceHandle").String() == "Do" {
+			baseInfo[edge.Get("source").String()] = edge.Get("target").String()
+			continue
+		}
 		r := Connection{
 			FromId: edge.Get("source").String(),
 			ToId:   edge.Get("target").String(),
 			Type:   edge.Get("sourceHandle").String(),
 		}
 		edges[i] = r
+	}
+
+	// 3. 构造点
+	graphNodes := canvasJson.Get("graph.nodes").Array()
+	nodes := make([]Node, len(graphNodes))
+	for i, node := range graphNodes {
+		// 存储id等组件原始信息
+		baseInfo["id"] = node.Get("id").String()
+		r := Node{
+			Id:   node.Get("id").String(),
+			Type: node.Get("data.type").String(),
+			Name: node.Get("data.name").String(),
+			// 不同组件配置读取逻辑不同
+			Configuration: ModuleReadConfig(node.Get("data"), baseInfo),
+		}
+		nodes[i] = r
 	}
 
 	// 4. 读取开始节点索引
