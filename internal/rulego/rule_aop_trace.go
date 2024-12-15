@@ -4,11 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"time"
-	enums "workflow/internal/enum"
 
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/engine"
 
+	enums "workflow/internal/enum"
 	"workflow/internal/model"
 )
 
@@ -59,7 +59,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 	// logx.Infof("around-耗时: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, elapsed)
 
 	// output
-	outputMar, _ := json.MarshalIndent(ctx.GetContext().Value(ctx.RuleChain().GetNodeId().Id), "", "    ")
+	outputMar, _ := json.MarshalIndent(ctx.GetContext().Value(nodeIdKey(ctx.RuleChain().GetNodeId().Id)), "", "    ")
 	// logx.Infof("around-output: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, outputMar)
 	// 更新追踪
 	traceQueue <- &model.Trace{
@@ -72,8 +72,13 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 	return msg, false
 }
 
+type nodeIdKey string
+
 func (aspect *TraceAop) After(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
-	ctx.SetContext(context.WithValue(ctx.GetContext(), ctx.RuleChain().GetNodeId().Id, msg))
+	nodeId := ctx.RuleChain().GetNodeId().Id
+	msg.Metadata["relationType"] = relationType
+	cctx := context.WithValue(ctx.GetContext(), nodeIdKey(nodeId), msg)
+	ctx.SetContext(cctx)
 	return msg
 }
 

@@ -4,7 +4,6 @@ import (
 	"context"
 	"database/sql"
 	"errors"
-	"workflow/internal/enum"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
@@ -13,6 +12,7 @@ import (
 	"github.com/uptrace/bun/dialect/mysqldialect"
 	"github.com/zeromicro/go-zero/core/logx"
 
+	"workflow/internal/enum"
 	"workflow/internal/model"
 	"workflow/internal/svc"
 )

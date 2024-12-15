@@ -24,6 +24,9 @@ const (
 	JsTransform string = "jsTransform"
 
 	Http string = "http"
+
+	Database string = "database"
+
 	Fork string = "fork"
 	Join string = "join"
 	For  string = "for"
@@ -38,6 +41,8 @@ func ModuleReadConfig(data gjson.Result, baseInfo map[string]string) map[string]
 		Start:       startCfg,
 		End:         func(gjson.Result, map[string]string) map[string]interface{} { return endCfg() },
 		Http:        httpCfg,
+		Database:    databaseCfg,
+		JsFilter:    jsFilterCfg,
 		JsTransform: jsTransformCfg,
 		Fork:        forkCfg,
 		Join:        JoinCfg,
@@ -86,6 +91,19 @@ func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]in
 	return config
 }
 
+func databaseCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
+	config := map[string]interface{}{}
+	configuration := DatabaseNodeConfiguration{
+		DatasourceType:        data.Get("datasource_type").String(),
+		DatasourceId:          data.Get("datasource_id").Int(),
+		DatasourceSql:         data.Get("datasource_sql").String(),
+		DatasourceParamMapper: make([]string, 0),
+	}
+	marshal, _ := json.Marshal(configuration)
+	_ = json.Unmarshal(marshal, &config)
+	return config
+}
+
 // httpParseHeaders takes a string in the format "key:value,key1:value1" and returns a map[string]string.
 func httpParseHeaders(authStr []gjson.Result) map[string]string {
 	authMap := make(map[string]string)
@@ -97,6 +115,16 @@ func httpParseHeaders(authStr []gjson.Result) map[string]string {
 		}
 	}
 	return authMap
+}
+
+func jsFilterCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
+	config := map[string]interface{}{}
+	script := data.Get("jsScript").String()
+	if script != "" {
+		// "jsScript": "return msgType =='EVENT_APP1';"
+		config["jsScript"] = "return " + script + ";"
+	}
+	return config
 }
 
 func jsTransformCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
