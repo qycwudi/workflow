@@ -12,6 +12,7 @@ require (
 	github.com/rs/xid v1.6.0
 	github.com/rulego/rulego v0.27.0
 	github.com/samber/lo v1.47.0
+	github.com/sijms/go-ora/v2 v2.8.22
 	github.com/tidwall/gjson v1.18.0
 	github.com/uptrace/bun v1.2.6
 	github.com/uptrace/bun/dialect/mssqldialect v1.2.6
@@ -31,12 +32,9 @@ require (
 	github.com/eclipse/paho.mqtt.golang v1.5.0 // indirect
 	github.com/expr-lang/expr v1.16.9 // indirect
 	github.com/fatih/color v1.17.0 // indirect
-	github.com/go-logfmt/logfmt v0.6.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/go-sourcemap/sourcemap v2.1.4+incompatible // indirect
-	github.com/godror/godror v0.45.2 // indirect
-	github.com/godror/knownpb v0.1.2 // indirect
 	github.com/gofrs/uuid/v5 v5.3.0 // indirect
 	github.com/golang-jwt/jwt/v4 v4.5.0 // indirect
 	github.com/golang-sql/civil v0.0.0-20190719163853-cb61b32ac6fe // indirect
@@ -62,7 +60,6 @@ require (
 	github.com/puzpuzpuz/xsync/v3 v3.4.0 // indirect
 	github.com/redis/go-redis/v9 v9.6.1 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/sijms/go-ora/v2 v2.8.22 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect

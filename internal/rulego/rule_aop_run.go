@@ -21,7 +21,7 @@ var (
 type RunAop struct {
 }
 
-func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.RuleMsg {
+func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) (types.RuleMsg, error) {
 	if msg.Type == enums.CanvasMsg {
 		// 画布运行
 		logx.Infof("CANVAS START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
@@ -35,7 +35,7 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 		})
 		if err != nil {
 			logx.Errorf("create space record err:%s", err.Error())
-			ctx.TellFailure(msg, err)
+			return msg, err
 		}
 	} else {
 		// API 调用
@@ -54,9 +54,10 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 		})
 		if err != nil {
 			logx.Errorf("create api record err:%s", err.Error())
+			return msg, err
 		}
 	}
-	return msg
+	return msg, nil
 }
 
 func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
