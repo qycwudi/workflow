@@ -65,3 +65,12 @@ Content-Type: application/json
 
 {
 }
+
+### 工作台复制
+POST http://127.0.0.1:8899/workflow/workspace/copy
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "id": "ctftkoaflvki1l4dkcog"
+}

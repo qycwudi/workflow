@@ -33,6 +33,7 @@ func ParsingDsl(draft string) (string, []byte, error) {
 	}
 
 	// 3. 构造点
+	firstNodeIndex := 0
 	graphNodes := canvasJson.Get("graph.nodes").Array()
 	nodes := make([]Node, len(graphNodes))
 	for i, node := range graphNodes {
@@ -45,16 +46,13 @@ func ParsingDsl(draft string) (string, []byte, error) {
 			// 不同组件配置读取逻辑不同
 			Configuration: ModuleReadConfig(node.Get("data"), baseInfo),
 		}
-		nodes[i] = r
-	}
 
-	// 4. 读取开始节点索引
-	firstNodeIndex := 0
-	for i, node := range nodes {
-		if node.Type == Start {
+		// 读取开始节点索引
+		if r.Type == Start {
 			firstNodeIndex = i
-			break
 		}
+
+		nodes[i] = r
 	}
 
 	// 4. 构造执行实体

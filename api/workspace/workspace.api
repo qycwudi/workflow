@@ -97,7 +97,17 @@ type MockResponse {
 //    Info MockInfo `json:"info"`
 }
 
+// 画布复制
+type (
+    WorkspaceCopyRequest {
+        Id string `json:"id"`
+    }
 
+    WorkspaceCopyResponse {
+        WorkSpaceBase
+        WorkSpaceConfig string `json:"workSpaceConfig"`
+    }
+)
 
 @server (
     // 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
@@ -133,4 +143,8 @@ service workflow-api {
     @doc "Mock接口"
     @handler MockHandler
     post /mock (MockRequest) returns (MockResponse)
+
+    @doc "WorkspaceCopyHandler 画布复制"
+    @handler WorkspaceCopyHandler
+    post /workspace/copy (WorkspaceCopyRequest) returns (WorkspaceCopyResponse)
 }
