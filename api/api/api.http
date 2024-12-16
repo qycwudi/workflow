@@ -63,10 +63,21 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://127.0.0.1:9999/api/role/v1/ctfp6jd3sjtnpeivp7kg
+POST http://127.0.0.1:9999/api/role/v1/ctfvtb2flvkm3l6cbsh0
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 1ea00ca19d4f47b48c9ed8aec131674d
+Authorization: Bearer b4084c770fea4ee49af2410eea6093e4
+
+{
+  "name": "张",
+  "age": 11
+}
+
+### API调用-单结构
+POST http://10.99.43.99:9999/api/role/v1/ctfvtb2flvkm3l6cbsh0
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer b4084c770fea4ee49af2410eea6093e4
 
 {
   "name": "张",
@@ -78,6 +89,25 @@ POST http://127.0.0.1:9999/api/role/v1/ctfsv853sjtsad9b5uvg
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 Authorization: Bearer 31afae937918470b9ba97d287007a7cc
+
+{
+  "list": [
+    {
+      "name": "张",
+      "age": 10
+    },
+    {
+      "name": "李", 
+      "age": 10
+    }
+  ]
+}
+
+### API调用-数组
+POST http://10.99.43.99:9999/api/role/v1/ctfvtb2flvkm3l6cbsh0
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer b4084c770fea4ee49af2410eea6093e4
 
 {
   "list": [
@@ -113,6 +143,18 @@ Content-Type: application/json
   "current": 2,
   "pageSize": 4
 }
+
+### API密钥列表
+POST http://10.99.43.99:8899/workflow/api/secretykey/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "apiId": "asdasdasd",
+  "current": 2,
+  "pageSize": 4
+}
+
 
 ### 修改API密钥状态
 POST http://127.0.0.1:8899/workflow/api/secretykey/update/status

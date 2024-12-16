@@ -85,6 +85,7 @@ type ApiSecretyKey {
 	Name           string `json:"name"`
 	SecretyKey     string `json:"secretyKey"`
 	ExpirationTime string `json:"expirationTime"`
+	Status    string `json:"status" desc:"状态 ON OFF"`
 }
 
 // 创建API密钥
