@@ -102,6 +102,13 @@ func (n *DataSourceMysqlNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 		result = append(result, rowData)
 	}
 
+	// 添加错误检查
+	if err = rows.Err(); err != nil {
+		logx.Errorf("row iteration failed: %v", err)
+		ctx.TellFailure(msg, err)
+		return
+	}
+
 	// 将结果赋值给msg的数据部分
 	marshal, _ := json.Marshal(result)
 	msg.Data = string(marshal)

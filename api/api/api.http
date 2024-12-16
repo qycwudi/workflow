@@ -63,7 +63,7 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://198.19.249.3:9999/api/role/v1/ctdpe7l3sjtsoutieu20
+POST http://127.0.0.1:9999/api/role/v1/ctfp6jd3sjtnpeivp7kg
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 Authorization: Bearer 1ea00ca19d4f47b48c9ed8aec131674d
@@ -74,19 +74,19 @@ Authorization: Bearer 1ea00ca19d4f47b48c9ed8aec131674d
 }
 
 ### API调用-数组
-POST http://127.0.0.1:9999/api/role/v1/ctdpe7l3sjtsoutieu20
+POST http://127.0.0.1:9999/api/role/v1/ctfsv853sjtsad9b5uvg
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 1ea00ca19d4f47b48c9ed8aec131674d
+Authorization: Bearer 31afae937918470b9ba97d287007a7cc
 
 {
-  "slice": [
+  "list": [
     {
       "name": "张",
       "age": 10
     },
     {
-      "name": "李四", 
+      "name": "李", 
       "age": 10
     }
   ]
@@ -98,7 +98,7 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-  "apiId": "ctdpe7l3sjtsoutieu20",
+  "apiId": "ctfsv853sjtsad9b5uvg",
   "name": "测试密钥",
   "expirationTime": 1752410828282
 }

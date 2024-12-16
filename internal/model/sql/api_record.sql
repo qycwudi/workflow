@@ -8,5 +8,7 @@ CREATE TABLE `api_record`
     `call_time` datetime     NOT NULL,
     `api_id`    varchar(255) NOT NULL,
     `api_name`  varchar(255) NOT NULL,
+    `error_msg` longtext NOT NULL,
+    `secrety_key` varchar(255) NOT NULL,
     PRIMARY KEY (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='api调用记录';

@@ -18,7 +18,7 @@ type (
 		apiSecretKeyModel
 		FindByApiId(ctx context.Context, apiId string) ([]*ApiSecretKey, error)
 		FindByApiIdPage(ctx context.Context, apiId string, current, pageSize int) (int64, []*ApiSecretKey, error)
-		FindOneBySecretKey(ctx context.Context, secretKey string) (*ApiSecretKey, error)
+		FindOneBySecretKey(ctx context.Context, chainId, secretKey string) (*ApiSecretKey, error)
 		LogicalDelete(ctx context.Context, secretKey string) error
 		UpdateExpirationTime(ctx context.Context, secretKey string, expirationTime time.Time) error
 		UpdateStatus(ctx context.Context, secretKey string, status string) error
@@ -78,10 +78,10 @@ func (m *customApiSecretKeyModel) FindByApiIdPage(ctx context.Context, apiId str
 	return total, resp, nil
 }
 
-func (m *customApiSecretKeyModel) FindOneBySecretKey(ctx context.Context, secretKey string) (*ApiSecretKey, error) {
-	query := fmt.Sprintf("select %s from %s where secret_key = ? and is_deleted = 0 limit 1", apiSecretKeyRows, m.table)
+func (m *customApiSecretKeyModel) FindOneBySecretKey(ctx context.Context, chainId, secretKey string) (*ApiSecretKey, error) {
+	query := fmt.Sprintf("select %s from %s where api_id = ? and secret_key = ? and is_deleted = 0 limit 1", apiSecretKeyRows, m.table)
 	var resp ApiSecretKey
-	err := m.conn.QueryRowCtx(ctx, &resp, query, secretKey)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, chainId, secretKey)
 	switch err {
 	case nil:
 		return &resp, nil

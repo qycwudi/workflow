@@ -3,11 +3,11 @@ package rulego
 import (
 	"encoding/json"
 	"time"
-	enums "workflow/internal/enum"
 
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
 
+	enums "workflow/internal/enum"
 	"workflow/internal/model"
 )
 
@@ -42,13 +42,15 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 		logx.Infof("API START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
 		msgMar, _ := json.Marshal(msg)
 		_, err := RoleChain.svc.ApiRecordModel.Insert(ctx.GetContext(), &model.ApiRecord{
-			Status:   enums.RecordStatusRunning,
-			TraceId:  msg.Id,
-			Param:    string(msgMar),
-			Extend:   "{}",
-			CallTime: time.Now(),
-			ApiId:    msg.Metadata["ApiId"],
-			ApiName:  msg.Metadata["ApiName"],
+			Status:     enums.RecordStatusRunning,
+			TraceId:    msg.Id,
+			Param:      string(msgMar),
+			Extend:     "{}",
+			CallTime:   time.Now(),
+			ApiId:      msg.Metadata["api_id"],
+			ApiName:    msg.Metadata["api_name"],
+			SecretyKey: msg.Metadata["secrety_key"],
+			ErrorMsg:   "",
 		})
 		if err != nil {
 			logx.Errorf("create api record err:%s", err.Error())
@@ -59,9 +61,11 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 
 func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
 	status := enums.RecordStatusSuccess
+	var errMsg string
 	if err != nil {
 		status = enums.RecordStatusFail
 		logx.Info(err.Error())
+		errMsg = err.Error()
 	}
 	if msg.Type == enums.CanvasMsg {
 		logx.Infof("CANVAS END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
@@ -80,7 +84,7 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		}
 	} else {
 		logx.Infof("API END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
-		err = RoleChain.svc.ApiRecordModel.UpdateStatusByTraceId(ctx.GetContext(), msg.Id, status)
+		err = RoleChain.svc.ApiRecordModel.UpdateStatusByTraceId(ctx.GetContext(), msg.Id, status, errMsg)
 		if err != nil {
 			logx.Errorf("update api record status err:%s", err.Error())
 			ctx.TellFailure(msg, err)
