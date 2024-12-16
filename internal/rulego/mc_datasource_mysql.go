@@ -47,8 +47,11 @@ func (n *DataSourceMysqlNode) Init(ruleConfig types.Config, configuration types.
 
 // OnMsg 处理消息
 func (n *DataSourceMysqlNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
+	// 参数映射
+	paramMapper := n.Config.DatasourceParamMapper
+
 	// 执行sql
-	rows, err := datasource.DataSourcePool.Query(n.Config.DatasourceId, n.Config.DatasourceSql)
+	rows, err := datasource.DataSourcePool.Query(n.Config.DatasourceId, n.Config.DatasourceSql, paramMapper)
 	if err != nil {
 		ctx.TellFailure(msg, err)
 		return

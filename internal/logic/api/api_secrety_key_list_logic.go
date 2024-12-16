@@ -36,8 +36,10 @@ func (l *ApiSecretyKeyListLogic) ApiSecretyKeyList(req *types.ApiSecretyKeyListR
 	for i, key := range secretKey {
 		keys[i] = types.ApiSecretyKey{
 			ApiId:          key.ApiId,
+			Name:           key.Name,
 			SecretyKey:     key.SecretKey,
 			ExpirationTime: utils.FormatDate(key.ExpirationTime),
+			Status:         key.Status,
 		}
 	}
 
