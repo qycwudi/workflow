@@ -9,16 +9,16 @@ import (
 	"workflow/response"
 )
 
-func ApiSecretyKeyCreateHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func ApisecretKeyUpdateStatusHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.ApiSecretyKeyCreateRequest
+		var req types.ApiSecretKeyUpdateStatusRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := api.NewApiSecretyKeyCreateLogic(r.Context(), svcCtx)
-		resp, err := l.ApiSecretyKeyCreate(&req)
+		l := api.NewApisecretKeyUpdateStatusLogic(r.Context(), svcCtx)
+		resp, err := l.ApisecretKeyUpdateStatus(&req)
 		response.Response(w, resp, err)
 
 	}

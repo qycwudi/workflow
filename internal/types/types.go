@@ -273,65 +273,65 @@ type ApiRecords struct {
 	Extend   string `json:"extend"`
 }
 
-type ApiSecretyKeyListRequest struct {
+type ApiSecretKeyListRequest struct {
 	ApiId    string `json:"apiId"`
 	Current  int    `json:"current"`
 	PageSize int    `json:"pageSize"`
 }
 
-type ApiSecretyKeyListResponse struct {
-	Current  int             `json:"current"`
-	PageSize int             `json:"pageSize"`
-	Total    int64           `json:"total"`
-	List     []ApiSecretyKey `json:"list"`
+type ApiSecretKeyListResponse struct {
+	Current  int            `json:"current"`
+	PageSize int            `json:"pageSize"`
+	Total    int64          `json:"total"`
+	List     []ApiSecretKey `json:"list"`
 }
 
-type ApiSecretyKey struct {
+type ApiSecretKey struct {
 	ApiId          string `json:"apiId"`
 	Name           string `json:"name"`
-	SecretyKey     string `json:"secretyKey"`
+	SecretKey      string `json:"secretKey"`
 	ExpirationTime string `json:"expirationTime"`
 	Status         string `json:"status" desc:"状态 ON OFF"`
 }
 
-type ApiSecretyKeyCreateRequest struct {
+type ApiSecretKeyCreateRequest struct {
 	ApiId          string `json:"apiId"`
 	Name           string `json:"name"`
 	ExpirationTime int64  `json:"expirationTime"`
 }
 
-type ApiSecretyKeyCreateResponse struct {
+type ApiSecretKeyCreateResponse struct {
 	ApiId          string `json:"apiId"`
 	Name           string `json:"name"`
 	SecretKey      string `json:"secretKey"`
 	ExpirationTime string `json:"expirationTime"`
 }
 
-type ApiSecretyKeyUpdateStatusRequest struct {
+type ApiSecretKeyUpdateStatusRequest struct {
 	SecretKey string `json:"secretKey"`
 	Status    string `json:"status" desc:"状态 ON OFF"`
 }
 
-type ApiSecretyKeyUpdateStatusResponse struct {
+type ApiSecretKeyUpdateStatusResponse struct {
 	SecretKey string `json:"secretKey"`
 	Status    string `json:"status" desc:"状态 ON OFF"`
 }
 
-type ApiSecretyKeyUpdateExpirationTimeRequest struct {
+type ApiSecretKeyUpdateExpirationTimeRequest struct {
 	SecretKey      string `json:"secretKey"`
 	ExpirationTime int64  `json:"expirationTime"`
 }
 
-type ApiSecretyKeyUpdateExpirationTimeResponse struct {
+type ApiSecretKeyUpdateExpirationTimeResponse struct {
 	SecretKey      string `json:"secretKey"`
 	ExpirationTime string `json:"expirationTime"`
 }
 
-type ApiSecretyKeyDeleteRequest struct {
+type ApiSecretKeyDeleteRequest struct {
 	SecretKey string `json:"secretKey"`
 }
 
-type ApiSecretyKeyDeleteResponse struct {
+type ApiSecretKeyDeleteResponse struct {
 	SecretKey string `json:"secretKey"`
 }
 

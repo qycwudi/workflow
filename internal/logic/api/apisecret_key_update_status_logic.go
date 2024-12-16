@@ -12,21 +12,21 @@ import (
 	"workflow/internal/types"
 )
 
-type ApiSecretyKeyUpdateStatusLogic struct {
+type ApisecretKeyUpdateStatusLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewApiSecretyKeyUpdateStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiSecretyKeyUpdateStatusLogic {
-	return &ApiSecretyKeyUpdateStatusLogic{
+func NewApisecretKeyUpdateStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApisecretKeyUpdateStatusLogic {
+	return &ApisecretKeyUpdateStatusLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *ApiSecretyKeyUpdateStatusLogic) ApiSecretyKeyUpdateStatus(req *types.ApiSecretyKeyUpdateStatusRequest) (resp *types.ApiSecretyKeyUpdateStatusResponse, err error) {
+func (l *ApisecretKeyUpdateStatusLogic) ApisecretKeyUpdateStatus(req *types.ApiSecretKeyUpdateStatusRequest) (resp *types.ApiSecretKeyUpdateStatusResponse, err error) {
 
 	// 检查下状态
 	if req.Status != model.ApiSecretKeyStatusOn && req.Status != model.ApiSecretKeyStatusOff {
@@ -37,7 +37,7 @@ func (l *ApiSecretyKeyUpdateStatusLogic) ApiSecretyKeyUpdateStatus(req *types.Ap
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "修改 API Secret Key 状态失败")
 	}
-	resp = &types.ApiSecretyKeyUpdateStatusResponse{
+	resp = &types.ApiSecretKeyUpdateStatusResponse{
 		SecretKey: req.SecretKey,
 		Status:    req.Status,
 	}

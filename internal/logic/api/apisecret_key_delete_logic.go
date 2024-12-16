@@ -11,28 +11,28 @@ import (
 	"workflow/internal/types"
 )
 
-type ApiSecretyKeyDeleteLogic struct {
+type ApisecretKeyDeleteLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewApiSecretyKeyDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiSecretyKeyDeleteLogic {
-	return &ApiSecretyKeyDeleteLogic{
+func NewApisecretKeyDeleteLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApisecretKeyDeleteLogic {
+	return &ApisecretKeyDeleteLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *ApiSecretyKeyDeleteLogic) ApiSecretyKeyDelete(req *types.ApiSecretyKeyDeleteRequest) (resp *types.ApiSecretyKeyDeleteResponse, err error) {
+func (l *ApisecretKeyDeleteLogic) ApisecretKeyDelete(req *types.ApiSecretKeyDeleteRequest) (resp *types.ApiSecretKeyDeleteResponse, err error) {
 
 	// 逻辑删除
 	err = l.svcCtx.ApiSecretKeyModel.LogicalDelete(l.ctx, req.SecretKey)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "删除 API Secret Key 记录失败")
 	}
-	resp = &types.ApiSecretyKeyDeleteResponse{
+	resp = &types.ApiSecretKeyDeleteResponse{
 		SecretKey: req.SecretKey,
 	}
 	return resp, nil

@@ -14,21 +14,21 @@ import (
 	"workflow/internal/utils"
 )
 
-type ApiSecretyKeyCreateLogic struct {
+type ApisecretKeyCreateLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewApiSecretyKeyCreateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiSecretyKeyCreateLogic {
-	return &ApiSecretyKeyCreateLogic{
+func NewApisecretKeyCreateLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApisecretKeyCreateLogic {
+	return &ApisecretKeyCreateLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *ApiSecretyKeyCreateLogic) ApiSecretyKeyCreate(req *types.ApiSecretyKeyCreateRequest) (resp *types.ApiSecretyKeyCreateResponse, err error) {
+func (l *ApisecretKeyCreateLogic) ApisecretKeyCreate(req *types.ApiSecretKeyCreateRequest) (resp *types.ApiSecretKeyCreateResponse, err error) {
 	// 检查API是否存在
 	_, err = l.svcCtx.ApiModel.FindOneByApiId(l.ctx, req.ApiId)
 	if err != nil {
@@ -57,7 +57,7 @@ func (l *ApiSecretyKeyCreateLogic) ApiSecretyKeyCreate(req *types.ApiSecretyKeyC
 		return nil, errors.New(int(logic.SystemOrmError), "生成 API Secret Key 失败")
 	}
 
-	resp = &types.ApiSecretyKeyCreateResponse{
+	resp = &types.ApiSecretKeyCreateResponse{
 		ApiId:          req.ApiId,
 		Name:           req.Name,
 		SecretKey:      secretKey,

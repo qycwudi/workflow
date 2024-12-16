@@ -9,16 +9,16 @@ import (
 	"workflow/response"
 )
 
-func ApiSecretyKeyUpdateExpirationTimeHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func ApisecretKeyDeleteHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.ApiSecretyKeyUpdateExpirationTimeRequest
+		var req types.ApiSecretKeyDeleteRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := api.NewApiSecretyKeyUpdateExpirationTimeLogic(r.Context(), svcCtx)
-		resp, err := l.ApiSecretyKeyUpdateExpirationTime(&req)
+		l := api.NewApisecretKeyDeleteLogic(r.Context(), svcCtx)
+		resp, err := l.ApisecretKeyDelete(&req)
 		response.Response(w, resp, err)
 
 	}

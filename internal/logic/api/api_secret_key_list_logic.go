@@ -12,38 +12,38 @@ import (
 	"workflow/internal/utils"
 )
 
-type ApiSecretyKeyListLogic struct {
+type ApiSecretKeyListLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewApiSecretyKeyListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiSecretyKeyListLogic {
-	return &ApiSecretyKeyListLogic{
+func NewApiSecretKeyListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiSecretKeyListLogic {
+	return &ApiSecretKeyListLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *ApiSecretyKeyListLogic) ApiSecretyKeyList(req *types.ApiSecretyKeyListRequest) (resp *types.ApiSecretyKeyListResponse, err error) {
+func (l *ApiSecretKeyListLogic) ApiSecretKeyList(req *types.ApiSecretKeyListRequest) (resp *types.ApiSecretKeyListResponse, err error) {
 	total, secretKey, err := l.svcCtx.ApiSecretKeyModel.FindByApiIdPage(l.ctx, req.ApiId, req.Current, req.PageSize)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询 API Secret Key 记录失败")
 	}
 
-	keys := make([]types.ApiSecretyKey, len(secretKey))
+	keys := make([]types.ApiSecretKey, len(secretKey))
 	for i, key := range secretKey {
-		keys[i] = types.ApiSecretyKey{
+		keys[i] = types.ApiSecretKey{
 			ApiId:          key.ApiId,
 			Name:           key.Name,
-			SecretyKey:     key.SecretKey,
+			SecretKey:      key.SecretKey,
 			ExpirationTime: utils.FormatDate(key.ExpirationTime),
 			Status:         key.Status,
 		}
 	}
 
-	resp = &types.ApiSecretyKeyListResponse{
+	resp = &types.ApiSecretKeyListResponse{
 		Current:  req.Current,
 		PageSize: req.PageSize,
 		Total:    total,

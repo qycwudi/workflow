@@ -12,21 +12,21 @@ import (
 	"workflow/internal/types"
 )
 
-type ApiSecretyKeyUpdateExpirationTimeLogic struct {
+type ApisecretKeyUpdateExpirationTimeLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewApiSecretyKeyUpdateExpirationTimeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiSecretyKeyUpdateExpirationTimeLogic {
-	return &ApiSecretyKeyUpdateExpirationTimeLogic{
+func NewApisecretKeyUpdateExpirationTimeLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApisecretKeyUpdateExpirationTimeLogic {
+	return &ApisecretKeyUpdateExpirationTimeLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *ApiSecretyKeyUpdateExpirationTimeLogic) ApiSecretyKeyUpdateExpirationTime(req *types.ApiSecretyKeyUpdateExpirationTimeRequest) (resp *types.ApiSecretyKeyUpdateExpirationTimeResponse, err error) {
+func (l *ApisecretKeyUpdateExpirationTimeLogic) ApisecretKeyUpdateExpirationTime(req *types.ApiSecretKeyUpdateExpirationTimeRequest) (resp *types.ApiSecretKeyUpdateExpirationTimeResponse, err error) {
 
 	// 检查过期时间
 	if req.ExpirationTime <= time.Now().UnixMilli() {
@@ -39,7 +39,7 @@ func (l *ApiSecretyKeyUpdateExpirationTimeLogic) ApiSecretyKeyUpdateExpirationTi
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "修改 API Secret Key 过期时间失败")
 	}
-	resp = &types.ApiSecretyKeyUpdateExpirationTimeResponse{
+	resp = &types.ApiSecretKeyUpdateExpirationTimeResponse{
 		ExpirationTime: expirationTime.Format(time.DateTime),
 	}
 	return resp, nil

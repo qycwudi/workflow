@@ -9,16 +9,16 @@ import (
 	"workflow/response"
 )
 
-func ApiSecretyKeyDeleteHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func ApisecretKeyCreateHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.ApiSecretyKeyDeleteRequest
+		var req types.ApiSecretKeyCreateRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := api.NewApiSecretyKeyDeleteLogic(r.Context(), svcCtx)
-		resp, err := l.ApiSecretyKeyDelete(&req)
+		l := api.NewApisecretKeyCreateLogic(r.Context(), svcCtx)
+		resp, err := l.ApisecretKeyCreate(&req)
 		response.Response(w, resp, err)
 
 	}
