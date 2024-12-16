@@ -49,7 +49,7 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) types.Rule
 			CallTime:   time.Now(),
 			ApiId:      msg.Metadata["api_id"],
 			ApiName:    msg.Metadata["api_name"],
-			SecretyKey: msg.Metadata["secrety_key"],
+			SecretyKey: msg.Metadata["secret_key"],
 			ErrorMsg:   "",
 		})
 		if err != nil {

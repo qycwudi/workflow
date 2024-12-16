@@ -67,7 +67,7 @@ func InitRoleServer() {
 			exchange.Out.SetBody([]byte(err.Error()))
 			return false
 		}
-		exchange.In.GetMsg().Metadata["secrety_key"] = token
+		exchange.In.GetMsg().Metadata["secret_key"] = token
 		exchange.In.GetMsg().Metadata["api_id"] = chainId
 		exchange.In.GetMsg().Metadata["api_name"] = apiName
 		return true
