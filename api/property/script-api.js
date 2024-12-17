@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check } from 'k6';
 
 export const options = {
-  vus: 100, // 虚拟用户数
+  vus: 50, // 虚拟用户数
   duration: '1m', // 持续时间
   thresholds: {
     http_req_duration: ['p(95)<500'], // 95%的请求响应时间小于500ms

@@ -7,6 +7,7 @@ import (
 
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/engine"
+	"github.com/zeromicro/go-zero/core/logx"
 
 	enums "workflow/internal/enum"
 	"workflow/internal/model"
@@ -26,16 +27,33 @@ var (
 type TraceAop struct {
 }
 
-// logx.Infof("debug Around before ruleChainId:%s,nodeName:%s,nodeType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Type, ctx.Self().GetNodeId().Id, msg, relationType)
-
 // Around 计算耗时
 func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, bool) {
+	// 检查请求是否被取消
+	select {
+	case <-ctx.GetContext().Done():
+		// 请求已被取消,记录取消状态并返回
+		trace := model.Trace{
+			TraceId:   msg.Id,
+			Output:    "{}",
+			Step:      0,
+			NodeId:    ctx.Self().GetNodeId().Id,
+			NodeName:  ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name,
+			Status:    enums.TraceStatusFinish,
+			ErrorMsg:  "request canceled",
+			StartTime: time.Now(),
+		}
+		traceQueue <- &trace
+		logx.Debugf("---request canceled,trace:%+v", trace)
+		return msg, false
+	default:
+	}
+
 	start := time.Now() // 记录开始时间
 	// input
 	inputMar, _ := json.MarshalIndent(msg, "", "    ")
 	// logic
 	logicMar, _ := json.MarshalIndent(ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Configuration, "", "    ")
-	// logx.Infof("around-before:%s,%s, %s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, inputMar)
 
 	// 新增追踪 todo 加开关
 	trace := model.Trace{
@@ -56,11 +74,9 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 	// 执行当前节点
 	ctx.Self().OnMsg(ctx, msg)
 	elapsed := time.Since(start) // 计算耗时 微秒
-	// logx.Infof("around-耗时: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, elapsed)
 
 	// output
 	outputMar, _ := json.MarshalIndent(ctx.GetContext().Value(nodeIdKey(ctx.RuleChain().GetNodeId().Id)), "", "    ")
-	// logx.Infof("around-output: %s,%s,%s", ctx.RuleChain().GetNodeId().Id, ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Name, outputMar)
 	// 更新追踪
 	traceQueue <- &model.Trace{
 		TraceId:     msg.Id,
@@ -81,7 +97,10 @@ func (aspect *TraceAop) After(ctx types.RuleContext, msg types.RuleMsg, err erro
 		msg.Metadata["error"] = err.Error()
 	}
 	msg.Metadata["relationType"] = relationType
-	cctx := context.WithValue(ctx.GetContext(), nodeIdKey(nodeId), msg)
+
+	// 保持原有 context 的取消信号
+	parentCtx := ctx.GetContext()
+	cctx := context.WithValue(parentCtx, nodeIdKey(nodeId), msg)
 	ctx.SetContext(cctx)
 	return msg
 }
