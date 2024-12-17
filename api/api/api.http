@@ -63,12 +63,13 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://127.0.0.1:9999/api/role/v1/ctfvtb2flvkm3l6cbsh0
+POST http://127.0.0.1:9999/api/role/v1/ctghrkt3sjtjo4lonulg
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer b4084c770fea4ee49af2410eea6093e4
+Authorization: Bearer 94425855c36c4e55ba6600b4c1a78b19
 
 {
+  "table": "users",
   "name": "张",
   "age": 11
 }
@@ -104,10 +105,10 @@ Authorization: Bearer 31afae937918470b9ba97d287007a7cc
 }
 
 ### API调用-数组
-POST http://10.99.43.99:9999/api/role/v1/ctfvtb2flvkm3l6cbsh0
+POST http://10.99.43.99:9999/api/role/v1/ctghrkt3sjtjo4lonulg
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer b4084c770fea4ee49af2410eea6093e4
+Authorization: Bearer 94425855c36c4e55ba6600b4c1a78b19
 
 {
   "list": [
