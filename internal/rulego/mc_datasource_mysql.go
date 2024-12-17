@@ -66,7 +66,7 @@ func (n *DataSourceMysqlNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 		return
 	}
 
-	logx.Infof("sql:%s,args:%+v", sql, args)
+	logx.Debugf("sql:%s,args:%+v", sql, args)
 
 	// 执行SQL
 	if err := n.executeSQL(ctx, msg, sql, args); err != nil {
