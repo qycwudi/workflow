@@ -22,14 +22,14 @@ Content-Type: application/json
 }
 
 ### 数据源-新增
-POST http://127.0.0.1:8899/workflow/datasource/add
+POST http://10.99.43.99:8899/workflow/datasource/add
 Content-Type: application/json
 
 {
+  "switch": 1,
+  "name": "test-1",
   "type": "mysql",
-  "name": "test-2",
-  "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local\"}",
-  "switch": 1
+  "config": "{\"host\": \"10.99.43.9\", \"port\": 3306, \"user\": \"root\", \"database\": \"workflow\", \"password\": \"Root@123\"}"
 }
 
 ### 数据源-编辑
@@ -53,10 +53,12 @@ Content-Type: application/json
 }
 
 ### 数据源-测试
-POST http://127.0.0.1:8899/workflow/datasource/test
+POST http://10.99.43.99:8899/workflow/datasource/test
 Content-Type: application/json
 
 {
-  "type": "oracle",
-  "config": "{\"host\":\"10.99.220.223\",\"port\":32760,\"user\":\"test\",\"password\":\"test\",\"database\":\"helowin\"}"
+  "switch": 1,
+  "name": "test-1",
+  "type": "mysql",
+  "config": "{\"host\": \"10.99.43.9\", \"port\": 3306, \"user\": \"root\", \"database\": \"workflow\", \"password\": \"Root@123\"}"
 }

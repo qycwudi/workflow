@@ -143,6 +143,30 @@ func (manager *DataSourceManager) Query(id int64, sql string, args ...interface{
 	return db.QueryContext(context.Background(), sql, args...)
 }
 
+func (manager *DataSourceManager) Insert(id int64, sql string, args ...interface{}) (sql.Result, error) {
+	db, ok := manager.dbs[id]
+	if !ok {
+		return nil, errors.New("data source not found")
+	}
+	return db.ExecContext(context.Background(), sql, args...)
+}
+
+func (manager *DataSourceManager) Update(id int64, sql string, args ...interface{}) (sql.Result, error) {
+	db, ok := manager.dbs[id]
+	if !ok {
+		return nil, errors.New("data source not found")
+	}
+	return db.ExecContext(context.Background(), sql, args...)
+}
+
+func (manager *DataSourceManager) Delete(id int64, sql string, args ...interface{}) (sql.Result, error) {
+	db, ok := manager.dbs[id]
+	if !ok {
+		return nil, errors.New("data source not found")
+	}
+	return db.ExecContext(context.Background(), sql, args...)
+}
+
 // func main() {
 // 	manager := NewDataSourceManager()
 
