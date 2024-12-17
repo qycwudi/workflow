@@ -1,6 +1,8 @@
 package rulego
 
 import (
+	"regexp"
+
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/utils/json"
@@ -15,10 +17,10 @@ type DataSourceMysqlNode struct {
 }
 
 type DatabaseNodeConfiguration struct {
-	DatasourceType        string   `json:"datasourceType"`
-	DatasourceId          int64    `json:"datasourceId"`
-	DatasourceSql         string   `json:"datasourceSql"`
-	DatasourceParamMapper []string `json:"datasourceParamMapper"`
+	DatasourceType        string            `json:"datasourceType"`
+	DatasourceId          int64             `json:"datasourceId"`
+	DatasourceSql         string            `json:"datasourceSql"`
+	DatasourceParamMapper map[string]string `json:"datasourceParamMapper"`
 }
 
 func init() {
@@ -33,7 +35,7 @@ func (n *DataSourceMysqlNode) New() types.Node {
 		DatasourceType:        "mysql",
 		DatasourceId:          1,
 		DatasourceSql:         "select * from test",
-		DatasourceParamMapper: []string{"id", "name"},
+		DatasourceParamMapper: map[string]string{},
 	}
 	return &DataSourceMysqlNode{Config: config}
 }
@@ -47,11 +49,44 @@ func (n *DataSourceMysqlNode) Init(ruleConfig types.Config, configuration types.
 
 // OnMsg 处理消息
 func (n *DataSourceMysqlNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
-	// 参数映射
-	paramMapper := n.Config.DatasourceParamMapper
+	// 解析消息中的参数
+	msgData := make(map[string]interface{})
+	if err := json.Unmarshal([]byte(msg.Data), &msgData); err != nil {
+		ctx.TellFailure(msg, err)
+		return
+	}
 
-	// 执行sql
-	rows, err := datasource.DataSourcePool.Query(n.Config.DatasourceId, n.Config.DatasourceSql, paramMapper)
+	// SQL参数替换
+	sql := n.Config.DatasourceSql
+	var args []interface{}
+
+	// 使用正则表达式找出所有${xxx}参数
+	re := regexp.MustCompile(`\${([^}]+)}`)
+	matches := re.FindAllStringSubmatch(sql, -1)
+
+	// 按SQL中参数出现顺序收集参数值
+	for _, match := range matches {
+		placeholder := match[0] // ${xxx}
+		paramName := n.Config.DatasourceParamMapper[placeholder]
+		if val, ok := msgData[paramName]; ok {
+			// 检查是否是表名参数(在from子句后面)
+			// 使用正则表达式检查参数是否在FROM子句后面
+			fromRe := regexp.MustCompile(`(?i)FROM\s+` + regexp.QuoteMeta(placeholder))
+			if fromRe.MatchString(sql) {
+				// 表名不作为预处理参数,直接替换
+				sql = regexp.MustCompile(regexp.QuoteMeta(placeholder)).ReplaceAllString(sql, val.(string))
+				continue
+			}
+			args = append(args, val)
+		}
+	}
+
+	// 替换剩余的${xxx}为?
+	sql = re.ReplaceAllString(sql, "?")
+
+	logx.Infof("sql:%s,args:%+v", sql, args)
+	// 执行SQL
+	rows, err := datasource.DataSourcePool.Query(n.Config.DatasourceId, sql, args...)
 	if err != nil {
 		ctx.TellFailure(msg, err)
 		return

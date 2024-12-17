@@ -97,8 +97,19 @@ func databaseCfg(data gjson.Result, specialRelation map[string]string) map[strin
 		DatasourceType:        data.Get("datasource_type").String(),
 		DatasourceId:          data.Get("datasource_id").Int(),
 		DatasourceSql:         data.Get("datasource_sql").String(),
-		DatasourceParamMapper: make([]string, 0),
+		DatasourceParamMapper: make(map[string]string),
 	}
+
+	// 解析参数映射
+	paramMappers := data.Get("datasource_param_mapper").Array()
+	for _, mapper := range paramMappers {
+		label := mapper.Get("label").String()
+		value := mapper.Get("value").String()
+		if label != "" && value != "" {
+			configuration.DatasourceParamMapper[label] = value
+		}
+	}
+
 	marshal, _ := json.Marshal(configuration)
 	_ = json.Unmarshal(marshal, &config)
 	return config

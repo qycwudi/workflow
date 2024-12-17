@@ -8,6 +8,9 @@ import (
 	"github.com/rulego/rulego/api/types"
 	"github.com/zeromicro/go-zero/core/logx"
 
+	"workflow/internal/config"
+	"workflow/internal/datasource"
+	"workflow/internal/svc"
 	"workflow/internal/utils"
 )
 
@@ -226,6 +229,43 @@ func Test_roleChain_Run_Join2(t *testing.T) {
 	matadata := make(map[string]string)
 	matadata["env"] = "jlhalsjdhfoisdbv"
 	data := "{\"name\": \"张三\",  \"age\": 10}"
+
+	msg := types.NewMsg(0, "CANVAS_MSG", types.JSON, matadata, data)
+	var result types.RuleMsg
+	chain.OnMsgAndWait(msg, types.WithOnEnd(func(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) {
+		result = msg
+	}))
+	t.Logf("chain run result:%+v", result)
+}
+
+func Test_roleChain_Run_Mysql(t *testing.T) {
+	svcCtx := svc.NewServiceContext(config.Config{MySqlUrn: "root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local"})
+	datasource.InitDataSourceManager(svcCtx)
+	file, _ := os.ReadFile("./chain/mysql.json")
+	config := rulego.NewConfig()
+	logConf := logx.LogConf{
+		Encoding: "plain",
+	}
+	//也可以使用以下方式，注册js自定义函数
+	config.RegisterUdf("log", func(msg interface{}) {
+		logx.Debugf("log:%+v", msg)
+	})
+
+	logx.SetUp(logConf)
+
+	// config.Logger = &utils.RoleCustomLog{}
+	chain, err := rulego.New(
+		"ctg1kid3sjti2l614lp0",
+		file,
+		rulego.WithConfig(config),
+		types.WithAspects(&DebugAop{}))
+	if err != nil {
+		logx.Errorf("load role chain fail,err:%v\n", err)
+		return
+	}
+	matadata := make(map[string]string)
+	matadata["env"] = "jlhalsjdhfoisdbv"
+	data := "{\"table\":\"users\",\"name\":\"xuetu-1\",\"age\":18}"
 
 	msg := types.NewMsg(0, "CANVAS_MSG", types.JSON, matadata, data)
 	var result types.RuleMsg

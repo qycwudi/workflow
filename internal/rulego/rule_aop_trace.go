@@ -68,6 +68,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 		ElapsedTime: elapsed.Microseconds(),
 		Output:      string(outputMar),
 		Status:      enums.TraceStatusFinish,
+		ErrorMsg:    msg.Metadata["error"],
 	}
 	return msg, false
 }
@@ -76,6 +77,9 @@ type nodeIdKey string
 
 func (aspect *TraceAop) After(ctx types.RuleContext, msg types.RuleMsg, err error, relationType string) types.RuleMsg {
 	nodeId := ctx.RuleChain().GetNodeId().Id
+	if err != nil {
+		msg.Metadata["error"] = err.Error()
+	}
 	msg.Metadata["relationType"] = relationType
 	cctx := context.WithValue(ctx.GetContext(), nodeIdKey(nodeId), msg)
 	ctx.SetContext(cctx)
