@@ -9,6 +9,6 @@ build-back:
   only:
     - main
     - /^dev-.*$/
-    - /^release-.*$/
+    - /^release\/\d+\.\d+$/
   tags:
     - k8s-ci
