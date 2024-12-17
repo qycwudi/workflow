@@ -63,10 +63,10 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://127.0.0.1:9999/api/role/v1/ctgi7tt3sjtjo4lonun0
+POST http://127.0.0.1:9999/api/role/v1/ctgnb453sjtpmaqhgh5g
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 9320d975ea304082955fc1307d41821d
+Authorization: Bearer 99d3fe7a19c3439cb846ec062d261eec
 
 {
   "table": "users",
