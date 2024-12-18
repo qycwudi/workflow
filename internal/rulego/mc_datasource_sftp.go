@@ -31,3 +31,7 @@ func (n *SftpNode) Destroy() {
 
 	// Do some cleanup work
 }
+
+func (n *SftpNode) executeSftp(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
+	return nil
+}
