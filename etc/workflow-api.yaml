@@ -17,7 +17,7 @@ MySqlUrn: root:Root@123@tcp(10.99.43.9:3306)/workflow?charset=utf8mb4&parseTime=
 DevServer:
     Enabled: true
     Port: 8080
-    HealthPath: "/ping"
+    HealthPath: "/v1/ping"
 
 Job:
   DatasourceClientCheck:
