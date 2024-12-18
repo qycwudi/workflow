@@ -14,12 +14,12 @@ import (
 	"workflow/internal/datasource"
 )
 
-// StartNode A plugin that flow start node ,receiving parameter
-type DataSourceMysqlNode struct {
-	Config DatabaseNodeConfiguration
+// DataSourceDatabaseNode A plugin that flow start node ,receiving parameter
+type DataSourceDatabaseNode struct {
+	Config DataSourceDatabaseNodeConfiguration
 }
 
-type DatabaseNodeConfiguration struct {
+type DataSourceDatabaseNodeConfiguration struct {
 	DatasourceType        string            `json:"datasourceType"`
 	DatasourceId          int64             `json:"datasourceId"`
 	DatasourceSql         string            `json:"datasourceSql"`
@@ -27,23 +27,23 @@ type DatabaseNodeConfiguration struct {
 }
 
 func init() {
-	_ = rulego.Registry.Register(&DataSourceMysqlNode{})
+	_ = rulego.Registry.Register(&DataSourceDatabaseNode{})
 }
 
-func (n *DataSourceMysqlNode) Type() string {
-	return Database
+func (n *DataSourceDatabaseNode) Type() string {
+	return DataSourceDatabaseNode
 }
-func (n *DataSourceMysqlNode) New() types.Node {
-	config := DatabaseNodeConfiguration{
+func (n *DataSourceDatabaseNode) New() types.Node {
+	config := DataSourceNodeConfiguration{
 		DatasourceType:        "mysql",
 		DatasourceId:          1,
 		DatasourceSql:         "select * from test",
 		DatasourceParamMapper: map[string]string{},
 	}
-	return &DataSourceMysqlNode{Config: config}
+	return &DataSourceDatabaseNode{Config: config}
 }
 
-func (n *DataSourceMysqlNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
+func (n *DataSourceDatabaseNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
 	// 读取配置
 	marshal, _ := json.Marshal(configuration)
 	_ = json.Unmarshal(marshal, &n.Config)
@@ -51,7 +51,7 @@ func (n *DataSourceMysqlNode) Init(ruleConfig types.Config, configuration types.
 }
 
 // OnMsg 处理消息
-func (n *DataSourceMysqlNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
+func (n *DataSourceDatabaseNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 	// 解析消息参数
 	msgData, err := parseMessageData(msg.Data)
 	if err != nil {
@@ -75,7 +75,7 @@ func (n *DataSourceMysqlNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 	}
 }
 
-func (n *DataSourceMysqlNode) Destroy() {}
+func (n *DataSourceDatabaseNode) Destroy() {}
 
 // 解析消息数据为map
 func parseMessageData(data string) (map[string]interface{}, error) {
@@ -87,7 +87,7 @@ func parseMessageData(data string) (map[string]interface{}, error) {
 }
 
 // 处理SQL语句和参数
-func (n *DataSourceMysqlNode) processSQLAndParams(msgData map[string]interface{}) (string, []interface{}, error) {
+func (n *DataSourceDatabaseNode) processSQLAndParams(msgData map[string]interface{}) (string, []interface{}, error) {
 	sql := n.Config.DatasourceSql
 	var args []interface{}
 
@@ -134,7 +134,7 @@ func replaceTableName(sql string, placeholder string, tableName string) string {
 }
 
 // 执行SQL语句
-func (n *DataSourceMysqlNode) executeSQL(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
+func (n *DataSourceDatabaseNode) executeSQL(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
 	sqlType := strings.ToUpper(strings.TrimSpace(sql))
 
 	switch {
@@ -152,7 +152,7 @@ func (n *DataSourceMysqlNode) executeSQL(ctx types.RuleContext, msg types.RuleMs
 }
 
 // 执行查询
-func (n *DataSourceMysqlNode) executeQuery(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
+func (n *DataSourceDatabaseNode) executeQuery(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
 	rows, err := datasource.DataSourcePool.Query(n.Config.DatasourceId, sql, args...)
 	if err != nil {
 		return err
@@ -227,7 +227,7 @@ func queryResult(rows *sql.Rows) ([]byte, error) {
 }
 
 // 执行插入
-func (n *DataSourceMysqlNode) executeInsert(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
+func (n *DataSourceDatabaseNode) executeInsert(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
 	result, err := datasource.DataSourcePool.Insert(n.Config.DatasourceId, sql, args...)
 	if err != nil {
 		return err
@@ -239,7 +239,7 @@ func (n *DataSourceMysqlNode) executeInsert(ctx types.RuleContext, msg types.Rul
 }
 
 // 执行更新
-func (n *DataSourceMysqlNode) executeUpdate(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
+func (n *DataSourceDatabaseNode) executeUpdate(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
 	result, err := datasource.DataSourcePool.Update(n.Config.DatasourceId, sql, args...)
 	if err != nil {
 		return err
@@ -251,7 +251,7 @@ func (n *DataSourceMysqlNode) executeUpdate(ctx types.RuleContext, msg types.Rul
 }
 
 // 执行删除
-func (n *DataSourceMysqlNode) executeDelete(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
+func (n *DataSourceDatabaseNode) executeDelete(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
 	result, err := datasource.DataSourcePool.Delete(n.Config.DatasourceId, sql, args...)
 	if err != nil {
 		return err
