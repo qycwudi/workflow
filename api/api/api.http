@@ -69,8 +69,8 @@ Content-Type: application/json
 Authorization: Bearer 8537cc19b30c4a49849b6efbd9bb4aa9
 
 {
-  "name1": "屋里",
-  "age2": 29
+  "name": "屋里",
+  "age": 29
 }
 
 ### API调用-单结构

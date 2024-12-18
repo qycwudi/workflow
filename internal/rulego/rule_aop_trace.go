@@ -44,7 +44,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 			StartTime: time.Now(),
 		}
 		traceQueue <- &trace
-		logx.Debugf("---request canceled,trace:%+v", trace)
+		logx.Debugf("request canceled,trace:%+v", trace)
 		return msg, false
 	default:
 	}

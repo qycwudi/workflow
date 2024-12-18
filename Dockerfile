@@ -16,6 +16,8 @@ RUN go mod download
 COPY . .
 COPY ./etc /app/etc
 RUN go build -ldflags="-s -w" -o /app/workflow workflow.go
+# RUN GOARCH=arm64 GOOS=linux go build -ldflags="-s -w" -o /app/workflow workflow.go
+
 
 
 FROM alpine
