@@ -91,6 +91,98 @@ func Test_roleChain_Run_Mysql_DeleteNotableName(t *testing.T) {
 	)
 }
 
+// 多表查询 非等值连接
+func Test_roleChain_Run_Mysql_Select_Multi_Table(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_multi_table.json",
+		"{\"table\":\"users\",\"name\":\"xuetu-2\",\"id\":1}",
+	)
+}
+
+func Test_roleChain_Run_Mysql_Select_Multi_Table_NoTableName(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_multi_table_NoTableName.json",
+		"{\"table1\":\"employees\",\"table2\":\"employees\"}",
+	)
+}
+
+// inner join
+func Test_roleChain_Run_Mysql_Select_Inner_join(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_inner_join.json",
+		"{\"table1\":\"employees\",\"table2\":\"employees\"}",
+	)
+}
+
+func Test_roleChain_Run_Mysql_Select_Inner_join_NoTableName(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_inner_join_NoTableName.json",
+		"{\"table1\":\"employees\",\"table2\":\"departments\"}",
+	)
+}
+
+// left join
+func Test_roleChain_Run_Mysql_Select_LeftJoin_NoTableName(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_left_join_NoTableName.json",
+		"{\"table1\":\"employees\",\"table2\":\"departments\"}",
+	)
+}
+
+// right join
+func Test_roleChain_Run_Mysql_Select_RightJoin(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_right_join.json",
+		"{\"table1\":\"employees\",\"table2\":\"departments\"}",
+	)
+}
+
+func Test_roleChain_Run_Mysql_Select_RightJoin_NoTableName(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_right_join_NoTableName.json",
+		"{\"table1\":\"employees\",\"table2\":\"departments\"}",
+	)
+}
+
+// union all
+func Test_roleChain_Run_Mysql_Select_UnionAll(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_union_all.json",
+		"{\"table1\":\"employees\",\"table2\":\"departments\"}",
+	)
+}
+
+func Test_roleChain_Run_Mysql_Select_UnionAll_NoTableName(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_union_all_NoTableName.json",
+		"{\"table1\":\"employees\",\"table2\":\"departments\",\"table3\":\"employees\",\"table4\":\"departments\"}",
+	)
+}
+
+// 子查询
+func Test_roleChain_Run_Mysql_Select_SubSelect(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_sub_select.json",
+		"{\"table1\":\"employees\",\"table2\":\"departments\",\"table3\":\"employees\",\"table4\":\"departments\"}",
+	)
+}
+
+// 聚合函数
+func Test_roleChain_Run_Mysql_Select_Function(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_function.json",
+		"{\"table1\":\"employees\",\"table2\":\"departments\",\"table3\":\"employees\",\"table4\":\"departments\"}",
+	)
+}
+
+// 排序分页
+func Test_roleChain_Run_Mysql_Select_OrderBy_Limit(t *testing.T) {
+	setupAndRunChain(t,
+		"./chain/mysql/mysql_select_order_by_limit.json",
+		"{\"table\":\"employees\",\"salary\":6000,\"order\":\"salary DESC\",\"limit\":10}",
+	)
+}
+
 /*
 测试数据
 
@@ -117,7 +209,7 @@ func setupAndRunChain(t *testing.T, jsonFile string, data string) types.RuleMsg 
 	// 初始化数据源
 	svcCtx := svc.NewServiceContext(config.Config{
 		// 其他测试数据库,MySqlUrn: "xxx",
-		MySqlUrn: "root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local",
+		MySqlUrn: "root:12345678@tcp(127.0.0.1:3306)/atguigudb?charset=utf8mb4&parseTime=True&loc=Local",
 	})
 	datasource.InitDataSourceManager(svcCtx)
 

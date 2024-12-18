@@ -119,7 +119,8 @@ func isTableNameParam(sql string, placeholder string) bool {
 	// 预编译正则表达式以提高性能
 	quotedPlaceholder := regexp.QuoteMeta(placeholder)
 	// (?i) 表示不区分大小写
-	pattern := fmt.Sprintf(`(?i)(FROM|INTO|UPDATE|JOIN)\s+%s|(?i)(CREATE|DROP|ALTER|TRUNCATE)\s+TABLE\s+%s`,
+	pattern := fmt.Sprintf(`(?i)(FROM|INTO|UPDATE|JOIN)\s+%s|(?i)(CREATE|DROP|ALTER|TRUNCATE)\s+TABLE\s+%s|(?i)(FROM|JOIN)\s+([^\s,]+)(?:\s+AS\s+|\s)([^\s,]+).*,\s+%s`,
+		quotedPlaceholder,
 		quotedPlaceholder,
 		quotedPlaceholder)
 
