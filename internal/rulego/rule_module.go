@@ -93,7 +93,7 @@ func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]in
 
 func databaseCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
-	configuration := DatabaseNodeConfiguration{
+	configuration := DataSourceDatabaseNodeConfiguration{
 		DatasourceType:        data.Get("datasource_type").String(),
 		DatasourceId:          data.Get("datasource_id").Int(),
 		DatasourceSql:         data.Get("datasource_sql").String(),

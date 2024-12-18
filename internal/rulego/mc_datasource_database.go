@@ -31,10 +31,10 @@ func init() {
 }
 
 func (n *DataSourceDatabaseNode) Type() string {
-	return DataSourceDatabaseNode
+	return "datasource_database"
 }
 func (n *DataSourceDatabaseNode) New() types.Node {
-	config := DataSourceNodeConfiguration{
+	config := DataSourceDatabaseNodeConfiguration{
 		DatasourceType:        "mysql",
 		DatasourceId:          1,
 		DatasourceSql:         "select * from test",
