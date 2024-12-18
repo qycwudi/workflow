@@ -209,7 +209,7 @@ func setupAndRunChain(t *testing.T, jsonFile string, data string) types.RuleMsg 
 	// 初始化数据源
 	svcCtx := svc.NewServiceContext(config.Config{
 		// 其他测试数据库,MySqlUrn: "xxx",
-		MySqlUrn: "root:12345678@tcp(127.0.0.1:3306)/atguigudb?charset=utf8mb4&parseTime=True&loc=Local",
+		MySqlUrn: "root:Root@123@tcp(10.99.43.9:3306)/workflow?charset=utf8mb4&parseTime=True&loc=Local",
 	})
 	datasource.InitDataSourceManager(svcCtx)
 

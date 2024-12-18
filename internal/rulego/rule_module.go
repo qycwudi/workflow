@@ -25,7 +25,7 @@ const (
 
 	Http string = "http"
 
-	Database string = "database"
+	Database string = "datasource_database"
 
 	Fork string = "fork"
 	Join string = "join"

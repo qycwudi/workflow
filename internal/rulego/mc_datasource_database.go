@@ -35,10 +35,10 @@ func (n *DataSourceDatabaseNode) Type() string {
 }
 func (n *DataSourceDatabaseNode) New() types.Node {
 	config := DataSourceDatabaseNodeConfiguration{
-		DatasourceType:        "mysql",
-		DatasourceId:          1,
-		DatasourceSql:         "select * from test",
-		DatasourceParamMapper: map[string]string{},
+		DatasourceType:        n.Config.DatasourceType,
+		DatasourceId:          n.Config.DatasourceId,
+		DatasourceSql:         n.Config.DatasourceSql,
+		DatasourceParamMapper: n.Config.DatasourceParamMapper,
 	}
 	return &DataSourceDatabaseNode{Config: config}
 }
@@ -135,8 +135,11 @@ func replaceTableName(sql string, placeholder string, tableName string) string {
 
 // 执行SQL语句
 func (n *DataSourceDatabaseNode) executeSQL(ctx types.RuleContext, msg types.RuleMsg, sql string, args []interface{}) error {
-	sqlType := strings.ToUpper(strings.TrimSpace(sql))
+	if n.Config.DatasourceType == "Oracle" {
+		sql = strings.ReplaceAll(sql, ";", "")
+	}
 
+	sqlType := strings.ToUpper(strings.TrimSpace(sql))
 	switch {
 	case strings.HasPrefix(sqlType, "SELECT"):
 		return n.executeQuery(ctx, msg, sql, args)
