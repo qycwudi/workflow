@@ -66,3 +66,4 @@
 2024-12-02T20:13:25.107+08:00	 stat 	(workflow) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms	caller=stat/metrics.go:210
 2024-12-02T20:14:09.366+08:00	 stat 	CPU: 0m, MEMORY: Alloc=1.1Mi, TotalAlloc=2.4Mi, Sys=13.1Mi, NumGC=12	caller=stat/usage.go:61
 2024-12-02T20:14:09.385+08:00	 stat 	(api) shedding_stat [1m], cpu: 0, total: 0, pass: 0, drop: 0	caller=load/sheddingstat.go:61
+2024-12-18T10:33:02.813+08:00	[32;1m stat [0;22m	(workflow) - qps: 0.0/s, drops: 0, avg time: 0.0ms, med: 0.0ms, 90th: 0.0ms, 99th: 0.0ms, 99.9th: 0.0ms	caller=stat/metrics.go:210

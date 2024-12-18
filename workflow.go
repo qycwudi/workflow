@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
@@ -25,6 +26,21 @@ func main() {
 	var c config.Config
 	// 读取配置文件
 	conf.MustLoad(*configFile, &c)
+
+	// 从环境变量读取 mysql 配置
+	if mysqlDsn := os.Getenv("DSN"); mysqlDsn != "" {
+		c.MySqlUrn = mysqlDsn
+	}
+
+	// 从环境变量读取 log 配置
+	if logMode := os.Getenv("LOG_MODE"); logMode != "" {
+		c.Log.Mode = logMode
+	}
+
+	// 从环境变量读取 log 配置
+	if logLevel := os.Getenv("LOG_LEVEL"); logLevel != "" {
+		c.Log.Level = logLevel
+	}
 
 	// # 需要通过的域名，这里可以写多个域名 或者可以写 * 全部通过
 	domains := []string{"*", "http://workflow", "http://127.0.0.1", "http://localhost"}
