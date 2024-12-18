@@ -26,6 +26,7 @@ const (
 	Http string = "http"
 
 	Database string = "datasource_database"
+	Ftp      string = "ftp"
 
 	Fork string = "fork"
 	Join string = "join"
