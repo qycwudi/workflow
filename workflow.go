@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/rest"
@@ -26,6 +27,15 @@ func main() {
 	var c config.Config
 	// 读取配置文件
 	conf.MustLoad(*configFile, &c)
+
+	// 从环境变量读取 服务端口
+	if port := os.Getenv("PORT"); port != "" {
+		c.Port, _ = strconv.Atoi(port)
+	}
+
+	if apiPort := os.Getenv("API_PORT"); apiPort != "" {
+		c.ApiPort, _ = strconv.Atoi(apiPort)
+	}
 
 	// 从环境变量读取 mysql 配置
 	if mysqlDsn := os.Getenv("DSN"); mysqlDsn != "" {
@@ -61,7 +71,7 @@ func main() {
 	// 注册规则链
 	rulego.InitRoleChain(ctx)
 	// 注册链服务
-	rulego.InitRoleServer()
+	rulego.InitRoleServer(c.ApiPort)
 	// 初始化锁
 	locks.CustomLock = locks.NewLock("mysql", ctx)
 	// 初始化Job

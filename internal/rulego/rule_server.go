@@ -3,6 +3,7 @@ package rulego
 import (
 	"context"
 	"errors"
+	"fmt"
 	"log"
 	"net/http"
 	"strings"
@@ -22,9 +23,9 @@ type RoleServer struct {
 }
 
 // InitRoleServer 注册接口 注册规则链
-func InitRoleServer() {
+func InitRoleServer(apiPort int) {
 	config := types.Config{Logger: &utils.RoleCustomLog{}}
-	restEndpoint, err := endpoint.Registry.New(rest.Type, config, rest.Config{Server: ":8889"})
+	restEndpoint, err := endpoint.Registry.New(rest.Type, config, rest.Config{Server: fmt.Sprintf(":%d", apiPort)})
 	if err != nil {
 		log.Fatal(err)
 	}
