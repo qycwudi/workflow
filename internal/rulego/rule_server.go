@@ -24,7 +24,7 @@ type RoleServer struct {
 // InitRoleServer 注册接口 注册规则链
 func InitRoleServer() {
 	config := types.Config{Logger: &utils.RoleCustomLog{}}
-	restEndpoint, err := endpoint.Registry.New(rest.Type, config, rest.Config{Server: ":9999"})
+	restEndpoint, err := endpoint.Registry.New(rest.Type, config, rest.Config{Server: ":8889"})
 	if err != nil {
 		log.Fatal(err)
 	}
