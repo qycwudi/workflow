@@ -25,7 +25,7 @@ const (
 
 	Http string = "http"
 
-	Database string = "datasource_database"
+	Database string = "database"
 
 	Ftp string = "ftp" // 包括 sftp
 
