@@ -7,12 +7,10 @@
         "type": "datasource_database",
         "configuration": {
           "datasourceId": 26,
-          "datasourceSql": "select ROWID, t.* from T_AREA t;",
+          "datasourceSql": "select avg(USENUM) from ${table} where YEAR='2012';",
           "datasourceType": "Oracle",
           "datasourceParamMapper": {
-            "${id}": "id",
-            "${name}": "name",
-            "${age}": "age"
+            "${table}": "table"
           }
         }
       },

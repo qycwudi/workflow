@@ -7,11 +7,11 @@
         "type": "datasource_database",
         "configuration": {
           "datasourceId": 26,
-          "datasourceSql": "select o.ID as oid, o.NAME as oname, ot.NAME as otname from T_OWNERS o, T_OWNERTYPE ot where o.OWNERTYPEID = ot.ID;",
+          "datasourceSql": "select ow.ID, ow.NAME, ac.YEAR, ac.MONTH, ac.MONEY from ${table1} ow, ${table2} ac where ow.ID=ac.OWNERUUID(+);",
           "datasourceType": "Oracle",
           "datasourceParamMapper": {
-            "${table}": "table",
-            "${id}": "id"
+            "${table1}": "table1",
+            "${table2}": "table2"
           }
         }
       },

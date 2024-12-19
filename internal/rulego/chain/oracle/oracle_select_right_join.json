@@ -7,12 +7,11 @@
         "type": "datasource_database",
         "configuration": {
           "datasourceId": 26,
-          "datasourceSql": "select ROWID, t.* from T_AREA t;",
+          "datasourceSql": "select ow.ID, ow.NAME, ac.YEAR, ac.MONTH, ac.MONEY from ${table1} ow, ${table2} ac where ow.ID(+)=ac.OWNERUUID;",
           "datasourceType": "Oracle",
           "datasourceParamMapper": {
-            "${id}": "id",
-            "${name}": "name",
-            "${age}": "age"
+            "${table1}": "table1",
+            "${table2}": "table2"
           }
         }
       },

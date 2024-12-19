@@ -7,12 +7,11 @@
         "type": "datasource_database",
         "configuration": {
           "datasourceId": 26,
-          "datasourceSql": "select ROWID, t.* from T_AREA t;",
+          "datasourceSql": "select * from (select ROWNUM r, t.* from (select * from T_ACCOUNT t order by USENUM desc) t where ROWNUM <=20) where r > 10;",
           "datasourceType": "Oracle",
           "datasourceParamMapper": {
-            "${id}": "id",
-            "${name}": "name",
-            "${age}": "age"
+            "${table1}": "table1",
+            "${table2}": "table2"
           }
         }
       },
