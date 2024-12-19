@@ -27,6 +27,8 @@ const (
 
 	Database string = "datasource_database"
 
+	Ftp string = "ftp" // 包括 sftp
+
 	Fork string = "fork"
 	Join string = "join"
 	For  string = "for"

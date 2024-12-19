@@ -31,7 +31,7 @@ func init() {
 }
 
 func (n *DataSourceDatabaseNode) Type() string {
-	return "datasource_database"
+	return Database
 }
 func (n *DataSourceDatabaseNode) New() types.Node {
 	config := DataSourceDatabaseNodeConfiguration{
