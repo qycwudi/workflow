@@ -4,7 +4,7 @@
       {
         "id": "database-bc45b03b-7142-40cb-9bc8-90d20ad0cee2",
         "name": "数据库",
-        "type": "datasource_database",
+        "type": "database",
         "configuration": {
           "datasourceId": 26,
           "datasourceSql": "delete from ${table} where id = ${id};",

@@ -4,7 +4,7 @@
       {
         "id": "database-bc45b03b-7142-40cb-9bc8-90d20ad0cee2",
         "name": "数据库",
-        "type": "datasource_database",
+        "type": "database",
         "configuration": {
           "datasourceId": 26,
           "datasourceSql": "select o.ID as oid, o.NAME as oname, ar.NAME as arname, ad.NAME as adname, ot.NAME as otname from ${table1} o, ${table2} ot, ${table3} ad, ${table4} ar where o.OWNERTYPEID=ot.ID and o.ADDRESSID=ad.ID and ad.AREAID=ar.ID;\n",
