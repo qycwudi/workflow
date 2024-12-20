@@ -38,7 +38,17 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 	if err != nil {
 		panic(err)
 	}
+	// 统计加载成功和失败的数量
+	successCount := 0
+	failCount := 0
+	skipCount := 0
 	for _, v := range datasource {
+		// 跳过fileServer
+		if v.Type == enum.FileServerType.String() {
+			skipCount++
+			logx.Infof("datasource init skip: %d, %s", v.Id, v.Type)
+			continue
+		}
 		// 读取dsn
 		//dsn := gjson.Get(v.Config, "dsn").String()
 		err := pool.UpdateDataSource(v.Id, v.Config, v.Type, v.Hash)
@@ -54,9 +64,7 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 			continue
 		}
 	}
-	// 统计加载成功和失败的数量
-	successCount := 0
-	failCount := 0
+
 	for _, v := range datasource {
 		if _, ok := pool.hash[v.Id]; ok {
 			successCount++
@@ -64,7 +72,7 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 			failCount++
 		}
 	}
-	logx.Infof("datasource init success: %d, failed: %d", successCount, failCount)
+	logx.Infof("datasource init success: %d, failed: %d, skip: %d", successCount, failCount, skipCount)
 
 	DataSourcePool = pool
 }

@@ -9,6 +9,7 @@ import (
 
 	"workflow/internal/corn/job"
 	"workflow/internal/datasource"
+	"workflow/internal/enum"
 	"workflow/internal/model"
 	"workflow/internal/svc"
 )
@@ -38,9 +39,14 @@ func UpdateDatasourceClient(ctx *svc.ServiceContext, corn string) error {
 		logx.Infof("Successfully fetched %d datasources", total)
 		successCount := 0
 		failCount := 0
+		skipCount := 0
 		for _, ds := range datasourceList {
-			//dsn := gjson.Get(ds.Config, "dsn").String()
-			//logx.Infof("Updating datasource: %s,%s", ds.Name, dsn)
+			// 跳过fileServer
+			if ds.Type == enum.FileServerType.String() {
+				skipCount++
+				logx.Infof("datasource update skip: %d, %s", ds.Id, ds.Type)
+				continue
+			}
 			err := datasource.DataSourcePool.UpdateDataSource(ds.Id, ds.Config, ds.Type, ds.Hash)
 			if err != nil {
 				logx.Errorf("Datasource %d update failed: %s", ds.Id, err.Error())
@@ -68,8 +74,8 @@ func UpdateDatasourceClient(ctx *svc.ServiceContext, corn string) error {
 			}
 		}
 
-		logx.Infof("Datasource update completed at: %s, total: %d, success: %d, failed: %d, cleared: %d",
-			time.Now().Format("2006-01-02 15:04:05"), total, successCount, failCount, clearCount)
+		logx.Infof("Datasource update completed at: %s, total: %d, success: %d, failed: %d, cleared: %d, skip: %d",
+			time.Now().Format("2006-01-02 15:04:05"), total, successCount, failCount, clearCount, skipCount)
 	}
 
 	return job.RunScheduledTask(elector, corn, jobFunc, "datasource_client_update")

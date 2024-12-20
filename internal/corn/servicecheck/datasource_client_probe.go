@@ -6,13 +6,13 @@ import (
 	"os"
 	"strconv"
 	"time"
-	"workflow/internal/enum"
 
 	"github.com/go-co-op/gocron/v2"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/corn/job"
 	"workflow/internal/datasource"
+	"workflow/internal/enum"
 	"workflow/internal/locks"
 	"workflow/internal/model"
 	"workflow/internal/svc"
@@ -61,9 +61,14 @@ func ProbeDatasourceClient(ctx *svc.ServiceContext, corn string) error {
 		logx.Infof("Successfully fetched %d datasources", total)
 		successCount := 0
 		failCount := 0
+		skipCount := 0
 		for _, ds := range datasourceList {
-			//dsn := gjson.Get(ds.Config, "dsn").String()
-			//logx.Infof("Checking datasource: %s,%s", ds.Name, dsn)
+			// 跳过fileServer
+			if ds.Type == enum.FileServerType.String() {
+				skipCount++
+				logx.Infof("datasource check skip: %d, %s", ds.Id, ds.Type)
+				continue
+			}
 			err := datasource.CheckDataSourceClient(enum.DBType(ds.Type), ds.Config)
 			nowStatus := model.DatasourceStatusConnected
 			if err != nil {
@@ -80,8 +85,8 @@ func ProbeDatasourceClient(ctx *svc.ServiceContext, corn string) error {
 			}
 		}
 
-		logx.Infof("Datasource check completed at: %s, success: %d, failed: %d",
-			time.Now().Format("2006-01-02 15:04:05"), successCount, failCount)
+		logx.Infof("Datasource check completed at: %s, success: %d, failed: %d, skip: %d",
+			time.Now().Format("2006-01-02 15:04:05"), successCount, failCount, skipCount)
 		// 释放锁
 		if err = locks.CustomLock.Release(context, datasourceClientCheckLockName, ownerId); err != nil {
 			logx.Errorf("Failed to release lock: %v", err)

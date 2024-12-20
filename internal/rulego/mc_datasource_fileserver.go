@@ -1,9 +1,11 @@
 package rulego
 
 import (
+	"context"
 	"fmt"
 	"io"
 	"os"
+	"path/filepath"
 	"time"
 
 	"github.com/jlaffaye/ftp"
@@ -12,15 +14,22 @@ import (
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/utils/json"
 	"golang.org/x/crypto/ssh"
+
+	"workflow/internal/datasource"
 )
 
 // FtpNode A plugin that flow sftp node
-type FileServerNode struct{}
+type FileServerNode struct {
+	Config FileServerNodeConfiguration
+}
 
-const (
-	FTP  = "ftp"
-	SFTP = "sftp"
-)
+// FtpAction FTP操作类型
+type FileServerNodeConfiguration struct {
+	Type         string `json:"type"`         // 数据源类型 ftp 或 sftp
+	Action       string `json:"action"`       // upload/download/delete
+	DatasourceId int64  `json:"datasourceId"` // 数据源 ID
+	DestPath     string `json:"destPath"`     // 目标文件路径
+}
 
 func init() {
 	_ = rulego.Registry.Register(&FileServerNode{})
@@ -33,12 +42,42 @@ func (n *FileServerNode) New() types.Node {
 	return &FileServerNode{}
 }
 func (n *FileServerNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
+	// 读取配置
+	marshal, _ := json.Marshal(configuration)
+	_ = json.Unmarshal(marshal, &n.Config)
 	return nil
 }
 
 // OnMsg 处理消息
 func (n *FileServerNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
-	if err := n.executeFtp(msg); err != nil {
+	source, err := RoleChain.svc.DatasourceModel.FindOne(context.Background(), n.Config.DatasourceId)
+	if err != nil {
+		ctx.TellFailure(msg, err)
+		return
+	}
+
+	// 读取FTP配置
+	var config datasource.FileServerConfig
+	if err := json.Unmarshal([]byte(source.Config), &config); err != nil {
+		ctx.TellFailure(msg, err)
+		return
+	}
+	// 解析 data
+	var data map[string]interface{}
+	if err := json.Unmarshal([]byte(msg.Data), &data); err != nil {
+		ctx.TellFailure(msg, err)
+		return
+	}
+	// 生成临时文件路径
+	var tmpPath string
+	if tmp, ok := data["tmpPath"]; ok {
+		tmpPath = tmp.(string)
+	} else {
+		tmpPath = filepath.Join(fmt.Sprintf("./file-server-%s", time.Now().Format("20060102150405")), filepath.Base(n.Config.DestPath))
+		data["tmpPath"] = tmpPath
+	}
+
+	if err := n.executeFileServer(tmpPath, config, n.Config); err != nil {
 		ctx.TellFailure(msg, err)
 		return
 	}
@@ -46,58 +85,23 @@ func (n *FileServerNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 }
 
 func (n *FileServerNode) Destroy() {
-
 	// Do some cleanup work
 }
 
-// FtpNodeConfiguration FTP节点配置
-type FtpNodeConfiguration struct {
-	Protocol string `json:"protocol"` // ftp 或 sftp
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
-// FtpAction FTP操作类型
-type FtpAction struct {
-	Action   string                 `json:"action"`   // upload/download/delete
-	Config   map[string]interface{} `json:"config"`   // FTP配置
-	SrcPath  string                 `json:"srcPath"`  // 源文件路径
-	DestPath string                 `json:"destPath"` // 目标文件路径
-	Path     string                 `json:"path"`     // 文件路径(用于删除)
-}
-
-// executeFtp 执行FTP操作
-func (n *FileServerNode) executeFtp(msg types.RuleMsg) error {
-	// 解析消息数据
-	var action FtpAction
-	if err := json.Unmarshal([]byte(msg.Data), &action); err != nil {
-		return err
-	}
-
-	// 解析FTP配置
-	var config FtpNodeConfiguration
-	configBytes, err := json.Marshal(action.Config)
-	if err != nil {
-		return err
-	}
-	if err := json.Unmarshal(configBytes, &config); err != nil {
-		return err
-	}
-
+// executeFileServer 执行文件服务器操作
+func (n *FileServerNode) executeFileServer(tmpPath string, config datasource.FileServerConfig, configuration FileServerNodeConfiguration) error {
 	switch config.Protocol {
-	case SFTP:
-		return n.executeSftp(config, action)
-	case FTP:
-		return n.executeFtpAction(config, action)
+	case datasource.SftpProtocol:
+		return n.executeSftp(tmpPath, config, configuration)
+	case datasource.FtpProtocol:
+		return n.executeFtp(tmpPath, config, configuration)
 	default:
 		return fmt.Errorf("unsupported protocol: %s", config.Protocol)
 	}
 }
 
 // executeFtpAction 执行FTP操作
-func (n *FileServerNode) executeFtpAction(config FtpNodeConfiguration, action FtpAction) error {
+func (n *FileServerNode) executeFtp(tmpPath string, config datasource.FileServerConfig, action FileServerNodeConfiguration) error {
 	// 连接FTP服务器
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	client, err := ftp.Dial(addr, ftp.DialWithTimeout(5*time.Second))
@@ -114,18 +118,18 @@ func (n *FileServerNode) executeFtpAction(config FtpNodeConfiguration, action Ft
 	// 根据操作类型执行不同的FTP操作
 	switch action.Action {
 	case "upload":
-		return n.uploadFtpFile(client, action.SrcPath, action.DestPath)
+		return n.uploadFtpFile(client, tmpPath, action.DestPath)
 	case "download":
-		return n.downloadFtpFile(client, action.SrcPath, action.DestPath)
+		return n.downloadFtpFile(client, action.DestPath, tmpPath)
 	case "delete":
-		return client.Delete(action.Path)
+		return client.Delete(action.DestPath)
 	default:
 		return fmt.Errorf("unsupported action: %s", action.Action)
 	}
 }
 
 // executeSftp 执行SFTP操作
-func (n *FileServerNode) executeSftp(config FtpNodeConfiguration, action FtpAction) error {
+func (n *FileServerNode) executeSftp(tmpPath string, config datasource.FileServerConfig, configuration FileServerNodeConfiguration) error {
 	// 配置SSH客户端
 	sshConfig := &ssh.ClientConfig{
 		User: config.Username,
@@ -152,15 +156,15 @@ func (n *FileServerNode) executeSftp(config FtpNodeConfiguration, action FtpActi
 	defer sftpClient.Close()
 
 	// 根据操作类型执行不同的SFTP操作
-	switch action.Action {
+	switch configuration.Action {
 	case "upload":
-		return n.uploadSftpFile(sftpClient, action.SrcPath, action.DestPath)
+		return n.uploadSftpFile(sftpClient, tmpPath, configuration.DestPath)
 	case "download":
-		return n.downloadSftpFile(sftpClient, action.SrcPath, action.DestPath)
+		return n.downloadSftpFile(sftpClient, tmpPath, configuration.DestPath)
 	case "delete":
-		return sftpClient.Remove(action.Path)
+		return sftpClient.Remove(configuration.DestPath)
 	default:
-		return fmt.Errorf("unsupported action: %s", action.Action)
+		return fmt.Errorf("unsupported action: %s", configuration.Action)
 	}
 }
 

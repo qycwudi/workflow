@@ -8,6 +8,9 @@ import (
 
 	"github.com/jlaffaye/ftp"
 	"github.com/rulego/rulego/api/types"
+	"github.com/rulego/rulego/utils/json"
+
+	"workflow/internal/datasource"
 )
 
 func TestSftpNode_executeFtp(t *testing.T) {
@@ -36,8 +39,23 @@ func TestSftpNode_executeFtp(t *testing.T) {
 	}
 
 	node := &FileServerNode{}
+	// 解析消息数据
+	var action FileServerNodeConfiguration
+	if err := json.Unmarshal([]byte(msg.Data), &action); err != nil {
+		log.Fatalf("解析消息数据失败: %v", err)
+	}
 
-	err = node.executeFtp(msg)
+	// 解析FTP配置
+	var config datasource.FileServerConfig
+	configBytes, err := json.Marshal(msg)
+	if err != nil {
+		log.Fatalf("解析FTP配置失败: %v", err)
+	}
+	if err := json.Unmarshal(configBytes, &config); err != nil {
+		log.Fatalf("解析FTP配置失败: %v", err)
+	}
+
+	err = node.executeFileServer("./file-server-20241220120000", config, action)
 	if err != nil {
 		t.Errorf("执行SFTP操作失败: %v", err)
 	}
@@ -55,7 +73,7 @@ func TestSftpNode_executeFtp(t *testing.T) {
 		"destPath": "./testdata/test_download.txt"
 	}`
 
-	err = node.executeFtp(msg)
+	err = node.executeFileServer("./file-server-20241220120000", config, action)
 	if err != nil {
 		t.Errorf("执行SFTP下载操作失败: %v", err)
 	}
@@ -73,7 +91,7 @@ func TestSftpNode_executeFtp(t *testing.T) {
 		"path": "/tmp/test.txt"
 	}`
 
-	err = node.executeFtp(msg)
+	err = node.executeFileServer("./file-server-20241220120000", config, action)
 	if err != nil {
 		t.Errorf("执行SFTP删除操作失败: %v", err)
 	}
@@ -283,10 +301,25 @@ func TestFtpNode_executeFtp(t *testing.T) {
 	msg := types.RuleMsg{
 		Data: `{"action":"upload","config":{"protocol":"ftp","host":"10.99.113.114","port":21,"username":"test","password":"test","passive":true},"srcPath":"./testdata/test.txt","destPath":"/test.txt"}`,
 	}
+	// 解析消息数据
+	var action FileServerNodeConfiguration
+	if err := json.Unmarshal([]byte(msg.Data), &action); err != nil {
+		log.Fatalf("解析消息数据失败: %v", err)
+	}
+
+	// 解析FTP配置
+	var config datasource.FileServerConfig
+	configBytes, err := json.Marshal(msg)
+	if err != nil {
+		log.Fatalf("解析FTP配置失败: %v", err)
+	}
+	if err := json.Unmarshal(configBytes, &config); err != nil {
+		log.Fatalf("解析FTP配置失败: %v", err)
+	}
 
 	node := &FileServerNode{}
 
-	err = node.executeFtp(msg)
+	err = node.executeFileServer("./file-server-20241220120000", config, action)
 	if err != nil {
 		t.Errorf("执行FTP上传操作失败: %v", err)
 	}

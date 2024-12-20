@@ -98,6 +98,14 @@ func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]in
 
 func fileServerCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
+	configuration := FileServerNodeConfiguration{
+		Action:       data.Get("datasource_mode").String(),
+		Type:         data.Get("datasource_type").String(),
+		DatasourceId: data.Get("datasource_id").Int(),
+		DestPath:     data.Get("datasource_path").String(),
+	}
+	marshal, _ := json.Marshal(configuration)
+	_ = json.Unmarshal(marshal, &config)
 	return config
 }
 
