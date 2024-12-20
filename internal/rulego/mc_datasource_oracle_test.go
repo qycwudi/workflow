@@ -1,6 +1,8 @@
 package rulego
 
-import "testing"
+import (
+	"testing"
+)
 
 func Test_roleChain_Run_Oracle_Insert(t *testing.T) {
 	setupAndRunChain(t,

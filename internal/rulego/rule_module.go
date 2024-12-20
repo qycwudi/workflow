@@ -3,6 +3,7 @@ package rulego
 import (
 	"regexp"
 	"strings"
+	enums "workflow/internal/enum"
 
 	"github.com/rulego/rulego/utils/json"
 	"github.com/tidwall/gjson"
@@ -76,6 +77,7 @@ func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]in
 	configuration := HttpNodeConfiguration{
 		RestEndpointUrlPattern:   data.Get("url").String(),
 		RequestMethod:            data.Get("method").String(),
+		ParamType:                enums.HttpParamType(data.Get("param_type").String()),
 		WithoutRequestBody:       false,
 		Headers:                  httpParseHeaders(data.Get("header").Array()),
 		ReadTimeoutMs:            0,

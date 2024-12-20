@@ -4,6 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/tls"
+	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
@@ -16,6 +18,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	enums "workflow/internal/enum"
 )
 
 // 规则链节点配置示例：
@@ -76,6 +79,8 @@ type HttpNodeConfiguration struct {
 	ProxyUser string
 	// ProxyPassword 代理密码
 	ProxyPassword string
+	// ParamType 参数类型
+	ParamType enums.HttpParamType
 	// 参数解析脚本
 	Script string `json:"script"`
 }
@@ -120,6 +125,10 @@ func (x *HttpNode) New() types.Node {
 func (x *HttpNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
 	err := maps.Map2Struct(configuration, &x.Config)
 	if err == nil {
+		if x.Config.ParamType == enums.HttpParamTypeXML {
+			x.Config.Headers[contentTypeKey] = "text/xml; charset=utf-8"
+		}
+
 		x.Config.RequestMethod = strings.ToUpper(x.Config.RequestMethod)
 		x.httpClient = NewHttpClient(x.Config)
 		// Server-Send Events 流式响应
@@ -155,7 +164,21 @@ func (x *HttpNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 	if x.Config.WithoutRequestBody {
 		req, err = http.NewRequest(x.Config.RequestMethod, endpointUrl, nil)
 	} else {
-		req, err = http.NewRequest(x.Config.RequestMethod, endpointUrl, bytes.NewReader([]byte(msg.Data)))
+		dataByte := []byte(msg.Data)
+		if x.Config.ParamType == enums.HttpParamTypeXML {
+			// json to xml
+			var xmlData map[string]interface{}
+			err := json.Unmarshal([]byte(msg.Data), &xmlData)
+			if err != nil {
+				ctx.TellFailure(msg, err)
+				return
+			}
+
+			xmlStr, _ := mapToXML(xmlData)
+			dataByte = []byte(xmlStr)
+		}
+
+		req, err = http.NewRequest(x.Config.RequestMethod, endpointUrl, bytes.NewReader(dataByte))
 	}
 	if err != nil {
 		ctx.TellFailure(msg, err)
@@ -192,7 +215,19 @@ func (x *HttpNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 		msg.Metadata.PutValue(statusMetadataKey, response.Status)
 		msg.Metadata.PutValue(statusCodeMetadataKey, strconv.Itoa(response.StatusCode))
 		if response.StatusCode == 200 {
-			msg.Data = string(b)
+			if x.Config.ParamType == enums.HttpParamTypeXML {
+				var xmlNode XMLNode
+				if err := xml.Unmarshal(b, &xmlNode); err != nil {
+					ctx.TellFailure(msg, err)
+				}
+
+				res := xmlToMap(&xmlNode)
+				resByte, _ := json.Marshal(res)
+				msg.Data = string(resByte)
+			} else {
+				msg.Data = string(b)
+			}
+
 			ctx.TellSuccess(msg)
 		} else {
 			msg.Metadata.PutValue(errorBodyMetadataKey, string(b))
@@ -253,4 +288,149 @@ func readFromStream(ctx types.RuleContext, msg types.RuleMsg, resp *http.Respons
 	if err := scanner.Err(); err != nil && err != io.EOF {
 		ctx.TellFailure(msg, err)
 	}
+}
+
+type XMLNode struct {
+	XMLName xml.Name
+	Attrs   []xml.Attr `xml:",any,attr"`
+	Content string     `xml:",chardata"`
+	Nodes   []XMLNode  `xml:",any"`
+}
+
+// xmlToMap XML 转 JSON
+func xmlToMap(node *XMLNode) interface{} {
+	// 如果只有文本内容，直接返回内容
+	if len(node.Nodes) == 0 && len(node.Attrs) == 0 {
+		return strings.TrimSpace(node.Content)
+	}
+
+	result := make(map[string]interface{})
+
+	// 处理属性
+	if len(node.Attrs) > 0 {
+		attrs := make(map[string]string)
+		for _, attr := range node.Attrs {
+			attrKey := attr.Name.Local
+			if attr.Name.Space != "" {
+				attrKey = fmt.Sprintf("%s:%s", attr.Name.Space, attrKey)
+			}
+			attrs[attrKey] = attr.Value
+		}
+		result["@attributes"] = attrs
+	}
+
+	// 处理子节点
+	for _, child := range node.Nodes {
+		name := child.XMLName.Local
+		value := xmlToMap(&child)
+
+		// 跳过空值
+		if value == nil {
+			continue
+		}
+
+		// 如果已存在同名节点，转换为数组
+		if existing, exists := result[name]; exists {
+			var array []interface{}
+			switch v := existing.(type) {
+			case []interface{}:
+				array = append(v, value)
+			default:
+				array = []interface{}{existing, value}
+			}
+			result[name] = array
+		} else {
+			result[name] = value
+		}
+	}
+
+	// 如果只有一个键值对且没有属性，直接返回值
+	if len(result) == 1 && len(node.Attrs) == 0 {
+		for _, v := range result {
+			return v
+		}
+	}
+
+	return result
+}
+
+// mapToXML JSON 转 XML
+func mapToXML(data map[string]interface{}) (string, error) {
+	root := XMLNode{
+		XMLName: xml.Name{Local: "root"},
+	}
+
+	if err := processNode(&root, data); err != nil {
+		return "", err
+	}
+
+	xmlOutput, err := xml.MarshalIndent(root, "", "  ")
+	if err != nil {
+		return "", err
+	}
+
+	output := string(xmlOutput)
+	output = strings.ReplaceAll(output, "<root>", "")
+	output = strings.ReplaceAll(output, "</root>", "")
+	return fmt.Sprintf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n%s", output), nil
+}
+
+// 处理节点数据
+func processNode(node *XMLNode, data interface{}) error {
+	switch v := data.(type) {
+	case map[string]interface{}:
+		// 处理属性
+		if attrs, ok := v["@attributes"].(map[string]interface{}); ok {
+			for key, value := range attrs {
+				node.Attrs = append(node.Attrs, xml.Attr{
+					Name:  xml.Name{Local: key},
+					Value: fmt.Sprint(value),
+				})
+			}
+			delete(v, "@attributes")
+		}
+
+		// 处理其他字段
+		for key, value := range v {
+			child := XMLNode{
+				XMLName: xml.Name{Local: key},
+			}
+			if err := processNode(&child, value); err != nil {
+				return err
+			}
+			node.Nodes = append(node.Nodes, child)
+		}
+
+	case []interface{}:
+		// 处理数组
+		for _, item := range v {
+			child := XMLNode{
+				XMLName: node.XMLName,
+			}
+			if err := processNode(&child, item); err != nil {
+				return err
+			}
+			node.Nodes = append(node.Nodes, child)
+		}
+
+	case nil:
+		// 处理空值
+		return nil
+
+	default:
+		// 处理基本类型
+		node.Content = escapeXML(fmt.Sprint(v))
+	}
+
+	return nil
+}
+
+// 转义XML特殊字符
+func escapeXML(s string) string {
+	s = strings.ReplaceAll(s, "&", "&amp;")
+	s = strings.ReplaceAll(s, "<", "&lt;")
+	s = strings.ReplaceAll(s, ">", "&gt;")
+	s = strings.ReplaceAll(s, "\"", "&quot;")
+	s = strings.ReplaceAll(s, "'", "&apos;")
+	return s
 }
