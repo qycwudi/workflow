@@ -8,7 +8,7 @@ type CanvasRunResponse {
 	Ts       int64                  `json:"ts"`
 	Id       string                 `json:"id"`
 	MetaData map[string]string      `json:"metadata"`
-	Data     map[string]interface{} `json:"data"`
+	Data     interface{} `json:"data"`
 }
 
 type CanvasRunSingleRequest {
@@ -20,7 +20,7 @@ type CanvasRunSingleResponse {
 	Ts       int64                  `json:"ts"`
 	Id       string                 `json:"id"`
 	MetaData map[string]string      `json:"metadata"`
-	Data     map[string]interface{} `json:"data"`
+	Data     interface{} `json:"data"`
 }
 
 type CanvasRunSingleDetailRequest {

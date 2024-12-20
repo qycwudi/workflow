@@ -62,7 +62,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	result := rulego.RoleChain.Run(canvasId, metadata, data)
 	l.Infof("chain run result:%+v", result)
 
-	respData := make(map[string]interface{})
+	var respData interface{}
 
 	err = json.Unmarshal([]byte(result.Data), &respData)
 	resp = &types.CanvasRunResponse{

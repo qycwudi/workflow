@@ -106,10 +106,10 @@ type CanvasRunRequest struct {
 }
 
 type CanvasRunResponse struct {
-	Ts       int64                  `json:"ts"`
-	Id       string                 `json:"id"`
-	MetaData map[string]string      `json:"metadata"`
-	Data     map[string]interface{} `json:"data"`
+	Ts       int64             `json:"ts"`
+	Id       string            `json:"id"`
+	MetaData map[string]string `json:"metadata"`
+	Data     interface{}       `json:"data"`
 }
 
 type CanvasRunSingleRequest struct {
@@ -118,10 +118,10 @@ type CanvasRunSingleRequest struct {
 }
 
 type CanvasRunSingleResponse struct {
-	Ts       int64                  `json:"ts"`
-	Id       string                 `json:"id"`
-	MetaData map[string]string      `json:"metadata"`
-	Data     map[string]interface{} `json:"data"`
+	Ts       int64             `json:"ts"`
+	Id       string            `json:"id"`
+	MetaData map[string]string `json:"metadata"`
+	Data     interface{}       `json:"data"`
 }
 
 type CanvasRunSingleDetailRequest struct {

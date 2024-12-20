@@ -63,10 +63,10 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://198.19.249.3:9999/api/role/v1/ctgqi9l3sjtsviksh0rg
+POST http://10.99.43.99:8889/api/role/v1/cths0biflvkgs92fuin0
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 8537cc19b30c4a49849b6efbd9bb4aa9
+Authorization: Bearer 51c93483eed04dfe92d7f3511a7db01c
 
 {
   "name": "屋里",
@@ -74,10 +74,10 @@ Authorization: Bearer 8537cc19b30c4a49849b6efbd9bb4aa9
 }
 
 ### API调用-单结构
-POST http://10.99.43.99:9999/api/role/v1/ctfvtb2flvkm3l6cbsh0
+POST http://10.99.43.99:9999/api/role/v1/cths0biflvkgs92fuin0
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer b4084c770fea4ee49af2410eea6093e4
+Authorization: Bearer 51c93483eed04dfe92d7f3511a7db01c
 
 {
   "name": "张",

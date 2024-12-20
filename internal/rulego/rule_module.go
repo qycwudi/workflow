@@ -168,7 +168,7 @@ func JoinCfg(data gjson.Result, baseInfo map[string]string) map[string]interface
 
 func forCfg(data gjson.Result, baseInfo map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
-	config["range"] = "msg." + data.Get("range").String()
+	config["range"] = data.Get("range").String()
 	config["mode"] = 1
 	config["do"] = baseInfo[baseInfo["id"]]
 	return config

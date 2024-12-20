@@ -63,7 +63,7 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 		result = msg
 	}))
 
-	var respData map[string]interface{}
+	var respData interface{}
 	if err := json.Unmarshal([]byte(result.Data), &respData); err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析结果失败")
 	}
