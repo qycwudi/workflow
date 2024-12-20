@@ -31,6 +31,21 @@ func NewCanvasRunSingleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *C
 }
 
 func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest) (resp *types.CanvasRunSingleResponse, err error) {
+	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
+	}
+
+	canvasId, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
+	}
+
+	// 运行文件
+	err = rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "加载画布失败,错误原因:"+err.Error())
+	}
 	parentNodes := rulego.RoleChain.GetParentNode(req.Id, req.NodeId)
 	trace, err := l.svcCtx.TraceModel.FindOneByNodeId(l.ctx, parentNodes[0])
 	if err != nil {

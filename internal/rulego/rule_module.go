@@ -27,7 +27,7 @@ const (
 
 	Database string = "database"
 
-	Ftp string = "ftp" // 包括 sftp
+	FileServer string = "fileServer" // 包括 sftp
 
 	Fork string = "fork"
 	Join string = "join"
@@ -47,6 +47,7 @@ func ModuleReadConfig(data gjson.Result, baseInfo map[string]string) map[string]
 		JsFilter:    jsFilterCfg,
 		JsTransform: jsTransformCfg,
 		Fork:        forkCfg,
+		FileServer:  fileServerCfg,
 		Join:        JoinCfg,
 		For:         forCfg,
 	}
@@ -90,6 +91,11 @@ func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]in
 	}
 	marshal, _ := json.Marshal(configuration)
 	_ = json.Unmarshal(marshal, &config)
+	return config
+}
+
+func fileServerCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
+	config := map[string]interface{}{}
 	return config
 }
 

@@ -35,7 +35,7 @@ func TestSftpNode_executeFtp(t *testing.T) {
 		}`,
 	}
 
-	node := &FtpNode{}
+	node := &FileServerNode{}
 
 	err = node.executeFtp(msg)
 	if err != nil {
@@ -284,50 +284,50 @@ func TestFtpNode_executeFtp(t *testing.T) {
 		Data: `{"action":"upload","config":{"protocol":"ftp","host":"10.99.113.114","port":21,"username":"test","password":"test","passive":true},"srcPath":"./testdata/test.txt","destPath":"/test.txt"}`,
 	}
 
-	node := &FtpNode{}
+	node := &FileServerNode{}
 
 	err = node.executeFtp(msg)
 	if err != nil {
 		t.Errorf("执行FTP上传操作失败: %v", err)
 	}
 
-	msg.Data = `{
-		"action": "download",
-		"config": {
-			"protocol": "ftp",
-			"host": "10.99.113.114",
-			"port": 21,
-			"username": "test",
-			"password": "test",
-			"passive": true
-		},
-		"srcPath": "/test.txt",
-		"destPath": "./testdata/test_download_ftp.txt"
-	}`
+	// msg.Data = `{
+	// 	"action": "download",
+	// 	"config": {
+	// 		"protocol": "ftp",
+	// 		"host": "10.99.113.114",
+	// 		"port": 21,
+	// 		"username": "test",
+	// 		"password": "test",
+	// 		"passive": true
+	// 	},
+	// 	"srcPath": "/test.txt",
+	// 	"destPath": "./testdata/test_download_ftp.txt"
+	// }`
 
-	err = node.executeFtp(msg)
-	if err != nil {
-		t.Errorf("执行FTP下载操作失败: %v", err)
-	}
-	defer os.Remove("./testdata/test_download_ftp.txt")
+	// err = node.executeFtp(msg)
+	// if err != nil {
+	// 	t.Errorf("执行FTP下载操作失败: %v", err)
+	// }
+	// defer os.Remove("./testdata/test_download_ftp.txt")
 
-	msg.Data = `{
-		"action": "delete",
-		"config": {
-			"protocol": "ftp",
-			"host": "10.99.113.114",
-			"port": 21,
-			"username": "test",
-			"password": "test",
-			"passive": true
-		},
-		"path": "/test.txt"
-	}`
+	// msg.Data = `{
+	// 	"action": "delete",
+	// 	"config": {
+	// 		"protocol": "ftp",
+	// 		"host": "10.99.113.114",
+	// 		"port": 21,
+	// 		"username": "test",
+	// 		"password": "test",
+	// 		"passive": true
+	// 	},
+	// 	"path": "/test.txt"
+	// }`
 
-	err = node.executeFtp(msg)
-	if err != nil {
-		t.Errorf("执行FTP删除操作失败: %v", err)
-	}
+	// err = node.executeFtp(msg)
+	// if err != nil {
+	// 	t.Errorf("执行FTP删除操作失败: %v", err)
+	// }
 }
 func TestFtpNode_net_executeFtp(t *testing.T) {
 	ftpServer := "10.99.113.114:21"

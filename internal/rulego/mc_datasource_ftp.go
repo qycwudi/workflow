@@ -15,24 +15,29 @@ import (
 )
 
 // FtpNode A plugin that flow sftp node
-type FtpNode struct{}
+type FileServerNode struct{}
+
+const (
+	FTP  = "ftp"
+	SFTP = "sftp"
+)
 
 func init() {
-	_ = rulego.Registry.Register(&FtpNode{})
+	_ = rulego.Registry.Register(&FileServerNode{})
 }
 
-func (n *FtpNode) Type() string {
-	return Ftp
+func (n *FileServerNode) Type() string {
+	return FileServer
 }
-func (n *FtpNode) New() types.Node {
-	return &FtpNode{}
+func (n *FileServerNode) New() types.Node {
+	return &FileServerNode{}
 }
-func (n *FtpNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
+func (n *FileServerNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
 	return nil
 }
 
 // OnMsg 处理消息
-func (n *FtpNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
+func (n *FileServerNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 	if err := n.executeFtp(msg); err != nil {
 		ctx.TellFailure(msg, err)
 		return
@@ -40,7 +45,7 @@ func (n *FtpNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 	ctx.TellSuccess(msg)
 }
 
-func (n *FtpNode) Destroy() {
+func (n *FileServerNode) Destroy() {
 
 	// Do some cleanup work
 }
@@ -64,7 +69,7 @@ type FtpAction struct {
 }
 
 // executeFtp 执行FTP操作
-func (n *FtpNode) executeFtp(msg types.RuleMsg) error {
+func (n *FileServerNode) executeFtp(msg types.RuleMsg) error {
 	// 解析消息数据
 	var action FtpAction
 	if err := json.Unmarshal([]byte(msg.Data), &action); err != nil {
@@ -82,15 +87,17 @@ func (n *FtpNode) executeFtp(msg types.RuleMsg) error {
 	}
 
 	switch config.Protocol {
-	case "sftp":
+	case SFTP:
 		return n.executeSftp(config, action)
-	default:
+	case FTP:
 		return n.executeFtpAction(config, action)
+	default:
+		return fmt.Errorf("unsupported protocol: %s", config.Protocol)
 	}
 }
 
 // executeFtpAction 执行FTP操作
-func (n *FtpNode) executeFtpAction(config FtpNodeConfiguration, action FtpAction) error {
+func (n *FileServerNode) executeFtpAction(config FtpNodeConfiguration, action FtpAction) error {
 	// 连接FTP服务器
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	client, err := ftp.Dial(addr, ftp.DialWithTimeout(5*time.Second))
@@ -118,7 +125,7 @@ func (n *FtpNode) executeFtpAction(config FtpNodeConfiguration, action FtpAction
 }
 
 // executeSftp 执行SFTP操作
-func (n *FtpNode) executeSftp(config FtpNodeConfiguration, action FtpAction) error {
+func (n *FileServerNode) executeSftp(config FtpNodeConfiguration, action FtpAction) error {
 	// 配置SSH客户端
 	sshConfig := &ssh.ClientConfig{
 		User: config.Username,
@@ -158,7 +165,7 @@ func (n *FtpNode) executeSftp(config FtpNodeConfiguration, action FtpAction) err
 }
 
 // uploadFtpFile 上传文件(FTP)
-func (n *FtpNode) uploadFtpFile(client *ftp.ServerConn, srcPath, destPath string) error {
+func (n *FileServerNode) uploadFtpFile(client *ftp.ServerConn, srcPath, destPath string) error {
 	srcFile, err := os.Open(srcPath)
 	if err != nil {
 		return err
@@ -169,7 +176,7 @@ func (n *FtpNode) uploadFtpFile(client *ftp.ServerConn, srcPath, destPath string
 }
 
 // downloadFtpFile 下载文件(FTP)
-func (n *FtpNode) downloadFtpFile(client *ftp.ServerConn, srcPath, destPath string) error {
+func (n *FileServerNode) downloadFtpFile(client *ftp.ServerConn, srcPath, destPath string) error {
 	resp, err := client.Retr(srcPath)
 	if err != nil {
 		return err
@@ -187,7 +194,7 @@ func (n *FtpNode) downloadFtpFile(client *ftp.ServerConn, srcPath, destPath stri
 }
 
 // uploadSftpFile 上传文件(SFTP)
-func (n *FtpNode) uploadSftpFile(client *sftp.Client, srcPath, destPath string) error {
+func (n *FileServerNode) uploadSftpFile(client *sftp.Client, srcPath, destPath string) error {
 	srcFile, err := os.Open(srcPath)
 	if err != nil {
 		return err
@@ -205,7 +212,7 @@ func (n *FtpNode) uploadSftpFile(client *sftp.Client, srcPath, destPath string) 
 }
 
 // downloadSftpFile 下载文件(SFTP)
-func (n *FtpNode) downloadSftpFile(client *sftp.Client, srcPath, destPath string) error {
+func (n *FileServerNode) downloadSftpFile(client *sftp.Client, srcPath, destPath string) error {
 	srcFile, err := client.Open(srcPath)
 	if err != nil {
 		return err
