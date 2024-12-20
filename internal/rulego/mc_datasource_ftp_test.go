@@ -7,13 +7,11 @@ import (
 	"testing"
 
 	"github.com/jlaffaye/ftp"
-	"github.com/rulego/rulego/api/types"
-	"github.com/rulego/rulego/utils/json"
 
 	"workflow/internal/datasource"
 )
 
-func TestSftpNode_executeFtp(t *testing.T) {
+func TestFileServerNode_ProcessFile(t *testing.T) {
 	// 创建测试文件
 	testContent := []byte("test content")
 	err := os.WriteFile("./testdata/test.txt", testContent, 0644)
@@ -22,346 +20,100 @@ func TestSftpNode_executeFtp(t *testing.T) {
 	}
 	defer os.Remove("./testdata/test.txt")
 
-	// 测试 SFTP
-	msg := types.RuleMsg{
-		Data: `{
-			"action": "upload",
-			"config": {
-				"protocol": "sftp",
-				"host": "10.99.169.7",
-				"port": 2233,
-				"username": "beuser",
-				"password": "Bepassword@123"
+	tests := []struct {
+		name    string
+		config  datasource.FileServerConfig
+		action  string
+		srcPath string
+		dstPath string
+		wantErr bool
+	}{
+		{
+			name: "SFTP上传测试",
+			config: datasource.FileServerConfig{
+				Protocol: "sftp",
+				Host:     "10.99.169.7",
+				Port:     2233,
+				Username: "beuser",
+				Password: "Bepassword@123",
 			},
-			"srcPath": "./testdata/test.txt",
-			"destPath": "/tmp/test.txt"
-		}`,
-	}
-
-	node := &FileServerNode{}
-	// 解析消息数据
-	var action FileServerNodeConfiguration
-	if err := json.Unmarshal([]byte(msg.Data), &action); err != nil {
-		log.Fatalf("解析消息数据失败: %v", err)
-	}
-
-	// 解析FTP配置
-	var config datasource.FileServerConfig
-	configBytes, err := json.Marshal(msg)
-	if err != nil {
-		log.Fatalf("解析FTP配置失败: %v", err)
-	}
-	if err := json.Unmarshal(configBytes, &config); err != nil {
-		log.Fatalf("解析FTP配置失败: %v", err)
-	}
-
-	err = node.executeFileServer("./file-server-20241220120000", config, action)
-	if err != nil {
-		t.Errorf("执行SFTP操作失败: %v", err)
-	}
-
-	msg.Data = `{
-		"action": "download",
-		"config": {
-			"protocol": "sftp",
-			"host": "10.99.169.7",
-			"port": 2233,
-			"username": "beuser", 
-			"password": "Bepassword@123"
+			action:  "upload",
+			srcPath: "./testdata/test.txt",
+			dstPath: "/tmp/test.txt",
 		},
-		"srcPath": "/tmp/test.txt",
-		"destPath": "./testdata/test_download.txt"
-	}`
-
-	err = node.executeFileServer("./file-server-20241220120000", config, action)
-	if err != nil {
-		t.Errorf("执行SFTP下载操作失败: %v", err)
-	}
-	defer os.Remove("./testdata/test_download.txt")
-
-	msg.Data = `{
-		"action": "delete",
-		"config": {
-			"protocol": "sftp",
-			"host": "10.99.169.7",
-			"port": 2233,
-			"username": "beuser",
-			"password": "Bepassword@123"
+		{
+			name: "SFTP下载测试",
+			config: datasource.FileServerConfig{
+				Protocol: "sftp",
+				Host:     "10.99.169.7",
+				Port:     2233,
+				Username: "beuser",
+				Password: "Bepassword@123",
+			},
+			action:  "download",
+			srcPath: "/tmp/test.txt",
+			dstPath: "./testdata/test_download.txt",
 		},
-		"path": "/tmp/test.txt"
-	}`
+		{
+			name: "SFTP删除测试",
+			config: datasource.FileServerConfig{
+				Protocol: "sftp",
+				Host:     "10.99.169.7",
+				Port:     2233,
+				Username: "beuser",
+				Password: "Bepassword@123",
+			},
+			action:  "delete",
+			srcPath: "/tmp/test.txt",
+		},
+		{
+			name: "FTP上传测试",
+			config: datasource.FileServerConfig{
+				Protocol: "ftp",
+				Host:     "10.99.113.114",
+				Port:     21,
+				Username: "test",
+				Password: "test",
+			},
+			action:  "upload",
+			srcPath: "./testdata/test.txt",
+			dstPath: "/test.txt",
+		},
+	}
 
-	err = node.executeFileServer("./file-server-20241220120000", config, action)
-	if err != nil {
-		t.Errorf("执行SFTP删除操作失败: %v", err)
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			node := &FileServerNode{
+				Config: FileServerNodeConfiguration{
+					Type:     tt.config.Protocol,
+					Action:   tt.action,
+					DestPath: tt.dstPath,
+				},
+			}
+
+			handler, err := node.createHandler(tt.config)
+			if err != nil {
+				t.Fatalf("创建处理器失败: %v", err)
+			}
+			defer handler.Close()
+
+			var err2 error
+			switch tt.action {
+			case "upload":
+				err2 = handler.Upload(tt.srcPath, tt.dstPath)
+			case "download":
+				err2 = handler.Download(tt.srcPath, tt.dstPath)
+			case "delete":
+				err2 = handler.Delete(tt.srcPath)
+			}
+
+			if (err2 != nil) != tt.wantErr {
+				t.Errorf("执行%s操作失败: %v", tt.action, err2)
+			}
+		})
 	}
 }
 
-/*
-	---
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  annotations: {}
-  labels:
-    k8s.kuboard.cn/name: ido-ftp
-  name: ido-ftp
-  namespace: uat-43
-  resourceVersion: '501817066'
-spec:
-  progressDeadlineSeconds: 600
-  replicas: 1
-  revisionHistoryLimit: 10
-  selector:
-    matchLabels:
-      k8s.kuboard.cn/name: ido-ftp
-  strategy:
-    rollingUpdate:
-      maxSurge: 25%
-      maxUnavailable: 25%
-    type: RollingUpdate
-  template:
-    metadata:
-      creationTimestamp: null
-      labels:
-        k8s.kuboard.cn/name: ido-ftp
-    spec:
-      containers:
-        - env:
-            - name: FTP_USER
-              value: test
-            - name: FTP_PASS
-              value: test
-            - name: PASV_ADDRESS
-              value: 10.99.43.43
-            - name: PASV_MIN_PORT
-              value: '21100'
-            - name: PASV_MAX_PORT
-              value: '21110'
-          image: '10.12.0.78:5000/k8s/vsftpd'
-          imagePullPolicy: Always
-          name: vsftpd
-          ports:
-            - containerPort: 21
-              protocol: TCP
-            - containerPort: 20
-              protocol: TCP
-            - containerPort: 21100
-              protocol: TCP
-            - containerPort: 21101
-              protocol: TCP
-            - containerPort: 21102
-              protocol: TCP
-            - containerPort: 21103
-              protocol: TCP
-            - containerPort: 21104
-              protocol: TCP
-            - containerPort: 21105
-              protocol: TCP
-            - containerPort: 21106
-              protocol: TCP
-            - containerPort: 21107
-              protocol: TCP
-            - containerPort: 21108
-              protocol: TCP
-            - containerPort: 21109
-              protocol: TCP
-            - containerPort: 21110
-              protocol: TCP
-          resources: {}
-          terminationMessagePath: /dev/termination-log
-          terminationMessagePolicy: File
-      dnsPolicy: ClusterFirst
-      restartPolicy: Always
-      schedulerName: default-scheduler
-      securityContext: {}
-      terminationGracePeriodSeconds: 30
-status:
-  availableReplicas: 1
-  conditions:
-    - lastTransitionTime: '2024-12-18T15:36:54Z'
-      lastUpdateTime: '2024-12-18T15:36:54Z'
-      message: Deployment has minimum availability.
-      reason: MinimumReplicasAvailable
-      status: 'True'
-      type: Available
-    - lastTransitionTime: '2024-12-18T15:25:27Z'
-      lastUpdateTime: '2024-12-18T15:36:54Z'
-      message: ReplicaSet "ido-ftp-85c5758748" has successfully progressed.
-      reason: NewReplicaSetAvailable
-      status: 'True'
-      type: Progressing
-  observedGeneration: 16
-  readyReplicas: 1
-  replicas: 1
-  updatedReplicas: 1
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  annotations: {}
-  name: ido-ftp
-  namespace: uat-43
-  resourceVersion: '501812860'
-spec:
-  clusterIP: 10.99.113.114
-  clusterIPs:
-    - 10.99.113.114
-  externalTrafficPolicy: Cluster
-  ipFamilies:
-    - IPv4
-  ipFamilyPolicy: SingleStack
-  ports:
-    - name: ftp
-      nodePort: 30013
-      port: 21
-      protocol: TCP
-      targetPort: 21
-    - name: ftp-data
-      nodePort: 30001
-      port: 20
-      protocol: TCP
-      targetPort: 20
-    - name: pasv
-      nodePort: 30002
-      port: 21100
-      protocol: TCP
-      targetPort: 21100
-    - name: pasv-20001
-      nodePort: 30003
-      port: 21101
-      protocol: TCP
-      targetPort: 21101
-    - name: pasv-20002
-      nodePort: 30014
-      port: 21102
-      protocol: TCP
-      targetPort: 21102
-    - name: pasv-20003
-      nodePort: 30015
-      port: 21103
-      protocol: TCP
-      targetPort: 21103
-    - name: pasv-20004
-      nodePort: 30016
-      port: 21104
-      protocol: TCP
-      targetPort: 21104
-    - name: pasv-20005
-      nodePort: 30007
-      port: 21105
-      protocol: TCP
-      targetPort: 21105
-    - name: pasv-20006
-      nodePort: 30008
-      port: 21106
-      protocol: TCP
-      targetPort: 21106
-    - name: pasv-20007
-      nodePort: 30009
-      port: 21107
-      protocol: TCP
-      targetPort: 21107
-    - name: pasv-20008
-      nodePort: 30010
-      port: 21108
-      protocol: TCP
-      targetPort: 21108
-    - name: pasv-20009
-      nodePort: 30011
-      port: 21109
-      protocol: TCP
-      targetPort: 21109
-    - name: pasv-20010
-      nodePort: 30012
-      port: 21110
-      protocol: TCP
-      targetPort: 21110
-  selector:
-    k8s.kuboard.cn/name: ido-ftp
-  sessionAffinity: None
-  type: NodePort
-status:
-  loadBalancer: {}
-
-
-*/
-
-func TestFtpNode_executeFtp(t *testing.T) {
-	// 创建测试文件
-	testContent := []byte("test content")
-	err := os.WriteFile("./testdata/test.txt", testContent, 0644)
-	if err != nil {
-		t.Fatalf("创建测试文件失败: %v", err)
-	}
-	defer os.Remove("./testdata/test.txt")
-
-	// 测试 FTP
-	msg := types.RuleMsg{
-		Data: `{"action":"upload","config":{"protocol":"ftp","host":"10.99.113.114","port":21,"username":"test","password":"test","passive":true},"srcPath":"./testdata/test.txt","destPath":"/test.txt"}`,
-	}
-	// 解析消息数据
-	var action FileServerNodeConfiguration
-	if err := json.Unmarshal([]byte(msg.Data), &action); err != nil {
-		log.Fatalf("解析消息数据失败: %v", err)
-	}
-
-	// 解析FTP配置
-	var config datasource.FileServerConfig
-	configBytes, err := json.Marshal(msg)
-	if err != nil {
-		log.Fatalf("解析FTP配置失败: %v", err)
-	}
-	if err := json.Unmarshal(configBytes, &config); err != nil {
-		log.Fatalf("解析FTP配置失败: %v", err)
-	}
-
-	node := &FileServerNode{}
-
-	err = node.executeFileServer("./file-server-20241220120000", config, action)
-	if err != nil {
-		t.Errorf("执行FTP上传操作失败: %v", err)
-	}
-
-	// msg.Data = `{
-	// 	"action": "download",
-	// 	"config": {
-	// 		"protocol": "ftp",
-	// 		"host": "10.99.113.114",
-	// 		"port": 21,
-	// 		"username": "test",
-	// 		"password": "test",
-	// 		"passive": true
-	// 	},
-	// 	"srcPath": "/test.txt",
-	// 	"destPath": "./testdata/test_download_ftp.txt"
-	// }`
-
-	// err = node.executeFtp(msg)
-	// if err != nil {
-	// 	t.Errorf("执行FTP下载操作失败: %v", err)
-	// }
-	// defer os.Remove("./testdata/test_download_ftp.txt")
-
-	// msg.Data = `{
-	// 	"action": "delete",
-	// 	"config": {
-	// 		"protocol": "ftp",
-	// 		"host": "10.99.113.114",
-	// 		"port": 21,
-	// 		"username": "test",
-	// 		"password": "test",
-	// 		"passive": true
-	// 	},
-	// 	"path": "/test.txt"
-	// }`
-
-	// err = node.executeFtp(msg)
-	// if err != nil {
-	// 	t.Errorf("执行FTP删除操作失败: %v", err)
-	// }
-}
 func TestFtpNode_net_executeFtp(t *testing.T) {
 	ftpServer := "10.99.113.114:21"
 	username := "test"

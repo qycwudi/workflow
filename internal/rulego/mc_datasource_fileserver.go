@@ -18,17 +18,25 @@ import (
 	"workflow/internal/datasource"
 )
 
-// FtpNode A plugin that flow sftp node
+// FileServerNode 文件服务器节点
 type FileServerNode struct {
 	Config FileServerNodeConfiguration
 }
 
-// FtpAction FTP操作类型
+// FileServerNodeConfiguration 节点配置
 type FileServerNodeConfiguration struct {
 	Type         string `json:"type"`         // 数据源类型 ftp 或 sftp
 	Action       string `json:"action"`       // upload/download/delete
 	DatasourceId int64  `json:"datasourceId"` // 数据源 ID
 	DestPath     string `json:"destPath"`     // 目标文件路径
+}
+
+// FileServerHandler 文件服务器操作接口
+type FileServerHandler interface {
+	Upload(srcPath, destPath string) error
+	Download(srcPath, destPath string) error
+	Delete(path string) error
+	Close() error
 }
 
 func init() {
@@ -38,17 +46,17 @@ func init() {
 func (n *FileServerNode) Type() string {
 	return FileServer
 }
+
 func (n *FileServerNode) New() types.Node {
 	return &FileServerNode{}
 }
+func (n *FileServerNode) Destroy() {}
+
 func (n *FileServerNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
-	// 读取配置
 	marshal, _ := json.Marshal(configuration)
-	_ = json.Unmarshal(marshal, &n.Config)
-	return nil
+	return json.Unmarshal(marshal, &n.Config)
 }
 
-// OnMsg 处理消息
 func (n *FileServerNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 	source, err := RoleChain.svc.DatasourceModel.FindOne(context.Background(), n.Config.DatasourceId)
 	if err != nil {
@@ -56,81 +64,128 @@ func (n *FileServerNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 		return
 	}
 
-	// 读取FTP配置
 	var config datasource.FileServerConfig
 	if err := json.Unmarshal([]byte(source.Config), &config); err != nil {
 		ctx.TellFailure(msg, err)
 		return
 	}
-	// 解析 data
+
 	var data map[string]interface{}
 	if err := json.Unmarshal([]byte(msg.Data), &data); err != nil {
 		ctx.TellFailure(msg, err)
 		return
 	}
-	// 生成临时文件路径
-	var tmpPath string
-	if tmp, ok := data["tmpPath"]; ok {
-		tmpPath = tmp.(string)
-	} else {
-		tmpPath = filepath.Join(fmt.Sprintf("./file-server-%s", time.Now().Format("20060102150405")), filepath.Base(n.Config.DestPath))
-		data["tmpPath"] = tmpPath
-	}
 
-	if err := n.executeFileServer(tmpPath, config, n.Config); err != nil {
+	tmpPath := n.getTempPath(data)
+	data["tmpPath"] = tmpPath
+
+	if err := n.processFile(tmpPath, config); err != nil {
 		ctx.TellFailure(msg, err)
 		return
 	}
+
+	marshal, _ := json.Marshal(data)
+	msg.Data = string(marshal)
 	ctx.TellSuccess(msg)
 }
 
-func (n *FileServerNode) Destroy() {
-	// Do some cleanup work
-}
-
-// executeFileServer 执行文件服务器操作
-func (n *FileServerNode) executeFileServer(tmpPath string, config datasource.FileServerConfig, configuration FileServerNodeConfiguration) error {
-	switch config.Protocol {
-	case datasource.SftpProtocol:
-		return n.executeSftp(tmpPath, config, configuration)
-	case datasource.FtpProtocol:
-		return n.executeFtp(tmpPath, config, configuration)
-	default:
-		return fmt.Errorf("unsupported protocol: %s", config.Protocol)
+func (n *FileServerNode) getTempPath(data map[string]interface{}) string {
+	if tmp, ok := data["tmpPath"]; ok {
+		return tmp.(string)
 	}
+	return filepath.Join(fmt.Sprintf("./file-server-%s", time.Now().Format("20060102150405")), filepath.Base(n.Config.DestPath))
 }
 
-// executeFtpAction 执行FTP操作
-func (n *FileServerNode) executeFtp(tmpPath string, config datasource.FileServerConfig, action FileServerNodeConfiguration) error {
-	// 连接FTP服务器
-	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
-	client, err := ftp.Dial(addr, ftp.DialWithTimeout(5*time.Second))
+func (n *FileServerNode) processFile(tmpPath string, config datasource.FileServerConfig) error {
+	handler, err := n.createHandler(config)
 	if err != nil {
 		return err
 	}
-	defer client.Quit()
+	defer handler.Close()
 
-	// 登录
-	if err := client.Login(config.Username, config.Password); err != nil {
-		return err
-	}
-
-	// 根据操作类型执行不同的FTP操作
-	switch action.Action {
+	switch n.Config.Action {
 	case "upload":
-		return n.uploadFtpFile(client, tmpPath, action.DestPath)
+		return handler.Upload(tmpPath, n.Config.DestPath)
 	case "download":
-		return n.downloadFtpFile(client, action.DestPath, tmpPath)
+		return handler.Download(n.Config.DestPath, tmpPath)
 	case "delete":
-		return client.Delete(action.DestPath)
+		return handler.Delete(n.Config.DestPath)
 	default:
-		return fmt.Errorf("unsupported action: %s", action.Action)
+		return fmt.Errorf("unsupported action: %s", n.Config.Action)
 	}
 }
 
-// executeSftp 执行SFTP操作
-func (n *FileServerNode) executeSftp(tmpPath string, config datasource.FileServerConfig, configuration FileServerNodeConfiguration) error {
-	// 配置SSH客户端
+func (n *FileServerNode) createHandler(config datasource.FileServerConfig) (FileServerHandler, error) {
+	switch config.Protocol {
+	case datasource.FtpProtocol:
+		return newFtpHandler(config)
+	case datasource.SftpProtocol:
+		return newSftpHandler(config)
+	default:
+		return nil, fmt.Errorf("unsupported protocol: %s", config.Protocol)
+	}
+}
+
+// FtpHandler FTP处理器
+type FtpHandler struct {
+	client *ftp.ServerConn
+}
+
+func newFtpHandler(config datasource.FileServerConfig) (*FtpHandler, error) {
+	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
+	client, err := ftp.Dial(addr, ftp.DialWithTimeout(5*time.Second))
+	if err != nil {
+		return nil, err
+	}
+
+	if err := client.Login(config.Username, config.Password); err != nil {
+		client.Quit()
+		return nil, err
+	}
+
+	return &FtpHandler{client: client}, nil
+}
+
+func (h *FtpHandler) Upload(srcPath, destPath string) error {
+	srcFile, err := os.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+	dirPath := filepath.Dir(destPath)
+	if err := h.client.ChangeDir(dirPath); err != nil {
+		if err := h.client.MakeDir(dirPath); err != nil {
+			return err
+		}
+	}
+	return h.client.Stor(destPath, srcFile)
+}
+
+func (h *FtpHandler) Download(srcPath, destPath string) error {
+	resp, err := h.client.Retr(srcPath)
+	if err != nil {
+		return err
+	}
+	defer resp.Close()
+
+	return saveFile(destPath, resp)
+}
+
+func (h *FtpHandler) Delete(path string) error {
+	return h.client.Delete(path)
+}
+
+func (h *FtpHandler) Close() error {
+	return h.client.Quit()
+}
+
+// SftpHandler SFTP处理器
+type SftpHandler struct {
+	sshClient  *ssh.Client
+	sftpClient *sftp.Client
+}
+
+func newSftpHandler(config datasource.FileServerConfig) (*SftpHandler, error) {
 	sshConfig := &ssh.ClientConfig{
 		User: config.Username,
 		Auth: []ssh.AuthMethod{
@@ -140,52 +195,72 @@ func (n *FileServerNode) executeSftp(tmpPath string, config datasource.FileServe
 		Timeout:         5 * time.Second,
 	}
 
-	// 连接SSH
 	addr := fmt.Sprintf("%s:%d", config.Host, config.Port)
 	sshClient, err := ssh.Dial("tcp", addr, sshConfig)
 	if err != nil {
-		return err
+		return nil, err
 	}
-	defer sshClient.Close()
 
-	// 创建SFTP客户端
 	sftpClient, err := sftp.NewClient(sshClient)
 	if err != nil {
-		return err
+		sshClient.Close()
+		return nil, err
 	}
-	defer sftpClient.Close()
 
-	// 根据操作类型执行不同的SFTP操作
-	switch configuration.Action {
-	case "upload":
-		return n.uploadSftpFile(sftpClient, tmpPath, configuration.DestPath)
-	case "download":
-		return n.downloadSftpFile(sftpClient, tmpPath, configuration.DestPath)
-	case "delete":
-		return sftpClient.Remove(configuration.DestPath)
-	default:
-		return fmt.Errorf("unsupported action: %s", configuration.Action)
-	}
+	return &SftpHandler{
+		sshClient:  sshClient,
+		sftpClient: sftpClient,
+	}, nil
 }
 
-// uploadFtpFile 上传文件(FTP)
-func (n *FileServerNode) uploadFtpFile(client *ftp.ServerConn, srcPath, destPath string) error {
+func (h *SftpHandler) Upload(srcPath, destPath string) error {
 	srcFile, err := os.Open(srcPath)
 	if err != nil {
 		return err
 	}
 	defer srcFile.Close()
 
-	return client.Stor(destPath, srcFile)
-}
+	dirPath := filepath.Dir(destPath)
+	if _, err := h.sftpClient.Stat(dirPath); err != nil {
+		if err := h.sftpClient.MkdirAll(dirPath); err != nil {
+			return err
+		}
+	}
 
-// downloadFtpFile 下载文件(FTP)
-func (n *FileServerNode) downloadFtpFile(client *ftp.ServerConn, srcPath, destPath string) error {
-	resp, err := client.Retr(srcPath)
+	dstFile, err := h.sftpClient.Create(destPath)
 	if err != nil {
 		return err
 	}
-	defer resp.Close()
+	defer dstFile.Close()
+
+	_, err = io.Copy(dstFile, srcFile)
+	return err
+}
+
+func (h *SftpHandler) Download(srcPath, destPath string) error {
+	srcFile, err := h.sftpClient.Open(srcPath)
+	if err != nil {
+		return err
+	}
+	defer srcFile.Close()
+
+	return saveFile(destPath, srcFile)
+}
+
+func (h *SftpHandler) Delete(path string) error {
+	return h.sftpClient.Remove(path)
+}
+
+func (h *SftpHandler) Close() error {
+	h.sftpClient.Close()
+	return h.sshClient.Close()
+}
+
+// 通用工具函数
+func saveFile(destPath string, reader io.Reader) error {
+	if err := os.MkdirAll(filepath.Dir(destPath), 0755); err != nil {
+		return err
+	}
 
 	destFile, err := os.Create(destPath)
 	if err != nil {
@@ -193,42 +268,6 @@ func (n *FileServerNode) downloadFtpFile(client *ftp.ServerConn, srcPath, destPa
 	}
 	defer destFile.Close()
 
-	_, err = io.Copy(destFile, resp)
-	return err
-}
-
-// uploadSftpFile 上传文件(SFTP)
-func (n *FileServerNode) uploadSftpFile(client *sftp.Client, srcPath, destPath string) error {
-	srcFile, err := os.Open(srcPath)
-	if err != nil {
-		return err
-	}
-	defer srcFile.Close()
-
-	dstFile, err := client.Create(destPath)
-	if err != nil {
-		return err
-	}
-	defer dstFile.Close()
-
-	_, err = io.Copy(dstFile, srcFile)
-	return err
-}
-
-// downloadSftpFile 下载文件(SFTP)
-func (n *FileServerNode) downloadSftpFile(client *sftp.Client, srcPath, destPath string) error {
-	srcFile, err := client.Open(srcPath)
-	if err != nil {
-		return err
-	}
-	defer srcFile.Close()
-
-	dstFile, err := os.Create(destPath)
-	if err != nil {
-		return err
-	}
-	defer dstFile.Close()
-
-	_, err = io.Copy(dstFile, srcFile)
+	_, err = io.Copy(destFile, reader)
 	return err
 }
