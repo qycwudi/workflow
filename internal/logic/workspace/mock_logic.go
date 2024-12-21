@@ -2,6 +2,7 @@ package workspace
 
 import (
 	"context"
+	"net/http"
 
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -23,7 +24,7 @@ func NewMockLogic(ctx context.Context, svcCtx *svc.ServiceContext) *MockLogic {
 	}
 }
 
-func (l *MockLogic) Mock(req *types.MockRequest) (resp *types.MockResponse, err error) {
-	// logx.Infof("request headers: %+v", r.Header)
+func (l *MockLogic) Mock(r *http.Request, req *types.MockRequest) (resp *types.MockResponse, err error) {
+	logx.Infof("request headers: %+v", r.Header)
 	return &types.MockResponse{Name: req.Name + "mock", Age: req.Age + 10}, nil
 }

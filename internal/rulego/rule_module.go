@@ -6,8 +6,6 @@ import (
 
 	"github.com/rulego/rulego/utils/json"
 	"github.com/tidwall/gjson"
-
-	enums "workflow/internal/enum"
 )
 
 /*
@@ -27,6 +25,8 @@ const (
 
 	Http string = "http"
 
+	HttpXml string = "http-xml"
+
 	Database string = "database"
 
 	FileServer string = "fileServer" // 包括 sftp
@@ -45,6 +45,7 @@ func ModuleReadConfig(data gjson.Result, baseInfo map[string]string) map[string]
 		Start:       startCfg,
 		End:         func(gjson.Result, map[string]string) map[string]interface{} { return endCfg() },
 		Http:        httpCfg,
+		HttpXml:     httpXmlCfg,
 		Database:    databaseCfg,
 		JsFilter:    jsFilterCfg,
 		JsTransform: jsTransformCfg,
@@ -78,7 +79,6 @@ func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]in
 	configuration := HttpCallNodeConfiguration{
 		RestEndpointUrlPattern:   data.Get("url").String(),
 		RequestMethod:            data.Get("method").String(),
-		ParamType:                enums.HttpParamType(data.Get("param_type").String()),
 		WithoutRequestBody:       false,
 		Headers:                  httpParseHeaders(data.Get("header").Array()),
 		ReadTimeoutMs:            0,
@@ -90,6 +90,29 @@ func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]in
 		ProxyPort:                0,
 		ProxyUser:                "",
 		ProxyPassword:            "",
+	}
+	marshal, _ := json.Marshal(configuration)
+	_ = json.Unmarshal(marshal, &config)
+	return config
+}
+
+func httpXmlCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
+	config := map[string]interface{}{}
+	configuration := HttpXmlCallNodeConfiguration{
+		RestEndpointUrlPattern:   data.Get("url").String(),
+		RequestMethod:            data.Get("method").String(),
+		WithoutRequestBody:       false,
+		Headers:                  httpParseHeaders(data.Get("header").Array()),
+		ReadTimeoutMs:            0,
+		MaxParallelRequestsCount: 200,
+		EnableProxy:              false,
+		UseSystemProxyProperties: false,
+		ProxyScheme:              "",
+		ProxyHost:                "",
+		ProxyPort:                0,
+		ProxyUser:                "",
+		ProxyPassword:            "",
+		XmlParam:                 data.Get("xmlParam").String(),
 	}
 	marshal, _ := json.Marshal(configuration)
 	_ = json.Unmarshal(marshal, &config)

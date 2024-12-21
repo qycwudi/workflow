@@ -1,48 +1,39 @@
 package rulego
 
 import (
-	"bufio"
 	"bytes"
 	"crypto/tls"
 	"fmt"
 	"io"
 	"net/http"
 	"net/url"
+	"regexp"
 	"strconv"
 	"strings"
 	"time"
 
+	xml2json "github.com/basgys/goxml2json"
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/components/base"
+	"github.com/rulego/rulego/utils/json"
 	"github.com/rulego/rulego/utils/maps"
 	"github.com/rulego/rulego/utils/str"
 )
 
 func init() {
-	_ = rulego.Registry.Register(&HttpCallNode{})
+	_ = rulego.Registry.Register(&HttpXmlCallNode{})
 }
 
-// 存在到metadata key
+// metadata key常量
 const (
-	//http响应状态，Metadata Key
-	statusMetadataKey = "status"
-	//http响应状态码，Metadata Key
-	statusCodeMetadataKey = "statusCode"
-	//http响应错误信息，Metadata Key
-	errorBodyMetadataKey = "errorBody"
-	//sso事件类型Metadata Key：data/event/id/retry
-	eventTypeMetadataKey = "eventType"
-
-	contentTypeKey  = "Content-Type"
-	acceptKey       = "Accept"
-	eventStreamMime = "text/event-stream"
-
-	jsonContentType = "application/json"
+	xmlContentType = "application/xml"
+	// HTTP方法常量
+	httpPost = "POST"
 )
 
 // HttpCallNodeConfiguration rest配置
-type HttpCallNodeConfiguration struct {
+type HttpXmlCallNodeConfiguration struct {
 	//RestEndpointUrlPattern HTTP URL地址,可以使用 ${metadata.key} 读取元数据中的变量或者使用 ${msg.key} 读取消息负荷中的变量进行替换
 	RestEndpointUrlPattern string
 	//RequestMethod 请求方法，默认POST
@@ -71,18 +62,18 @@ type HttpCallNodeConfiguration struct {
 	ProxyUser string
 	//ProxyPassword 代理密码
 	ProxyPassword string
+	// xmlParam xml 参数映射
+	XmlParam string
 }
 
 // HttpCallNode 将通过REST API调用GET | POST | PUT | DELETE到外部REST服务。
 // 如果请求成功，把HTTP响应消息发送到`Success`链, 否则发到`Failure`链，
 // metaData.status记录响应错误码和metaData.errorBody记录错误信息。
-type HttpCallNode struct {
+type HttpXmlCallNode struct {
 	//节点配置
-	Config HttpCallNodeConfiguration
+	Config HttpXmlCallNodeConfiguration
 	//httpClient http客户端
 	httpClient *http.Client
-	//是否是SSE（Server-Send Events）流式响应
-	isStream bool
 
 	urlTemplate     str.Template
 	headersTemplate map[str.Template]str.Template
@@ -90,31 +81,35 @@ type HttpCallNode struct {
 }
 
 // Type 组件类型
-func (x *HttpCallNode) Type() string {
-	return Http
+func (x *HttpXmlCallNode) Type() string {
+	return HttpXml
 }
 
-func (x *HttpCallNode) New() types.Node {
-	headers := map[string]string{"Content-Type": jsonContentType}
-	config := HttpCallNodeConfiguration{
-		RequestMethod:            "POST",
+func (x *HttpXmlCallNode) New() types.Node {
+	headers := map[string]string{"Content-Type": xmlContentType}
+	config := HttpXmlCallNodeConfiguration{
+		RequestMethod:            httpPost,
 		MaxParallelRequestsCount: 200,
 		ReadTimeoutMs:            0,
 		Headers:                  headers,
 	}
-	return &HttpCallNode{Config: config}
+	return &HttpXmlCallNode{Config: config}
 }
 
 // Init 初始化
-func (x *HttpCallNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
+func (x *HttpXmlCallNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
 	err := maps.Map2Struct(configuration, &x.Config)
 	if err == nil {
-		x.Config.RequestMethod = strings.ToUpper(x.Config.RequestMethod)
-		x.httpClient = NewHttpClient(x.Config)
-		//Server-Send Events 流式响应
-		if strings.HasPrefix(x.Config.Headers[acceptKey], eventStreamMime) || strings.HasPrefix(x.Config.Headers[contentTypeKey], eventStreamMime) {
-			x.isStream = true
+		// 验证HTTP方法是否有效
+		method := strings.ToUpper(x.Config.RequestMethod)
+		switch method {
+		case httpPost:
+			x.Config.RequestMethod = method
+		default:
+			return fmt.Errorf("invalid HTTP method: %s", x.Config.RequestMethod)
 		}
+
+		x.httpClient = NewHttpXmlClient(x.Config)
 		x.urlTemplate = str.NewTemplate(x.Config.RestEndpointUrlPattern)
 
 		var headerTemplates = make(map[str.Template]str.Template)
@@ -132,7 +127,7 @@ func (x *HttpCallNode) Init(ruleConfig types.Config, configuration types.Configu
 }
 
 // OnMsg 处理消息
-func (x *HttpCallNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
+func (x *HttpXmlCallNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 	// 1. 准备请求
 	req, err := x.prepareRequest(ctx, msg)
 	if err != nil {
@@ -153,13 +148,14 @@ func (x *HttpCallNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 }
 
 // prepareRequest 准备HTTP请求
-func (x *HttpCallNode) prepareRequest(ctx types.RuleContext, msg types.RuleMsg) (*http.Request, error) {
+func (x *HttpXmlCallNode) prepareRequest(ctx types.RuleContext, msg types.RuleMsg) (*http.Request, error) {
+	param := replaceXmlTemplateVars(x.Config.XmlParam, msg.Data)
 	var evn map[string]interface{}
 	if !x.urlTemplate.IsNotVar() || x.hasVar {
 		evn = base.NodeUtils.GetEvnAndMetadata(ctx, msg)
 	}
 	endpointUrl := x.urlTemplate.Execute(evn)
-
+	msg.Data = param
 	req, err := x.createRequest(endpointUrl, msg)
 	if err != nil {
 		return nil, err
@@ -170,7 +166,7 @@ func (x *HttpCallNode) prepareRequest(ctx types.RuleContext, msg types.RuleMsg) 
 }
 
 // createRequest 创建HTTP请求
-func (x *HttpCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*http.Request, error) {
+func (x *HttpXmlCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*http.Request, error) {
 	if x.Config.WithoutRequestBody {
 		return http.NewRequest(x.Config.RequestMethod, endpointUrl, nil)
 	}
@@ -184,56 +180,39 @@ func (x *HttpCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*ht
 }
 
 // prepareRequestBody 准备请求体
-func (x *HttpCallNode) prepareRequestBody(msg types.RuleMsg) ([]byte, error) {
+func (x *HttpXmlCallNode) prepareRequestBody(msg types.RuleMsg) ([]byte, error) {
 	return []byte(msg.Data), nil
 }
 
 // setRequestHeaders 设置请求头
-func (x *HttpCallNode) setRequestHeaders(req *http.Request, evn map[string]interface{}) {
+func (x *HttpXmlCallNode) setRequestHeaders(req *http.Request, evn map[string]interface{}) {
 	for key, value := range x.headersTemplate {
 		req.Header.Set(key.Execute(evn), value.Execute(evn))
 	}
 }
 
 // sendRequest 发送HTTP请求
-func (x *HttpCallNode) sendRequest(req *http.Request) (*http.Response, error) {
+func (x *HttpXmlCallNode) sendRequest(req *http.Request) (*http.Response, error) {
 	return x.httpClient.Do(req)
 }
 
 // closeResponse 关闭响应
-func (x *HttpCallNode) closeResponse(response *http.Response) {
+func (x *HttpXmlCallNode) closeResponse(response *http.Response) {
 	if response != nil && response.Body != nil {
 		_ = response.Body.Close()
 	}
 }
 
 // handleResponse 处理HTTP响应
-func (x *HttpCallNode) handleResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response) {
+func (x *HttpXmlCallNode) handleResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response) {
 	// 设置基本响应信息
 	msg.Metadata.PutValue(statusMetadataKey, response.Status)
 	msg.Metadata.PutValue(statusCodeMetadataKey, strconv.Itoa(response.StatusCode))
-
-	if x.isStream {
-		x.handleStreamResponse(ctx, msg, response)
-		return
-	}
-
 	x.handleNormalResponse(ctx, msg, response)
 }
 
-// handleStreamResponse 处理流式响应
-func (x *HttpCallNode) handleStreamResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response) {
-	if response.StatusCode == 200 {
-		readFromStream(ctx, msg, response)
-	} else {
-		b, _ := io.ReadAll(response.Body)
-		msg.Metadata.PutValue(errorBodyMetadataKey, string(b))
-		ctx.TellNext(msg, types.Failure)
-	}
-}
-
 // handleNormalResponse 处理普通响应
-func (x *HttpCallNode) handleNormalResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response) {
+func (x *HttpXmlCallNode) handleNormalResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response) {
 	b, err := io.ReadAll(response.Body)
 	if err != nil {
 		ctx.TellFailure(msg, err)
@@ -249,16 +228,22 @@ func (x *HttpCallNode) handleNormalResponse(ctx types.RuleContext, msg types.Rul
 }
 
 // handleSuccessResponse 处理成功响应
-func (x *HttpCallNode) handleSuccessResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response, body []byte) {
-	msg.Data = string(body)
+func (x *HttpXmlCallNode) handleSuccessResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response, body []byte) {
+	// 将XML响应转换为JSON
+	jsonResp, err := xml2json.Convert(strings.NewReader(string(body)))
+	if err != nil {
+		ctx.TellFailure(msg, err)
+		return
+	}
+	msg.Data = jsonResp.String()
 	ctx.TellSuccess(msg)
 }
 
 // Destroy 销毁
-func (x *HttpCallNode) Destroy() {
+func (x *HttpXmlCallNode) Destroy() {
 }
 
-func NewHttpClient(config HttpCallNodeConfiguration) *http.Client {
+func NewHttpXmlClient(config HttpXmlCallNodeConfiguration) *http.Client {
 	transport := http.DefaultTransport.(*http.Transport).Clone()
 	transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: config.InsecureSkipVerify}
 	transport.MaxConnsPerHost = config.MaxParallelRequestsCount
@@ -276,33 +261,51 @@ func NewHttpClient(config HttpCallNodeConfiguration) *http.Client {
 		Timeout: time.Duration(config.ReadTimeoutMs) * time.Millisecond}
 }
 
-// SSE 流式数据读取
-func readFromStream(ctx types.RuleContext, msg types.RuleMsg, resp *http.Response) {
-	// 从响应的Body中读取数据，使用bufio.Scanner按行读取
-	scanner := bufio.NewScanner(resp.Body)
-	for scanner.Scan() {
-		// 获取一行数据
-		line := scanner.Text()
-		// 如果是空行，表示一个事件结束，继续读取下一个事件
-		if line == "" {
-			continue
-		}
-		// 如果是注释行，忽略
-		if strings.HasPrefix(line, ":") {
-			continue
-		}
-		// 解析数据，根据不同的事件类型和数据内容进行处理
-		parts := strings.SplitN(line, ":", 2)
-		if len(parts) != 2 {
-			continue
-		}
-		eventType := strings.TrimSpace(parts[0])
-		eventData := strings.TrimSpace(parts[1])
-		msg.Metadata.PutValue(eventTypeMetadataKey, eventType)
-		msg.Data = eventData
-		ctx.TellSuccess(msg)
+// 替换XML模板中的变量
+func replaceXmlTemplateVars(template string, data string) string {
+	msg := map[string]any{}
+	if err := json.Unmarshal([]byte(data), &msg); err != nil {
+		return template
 	}
-	if err := scanner.Err(); err != nil && err != io.EOF {
-		ctx.TellFailure(msg, err)
+	result := template
+
+	// 递归处理嵌套map和数组
+	var replaceNestedValue func(data map[string]any, prefix string)
+	replaceNestedValue = func(data map[string]any, prefix string) {
+		for key, value := range data {
+			fullKey := key
+			if prefix != "" {
+				fullKey = prefix + "." + key
+			}
+
+			switch v := value.(type) {
+			case map[string]any:
+				replaceNestedValue(v, fullKey)
+			case []interface{}:
+				// 处理整个数组
+				var strValues []string
+				for _, item := range v {
+					strValues = append(strValues, fmt.Sprintf("%v", item))
+				}
+				placeholder := "${" + fullKey + "}"
+				result = strings.Replace(result, placeholder, strings.Join(strValues, ","), -1)
+				// 处理数组索引
+				for i, item := range v {
+					indexPlaceholder := fmt.Sprintf("${%s[%d]}", fullKey, i)
+					result = strings.Replace(result, indexPlaceholder, fmt.Sprintf("%v", item), -1)
+				}
+			default:
+				placeholder := "${" + fullKey + "}"
+				result = strings.Replace(result, placeholder, fmt.Sprintf("%v", value), -1)
+			}
+		}
 	}
+
+	replaceNestedValue(msg, "")
+
+	// 替换未定义的变量为空字符串
+	re := regexp.MustCompile(`\${[^}]+}`)
+	result = re.ReplaceAllString(result, "")
+
+	return result
 }

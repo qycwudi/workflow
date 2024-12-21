@@ -22,7 +22,7 @@ func MockHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 		// 打印请求头
 		logx.Infof("request headers: %+v", r.Header)
 		l := workspace.NewMockLogic(r.Context(), svcCtx)
-		resp, err := l.Mock(&req)
+		resp, err := l.Mock(r, &req)
 		response.Response(w, resp, err)
 
 	}
