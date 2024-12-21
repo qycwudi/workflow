@@ -4,100 +4,92 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/tls"
-	"encoding/json"
-	"encoding/xml"
 	"fmt"
-	"github.com/rulego/rulego"
-	"github.com/rulego/rulego/api/types"
-	"github.com/rulego/rulego/components/base"
-	"github.com/rulego/rulego/utils/maps"
-	"github.com/rulego/rulego/utils/str"
 	"io"
 	"net/http"
 	"net/url"
 	"strconv"
 	"strings"
 	"time"
+
+	xml2json "github.com/basgys/goxml2json"
+	"github.com/clbanning/mxj"
+	"github.com/rulego/rulego"
+	"github.com/rulego/rulego/api/types"
+	"github.com/rulego/rulego/components/base"
+	"github.com/rulego/rulego/utils/json"
+	"github.com/rulego/rulego/utils/maps"
+	"github.com/rulego/rulego/utils/str"
+
 	enums "workflow/internal/enum"
 )
 
-// 规则链节点配置示例：
-// {
-//        "id": "s3",
-//        "type": "Http",
-//        "name": "推送数据",
-//        "debugMode": false,
-//        "configuration": {
-//          "restEndpointUrlPattern": "http://192.168.118.29:8080/msg",
-//          "requestMethod": "POST",
-//          "maxParallelRequestsCount": 200,
-// 			"script":""
-//        }
-//      }
+func init() {
+	_ = rulego.Registry.Register(&HttpCallNode{})
+}
 
 // 存在到metadata key
 const (
-	// http响应状态，Metadata Key
+	//http响应状态，Metadata Key
 	statusMetadataKey = "status"
-	// http响应状态码，Metadata Key
+	//http响应状态码，Metadata Key
 	statusCodeMetadataKey = "statusCode"
-	// http响应错误信息，Metadata Key
+	//http响应错误信息，Metadata Key
 	errorBodyMetadataKey = "errorBody"
-	// sso事件类型Metadata Key：data/event/id/retry
+	//sso事件类型Metadata Key：data/event/id/retry
 	eventTypeMetadataKey = "eventType"
 
 	contentTypeKey  = "Content-Type"
 	acceptKey       = "Accept"
 	eventStreamMime = "text/event-stream"
+
+	jsonContentType = "application/json"
+	xmlContentType  = "application/xml"
 )
 
-// HttpNodeConfiguration rest配置
-type HttpNodeConfiguration struct {
-	// RestEndpointUrlPattern HTTP URL地址,可以使用 ${metadata.key} 读取元数据中的变量或者使用 ${msg.key} 读取消息负荷中的变量进行替换
+// HttpCallNodeConfiguration rest配置
+type HttpCallNodeConfiguration struct {
+	//RestEndpointUrlPattern HTTP URL地址,可以使用 ${metadata.key} 读取元数据中的变量或者使用 ${msg.key} 读取消息负荷中的变量进行替换
 	RestEndpointUrlPattern string
-	// RequestMethod 请求方法，默认POST
+	//RequestMethod 请求方法，默认POST
 	RequestMethod string
 	// Without request body
 	WithoutRequestBody bool
-	// Headers 请求头,可以使用 ${metadata.key} 读取元数据中的变量或者使用 ${msg.key} 读取消息负荷中的变量进行替换
+	//Headers 请求头,可以使用 ${metadata.key} 读取元数据中的变量或者使用 ${msg.key} 读取消息负荷中的变量进行替换
 	Headers map[string]string
-	// ReadTimeoutMs 超时，单位毫秒，默认0:不限制
+	//ReadTimeoutMs 超时，单位毫秒，默认0:不限制
 	ReadTimeoutMs int
-	// MaxParallelRequestsCount 连接池大小，默认200。0代表不限制
+	//禁用证书验证
+	InsecureSkipVerify bool
+	//MaxParallelRequestsCount 连接池大小，默认200。0代表不限制
 	MaxParallelRequestsCount int
-	// EnableProxy 是否开启代理
+	//EnableProxy 是否开启代理
 	EnableProxy bool
-	// UseSystemProxyProperties 使用系统配置代理
+	//UseSystemProxyProperties 使用系统配置代理
 	UseSystemProxyProperties bool
-	// ProxyScheme 代理协议
+	//ProxyScheme 代理协议
 	ProxyScheme string
-	// ProxyHost 代理主机
+	//ProxyHost 代理主机
 	ProxyHost string
-	// ProxyPort 代理端口
+	//ProxyPort 代理端口
 	ProxyPort int
-	// ProxyUser 代理用户名
+	//ProxyUser 代理用户名
 	ProxyUser string
-	// ProxyPassword 代理密码
+	//ProxyPassword 代理密码
 	ProxyPassword string
-	// ParamType 参数类型
+	//ParamType 参数类型，默认json ｜xml
 	ParamType enums.HttpParamType
-	// 参数解析脚本
-	Script string `json:"script"`
 }
 
-func init() {
-	_ = rulego.Registry.Register(&HttpNode{})
-}
-
-// HttpNode 将通过REST API调用GET | POST | PUT | DELETE到外部REST服务。
+// HttpCallNode 将通过REST API调用GET | POST | PUT | DELETE到外部REST服务。
 // 如果请求成功，把HTTP响应消息发送到`Success`链, 否则发到`Failure`链，
 // metaData.status记录响应错误码和metaData.errorBody记录错误信息。
-type HttpNode struct {
-	// 节点配置
-	Config HttpNodeConfiguration
-	// httpClient http客户端
+type HttpCallNode struct {
+	//节点配置
+	Config HttpCallNodeConfiguration
+	//httpClient http客户端
 	httpClient *http.Client
-	// 是否是SSE（Server-Send Events）流式响应
+	//是否是SSE（Server-Send Events）流式响应
 	isStream bool
 
 	urlTemplate     str.Template
@@ -106,32 +98,29 @@ type HttpNode struct {
 }
 
 // Type 组件类型
-func (x *HttpNode) Type() string {
-	return "http"
+func (x *HttpCallNode) Type() string {
+	return Http
 }
 
-func (x *HttpNode) New() types.Node {
-	headers := map[string]string{"Content-Type": "application/json"}
-	config := HttpNodeConfiguration{
+func (x *HttpCallNode) New() types.Node {
+	headers := map[string]string{"Content-Type": jsonContentType}
+	config := HttpCallNodeConfiguration{
 		RequestMethod:            "POST",
 		MaxParallelRequestsCount: 200,
 		ReadTimeoutMs:            0,
 		Headers:                  headers,
+		ParamType:                enums.HttpParamTypeJson,
 	}
-	return &HttpNode{Config: config}
+	return &HttpCallNode{Config: config}
 }
 
 // Init 初始化
-func (x *HttpNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
+func (x *HttpCallNode) Init(ruleConfig types.Config, configuration types.Configuration) error {
 	err := maps.Map2Struct(configuration, &x.Config)
 	if err == nil {
-		if x.Config.ParamType == enums.HttpParamTypeXML {
-			x.Config.Headers[contentTypeKey] = "text/xml; charset=utf-8"
-		}
-
 		x.Config.RequestMethod = strings.ToUpper(x.Config.RequestMethod)
 		x.httpClient = NewHttpClient(x.Config)
-		// Server-Send Events 流式响应
+		//Server-Send Events 流式响应
 		if strings.HasPrefix(x.Config.Headers[acceptKey], eventStreamMime) || strings.HasPrefix(x.Config.Headers[contentTypeKey], eventStreamMime) {
 			x.isStream = true
 		}
@@ -152,101 +141,169 @@ func (x *HttpNode) Init(ruleConfig types.Config, configuration types.Configurati
 }
 
 // OnMsg 处理消息
-func (x *HttpNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
+func (x *HttpCallNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
+	// 1. 准备请求
+	req, err := x.prepareRequest(ctx, msg)
+	if err != nil {
+		ctx.TellFailure(msg, err)
+		return
+	}
+
+	// 2. 发送请求并获取响应
+	response, err := x.sendRequest(req)
+	if err != nil {
+		ctx.TellFailure(msg, err)
+		return
+	}
+	defer x.closeResponse(response)
+
+	// 3. 处理响应
+	x.handleResponse(ctx, msg, response)
+}
+
+// prepareRequest 准备HTTP请求
+func (x *HttpCallNode) prepareRequest(ctx types.RuleContext, msg types.RuleMsg) (*http.Request, error) {
 	var evn map[string]interface{}
 	if !x.urlTemplate.IsNotVar() || x.hasVar {
 		evn = base.NodeUtils.GetEvnAndMetadata(ctx, msg)
 	}
 	endpointUrl := x.urlTemplate.Execute(evn)
-	var req *http.Request
-	var err error
 
-	if x.Config.WithoutRequestBody {
-		req, err = http.NewRequest(x.Config.RequestMethod, endpointUrl, nil)
-	} else {
-		dataByte := []byte(msg.Data)
-		if x.Config.ParamType == enums.HttpParamTypeXML {
-			// json to xml
-			var xmlData map[string]interface{}
-			err := json.Unmarshal([]byte(msg.Data), &xmlData)
-			if err != nil {
-				ctx.TellFailure(msg, err)
-				return
-			}
-
-			xmlStr, _ := mapToXML(xmlData)
-			dataByte = []byte(xmlStr)
-		}
-
-		req, err = http.NewRequest(x.Config.RequestMethod, endpointUrl, bytes.NewReader(dataByte))
+	req, err := x.createRequest(endpointUrl, msg)
+	if err != nil {
+		return nil, err
 	}
+
+	x.setRequestHeaders(req, evn)
+	return req, nil
+}
+
+// createRequest 创建HTTP请求
+func (x *HttpCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*http.Request, error) {
+	if x.Config.WithoutRequestBody {
+		return http.NewRequest(x.Config.RequestMethod, endpointUrl, nil)
+	}
+
+	reqBody, err := x.prepareRequestBody(msg)
+	if err != nil {
+		return nil, err
+	}
+
+	return http.NewRequest(x.Config.RequestMethod, endpointUrl, bytes.NewReader(reqBody))
+}
+
+// prepareRequestBody 准备请求体
+func (x *HttpCallNode) prepareRequestBody(msg types.RuleMsg) ([]byte, error) {
+	if x.Config.ParamType == enums.HttpParamTypeXML {
+		return x.convertJsonToXml(msg.Data)
+	}
+	return []byte(msg.Data), nil
+}
+
+// convertJsonToXml JSON转XML
+func (x *HttpCallNode) convertJsonToXml(data string) ([]byte, error) {
+	var jsonData interface{}
+	if err := json.Unmarshal([]byte(data), &jsonData); err != nil {
+		return nil, fmt.Errorf("JSON解析失败: %v", err)
+	}
+
+	mv := mxj.Map(jsonData.(map[string]interface{}))
+	reqBody, err := mv.Xml()
+	if err != nil {
+		return nil, fmt.Errorf("JSON转XML失败: %v", err)
+	}
+
+	x.Config.Headers[contentTypeKey] = xmlContentType
+	return reqBody, nil
+}
+
+// setRequestHeaders 设置请求头
+func (x *HttpCallNode) setRequestHeaders(req *http.Request, evn map[string]interface{}) {
+	for key, value := range x.headersTemplate {
+		req.Header.Set(key.Execute(evn), value.Execute(evn))
+	}
+}
+
+// sendRequest 发送HTTP请求
+func (x *HttpCallNode) sendRequest(req *http.Request) (*http.Response, error) {
+	return x.httpClient.Do(req)
+}
+
+// closeResponse 关闭响应
+func (x *HttpCallNode) closeResponse(response *http.Response) {
+	if response != nil && response.Body != nil {
+		_ = response.Body.Close()
+	}
+}
+
+// handleResponse 处理HTTP响应
+func (x *HttpCallNode) handleResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response) {
+	// 设置基本响应信息
+	msg.Metadata.PutValue(statusMetadataKey, response.Status)
+	msg.Metadata.PutValue(statusCodeMetadataKey, strconv.Itoa(response.StatusCode))
+
+	if x.isStream {
+		x.handleStreamResponse(ctx, msg, response)
+		return
+	}
+
+	x.handleNormalResponse(ctx, msg, response)
+}
+
+// handleStreamResponse 处理流式响应
+func (x *HttpCallNode) handleStreamResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response) {
+	if response.StatusCode == 200 {
+		readFromStream(ctx, msg, response)
+	} else {
+		b, _ := io.ReadAll(response.Body)
+		msg.Metadata.PutValue(errorBodyMetadataKey, string(b))
+		ctx.TellNext(msg, types.Failure)
+	}
+}
+
+// handleNormalResponse 处理普通响应
+func (x *HttpCallNode) handleNormalResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response) {
+	b, err := io.ReadAll(response.Body)
 	if err != nil {
 		ctx.TellFailure(msg, err)
 		return
 	}
-	// 设置header
-	for key, value := range x.headersTemplate {
-		req.Header.Set(key.Execute(evn), value.Execute(evn))
-	}
 
-	response, err := x.httpClient.Do(req)
-	defer func() {
-		if response != nil && response.Body != nil {
-			_ = response.Body.Close()
-		}
-	}()
-
-	if err != nil {
-		ctx.TellFailure(msg, err)
-	} else if x.isStream {
-		msg.Metadata.PutValue(statusMetadataKey, response.Status)
-		msg.Metadata.PutValue(statusCodeMetadataKey, strconv.Itoa(response.StatusCode))
-		if response.StatusCode == 200 {
-			readFromStream(ctx, msg, response)
-		} else {
-			b, _ := io.ReadAll(response.Body)
-			msg.Metadata.PutValue(errorBodyMetadataKey, string(b))
-			ctx.TellNext(msg, types.Failure)
-		}
-
-	} else if b, err := io.ReadAll(response.Body); err != nil {
-		ctx.TellFailure(msg, err)
+	if response.StatusCode == 200 {
+		x.handleSuccessResponse(ctx, msg, response, b)
 	} else {
-		msg.Metadata.PutValue(statusMetadataKey, response.Status)
-		msg.Metadata.PutValue(statusCodeMetadataKey, strconv.Itoa(response.StatusCode))
-		if response.StatusCode == 200 {
-			if x.Config.ParamType == enums.HttpParamTypeXML {
-				var xmlNode XMLNode
-				if err := xml.Unmarshal(b, &xmlNode); err != nil {
-					ctx.TellFailure(msg, err)
-				}
-
-				res := xmlToMap(&xmlNode)
-				resByte, _ := json.Marshal(res)
-				msg.Data = string(resByte)
-			} else {
-				msg.Data = string(b)
-			}
-
-			ctx.TellSuccess(msg)
-		} else {
-			msg.Metadata.PutValue(errorBodyMetadataKey, string(b))
-			ctx.TellNext(msg, types.Failure)
-		}
-
+		msg.Metadata.PutValue(errorBodyMetadataKey, string(b))
+		ctx.TellNext(msg, types.Failure)
 	}
+}
+
+// handleSuccessResponse 处理成功响应
+func (x *HttpCallNode) handleSuccessResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response, body []byte) {
+	var data string
+	if strings.Contains(response.Header.Get(contentTypeKey), xmlContentType) {
+		jsonResp, err := xml2json.Convert(strings.NewReader(string(body)))
+		if err != nil {
+			ctx.TellFailure(msg, fmt.Errorf("XML转JSON失败: %v", err))
+			return
+		}
+		data = jsonResp.String()
+	} else {
+		data = string(body)
+	}
+	msg.Data = data
+	ctx.TellSuccess(msg)
 }
 
 // Destroy 销毁
-func (x *HttpNode) Destroy() {
+func (x *HttpCallNode) Destroy() {
 }
 
-func NewHttpClient(config HttpNodeConfiguration) *http.Client {
+func NewHttpClient(config HttpCallNodeConfiguration) *http.Client {
 	transport := http.DefaultTransport.(*http.Transport).Clone()
-	transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: false}
+	transport.TLSClientConfig = &tls.Config{InsecureSkipVerify: config.InsecureSkipVerify}
 	transport.MaxConnsPerHost = config.MaxParallelRequestsCount
 	if config.EnableProxy && !config.UseSystemProxyProperties {
-		// 开启代理
+		//开启代理
 		urli := url.URL{}
 		proxyUrl := fmt.Sprintf("%s://%s:%d", config.ProxyScheme, config.ProxyHost, config.ProxyPort)
 		urlProxy, _ := urli.Parse(proxyUrl)
@@ -288,149 +345,4 @@ func readFromStream(ctx types.RuleContext, msg types.RuleMsg, resp *http.Respons
 	if err := scanner.Err(); err != nil && err != io.EOF {
 		ctx.TellFailure(msg, err)
 	}
-}
-
-type XMLNode struct {
-	XMLName xml.Name
-	Attrs   []xml.Attr `xml:",any,attr"`
-	Content string     `xml:",chardata"`
-	Nodes   []XMLNode  `xml:",any"`
-}
-
-// xmlToMap XML 转 JSON
-func xmlToMap(node *XMLNode) interface{} {
-	// 如果只有文本内容，直接返回内容
-	if len(node.Nodes) == 0 && len(node.Attrs) == 0 {
-		return strings.TrimSpace(node.Content)
-	}
-
-	result := make(map[string]interface{})
-
-	// 处理属性
-	if len(node.Attrs) > 0 {
-		attrs := make(map[string]string)
-		for _, attr := range node.Attrs {
-			attrKey := attr.Name.Local
-			if attr.Name.Space != "" {
-				attrKey = fmt.Sprintf("%s:%s", attr.Name.Space, attrKey)
-			}
-			attrs[attrKey] = attr.Value
-		}
-		result["@attributes"] = attrs
-	}
-
-	// 处理子节点
-	for _, child := range node.Nodes {
-		name := child.XMLName.Local
-		value := xmlToMap(&child)
-
-		// 跳过空值
-		if value == nil {
-			continue
-		}
-
-		// 如果已存在同名节点，转换为数组
-		if existing, exists := result[name]; exists {
-			var array []interface{}
-			switch v := existing.(type) {
-			case []interface{}:
-				array = append(v, value)
-			default:
-				array = []interface{}{existing, value}
-			}
-			result[name] = array
-		} else {
-			result[name] = value
-		}
-	}
-
-	// 如果只有一个键值对且没有属性，直接返回值
-	if len(result) == 1 && len(node.Attrs) == 0 {
-		for _, v := range result {
-			return v
-		}
-	}
-
-	return result
-}
-
-// mapToXML JSON 转 XML
-func mapToXML(data map[string]interface{}) (string, error) {
-	root := XMLNode{
-		XMLName: xml.Name{Local: "root"},
-	}
-
-	if err := processNode(&root, data); err != nil {
-		return "", err
-	}
-
-	xmlOutput, err := xml.MarshalIndent(root, "", "  ")
-	if err != nil {
-		return "", err
-	}
-
-	output := string(xmlOutput)
-	output = strings.ReplaceAll(output, "<root>", "")
-	output = strings.ReplaceAll(output, "</root>", "")
-	return fmt.Sprintf("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n%s", output), nil
-}
-
-// 处理节点数据
-func processNode(node *XMLNode, data interface{}) error {
-	switch v := data.(type) {
-	case map[string]interface{}:
-		// 处理属性
-		if attrs, ok := v["@attributes"].(map[string]interface{}); ok {
-			for key, value := range attrs {
-				node.Attrs = append(node.Attrs, xml.Attr{
-					Name:  xml.Name{Local: key},
-					Value: fmt.Sprint(value),
-				})
-			}
-			delete(v, "@attributes")
-		}
-
-		// 处理其他字段
-		for key, value := range v {
-			child := XMLNode{
-				XMLName: xml.Name{Local: key},
-			}
-			if err := processNode(&child, value); err != nil {
-				return err
-			}
-			node.Nodes = append(node.Nodes, child)
-		}
-
-	case []interface{}:
-		// 处理数组
-		for _, item := range v {
-			child := XMLNode{
-				XMLName: node.XMLName,
-			}
-			if err := processNode(&child, item); err != nil {
-				return err
-			}
-			node.Nodes = append(node.Nodes, child)
-		}
-
-	case nil:
-		// 处理空值
-		return nil
-
-	default:
-		// 处理基本类型
-		node.Content = escapeXML(fmt.Sprint(v))
-	}
-
-	return nil
-}
-
-// 转义XML特殊字符
-func escapeXML(s string) string {
-	s = strings.ReplaceAll(s, "&", "&amp;")
-	s = strings.ReplaceAll(s, "<", "&lt;")
-	s = strings.ReplaceAll(s, ">", "&gt;")
-	s = strings.ReplaceAll(s, "\"", "&quot;")
-	s = strings.ReplaceAll(s, "'", "&apos;")
-	return s
 }

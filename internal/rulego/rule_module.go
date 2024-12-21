@@ -3,10 +3,11 @@ package rulego
 import (
 	"regexp"
 	"strings"
-	enums "workflow/internal/enum"
 
 	"github.com/rulego/rulego/utils/json"
 	"github.com/tidwall/gjson"
+
+	enums "workflow/internal/enum"
 )
 
 /*
@@ -74,7 +75,7 @@ func endCfg() map[string]interface{} {
 
 func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
-	configuration := HttpNodeConfiguration{
+	configuration := HttpCallNodeConfiguration{
 		RestEndpointUrlPattern:   data.Get("url").String(),
 		RequestMethod:            data.Get("method").String(),
 		ParamType:                enums.HttpParamType(data.Get("param_type").String()),
@@ -89,7 +90,6 @@ func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]in
 		ProxyPort:                0,
 		ProxyUser:                "",
 		ProxyPassword:            "",
-		// Script:                   data.Get("code").String(),
 	}
 	marshal, _ := json.Marshal(configuration)
 	_ = json.Unmarshal(marshal, &config)
