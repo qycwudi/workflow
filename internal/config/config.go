@@ -1,12 +1,21 @@
 package config
 
-import "github.com/zeromicro/go-zero/rest"
+import (
+	"github.com/zeromicro/go-zero/rest"
+)
 
 type Config struct {
 	ApiPort int
 	rest.RestConf
 	MySqlUrn string
-	Job      JobConfig `json:"Job"`
+	Job      JobConfig   `json:"Job"`
+	Redis    RedisConfig `json:"Redis"`
+}
+
+type RedisConfig struct {
+	Host     string `json:"Host"`
+	Password string `json:"Password"`
+	DB       int    `json:"DB"`
 }
 
 // 任务配置
