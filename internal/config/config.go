@@ -7,9 +7,10 @@ import (
 type Config struct {
 	ApiPort int
 	rest.RestConf
-	MySqlUrn string
-	Job      []JobBase   `json:"job"`
-	Redis    RedisConfig `json:"Redis"`
+	MySqlUrn            string
+	Job                 []JobBase   `json:"job"`
+	Redis               RedisConfig `json:"Redis"`
+	RuleServerLimitSize int         `json:"RuleServerLimitSize" default:"4"` // 规则链服务限制大小 单位 M
 }
 
 type RedisConfig struct {

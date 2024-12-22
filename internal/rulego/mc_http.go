@@ -241,7 +241,7 @@ func (x *HttpCallNode) handleNormalResponse(ctx types.RuleContext, msg types.Rul
 	}
 
 	if response.StatusCode == 200 {
-		x.handleSuccessResponse(ctx, msg, response, b)
+		x.handleSuccessResponse(ctx, msg, b)
 	} else {
 		msg.Metadata.PutValue(errorBodyMetadataKey, string(b))
 		ctx.TellNext(msg, types.Failure)
@@ -249,7 +249,7 @@ func (x *HttpCallNode) handleNormalResponse(ctx types.RuleContext, msg types.Rul
 }
 
 // handleSuccessResponse 处理成功响应
-func (x *HttpCallNode) handleSuccessResponse(ctx types.RuleContext, msg types.RuleMsg, response *http.Response, body []byte) {
+func (x *HttpCallNode) handleSuccessResponse(ctx types.RuleContext, msg types.RuleMsg, body []byte) {
 	msg.Data = string(body)
 	ctx.TellSuccess(msg)
 }

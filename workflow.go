@@ -78,7 +78,7 @@ func main() {
 	// 注册规则链
 	rulego.InitRoleChain(ctx)
 	// 注册链服务
-	rulego.InitRoleServer(c.ApiPort)
+	rulego.InitRoleServer(c.ApiPort, ctx.Config.RuleServerLimitSize)
 	// 初始化锁
 	locks.CustomLock = locks.NewLock("mysql", ctx)
 	// 初始化数据源连接池

@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -27,8 +28,8 @@ type (
 )
 
 func (c customApiModel) UpdateStatusByApiId(ctx context.Context, apiId string, status string) error {
-	query := fmt.Sprintf("update %s set `status` = ? where `api_id` = ?", c.table)
-	_, err := c.conn.ExecCtx(ctx, query, status, apiId)
+	query := fmt.Sprintf("update %s set `status` = ?,update_time = ? where `api_id` = ?", c.table)
+	_, err := c.conn.ExecCtx(ctx, query, status, time.Now(), apiId)
 	return err
 }
 

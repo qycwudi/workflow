@@ -2,10 +2,12 @@ package api
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
+	"workflow/internal/cache"
 	"workflow/internal/logic"
 	"workflow/internal/model"
 	"workflow/internal/pubsub"
@@ -47,6 +49,13 @@ func (l *ApiOnOffLogic) ApiOnOff(req *types.ApiOnOffRequest) (resp *types.ApiOnO
 			logx.Errorf("send api load sync event error: %s", err)
 			return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")
 		}
+	}
+
+	// 删除redis中的api信息
+	err = cache.Redis.DelByPrefix(l.ctx, fmt.Sprintf(cache.ApiPrefixRedisKey, api.ApiId))
+	if err != nil {
+		logx.Errorf("delete redis api info error: %s", err)
+		return nil, errors.New(int(logic.SystemError), "删除缓存中的API信息失败")
 	}
 
 	return &types.ApiOnOffResponse{
