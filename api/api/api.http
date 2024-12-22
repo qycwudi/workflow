@@ -74,14 +74,14 @@ Authorization: Bearer 51c93483eed04dfe92d7f3511a7db01c
 }
 
 ### API调用-单结构
-POST http://10.99.43.99:9999/api/role/v1/cths0biflvkgs92fuin0
+POST http://127.0.0.1:8889/api/role/v1/ctjs3kl3sjtgb99ps320
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 51c93483eed04dfe92d7f3511a7db01c
+Authorization: Bearer 3e45b7625b264a2ba6118c4bd46d6d01
 
 {
-  "name": "张",
-  "age": 11
+  "intA": 30,
+  "intB": 10
 }
 
 ### API调用-数组

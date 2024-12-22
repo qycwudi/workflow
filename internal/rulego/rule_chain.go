@@ -53,6 +53,7 @@ func (r *roleChain) GetParentNode(id string, nodeId string) []string {
 	return parentNodes
 }
 
+// 加载链服务
 func (r *roleChain) LoadChain(id string, json []byte) error {
 	chain, b := rulego.Get(id)
 	if b {

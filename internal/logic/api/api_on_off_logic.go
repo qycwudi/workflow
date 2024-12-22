@@ -2,13 +2,15 @@ package api
 
 import (
 	"context"
-	"github.com/zeromicro/x/errors"
-	"workflow/internal/logic"
-
-	"workflow/internal/svc"
-	"workflow/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
+	"workflow/internal/model"
+	"workflow/internal/pubsub"
+	"workflow/internal/svc"
+	"workflow/internal/types"
 )
 
 type ApiOnOffLogic struct {
@@ -26,10 +28,27 @@ func NewApiOnOffLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiOnOff
 }
 
 func (l *ApiOnOffLogic) ApiOnOff(req *types.ApiOnOffRequest) (resp *types.ApiOnOffResponse, err error) {
+	api, err := l.svcCtx.ApiModel.FindOneByApiId(l.ctx, req.ApiId)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "查询API失败")
+	}
 	err = l.svcCtx.ApiModel.UpdateStatusByApiId(l.ctx, req.ApiId, req.Status)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "修改API发布状态失败")
 	}
+
+	if req.Status == model.ApiStatusOn {
+		// 发送加载链服务消息
+		err = pubsub.PublishApiLoadSyncEvent(l.ctx, &pubsub.ApiLoadSyncMsg{
+			ApiId:     api.ApiId,
+			RuleChain: api.Dsl,
+		})
+		if err != nil {
+			logx.Errorf("send api load sync event error: %s", err)
+			return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")
+		}
+	}
+
 	return &types.ApiOnOffResponse{
 		ApiId:  req.ApiId,
 		Status: req.Status,

@@ -33,7 +33,7 @@ func NewPubSub(ctx *svc.ServiceContext) {
 
 	// 开启协程处理API策略同步事件
 	go func() {
-		if err := SubscribeApiTacticsSyncEvent(subCtx, ApiTacticsSyncHandler); err != nil {
+		if err := SubscribeApiLoadSyncEvent(subCtx, ApiLoadSyncHandler); err != nil {
 			// 记录错误但不影响主程序
 			return
 		}

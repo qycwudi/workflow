@@ -12,6 +12,7 @@ import (
 
 	"workflow/internal/logic"
 	"workflow/internal/model"
+	"workflow/internal/pubsub"
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -63,8 +64,15 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		return nil, errors.New(int(logic.SystemError), "发布 API 失败")
 	}
 
-	// 3. 加载链服务
-	rulego.RoleChain.LoadChain(apiId, ruleChain)
+	// 3. 发送加载链服务消息
+	err = pubsub.PublishApiLoadSyncEvent(l.ctx, &pubsub.ApiLoadSyncMsg{
+		ApiId:     apiId,
+		RuleChain: string(ruleChain),
+	})
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")
+	}
+
 	resp = &types.ApiPublishResponse{ApiId: apiId}
 	return resp, nil
 }
