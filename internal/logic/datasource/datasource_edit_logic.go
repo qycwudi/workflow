@@ -6,15 +6,16 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"workflow/internal/enum"
 
 	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/datasource"
+	"workflow/internal/enum"
 	"workflow/internal/logic"
 	"workflow/internal/model"
+	"workflow/internal/pubsub"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -89,8 +90,14 @@ func (l *DatasourceEditLogic) DatasourceEdit(req *types.DatasourceEditRequest) (
 		return nil, errors.New(int(logic.SystemError), "修改数据源失败")
 	}
 
-	// 异步JOB更新 internal/corn/servicecheck/datasource_client_update.go
-
+	// 异步JOB更新 internal/asynq/processor/datasource_client_sync_processor.go
+	// 发布数据源客户端同步事件 通知数据源客户端同步 【全量】
+	// 双重保险 防止数据源客户端消息消费失败后,导致一直有副本同步失败
+	err = pubsub.PublishDatasourceClientSyncEvent(l.ctx)
+	if err != nil {
+		logx.Errorf("%s publish event failed: %s", "DatasourceClientSync", err.Error())
+		return nil, err
+	}
 	resp = &types.DatasourceEditResponse{
 		Id: req.Id,
 	}

@@ -1,6 +1,7 @@
 package svc
 
 import (
+	"github.com/redis/go-redis/v9"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 
 	"workflow/internal/config"
@@ -21,10 +22,17 @@ type ServiceContext struct {
 	TraceModel               model.TraceModel
 	DatasourceModel          model.DatasourceModel
 	LocksModel               model.LocksModel
+	RedisClient              redis.UniversalClient
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.MySqlUrn)
+
+	redisClient := redis.NewUniversalClient(&redis.UniversalOptions{
+		Addrs:    []string{c.Redis.Host},
+		Password: c.Redis.Password,
+		DB:       c.Redis.DB,
+	})
 
 	return &ServiceContext{
 		Config:                   c,
@@ -40,5 +48,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		TraceModel:               model.NewTraceModel(conn),
 		DatasourceModel:          model.NewDatasourceModel(conn),
 		LocksModel:               model.NewLocksModel(conn),
+		RedisClient:              redisClient,
 	}
 }

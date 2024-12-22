@@ -14,7 +14,7 @@ Log:
 # MySqlUrn: root:12345678@tcp(127.0.0.1:3306)/workflow?charset=utf8mb4&parseTime=True&loc=Local
 MySqlUrn: root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local
 Redis:
-  Host: 192.168.49.2:6379
+  Host: 192.168.49.2:31127
   Password: '123456'
   DB: 10
 
@@ -24,10 +24,11 @@ DevServer:
     HealthPath: "/v1/ping"
 
 Job:
-  DatasourceClientCheck:
+  - Name: DataSourceClientProbe
     Enable: true
-    Cron: '0 0/10 * * * *'
-  DatasourceClientUpdate:
+    Cron: '0 0/1 * * * *'
+    Topic: 'datasource_client_probe'
+  - Name: DataSourceClientSync
     Enable: true
-    Cron: '0 0/10 * * * *'
-
+    Cron: '0 * 0/1 * * *'
+    Topic: 'datasource_client_sync'

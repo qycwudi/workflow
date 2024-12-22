@@ -7,14 +7,19 @@ import (
 	"os"
 	"strconv"
 
+	asynq2 "github.com/hibiken/asynq"
+	"github.com/hibiken/asynqmon"
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
 
+	"workflow/internal/asynq"
+	"workflow/internal/cache"
 	"workflow/internal/config"
-	"workflow/internal/corn"
 	"workflow/internal/datasource"
 	"workflow/internal/handler"
 	"workflow/internal/locks"
+	"workflow/internal/pubsub"
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
 )
@@ -68,18 +73,44 @@ func main() {
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
+	// 初始化 redis
+	cache.NewRedis(ctx.RedisClient)
 	// 注册规则链
 	rulego.InitRoleChain(ctx)
 	// 注册链服务
 	rulego.InitRoleServer(c.ApiPort)
 	// 初始化锁
 	locks.CustomLock = locks.NewLock("mysql", ctx)
-	// 初始化Job
-	corn.NewJob(c.Job, ctx)
 	// 初始化数据源连接池
 	datasource.InitDataSourceManager(ctx)
-
+	// 初始化 asynq
+	asynq.NewAsynqServer(ctx)
+	// 初始化 asynq 周期性任务
+	asynq.NewAsynqJob(ctx)
+	// 初始化订阅
+	pubsub.NewPubSub(ctx)
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
+
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered in main:", r)
+			}
+		}()
+		h := asynqmon.New(asynqmon.Options{
+			RootPath: "/asynq",
+			RedisConnOpt: asynq2.RedisClientOpt{
+				Addr:     ctx.Config.Redis.Host,
+				DB:       ctx.Config.Redis.DB,
+				Username: "",
+				Password: ctx.Config.Redis.Password,
+			},
+		})
+
+		http.Handle(h.RootPath()+"/", h)
+		println("Starting asynq monitor at 0.0.0.0:7201...")
+		logx.Error(ctx, http.ListenAndServe(":7201", nil).Error())
+	}()
 	server.Start()
 
 }
