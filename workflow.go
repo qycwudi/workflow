@@ -33,7 +33,7 @@ func main() {
 	// 读取配置文件
 	conf.MustLoad(*configFile, &c)
 
-	// 从环境变量读取 服务端口
+	// 从环境变量读取配置
 	if port := os.Getenv("PORT"); port != "" {
 		c.Port, _ = strconv.Atoi(port)
 	}
@@ -42,19 +42,36 @@ func main() {
 		c.ApiPort, _ = strconv.Atoi(apiPort)
 	}
 
-	// 从环境变量读取 mysql 配置
 	if mysqlDsn := os.Getenv("DSN"); mysqlDsn != "" {
 		c.MySqlUrn = mysqlDsn
 	}
 
-	// 从环境变量读取 log 配置
+	if redisHost := os.Getenv("REDIS_HOST"); redisHost != "" {
+		c.Redis.Host = redisHost
+	}
+
+	if redisPassword := os.Getenv("REDIS_PASSWORD"); redisPassword != "" {
+		c.Redis.Password = redisPassword
+	}
+
+	if redisDB := os.Getenv("REDIS_DB"); redisDB != "" {
+		c.Redis.DB, _ = strconv.Atoi(redisDB)
+	}
+
 	if logMode := os.Getenv("LOG_MODE"); logMode != "" {
 		c.Log.Mode = logMode
 	}
 
-	// 从环境变量读取 log 配置
 	if logLevel := os.Getenv("LOG_LEVEL"); logLevel != "" {
 		c.Log.Level = logLevel
+	}
+
+	if ruleServerTrace := os.Getenv("RULE_SERVER_TRACE"); ruleServerTrace != "" {
+		c.RuleServerTrace, _ = strconv.ParseBool(ruleServerTrace)
+	}
+
+	if ruleServerLimitSize := os.Getenv("RULE_SERVER_LIMIT_SIZE"); ruleServerLimitSize != "" {
+		c.RuleServerLimitSize, _ = strconv.Atoi(ruleServerLimitSize)
 	}
 
 	// # 需要通过的域名，这里可以写多个域名 或者可以写 * 全部通过
@@ -78,7 +95,7 @@ func main() {
 	// 注册规则链
 	rulego.InitRoleChain(ctx)
 	// 注册链服务
-	rulego.InitRoleServer(c.ApiPort, ctx.Config.RuleServerLimitSize)
+	rulego.InitRoleServer(c.RuleServerTrace, c.ApiPort, ctx.Config.RuleServerLimitSize)
 	// 初始化锁
 	locks.CustomLock = locks.NewLock("mysql", ctx)
 	// 初始化数据源连接池

@@ -59,7 +59,7 @@ func ApiLoadSyncHandler(ctx context.Context, msg *redis.Message) {
 	}
 
 	// 加载链服务
-	err = rulego.RoleChain.LoadChain(syncMsg.ApiId, []byte(syncMsg.RuleChain))
+	err = rulego.RoleChain.LoadApiServiceChain(syncMsg.ApiId, []byte(syncMsg.RuleChain))
 	if err != nil {
 		logx.Errorf("ApiLoadSyncHandler load chain failed: %s", err.Error())
 		return

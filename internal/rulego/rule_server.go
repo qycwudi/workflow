@@ -27,7 +27,7 @@ type RoleServer struct {
 }
 
 // InitRoleServer 注册接口 注册规则链
-func InitRoleServer(apiPort int, limitSize int) {
+func InitRoleServer(trace bool, apiPort int, limitSize int) {
 	config := types.Config{Logger: &utils.RoleCustomLog{}}
 	restEndpoint, err := endpoint.Registry.New(rest.Type, config, rest.Config{Server: fmt.Sprintf(":%d", apiPort)})
 	if err != nil {
@@ -95,7 +95,7 @@ func InitRoleServer(apiPort int, limitSize int) {
 	}
 	for _, api := range apis {
 		logx.Infof("load api id:%s,name:%s", api.ApiId, api.ApiName)
-		RoleChain.LoadChain(api.ApiId, []byte(api.Dsl))
+		RoleChain.LoadApiServiceChain(api.ApiId, []byte(api.Dsl))
 	}
 	logx.Infof("init role server load api complete : %d", len(apis))
 }

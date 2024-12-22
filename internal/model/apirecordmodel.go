@@ -14,6 +14,7 @@ type (
 	// and implement the added methods in customApiRecordModel.
 	ApiRecordModel interface {
 		apiRecordModel
+		UpdateStatusAndResultByTraceId(ctx context.Context, id string, status string, result string, errMsg string) error
 		UpdateStatusByTraceId(ctx context.Context, id string, status string, errMsg string) error
 		FindByApiId(ctx context.Context, apiId string, current int, pageSize int) (int64, []*ApiRecord, error)
 		FindByApiName(ctx context.Context, apiName string, current int, pageSize int) (int64, []*ApiRecord, error)
@@ -54,6 +55,12 @@ func (c customApiRecordModel) FindByApiName(ctx context.Context, apiName string,
 	default:
 		return 0, nil, err
 	}
+}
+
+func (c customApiRecordModel) UpdateStatusAndResultByTraceId(ctx context.Context, id string, status string, result string, errMsg string) error {
+	query := fmt.Sprintf("update %s set status = ?, extend = ?, error_msg = ? where `trace_id` = ?", c.table)
+	_, err := c.conn.ExecCtx(ctx, query, status, result, errMsg, id)
+	return err
 }
 
 func (c customApiRecordModel) UpdateStatusByTraceId(ctx context.Context, id string, status string, errMsg string) error {

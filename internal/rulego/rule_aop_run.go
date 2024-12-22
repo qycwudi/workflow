@@ -85,7 +85,8 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		}
 	} else {
 		logx.Infof("API END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
-		err = RoleChain.svc.ApiRecordModel.UpdateStatusByTraceId(ctx.GetContext(), msg.Id, status, errMsg)
+		result, _ := json.Marshal(msg)
+		err = RoleChain.svc.ApiRecordModel.UpdateStatusAndResultByTraceId(ctx.GetContext(), msg.Id, status, string(result), errMsg)
 		if err != nil {
 			logx.Errorf("update api record status err:%s", err.Error())
 			ctx.TellFailure(msg, err)

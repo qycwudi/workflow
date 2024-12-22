@@ -4,6 +4,7 @@ Port: 8888
 ApiPort: 8889
 Timeout: 50000
 RuleServerLimitSize: 1
+RuleServerTrace: true
 Log:
   Level: debug
   # file console

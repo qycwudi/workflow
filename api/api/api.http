@@ -77,7 +77,7 @@ Authorization: Bearer 3e45b7625b264a2ba6118c4bd46d6d01
 POST http://127.0.0.1:8889/api/role/v1/ctjs3kl3sjtgb99ps320
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 3e45b7625b264a2ba6118c4bd46d6d01
+Authorization: Bearer 714aeff02685434381b292c1d8588a6c
 
 {
   "intA": 30,

@@ -2,15 +2,16 @@ package api
 
 import (
 	"context"
-	"github.com/zeromicro/x/errors"
-	"workflow/internal/logic"
-	"workflow/internal/model"
-	"workflow/internal/utils"
-
-	"workflow/internal/svc"
-	"workflow/internal/types"
+	"encoding/json"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
+	"workflow/internal/model"
+	"workflow/internal/svc"
+	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type ApiRecordsLogic struct {
@@ -41,14 +42,18 @@ func (l *ApiRecordsLogic) ApiRecords(req *types.ApiRecordsRequest) (resp *types.
 
 	lists := make([]types.ApiRecords, len(apiRecords))
 	for i, record := range apiRecords {
+		// 美化 Param 和 Extend 字段的 JSON
+		paramJson, _ := json.MarshalIndent(record.Param, "", "  ")
+		extendJson, _ := json.MarshalIndent(record.Extend, "", "  ")
+
 		lists[i] = types.ApiRecords{
 			ApiId:    record.ApiId,
 			ApiName:  record.ApiName,
 			CallTime: utils.FormatDate(record.CallTime),
 			Status:   record.Status,
 			TraceId:  record.TraceId,
-			Param:    record.Param,
-			Extend:   record.Extend,
+			Param:    string(paramJson),
+			Extend:   string(extendJson),
 		}
 	}
 

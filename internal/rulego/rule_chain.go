@@ -18,7 +18,6 @@ func InitRoleChain(svc *svc.ServiceContext) {
 	config.Logger = &utils.RoleCustomLog{}
 	opts := []types.RuleEngineOption{
 		rulego.WithConfig(config),
-		types.WithAspects(&TraceAop{}, &RunAop{}),
 	}
 
 	RoleChain = &roleChain{svc: svc, opts: opts}
@@ -67,6 +66,39 @@ func (r *roleChain) LoadChain(id string, json []byte) error {
 		return nil
 	}
 
+	r.opts = append(r.opts, types.WithAspects(&TraceAop{}, &RunAop{}))
+	_, err := rulego.New(
+		id,
+		json,
+		r.opts...,
+	)
+	if err != nil {
+		logx.Errorf("load role chain fail,err:%v\n", err)
+		return err
+	}
+
+	logx.Infof("load %s role chain success,json:%s \n", id, json)
+	return nil
+}
+
+// 加载链服务
+func (r *roleChain) LoadApiServiceChain(id string, json []byte) error {
+	chain, b := rulego.Get(id)
+	if b {
+		// 重新加载
+		err := chain.ReloadSelf(json)
+		if err != nil {
+			logx.Errorf("reload self role chain %s fail,err:%v\n", id, err)
+			return err
+		}
+		logx.Infof("reload self role chain %s success,json: %s \n", id, string(json))
+		return nil
+	}
+	if r.svc.Config.RuleServerTrace {
+		r.opts = append(r.opts, types.WithAspects(&TraceAop{}, &RunAop{}))
+	} else {
+		r.opts = append(r.opts, types.WithAspects(&RunAop{}))
+	}
 	_, err := rulego.New(
 		id,
 		json,

@@ -11,6 +11,7 @@ type Config struct {
 	Job                 []JobBase   `json:"job"`
 	Redis               RedisConfig `json:"Redis"`
 	RuleServerLimitSize int         `json:"RuleServerLimitSize" default:"4"` // 规则链服务限制大小 单位 M
+	RuleServerTrace     bool        `json:"RuleServerTrace" default:"true"`  // 是否开启规则链服务追踪
 }
 
 type RedisConfig struct {
