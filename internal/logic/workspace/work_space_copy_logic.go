@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 	"time"
+	"workflow/internal/rulego"
 
 	"github.com/google/uuid"
 	"github.com/rs/xid"
@@ -102,6 +103,17 @@ func (l *WorkSpaceCopyLogic) WorkSpaceCopy(req *types.WorkSpaceCopyRequest) (res
 	if err != nil {
 		logx.Errorf("canvas insert error: %+v", err)
 		return nil, errors.New(int(logic.SystemStoreError), "创建画布失败")
+	}
+
+	// 解析加载画布
+	canvasId, ruleChain, err := rulego.ParsingDsl(newCanvasDraft)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
+	}
+
+	err = rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "加载画布失败,错误原因:"+err.Error())
 	}
 
 	return
