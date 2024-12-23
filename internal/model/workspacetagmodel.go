@@ -3,6 +3,7 @@ package model
 import (
 	"context"
 	"fmt"
+
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -24,7 +25,7 @@ type (
 )
 
 func (c customWorkspaceTagModel) FindAll(ctx context.Context) ([]*WorkspaceTag, error) {
-	query := fmt.Sprintf("select %s from %s order by id desc", workspaceTagRows, c.table)
+	query := fmt.Sprintf("select %s from %s where is_delete = 0 order by id desc", workspaceTagRows, c.table)
 	var resp []*WorkspaceTag
 	err := c.conn.QueryRowsCtx(ctx, &resp, query)
 	switch err {

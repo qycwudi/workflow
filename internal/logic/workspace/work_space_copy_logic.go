@@ -3,36 +3,36 @@ package workspace
 import (
 	"context"
 	"fmt"
+	"strings"
+	"time"
+
 	"github.com/google/uuid"
 	"github.com/rs/xid"
 	"github.com/tidwall/gjson"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
-	"strings"
-	"time"
+
 	"workflow/internal/logic"
 	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
-type WorkspaceCopyLogic struct {
+type WorkSpaceCopyLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-// WorkspaceCopyHandler 画布复制
-func NewWorkspaceCopyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *WorkspaceCopyLogic {
-	return &WorkspaceCopyLogic{
+func NewWorkSpaceCopyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *WorkSpaceCopyLogic {
+	return &WorkSpaceCopyLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *WorkspaceCopyLogic) WorkspaceCopy(req *types.WorkspaceCopyRequest) (resp *types.WorkspaceCopyResponse, err error) {
+func (l *WorkSpaceCopyLogic) WorkSpaceCopy(req *types.WorkSpaceCopyRequest) (resp *types.WorkSpaceCopyResponse, err error) {
 	// 复制workspace
 	oldWorkspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {

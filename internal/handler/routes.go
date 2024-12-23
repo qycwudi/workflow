@@ -49,13 +49,23 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			},
 			{
 				Method:  http.MethodPost,
+				Path:    "/tag/edit",
+				Handler: workspace.TagEditHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/tag/remove",
+				Handler: workspace.TagRemoveHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
 				Path:    "/mock",
 				Handler: workspace.MockHandler(serverCtx),
 			},
 			{
 				Method:  http.MethodPost,
 				Path:    "/workspace/copy",
-				Handler: workspace.WorkspaceCopyHandler(serverCtx),
+				Handler: workspace.WorkSpaceCopyHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/workflow"),

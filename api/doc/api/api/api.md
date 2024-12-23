@@ -48,6 +48,7 @@ type ApiPublishListRequest struct {
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
 	Id string `json:"id,optional" desc:"空间ID 非必填"`
+	Name string `json:"name,optional"`
 }
 ```
 
@@ -133,21 +134,21 @@ type ApiRecordsResponse struct {
 }
 ```
 
-### 5. "secretyKeyList"
+### 5. "secretKeyList"
 
 1. route definition
 
-- Url: /workflow/api/secretykey/list
+- Url: /workflow/api/secretkey/list
 - Method: POST
-- Request: `ApiSecretyKeyListRequest`
-- Response: `ApiSecretyKeyListResponse`
+- Request: `ApiSecretKeyListRequest`
+- Response: `ApiSecretKeyListResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyListRequest struct {
+type ApiSecretKeyListRequest struct {
 	ApiId string `json:"apiId"`
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
@@ -160,11 +161,11 @@ type ApiSecretyKeyListRequest struct {
 
 
 ```golang
-type ApiSecretyKeyListResponse struct {
+type ApiSecretKeyListResponse struct {
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
 	Total int64 `json:"total"`
-	List []ApiSecretyKey `json:"list"`
+	List []ApiSecretKey `json:"list"`
 }
 ```
 
@@ -172,17 +173,17 @@ type ApiSecretyKeyListResponse struct {
 
 1. route definition
 
-- Url: /workflow/api/secretykey/create
+- Url: /workflow/api/secretkey/create
 - Method: POST
-- Request: `ApiSecretyKeyCreateRequest`
-- Response: `ApiSecretyKeyCreateResponse`
+- Request: `ApiSecretKeyCreateRequest`
+- Response: `ApiSecretKeyCreateResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyCreateRequest struct {
+type ApiSecretKeyCreateRequest struct {
 	ApiId string `json:"apiId"`
 	Name string `json:"name"`
 	ExpirationTime int64 `json:"expirationTime"`
@@ -195,7 +196,7 @@ type ApiSecretyKeyCreateRequest struct {
 
 
 ```golang
-type ApiSecretyKeyCreateResponse struct {
+type ApiSecretKeyCreateResponse struct {
 	ApiId string `json:"apiId"`
 	Name string `json:"name"`
 	SecretKey string `json:"secretKey"`
@@ -207,17 +208,17 @@ type ApiSecretyKeyCreateResponse struct {
 
 1. route definition
 
-- Url: /workflow/api/secretykey/update/status
+- Url: /workflow/api/secretkey/update/status
 - Method: POST
-- Request: `ApiSecretyKeyUpdateStatusRequest`
-- Response: `ApiSecretyKeyUpdateStatusResponse`
+- Request: `ApiSecretKeyUpdateStatusRequest`
+- Response: `ApiSecretKeyUpdateStatusResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyUpdateStatusRequest struct {
+type ApiSecretKeyUpdateStatusRequest struct {
 	SecretKey string `json:"secretKey"`
 	Status string `json:"status" desc:"状态 ON OFF"`
 }
@@ -229,7 +230,7 @@ type ApiSecretyKeyUpdateStatusRequest struct {
 
 
 ```golang
-type ApiSecretyKeyUpdateStatusResponse struct {
+type ApiSecretKeyUpdateStatusResponse struct {
 	SecretKey string `json:"secretKey"`
 	Status string `json:"status" desc:"状态 ON OFF"`
 }
@@ -239,17 +240,17 @@ type ApiSecretyKeyUpdateStatusResponse struct {
 
 1. route definition
 
-- Url: /workflow/api/secretykey/update/expirationtime
+- Url: /workflow/api/secretkey/update/expirationtime
 - Method: POST
-- Request: `ApiSecretyKeyUpdateExpirationTimeRequest`
-- Response: `ApiSecretyKeyUpdateExpirationTimeResponse`
+- Request: `ApiSecretKeyUpdateExpirationTimeRequest`
+- Response: `ApiSecretKeyUpdateExpirationTimeResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyUpdateExpirationTimeRequest struct {
+type ApiSecretKeyUpdateExpirationTimeRequest struct {
 	SecretKey string `json:"secretKey"`
 	ExpirationTime int64 `json:"expirationTime"`
 }
@@ -261,7 +262,7 @@ type ApiSecretyKeyUpdateExpirationTimeRequest struct {
 
 
 ```golang
-type ApiSecretyKeyUpdateExpirationTimeResponse struct {
+type ApiSecretKeyUpdateExpirationTimeResponse struct {
 	SecretKey string `json:"secretKey"`
 	ExpirationTime string `json:"expirationTime"`
 }
@@ -271,17 +272,17 @@ type ApiSecretyKeyUpdateExpirationTimeResponse struct {
 
 1. route definition
 
-- Url: /workflow/api/secretykey/delete
+- Url: /workflow/api/secretkey/delete
 - Method: POST
-- Request: `ApiSecretyKeyDeleteRequest`
-- Response: `ApiSecretyKeyDeleteResponse`
+- Request: `ApiSecretKeyDeleteRequest`
+- Response: `ApiSecretKeyDeleteResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyDeleteRequest struct {
+type ApiSecretKeyDeleteRequest struct {
 	SecretKey string `json:"secretKey"`
 }
 ```
@@ -292,7 +293,7 @@ type ApiSecretyKeyDeleteRequest struct {
 
 
 ```golang
-type ApiSecretyKeyDeleteResponse struct {
+type ApiSecretKeyDeleteResponse struct {
 	SecretKey string `json:"secretKey"`
 }
 ```

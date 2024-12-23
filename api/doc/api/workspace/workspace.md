@@ -228,6 +228,7 @@ type WorkSpaceEditTagResponse struct {
 
 ```golang
 type TagListRequest struct {
+	TagName string `json:"tagName,optional"`
 }
 ```
 
@@ -242,7 +243,70 @@ type TagListResponse struct {
 }
 ```
 
-### 7. "Mock接口"
+### 7. "编辑标签"
+
+1. route definition
+
+- Url: /workflow/tag/edit
+- Method: POST
+- Request: `TagEditRequest`
+- Response: `TagEditResponse`
+
+2. request definition
+
+
+
+```golang
+type TagEditRequest struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type TagEditResponse struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+}
+```
+
+### 8. "删除标签"
+
+1. route definition
+
+- Url: /workflow/tag/remove
+- Method: POST
+- Request: `TagRemoveRequest`
+- Response: `TagRemoveResponse`
+
+2. request definition
+
+
+
+```golang
+type TagRemoveRequest struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type TagRemoveResponse struct {
+	Id int64 `json:"id"`
+}
+```
+
+### 9. "Mock接口"
 
 1. route definition
 
@@ -271,6 +335,51 @@ type MockRequest struct {
 type MockResponse struct {
 	Name string `json:"name"`
 	Age int `json:"age"`
+}
+```
+
+### 10. "WorkspaceCopyHandler 画布复制"
+
+1. route definition
+
+- Url: /workflow/workspace/copy
+- Method: POST
+- Request: `WorkSpaceCopyRequest`
+- Response: `WorkSpaceCopyResponse`
+
+2. request definition
+
+
+
+```golang
+type WorkSpaceCopyRequest struct {
+	Id string `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type WorkSpaceCopyResponse struct {
+	Id string `json:"id,optional"`
+	WorkSpaceName string `json:"workSpaceName"`
+	WorkSpaceDesc string `json:"workSpaceDesc,optional"`
+	WorkSpaceType string `json:"workSpaceType"`
+	WorkSpaceTag []string `json:"workSpaceTag,optional"`
+	WorkSpaceIcon string `json:"workSpaceIcon,optional"`
+	WorkSpaceConfig string `json:"workSpaceConfig"`
+}
+
+type WorkSpaceBase struct {
+	Id string `json:"id,optional"`
+	WorkSpaceName string `json:"workSpaceName"`
+	WorkSpaceDesc string `json:"workSpaceDesc,optional"`
+	WorkSpaceType string `json:"workSpaceType"`
+	WorkSpaceTag []string `json:"workSpaceTag,optional"`
+	WorkSpaceIcon string `json:"workSpaceIcon,optional"`
 }
 ```
 

@@ -228,6 +228,7 @@ type WorkSpaceEditTagResponse struct {
 
 ```golang
 type TagListRequest struct {
+	TagName string `json:"tagName,optional"`
 }
 ```
 
@@ -242,7 +243,70 @@ type TagListResponse struct {
 }
 ```
 
-### 7. "Mock接口"
+### 7. "编辑标签"
+
+1. route definition
+
+- Url: /workflow/tag/edit
+- Method: POST
+- Request: `TagEditRequest`
+- Response: `TagEditResponse`
+
+2. request definition
+
+
+
+```golang
+type TagEditRequest struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type TagEditResponse struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+}
+```
+
+### 8. "删除标签"
+
+1. route definition
+
+- Url: /workflow/tag/remove
+- Method: POST
+- Request: `TagRemoveRequest`
+- Response: `TagRemoveResponse`
+
+2. request definition
+
+
+
+```golang
+type TagRemoveRequest struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type TagRemoveResponse struct {
+	Id int64 `json:"id"`
+}
+```
+
+### 9. "Mock接口"
 
 1. route definition
 
@@ -274,7 +338,52 @@ type MockResponse struct {
 }
 ```
 
-### 8. "画布更新"
+### 10. "WorkspaceCopyHandler 画布复制"
+
+1. route definition
+
+- Url: /workflow/workspace/copy
+- Method: POST
+- Request: `WorkSpaceCopyRequest`
+- Response: `WorkSpaceCopyResponse`
+
+2. request definition
+
+
+
+```golang
+type WorkSpaceCopyRequest struct {
+	Id string `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type WorkSpaceCopyResponse struct {
+	Id string `json:"id,optional"`
+	WorkSpaceName string `json:"workSpaceName"`
+	WorkSpaceDesc string `json:"workSpaceDesc,optional"`
+	WorkSpaceType string `json:"workSpaceType"`
+	WorkSpaceTag []string `json:"workSpaceTag,optional"`
+	WorkSpaceIcon string `json:"workSpaceIcon,optional"`
+	WorkSpaceConfig string `json:"workSpaceConfig"`
+}
+
+type WorkSpaceBase struct {
+	Id string `json:"id,optional"`
+	WorkSpaceName string `json:"workSpaceName"`
+	WorkSpaceDesc string `json:"workSpaceDesc,optional"`
+	WorkSpaceType string `json:"workSpaceType"`
+	WorkSpaceTag []string `json:"workSpaceTag,optional"`
+	WorkSpaceIcon string `json:"workSpaceIcon,optional"`
+}
+```
+
+### 11. "画布更新"
 
 1. route definition
 
@@ -306,7 +415,7 @@ type CanvasDraftResponse struct {
 }
 ```
 
-### 9. "画布详情"
+### 12. "画布详情"
 
 1. route definition
 
@@ -337,7 +446,7 @@ type CanvasDetailResponse struct {
 }
 ```
 
-### 10. "全部运行"
+### 13. "全部运行"
 
 1. route definition
 
@@ -366,11 +475,11 @@ type CanvasRunResponse struct {
 	Ts int64 `json:"ts"`
 	Id string `json:"id"`
 	MetaData map[string]string `json:"metadata"`
-	Data map[string]interface{} `json:"data"`
+	Data interface{} `json:"data"`
 }
 ```
 
-### 11. "单组件运行"
+### 14. "单组件运行"
 
 1. route definition
 
@@ -400,11 +509,11 @@ type CanvasRunSingleResponse struct {
 	Ts int64 `json:"ts"`
 	Id string `json:"id"`
 	MetaData map[string]string `json:"metadata"`
-	Data map[string]interface{} `json:"data"`
+	Data interface{} `json:"data"`
 }
 ```
 
-### 12. "组件运行详情"
+### 15. "组件运行详情"
 
 1. route definition
 
@@ -437,12 +546,12 @@ type CanvasRunSingleDetailResponse struct {
 	Duration int64 `json:"duration"`
 	Status string `json:"status"`
 	Error string `json:"error"`
-	Input map[string]interface{} `json:"input"`
-	Output map[string]interface{} `json:"output"`
+	Input string `json:"input"`
+	Output string `json:"output"`
 }
 ```
 
-### 13. "获取画布运行历史"
+### 16. "获取画布运行历史"
 
 1. route definition
 
@@ -473,7 +582,7 @@ type GetCanvasRunHistoryResp struct {
 }
 ```
 
-### 14. "获取画布运行详情"
+### 17. "获取画布运行详情"
 
 1. route definition
 
@@ -508,7 +617,7 @@ type GetCanvasRunDetailResp struct {
 }
 ```
 
-### 15. "API发布"
+### 18. "API发布"
 
 1. route definition
 
@@ -540,7 +649,7 @@ type ApiPublishResponse struct {
 }
 ```
 
-### 16. "API发布列表"
+### 19. "API发布列表"
 
 1. route definition
 
@@ -558,6 +667,7 @@ type ApiPublishListRequest struct {
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
 	Id string `json:"id,optional" desc:"空间ID 非必填"`
+	Name string `json:"name,optional"`
 }
 ```
 
@@ -575,7 +685,7 @@ type ApiPublishListResponse struct {
 }
 ```
 
-### 17. "APIOnOff"
+### 20. "APIOnOff"
 
 1. route definition
 
@@ -607,7 +717,7 @@ type ApiOnOffResponse struct {
 }
 ```
 
-### 18. "API调用记录"
+### 21. "API调用记录"
 
 1. route definition
 
@@ -643,21 +753,21 @@ type ApiRecordsResponse struct {
 }
 ```
 
-### 19. "secretyKeyList"
+### 22. "secretKeyList"
 
 1. route definition
 
-- Url: /workflow/api/secretykey/list
+- Url: /workflow/api/secretkey/list
 - Method: POST
-- Request: `ApiSecretyKeyListRequest`
-- Response: `ApiSecretyKeyListResponse`
+- Request: `ApiSecretKeyListRequest`
+- Response: `ApiSecretKeyListResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyListRequest struct {
+type ApiSecretKeyListRequest struct {
 	ApiId string `json:"apiId"`
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
@@ -670,29 +780,29 @@ type ApiSecretyKeyListRequest struct {
 
 
 ```golang
-type ApiSecretyKeyListResponse struct {
+type ApiSecretKeyListResponse struct {
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
 	Total int64 `json:"total"`
-	List []ApiSecretyKey `json:"list"`
+	List []ApiSecretKey `json:"list"`
 }
 ```
 
-### 20. "创建API密钥"
+### 23. "创建API密钥"
 
 1. route definition
 
-- Url: /workflow/api/secretykey/create
+- Url: /workflow/api/secretkey/create
 - Method: POST
-- Request: `ApiSecretyKeyCreateRequest`
-- Response: `ApiSecretyKeyCreateResponse`
+- Request: `ApiSecretKeyCreateRequest`
+- Response: `ApiSecretKeyCreateResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyCreateRequest struct {
+type ApiSecretKeyCreateRequest struct {
 	ApiId string `json:"apiId"`
 	Name string `json:"name"`
 	ExpirationTime int64 `json:"expirationTime"`
@@ -705,7 +815,7 @@ type ApiSecretyKeyCreateRequest struct {
 
 
 ```golang
-type ApiSecretyKeyCreateResponse struct {
+type ApiSecretKeyCreateResponse struct {
 	ApiId string `json:"apiId"`
 	Name string `json:"name"`
 	SecretKey string `json:"secretKey"`
@@ -713,21 +823,21 @@ type ApiSecretyKeyCreateResponse struct {
 }
 ```
 
-### 21. "修改API密钥状态"
+### 24. "修改API密钥状态"
 
 1. route definition
 
-- Url: /workflow/api/secretykey/update/status
+- Url: /workflow/api/secretkey/update/status
 - Method: POST
-- Request: `ApiSecretyKeyUpdateStatusRequest`
-- Response: `ApiSecretyKeyUpdateStatusResponse`
+- Request: `ApiSecretKeyUpdateStatusRequest`
+- Response: `ApiSecretKeyUpdateStatusResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyUpdateStatusRequest struct {
+type ApiSecretKeyUpdateStatusRequest struct {
 	SecretKey string `json:"secretKey"`
 	Status string `json:"status" desc:"状态 ON OFF"`
 }
@@ -739,27 +849,27 @@ type ApiSecretyKeyUpdateStatusRequest struct {
 
 
 ```golang
-type ApiSecretyKeyUpdateStatusResponse struct {
+type ApiSecretKeyUpdateStatusResponse struct {
 	SecretKey string `json:"secretKey"`
 	Status string `json:"status" desc:"状态 ON OFF"`
 }
 ```
 
-### 22. "修改API密钥到期时间"
+### 25. "修改API密钥到期时间"
 
 1. route definition
 
-- Url: /workflow/api/secretykey/update/expirationtime
+- Url: /workflow/api/secretkey/update/expirationtime
 - Method: POST
-- Request: `ApiSecretyKeyUpdateExpirationTimeRequest`
-- Response: `ApiSecretyKeyUpdateExpirationTimeResponse`
+- Request: `ApiSecretKeyUpdateExpirationTimeRequest`
+- Response: `ApiSecretKeyUpdateExpirationTimeResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyUpdateExpirationTimeRequest struct {
+type ApiSecretKeyUpdateExpirationTimeRequest struct {
 	SecretKey string `json:"secretKey"`
 	ExpirationTime int64 `json:"expirationTime"`
 }
@@ -771,27 +881,27 @@ type ApiSecretyKeyUpdateExpirationTimeRequest struct {
 
 
 ```golang
-type ApiSecretyKeyUpdateExpirationTimeResponse struct {
+type ApiSecretKeyUpdateExpirationTimeResponse struct {
 	SecretKey string `json:"secretKey"`
 	ExpirationTime string `json:"expirationTime"`
 }
 ```
 
-### 23. "删除API密钥"
+### 26. "删除API密钥"
 
 1. route definition
 
-- Url: /workflow/api/secretykey/delete
+- Url: /workflow/api/secretkey/delete
 - Method: POST
-- Request: `ApiSecretyKeyDeleteRequest`
-- Response: `ApiSecretyKeyDeleteResponse`
+- Request: `ApiSecretKeyDeleteRequest`
+- Response: `ApiSecretKeyDeleteResponse`
 
 2. request definition
 
 
 
 ```golang
-type ApiSecretyKeyDeleteRequest struct {
+type ApiSecretKeyDeleteRequest struct {
 	SecretKey string `json:"secretKey"`
 }
 ```
@@ -802,12 +912,12 @@ type ApiSecretyKeyDeleteRequest struct {
 
 
 ```golang
-type ApiSecretyKeyDeleteResponse struct {
+type ApiSecretKeyDeleteResponse struct {
 	SecretKey string `json:"secretKey"`
 }
 ```
 
-### 24. "组件list"
+### 27. "组件list"
 
 1. route definition
 
@@ -837,7 +947,7 @@ type ModuleListResponse struct {
 }
 ```
 
-### 25. "组件新建"
+### 28. "组件新建"
 
 1. route definition
 
@@ -870,7 +980,7 @@ type ModuleNewResponse struct {
 }
 ```
 
-### 26. "组件编辑"
+### 29. "组件编辑"
 
 1. route definition
 
@@ -904,7 +1014,7 @@ type ModuleEditResponse struct {
 }
 ```
 
-### 27. "数据源列表"
+### 30. "数据源列表"
 
 1. route definition
 
@@ -941,7 +1051,7 @@ type DatasourceListResponse struct {
 }
 ```
 
-### 28. "新增数据源"
+### 31. "新增数据源"
 
 1. route definition
 
@@ -974,7 +1084,7 @@ type DatasourceAddResponse struct {
 }
 ```
 
-### 29. "编辑数据源"
+### 32. "编辑数据源"
 
 1. route definition
 
@@ -1008,7 +1118,7 @@ type DatasourceEditResponse struct {
 }
 ```
 
-### 30. "删除数据源"
+### 33. "删除数据源"
 
 1. route definition
 
@@ -1038,7 +1148,7 @@ type DatasourceDeleteResponse struct {
 }
 ```
 
-### 31. "测试数据源"
+### 34. "测试数据源"
 
 1. route definition
 

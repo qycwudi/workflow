@@ -66,6 +66,7 @@ type WorkSpaceEditTagResponse struct {
 }
 
 type TagListRequest struct {
+	TagName string `json:"tagName,optional"`
 }
 
 type TagListResponse struct {
@@ -75,6 +76,25 @@ type TagListResponse struct {
 type TagEntity struct {
 	Id   int    `json:"id"`
 	Name string `json:"name"`
+}
+
+type TagEditRequest struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+type TagEditResponse struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+type TagRemoveRequest struct {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+type TagRemoveResponse struct {
+	Id int64 `json:"id"`
 }
 
 type MockRequest struct {
@@ -92,11 +112,11 @@ type MockResponse struct {
 	Age  int    `json:"age"`
 }
 
-type WorkspaceCopyRequest struct {
+type WorkSpaceCopyRequest struct {
 	Id string `json:"id"`
 }
 
-type WorkspaceCopyResponse struct {
+type WorkSpaceCopyResponse struct {
 	WorkSpaceBase
 	WorkSpaceConfig string `json:"workSpaceConfig"`
 }

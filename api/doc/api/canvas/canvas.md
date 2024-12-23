@@ -90,7 +90,7 @@ type CanvasRunResponse struct {
 	Ts int64 `json:"ts"`
 	Id string `json:"id"`
 	MetaData map[string]string `json:"metadata"`
-	Data map[string]interface{} `json:"data"`
+	Data interface{} `json:"data"`
 }
 ```
 
@@ -124,7 +124,7 @@ type CanvasRunSingleResponse struct {
 	Ts int64 `json:"ts"`
 	Id string `json:"id"`
 	MetaData map[string]string `json:"metadata"`
-	Data map[string]interface{} `json:"data"`
+	Data interface{} `json:"data"`
 }
 ```
 
@@ -161,8 +161,8 @@ type CanvasRunSingleDetailResponse struct {
 	Duration int64 `json:"duration"`
 	Status string `json:"status"`
 	Error string `json:"error"`
-	Input map[string]interface{} `json:"input"`
-	Output map[string]interface{} `json:"output"`
+	Input string `json:"input"`
+	Output string `json:"output"`
 }
 ```
 

@@ -68,7 +68,7 @@ type WorkSpaceEditTagResponse {
 }
 
 type TagListRequest {
-
+    TagName string `json:"tagName,optional"`
 }
 
 type TagListResponse {
@@ -78,6 +78,25 @@ type TagListResponse {
 type TagEntity {
     Id int `json:"id"`
     Name string `json:"name"`
+}
+
+type TagEditRequest{
+    Id int64 `json:"id"`
+    Name string `json:"name"`
+}
+
+type TagEditResponse{
+    Id int64 `json:"id"`
+    Name string `json:"name"`
+}
+
+type TagRemoveRequest{
+    Id int64 `json:"id"`
+    Name string `json:"name"`
+}
+
+type TagRemoveResponse{
+    Id int64 `json:"id"`
 }
 
 type MockRequest {
@@ -99,11 +118,11 @@ type MockResponse {
 
 // 画布复制
 type (
-    WorkspaceCopyRequest {
+    WorkSpaceCopyRequest {
         Id string `json:"id"`
     }
 
-    WorkspaceCopyResponse {
+    WorkSpaceCopyResponse {
         WorkSpaceBase
         WorkSpaceConfig string `json:"workSpaceConfig"`
     }
@@ -140,11 +159,19 @@ service workflow-api {
     @handler TagListHandler
     post /tag/list (TagListRequest) returns (TagListResponse)
 
+    @doc "编辑标签"
+    @handler TagEditHandler
+    post /tag/edit (TagEditRequest) returns (TagEditResponse)
+
+    @doc "删除标签"
+    @handler TagRemoveHandler
+    post /tag/remove (TagRemoveRequest) returns (TagRemoveResponse)
+
     @doc "Mock接口"
     @handler MockHandler
     post /mock (MockRequest) returns (MockResponse)
 
     @doc "WorkspaceCopyHandler 画布复制"
-    @handler WorkspaceCopyHandler
-    post /workspace/copy (WorkspaceCopyRequest) returns (WorkspaceCopyResponse)
+    @handler WorkSpaceCopyHandler
+    post /workspace/copy (WorkSpaceCopyRequest) returns (WorkSpaceCopyResponse)
 }
