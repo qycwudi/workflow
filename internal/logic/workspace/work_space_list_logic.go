@@ -2,15 +2,17 @@ package workspace
 
 import (
 	"context"
+	"database/sql"
+
 	"github.com/samber/lo"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
+
 	"workflow/internal/logic"
 	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 	"workflow/internal/utils"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type WorkSpaceListLogic struct {
@@ -37,7 +39,7 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 	var page []*model.Workspace
 	var total int64
 	// 标签过滤,走in逻辑
-	// todo 这里有问题，要修改下 sql 改错标签和名称混合查询，数据量不会太大 不考虑性能问题
+	// todo 这里有问题，要修改下 sql 改成标签和名称混合查询，数据量不会太大 不考虑性能问题
 	if len(req.WorkSpaceTag) > 0 {
 		// 查询满足条件的workspace
 		workspaceIds, totalNum, err := l.svcCtx.WorkspaceTagMappingModel.FindPageByTagId(l.ctx, req.Current, req.PageSize, req.WorkSpaceTag)
@@ -47,6 +49,10 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 
 		workSpacePage, err := l.svcCtx.WorkSpaceModel.FindInWorkSpaceId(l.ctx, workspaceIds)
 		if err != nil {
+			if err == sql.ErrNoRows {
+				resp.Data = []types.WorkSpacePage{}
+				return resp, nil
+			}
 			return nil, errors.New(int(logic.SystemOrmError), "过滤查询空间列表数据失败")
 		}
 		total = totalNum

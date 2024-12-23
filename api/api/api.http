@@ -63,10 +63,10 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://10.99.43.99:8889/api/role/v1/ctjs3kl3sjtgb99ps320
+POST http://10.99.29.49:8889/api/role/v1/ctkgflqflvkqiagjhqrg
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 3e45b7625b264a2ba6118c4bd46d6d01
+Authorization: Bearer 2fd2ad5b718f4a5a86106d8991a06707
 
 {
   "name": "屋里",
