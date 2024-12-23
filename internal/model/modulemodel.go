@@ -31,7 +31,7 @@ func NewModuleModel(conn sqlx.SqlConn) ModuleModel {
 }
 
 func (m *defaultModuleModel) FindAll(ctx context.Context) ([]*Module, error) {
-	query := fmt.Sprintf("select %s from %s order by module_index desc", moduleRows, m.table)
+	query := fmt.Sprintf("select %s from %s order by module_index asc", moduleRows, m.table)
 	var resp []*Module
 	err := m.conn.QueryRowsCtx(ctx, &resp, query)
 	switch err {
