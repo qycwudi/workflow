@@ -41,5 +41,5 @@ gogogo:setenv
 	--output type=image,registry.insecure=true,name=$(ImageID),push=true \
 	--allow security.insecure \
 	--opt filename=Dockerfile \
-	--opt platform=linux/arm64 \
+	--opt platform=linux/amd64 \
 	--opt build-arg:flags=$(Flags)
