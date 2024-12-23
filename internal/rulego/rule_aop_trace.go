@@ -81,7 +81,7 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 	traceQueue <- &model.Trace{
 		TraceId:     msg.Id,
 		NodeId:      ctx.Self().GetNodeId().Id,
-		ElapsedTime: elapsed.Microseconds(),
+		ElapsedTime: elapsed.Milliseconds(),
 		Output:      string(outputMar),
 		Status:      enums.TraceStatusFinish,
 		ErrorMsg:    msg.Metadata["error"],
