@@ -17,6 +17,7 @@ type (
 		workspaceTagModel
 		FindOneByName(ctx context.Context, tagName string) (*WorkspaceTag, error)
 		FindAll(ctx context.Context) ([]*WorkspaceTag, error)
+		FindAllByName(ctx context.Context, tagName string) ([]*WorkspaceTag, error)
 	}
 
 	customWorkspaceTagModel struct {
@@ -28,6 +29,18 @@ func (c customWorkspaceTagModel) FindAll(ctx context.Context) ([]*WorkspaceTag, 
 	query := fmt.Sprintf("select %s from %s where is_delete = 0 order by id desc", workspaceTagRows, c.table)
 	var resp []*WorkspaceTag
 	err := c.conn.QueryRowsCtx(ctx, &resp, query)
+	switch err {
+	case nil:
+		return resp, nil
+	default:
+		return nil, err
+	}
+}
+
+func (c customWorkspaceTagModel) FindAllByName(ctx context.Context, tagName string) ([]*WorkspaceTag, error) {
+	query := fmt.Sprintf("select %s from %s where `tag_name` = ? limit 1", workspaceTagRows, c.table)
+	var resp []*WorkspaceTag
+	err := c.conn.QueryRowsCtx(ctx, &resp, query, tagName)
 	switch err {
 	case nil:
 		return resp, nil

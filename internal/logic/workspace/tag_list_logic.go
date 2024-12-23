@@ -2,13 +2,13 @@ package workspace
 
 import (
 	"context"
-	"github.com/zeromicro/x/errors"
-	"workflow/internal/logic"
-
-	"workflow/internal/svc"
-	"workflow/internal/types"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
+	"workflow/internal/svc"
+	"workflow/internal/types"
 )
 
 type TagListLogic struct {
@@ -26,7 +26,7 @@ func NewTagListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TagListLo
 }
 
 func (l *TagListLogic) TagList(req *types.TagListRequest) (resp *types.TagListResponse, err error) {
-	tagList, err := l.svcCtx.WorkSpaceTagModel.FindAll(l.ctx)
+	tagList, err := l.svcCtx.WorkSpaceTagModel.FindAllByName(l.ctx, req.TagName)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询标签列表失败")
 	}
