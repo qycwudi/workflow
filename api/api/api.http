@@ -63,21 +63,25 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://10.99.29.49:8889/api/role/v1/ctkgflqflvkqiagjhqrg
+POST http://127.0.0.1:8889/api/role/v1/ctkq83d3sjthl48em2pg
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 2fd2ad5b718f4a5a86106d8991a06707
+Authorization: Bearer d3ca012018be45558036732e681dc97d
 
 {
-  "name": "屋里",
-  "age": 29
+  "data":
+  {
+    "name": "屋里",
+    "age": 29,
+    "tableName":"users"
+  }
 }
 
 ### API调用-单结构
 POST http://127.0.0.1:8889/api/role/v1/ctjs3kl3sjtgb99ps320
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 714aeff02685434381b292c1d8588a6c
+Authorization: Bearer ctkpp553sjth1oquefng
 
 {
   "intA": 30,
@@ -85,10 +89,10 @@ Authorization: Bearer 714aeff02685434381b292c1d8588a6c
 }
 
 ### API调用-数组
-POST http://127.0.0.1:9999/api/role/v1/ctfsv853sjtsad9b5uvg
+POST http://127.0.0.1:9999/api/role/v1/ctkpp553sjth1oquefng
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 31afae937918470b9ba97d287007a7cc
+Authorization: Bearer 5b1a3b5021d44e46b4b5f099e19304b2
 
 {
   "list": [

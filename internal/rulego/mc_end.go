@@ -24,6 +24,7 @@ func (n *EndNode) Init(ruleConfig types.Config, configuration types.Configuratio
 
 // OnMsg 处理消息
 func (n *EndNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
+	msg.Metadata.PutValue("END_NODE", "true")
 	ctx.TellSuccess(msg)
 }
 
