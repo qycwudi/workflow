@@ -106,7 +106,6 @@ func (n *DataSourceDatabaseNode) processSQLAndParams(msgData map[string]interfac
 			continue
 		}
 		args = append(args, val)
-
 	}
 
 	// 替换剩余的${xxx}为?
