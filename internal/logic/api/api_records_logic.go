@@ -42,11 +42,12 @@ func (l *ApiRecordsLogic) ApiRecords(req *types.ApiRecordsRequest) (resp *types.
 
 	lists := make([]types.ApiRecords, len(apiRecords))
 	for i, record := range apiRecords {
-		paramMap := make(map[string]interface{})
+		// 处理多层嵌套的 JSON 数据
+		var paramMap interface{}
 		_ = json.Unmarshal([]byte(record.Param), &paramMap)
-		extendMap := make(map[string]interface{})
+		var extendMap interface{}
 		_ = json.Unmarshal([]byte(record.Extend), &extendMap)
-		// 美化 Param 和 Extend 字段的 JSON
+		// 美化 Param 和 Extend 字段的 JSON,支持多层嵌套
 		paramJson, _ := json.MarshalIndent(paramMap, "", "  ")
 		extendJson, _ := json.MarshalIndent(extendMap, "", "  ")
 
