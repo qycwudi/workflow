@@ -42,9 +42,13 @@ func (l *ApiRecordsLogic) ApiRecords(req *types.ApiRecordsRequest) (resp *types.
 
 	lists := make([]types.ApiRecords, len(apiRecords))
 	for i, record := range apiRecords {
+		paramMap := make(map[string]interface{})
+		_ = json.Unmarshal([]byte(record.Param), &paramMap)
+		extendMap := make(map[string]interface{})
+		_ = json.Unmarshal([]byte(record.Extend), &extendMap)
 		// 美化 Param 和 Extend 字段的 JSON
-		paramJson, _ := json.MarshalIndent(record.Param, "", "  ")
-		extendJson, _ := json.MarshalIndent(record.Extend, "", "  ")
+		paramJson, _ := json.MarshalIndent(paramMap, "", "  ")
+		extendJson, _ := json.MarshalIndent(extendMap, "", "  ")
 
 		lists[i] = types.ApiRecords{
 			ApiId:    record.ApiId,
