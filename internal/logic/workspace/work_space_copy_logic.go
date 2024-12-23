@@ -40,9 +40,14 @@ func (l *WorkSpaceCopyLogic) WorkSpaceCopy(req *types.WorkSpaceCopyRequest) (res
 		return nil, errors.New(int(logic.SystemStoreError), "查询空间失败")
 	}
 
+	workspaceName := req.Name
+	if workspaceName == "" {
+		workspaceName = fmt.Sprintf("%s-副本", oldWorkspace.WorkspaceName)
+	}
+
 	newWorkspace := &model.Workspace{
 		WorkspaceId:    xid.New().String(),
-		WorkspaceName:  fmt.Sprintf("%s-副本", oldWorkspace.WorkspaceName),
+		WorkspaceName:  workspaceName,
 		WorkspaceDesc:  oldWorkspace.WorkspaceDesc,
 		WorkspaceType:  oldWorkspace.WorkspaceType,
 		WorkspaceIcon:  oldWorkspace.WorkspaceIcon,
