@@ -24,6 +24,7 @@ type (
 	}
 
 	PageListBuilder struct {
+		Name   string
 		Type   string
 		Status string
 		Switch int64
@@ -44,6 +45,10 @@ func (m *defaultDatasourceModel) FindDataSourcePageList(ctx context.Context, par
 	// 构建查询条件
 	conditions := make([]string, 0)
 	args := make([]interface{}, 0)
+	if param.Name != "" {
+		conditions = append(conditions, "name like ?")
+		args = append(args, "%"+param.Name+"%")
+	}
 
 	if param.Type != "" {
 		conditions = append(conditions, "type = ?")

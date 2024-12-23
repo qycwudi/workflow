@@ -29,6 +29,7 @@ func NewDatasourceListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Da
 func (l *DatasourceListLogic) DatasourceList(req *types.DatasourceListRequest) (resp *types.DatasourceListResponse, err error) {
 	// 查询
 	param := model.PageListBuilder{
+		Name:   req.Name,
 		Type:   req.Type,
 		Status: req.Status,
 		Switch: int64(req.Switch),
