@@ -47,7 +47,8 @@ func (l *ApiRecordsLogic) ApiRecords(req *types.ApiRecordsRequest) (resp *types.
 		_ = json.Unmarshal([]byte(record.Param), &paramMap)
 		var extendMap interface{}
 		_ = json.Unmarshal([]byte(record.Extend), &extendMap)
-		// 美化 Param 和 Extend 字段的 JSON,支持多层嵌套
+
+		// 美化 JSON 输出
 		paramJson, _ := json.MarshalIndent(paramMap, "", "  ")
 		extendJson, _ := json.MarshalIndent(extendMap, "", "  ")
 

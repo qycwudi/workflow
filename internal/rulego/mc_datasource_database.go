@@ -9,6 +9,7 @@ import (
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
 	"github.com/rulego/rulego/utils/json"
+	str "github.com/rulego/rulego/utils/str"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/datasource"
@@ -66,7 +67,7 @@ func (n *DataSourceDatabaseNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg)
 		return
 	}
 
-	logx.Debugf("sql:%s,args:%+v", sql, args)
+	logx.Infof("sql:%s,args:%+v", sql, args)
 
 	// 执行SQL
 	if err := n.executeSQL(ctx, msg, sql, args); err != nil {
@@ -98,15 +99,14 @@ func (n *DataSourceDatabaseNode) processSQLAndParams(msgData map[string]interfac
 	// 处理参数
 	for _, match := range matches {
 		placeholder := match[0]
-		paramName := n.Config.DatasourceParamMapper[placeholder]
-		if val, ok := msgData[paramName]; ok {
-			// 检查是否是表名参数
-			if isTableNameParam(sql, placeholder) {
-				sql = replaceTableName(sql, placeholder, val.(string))
-				continue
-			}
-			args = append(args, val)
+		val := str.ExecuteTemplate(placeholder, msgData)
+		// 检查是否是表名参数
+		if isTableNameParam(sql, placeholder) {
+			sql = replaceTableName(sql, placeholder, val)
+			continue
 		}
+		args = append(args, val)
+
 	}
 
 	// 替换剩余的${xxx}为?
