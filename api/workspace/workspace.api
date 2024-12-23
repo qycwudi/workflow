@@ -68,7 +68,7 @@ type WorkSpaceEditTagResponse {
 }
 
 type TagListRequest {
-    TagName string `json:"tagName,optional"`
+    Name string `json:"name,optional"`
 }
 
 type TagListResponse {

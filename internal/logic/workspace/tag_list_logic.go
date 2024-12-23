@@ -26,7 +26,7 @@ func NewTagListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TagListLo
 }
 
 func (l *TagListLogic) TagList(req *types.TagListRequest) (resp *types.TagListResponse, err error) {
-	tagList, err := l.svcCtx.WorkSpaceTagModel.FindAllByName(l.ctx, req.TagName)
+	tagList, err := l.svcCtx.WorkSpaceTagModel.FindAllByName(l.ctx, req.Name)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询标签列表失败")
 	}
