@@ -38,9 +38,9 @@ func (c customWorkspaceTagModel) FindAll(ctx context.Context) ([]*WorkspaceTag, 
 }
 
 func (c customWorkspaceTagModel) FindAllByName(ctx context.Context, tagName string) ([]*WorkspaceTag, error) {
-	query := fmt.Sprintf("select %s from %s where `tag_name` = ? limit 1", workspaceTagRows, c.table)
+	query := fmt.Sprintf("select %s from %s where `tag_name` like ? limit 1", workspaceTagRows, c.table)
 	var resp []*WorkspaceTag
-	err := c.conn.QueryRowsCtx(ctx, &resp, query, tagName)
+	err := c.conn.QueryRowsCtx(ctx, &resp, query, "%"+tagName+"%")
 	switch err {
 	case nil:
 		return resp, nil
