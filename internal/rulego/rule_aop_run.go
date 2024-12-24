@@ -1,7 +1,6 @@
 package rulego
 
 import (
-	"encoding/json"
 	"time"
 
 	"github.com/rulego/rulego/api/types"
@@ -40,11 +39,10 @@ func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) (types.Rul
 	} else {
 		// API 调用
 		logx.Infof("API START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
-		msgMar, _ := json.Marshal(msg)
 		_, err := RoleChain.svc.ApiRecordModel.Insert(ctx.GetContext(), &model.ApiRecord{
 			Status:     enums.RecordStatusRunning,
 			TraceId:    msg.Id,
-			Param:      string(msgMar),
+			Param:      msg.Data,
 			Extend:     "{}",
 			CallTime:   time.Now(),
 			ApiId:      msg.Metadata["api_id"],
@@ -85,8 +83,7 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		}
 	} else {
 		logx.Infof("API END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
-		result, _ := json.Marshal(msg)
-		err = RoleChain.svc.ApiRecordModel.UpdateStatusAndResultByTraceId(ctx.GetContext(), msg.Id, status, string(result), errMsg)
+		err = RoleChain.svc.ApiRecordModel.UpdateStatusAndResultByTraceId(ctx.GetContext(), msg.Id, status, msg.Data, errMsg)
 		if err != nil {
 			logx.Errorf("update api record status err:%s", err.Error())
 			ctx.TellFailure(msg, err)

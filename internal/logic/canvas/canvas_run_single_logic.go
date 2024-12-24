@@ -65,7 +65,7 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 				metadata[k] = v.String()
 			}
 		}
-		dataValue := gjson.Get(trace.Input, "data")
+		dataValue := gjson.Get(trace.Input, "msg")
 		if dataValue.Exists() {
 			data = dataValue.String()
 		}

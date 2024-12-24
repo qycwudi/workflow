@@ -50,8 +50,14 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 	}
 
 	start := time.Now() // 记录开始时间
+	inputMap := make(map[string]interface{})
+	var inMsgData interface{}
+	_ = json.Unmarshal([]byte(msg.Data), &inMsgData)
+	inputMap["msg"] = inMsgData
+	inputMap["metadata"] = msg.Metadata
+	inputMap["msgType"] = msg.Type
 	// input
-	inputMar, _ := json.MarshalIndent(msg, "", "    ")
+	inputMar, _ := json.MarshalIndent(inputMap, "", "    ")
 	// logic
 	logicMar, _ := json.MarshalIndent(ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Configuration, "", "    ")
 
@@ -75,8 +81,14 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 	ctx.Self().OnMsg(ctx, msg)
 	elapsed := time.Since(start) // 计算耗时 微秒
 
+	outputMap := make(map[string]interface{})
+	var outMsgData interface{}
+	_ = json.Unmarshal([]byte(msg.Data), &outMsgData)
+	outputMap["msg"] = outMsgData
+	outputMap["metadata"] = msg.Metadata
+	outputMap["msgType"] = msg.Type
 	// output
-	outputMar, _ := json.MarshalIndent(ctx.GetContext().Value(nodeIdKey(ctx.RuleChain().GetNodeId().Id)), "", "    ")
+	outputMar, _ := json.MarshalIndent(outputMap, "", "    ")
 	// 更新追踪
 	traceQueue <- &model.Trace{
 		TraceId:     msg.Id,
