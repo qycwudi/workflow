@@ -2,14 +2,14 @@ package canvas
 
 import (
 	"context"
-	"github.com/rulego/rulego/utils/json"
-	"github.com/zeromicro/x/errors"
-	"workflow/internal/logic"
 
+	"github.com/rulego/rulego/utils/json"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type CanvasDetailLogic struct {
@@ -29,6 +29,11 @@ func NewCanvasDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Canv
 func (l *CanvasDetailLogic) CanvasDetail(req *types.CanvasDetailRequest) (resp *types.CanvasDetailResponse, err error) {
 	resp = &types.CanvasDetailResponse{}
 
+	workspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceId(l.ctx, req.Id)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "查询工作空间失败")
+	}
+
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
@@ -40,5 +45,6 @@ func (l *CanvasDetailLogic) CanvasDetail(req *types.CanvasDetailRequest) (resp *
 	}
 	resp.Id = req.Id
 	resp.Graph = draft
+	resp.Name = workspace.WorkspaceName
 	return resp, nil
 }

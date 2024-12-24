@@ -51,7 +51,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	// 读取 data
 	data, err := l.readData(gjson.Parse(canvas.Draft))
 	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "读取 data 失败")
+		return nil, errors.New(int(logic.SystemError), "读取入参错误:"+err.Error())
 	}
 
 	// 运行文件
@@ -89,7 +89,11 @@ func (l *CanvasRunLogic) readData(result gjson.Result) (string, error) {
 	for _, node := range nodes {
 		if node.Get("data.type").String() == "start" {
 			param := node.Get("data.custom.param").String()
-			return param, nil
+			var data interface{}
+			if err := json.Unmarshal([]byte(param), &data); err == nil {
+				return param, nil
+			}
+			return "", errors.New(int(logic.SystemError), "输入不是 JSON 格式")
 		}
 	}
 	return "", errors.New(int(logic.SystemError), "未找到开始节点")

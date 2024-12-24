@@ -223,6 +223,7 @@ type CanvasDetailRequest struct {
 
 type CanvasDetailResponse struct {
 	Id    string                 `json:"id"`
+	Name  string                 `json:"name"`
 	Graph map[string]interface{} `json:"graph"`
 }
 
