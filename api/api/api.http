@@ -63,18 +63,14 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://127.0.0.1:8889/api/role/v1/ctkq83d3sjthl48em2pg
+POST http://127.0.0.1:8889/api/role/v1/ctl4m0t3sjtkr9cvi3eg
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer d3ca012018be45558036732e681dc97d
+Authorization: Bearer 051d029fcb6241deb9a7a32c41e07e39
 
 {
-  "data":
-  {
-    "name": "屋里",
-    "age": 29,
-    "tableName":"users"
-  }
+    "name": "张三",
+    "age": 10
 }
 
 ### API调用-单结构
