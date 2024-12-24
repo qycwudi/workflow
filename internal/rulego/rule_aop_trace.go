@@ -29,10 +29,30 @@ type TraceAop struct {
 
 // Around 计算耗时
 func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relationType string) (types.RuleMsg, bool) {
-	// 检查请求是否被取消
+	// 1. 检查请求是否被取消
+	if canceled := aspect.checkRequestCanceled(ctx, msg); canceled {
+		return msg, false
+	}
+
+	// 2. 记录开始时间并准备初始追踪数据
+	start := time.Now()
+	trace := aspect.prepareInitialTrace(ctx, msg)
+	traceQueue <- &trace
+
+	// 3. 执行当前节点
+	ctx.Self().OnMsg(ctx, msg)
+	elapsed := time.Since(start)
+
+	// 4. 更新追踪结果
+	aspect.updateTraceResult(ctx, msg, elapsed)
+
+	return msg, false
+}
+
+// 检查请求是否被取消
+func (aspect *TraceAop) checkRequestCanceled(ctx types.RuleContext, msg types.RuleMsg) bool {
 	select {
 	case <-ctx.GetContext().Done():
-		// 请求已被取消,记录取消状态并返回
 		trace := model.Trace{
 			TraceId:   msg.Id,
 			Output:    "{}",
@@ -45,24 +65,27 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 		}
 		traceQueue <- &trace
 		logx.Debugf("request canceled,trace:%+v", trace)
-		return msg, false
+		return true
 	default:
+		return false
 	}
+}
 
-	start := time.Now() // 记录开始时间
+// 准备初始追踪数据
+func (aspect *TraceAop) prepareInitialTrace(ctx types.RuleContext, msg types.RuleMsg) model.Trace {
+	// 准备输入数据
 	inputMap := make(map[string]interface{})
 	var inMsgData interface{}
 	_ = json.Unmarshal([]byte(msg.Data), &inMsgData)
 	inputMap["msg"] = inMsgData
 	inputMap["metadata"] = msg.Metadata
 	inputMap["msgType"] = msg.Type
-	// input
 	inputMar, _ := json.MarshalIndent(inputMap, "", "    ")
-	// logic
+
+	// 准备逻辑数据
 	logicMar, _ := json.MarshalIndent(ctx.Self().(*engine.RuleNodeCtx).SelfDefinition.Configuration, "", "    ")
 
-	// 新增追踪 todo 加开关
-	trace := model.Trace{
+	return model.Trace{
 		WorkspaceId: ctx.RuleChain().GetNodeId().Id,
 		TraceId:     msg.Id,
 		Input:       string(inputMar),
@@ -75,21 +98,21 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 		ElapsedTime: 0,
 		StartTime:   time.Now(),
 	}
-	traceQueue <- &trace
+}
 
-	// 执行当前节点
-	ctx.Self().OnMsg(ctx, msg)
-	elapsed := time.Since(start) // 计算耗时 微秒
-
+// 更新追踪结果
+func (aspect *TraceAop) updateTraceResult(ctx types.RuleContext, msg types.RuleMsg, elapsed time.Duration) {
 	outputMap := make(map[string]interface{})
+	resultMsg := ctx.GetContext().Value(nodeIdKey(ctx.RuleChain().GetNodeId().Id)).(types.RuleMsg)
+
 	var outMsgData interface{}
-	_ = json.Unmarshal([]byte(msg.Data), &outMsgData)
+	_ = json.Unmarshal([]byte(resultMsg.Data), &outMsgData)
 	outputMap["msg"] = outMsgData
-	outputMap["metadata"] = msg.Metadata
-	outputMap["msgType"] = msg.Type
-	// output
+	outputMap["metadata"] = resultMsg.Metadata
+	outputMap["msgType"] = resultMsg.Type
+
 	outputMar, _ := json.MarshalIndent(outputMap, "", "    ")
-	// 更新追踪
+
 	traceQueue <- &model.Trace{
 		TraceId:     msg.Id,
 		NodeId:      ctx.Self().GetNodeId().Id,
@@ -98,7 +121,6 @@ func (aspect *TraceAop) Around(ctx types.RuleContext, msg types.RuleMsg, relatio
 		Status:      enums.TraceStatusFinish,
 		ErrorMsg:    msg.Metadata["error"],
 	}
-	return msg, false
 }
 
 type nodeIdKey string
