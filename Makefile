@@ -29,7 +29,7 @@ setenv:
 	$(eval ImageRegistryPassword:=$(or $(HARBOR_PASSWORD),Harbor12345))
 	$(eval ImageRegistryUrl:=$(or $(REGISTRY_URL),10.12.0.78:5000))
 	$(eval ImageID:=$(ImageRegistryUrl)/middleware-$(Stage)/workflow:$(Version)-$(CommitID))
-	$(call set,ImageID,$(Stage),release,$(ImageRegistryUrl)/middleware-$(Version)/workflow:$(MinaVersion)-beta-$(CommitID))
+	$(call set,ImageID,$(Stage),release,$(ImageRegistryUrl)/middleware-$(Version)/workflow:$(MinaVersion)-beta-$(CommitID)-arm)
 
 .PHONY: gogogo
 gogogo:setenv
@@ -41,5 +41,5 @@ gogogo:setenv
 	--output type=image,registry.insecure=true,name=$(ImageID),push=true \
 	--allow security.insecure \
 	--opt filename=Dockerfile \
-	--opt platform=linux/amd64 \
+	--opt platform=linux/arm64 \
 	--opt build-arg:flags=$(Flags)
