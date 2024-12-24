@@ -12,7 +12,9 @@ import (
 	"github.com/pkg/sftp"
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
+	"github.com/rulego/rulego/components/base"
 	"github.com/rulego/rulego/utils/json"
+	str "github.com/rulego/rulego/utils/str"
 	"golang.org/x/crypto/ssh"
 
 	"workflow/internal/datasource"
@@ -76,7 +78,12 @@ func (n *FileServerNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 		return
 	}
 
-	tmpPath := n.getTempPath(data)
+	evn := base.NodeUtils.GetEvnAndMetadata(ctx, msg)
+	// 替换路径变量
+	destPath := str.NewTemplate(n.Config.DestPath).Execute(evn)
+	n.Config.DestPath = destPath
+	data["absPath"] = destPath
+	tmpPath := str.NewTemplate(n.getTempPath(data)).Execute(evn)
 	data["tmpPath"] = tmpPath
 
 	if err := n.processFile(tmpPath, config); err != nil {

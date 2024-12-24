@@ -54,7 +54,7 @@ func (n *DataSourceDatabaseNode) Init(ruleConfig types.Config, configuration typ
 // OnMsg 处理消息
 func (n *DataSourceDatabaseNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 	// 解析消息参数
-	msgData, err := parseMessageData(msg.Data)
+	msgData, err := parseMessageData(msg.Data, msg.Metadata)
 	if err != nil {
 		ctx.TellFailure(msg, err)
 		return
@@ -79,12 +79,17 @@ func (n *DataSourceDatabaseNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg)
 func (n *DataSourceDatabaseNode) Destroy() {}
 
 // 解析消息数据为map
-func parseMessageData(data string) (map[string]interface{}, error) {
+func parseMessageData(data string, metadata map[string]string) (map[string]interface{}, error) {
 	msgData := make(map[string]interface{})
 	if err := json.Unmarshal([]byte(data), &msgData); err != nil {
 		return nil, err
 	}
-	return msgData, nil
+	env := make(map[string]interface{})
+	// 添加metadata到msgData
+	env["metadata"] = metadata
+	// 添加msgData到msgData
+	env["msg"] = msgData
+	return env, nil
 }
 
 // 处理SQL语句和参数

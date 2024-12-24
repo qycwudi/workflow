@@ -76,6 +76,7 @@ type HttpXmlCallNode struct {
 	httpClient *http.Client
 
 	urlTemplate     str.Template
+	paramTemplate   str.Template
 	headersTemplate map[str.Template]str.Template
 	hasVar          bool
 }
@@ -111,16 +112,15 @@ func (x *HttpXmlCallNode) Init(ruleConfig types.Config, configuration types.Conf
 
 		x.httpClient = NewHttpXmlClient(x.Config)
 		x.urlTemplate = str.NewTemplate(x.Config.RestEndpointUrlPattern)
-
+		x.paramTemplate = str.NewTemplate(x.Config.XmlParam)
 		var headerTemplates = make(map[str.Template]str.Template)
 		for key, value := range x.Config.Headers {
 			keyTmpl := str.NewTemplate(key)
 			valueTmpl := str.NewTemplate(value)
 			headerTemplates[keyTmpl] = valueTmpl
-			if !keyTmpl.IsNotVar() || !valueTmpl.IsNotVar() {
-				x.hasVar = true
-			}
 		}
+		// xml默认开启变量替换
+		x.hasVar = true
 		x.headersTemplate = headerTemplates
 	}
 	return err
@@ -149,12 +149,12 @@ func (x *HttpXmlCallNode) OnMsg(ctx types.RuleContext, msg types.RuleMsg) {
 
 // prepareRequest 准备HTTP请求
 func (x *HttpXmlCallNode) prepareRequest(ctx types.RuleContext, msg types.RuleMsg) (*http.Request, error) {
-	param := replaceXmlTemplateVars(x.Config.XmlParam, msg.Data)
 	var evn map[string]interface{}
 	if !x.urlTemplate.IsNotVar() || x.hasVar {
 		evn = base.NodeUtils.GetEvnAndMetadata(ctx, msg)
 	}
 	endpointUrl := x.urlTemplate.Execute(evn)
+	param := x.paramTemplate.Execute(evn)
 	msg.Data = param
 	req, err := x.createRequest(endpointUrl, msg)
 	if err != nil {
