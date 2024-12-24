@@ -100,7 +100,7 @@ func (n *FileServerNode) getTempPath(data map[string]interface{}) string {
 	if tmp, ok := data["tmpPath"]; ok {
 		return tmp.(string)
 	}
-	return filepath.Join(fmt.Sprintf("./file-server-%s", time.Now().Format("20060102150405")), filepath.Base(n.Config.DestPath))
+	return filepath.Join(fmt.Sprintf("./file-server/%s", time.Now().Format("20060102150405")), filepath.Base(n.Config.DestPath))
 }
 
 func (n *FileServerNode) processFile(tmpPath string, config datasource.FileServerConfig) error {
