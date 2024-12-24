@@ -105,6 +105,7 @@ type CanvasDetailRequest {
 
 type CanvasDetailResponse {
 	Id    string                 `json:"id"`
+	Name  string                 `json:"name"`
 	Graph map[string]interface{} `json:"graph"`
 }
 
