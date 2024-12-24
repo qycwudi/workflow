@@ -3,7 +3,6 @@ package rulego
 import (
 	"fmt"
 	"log"
-	"os"
 	"testing"
 
 	"github.com/jlaffaye/ftp"
@@ -13,12 +12,12 @@ import (
 
 func TestFileServerNode_ProcessFile(t *testing.T) {
 	// 创建测试文件
-	testContent := []byte("test content")
-	err := os.WriteFile("./testdata/test.txt", testContent, 0644)
-	if err != nil {
-		t.Fatalf("创建测试文件失败: %v", err)
-	}
-	defer os.Remove("./testdata/test.txt")
+	// testContent := []byte("test content")
+	// err := os.WriteFile("./testdata/test.txt", testContent, 0644)
+	// if err != nil {
+	// 	t.Fatalf("创建测试文件失败: %v", err)
+	// }
+	// defer os.Remove("./testdata/test.txt")
 
 	tests := []struct {
 		name    string
@@ -28,19 +27,19 @@ func TestFileServerNode_ProcessFile(t *testing.T) {
 		dstPath string
 		wantErr bool
 	}{
-		{
-			name: "SFTP上传测试",
-			config: datasource.FileServerConfig{
-				Protocol: "sftp",
-				Host:     "10.99.169.7",
-				Port:     2233,
-				Username: "beuser",
-				Password: "Bepassword@123",
-			},
-			action:  "upload",
-			srcPath: "./testdata/test.txt",
-			dstPath: "/xuetu/test.txt",
-		},
+		// {
+		// 	name: "SFTP上传测试",
+		// 	config: datasource.FileServerConfig{
+		// 		Protocol: "sftp",
+		// 		Host:     "10.99.169.7",
+		// 		Port:     2233,
+		// 		Username: "beuser",
+		// 		Password: "Bepassword@123",
+		// 	},
+		// 	action:  "upload",
+		// 	srcPath: "./testdata/test.txt",
+		// 	dstPath: "/xuetu/test.txt",
+		// },
 		// {
 		// 	name: "SFTP下载测试",
 		// 	config: datasource.FileServerConfig{
@@ -54,18 +53,18 @@ func TestFileServerNode_ProcessFile(t *testing.T) {
 		// 	srcPath: "/tmp/test.txt",
 		// 	dstPath: "./testdata/test_download.txt",
 		// },
-		// {
-		// 	name: "SFTP删除测试",
-		// 	config: datasource.FileServerConfig{
-		// 		Protocol: "sftp",
-		// 		Host:     "10.99.169.7",
-		// 		Port:     2233,
-		// 		Username: "beuser",
-		// 		Password: "Bepassword@123",
-		// 	},
-		// 	action:  "delete",
-		// 	srcPath: "/tmp/test.txt",
-		// },
+		{
+			name: "FTP删除测试",
+			config: datasource.FileServerConfig{
+				Protocol: "ftp",
+				Host:     "10.99.113.114",
+				Port:     21,
+				Username: "test",
+				Password: "test",
+			},
+			action:  "delete",
+			srcPath: "/tmp/tmp-1/a.csv",
+		},
 		// {
 		// 	name: "FTP上传测试",
 		// 	config: datasource.FileServerConfig{

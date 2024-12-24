@@ -2,6 +2,7 @@ package datasource
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
@@ -48,6 +49,15 @@ func (l *DatasourceListLogic) DatasourceList(req *types.DatasourceListRequest) (
 	// 转换数据
 	var datasourceList []types.DatasourceInfo
 	for _, item := range list {
+		// 读取 item.Config 中的的 password
+		config := make(map[string]string)
+		_ = json.Unmarshal([]byte(item.Config), &config)
+		_, ok := config["password"]
+		if ok {
+			config["password"] = "******"
+		}
+		json, _ := json.Marshal(config)
+		item.Config = string(json)
 		datasourceList = append(datasourceList, types.DatasourceInfo{
 			Id:     int(item.Id),
 			Name:   item.Name,
