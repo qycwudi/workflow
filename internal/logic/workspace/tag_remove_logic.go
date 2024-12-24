@@ -8,7 +8,6 @@ import (
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/logic"
-	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -28,12 +27,17 @@ func NewTagRemoveLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TagRemo
 }
 
 func (l *TagRemoveLogic) TagRemove(req *types.TagRemoveRequest) (resp *types.TagRemoveResponse, err error) {
+	tag, err := l.svcCtx.WorkSpaceTagModel.FindOne(l.ctx, req.Id)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "标签不存在")
+	}
+	if tag.IsDelete == 1 {
+		return nil, errors.New(int(logic.SystemOrmError), "标签已删除")
+	}
 	// 逻辑删除
-	err = l.svcCtx.WorkSpaceTagModel.Update(l.ctx, &model.WorkspaceTag{
-		Id:         req.Id,
-		IsDelete:   1,
-		UpdateTime: time.Now(),
-	})
+	tag.IsDelete = 1
+	tag.UpdateTime = time.Now()
+	err = l.svcCtx.WorkSpaceTagModel.Update(l.ctx, tag)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "删除标签失败")
 	}

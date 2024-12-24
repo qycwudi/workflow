@@ -89,8 +89,7 @@ type TagEditResponse struct {
 }
 
 type TagRemoveRequest struct {
-	Id   int64  `json:"id"`
-	Name string `json:"name"`
+	Id int64 `json:"id"`
 }
 
 type TagRemoveResponse struct {

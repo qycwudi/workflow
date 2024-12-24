@@ -8,7 +8,6 @@ import (
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/logic"
-	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -28,12 +27,20 @@ func NewTagEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *TagEditLo
 }
 
 func (l *TagEditLogic) TagEdit(req *types.TagEditRequest) (resp *types.TagEditResponse, err error) {
+	if req.Name == "" {
+		return nil, errors.New(int(logic.SystemOrmError), "标签名称不能为空")
+	}
 	// 编辑名称
-	err = l.svcCtx.WorkSpaceTagModel.Update(l.ctx, &model.WorkspaceTag{
-		Id:         req.Id,
-		TagName:    req.Name,
-		UpdateTime: time.Now(),
-	})
+	tag, err := l.svcCtx.WorkSpaceTagModel.FindOne(l.ctx, req.Id)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "标签不存在")
+	}
+	if tag.TagName == req.Name {
+		return nil, errors.New(int(logic.SystemOrmError), "标签名称相同")
+	}
+	tag.TagName = req.Name
+	tag.UpdateTime = time.Now()
+	err = l.svcCtx.WorkSpaceTagModel.Update(l.ctx, tag)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "修改标签失败")
 	}
