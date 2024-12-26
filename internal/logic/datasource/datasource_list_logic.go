@@ -50,7 +50,7 @@ func (l *DatasourceListLogic) DatasourceList(req *types.DatasourceListRequest) (
 	var datasourceList []types.DatasourceInfo
 	for _, item := range list {
 		// 读取 item.Config 中的的 password
-		config := make(map[string]string)
+		config := make(map[string]interface{})
 		_ = json.Unmarshal([]byte(item.Config), &config)
 		_, ok := config["password"]
 		if ok {
