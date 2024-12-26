@@ -4,12 +4,15 @@ import (
 	"context"
 	"database/sql"
 	"errors"
+	"fmt"
+	"time"
 
 	_ "github.com/denisenkom/go-mssqldb"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/uptrace/bun"
 	"github.com/uptrace/bun/dialect/mssqldialect"
 	"github.com/uptrace/bun/dialect/mysqldialect"
+	"github.com/uptrace/bun/dialect/oracledialect"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/enum"
@@ -84,12 +87,23 @@ func (manager *DataSourceManager) addDataSource(id int64, config string, dbType 
 	if err != nil {
 		return err
 	}
+	// 设置连接超时时间为3秒
+	ctx, cancel := context.WithTimeout(context.Background(), 3*time.Second)
+	defer cancel()
+
 	// 测试连接
-	err = sqlDB.Ping()
+	err = sqlDB.PingContext(ctx)
 	if err != nil {
+		if ctx.Err() == context.DeadlineExceeded {
+			return fmt.Errorf("database connection timeout (3 seconds)")
+		}
 		return err
 	}
-
+	// 中型应用
+	sqlDB.SetMaxOpenConns(25)
+	sqlDB.SetMaxIdleConns(10)
+	sqlDB.SetConnMaxLifetime(time.Hour)
+	sqlDB.SetConnMaxIdleTime(time.Minute * 30)
 	var bunDB *bun.DB
 	switch dbType {
 	case enum.MysqlType:
@@ -97,7 +111,7 @@ func (manager *DataSourceManager) addDataSource(id int64, config string, dbType 
 	case enum.SqlServerType:
 		bunDB = bun.NewDB(sqlDB, mssqldialect.New())
 	case enum.OracleType:
-		bunDB = bun.NewDB(sqlDB, mssqldialect.New())
+		bunDB = bun.NewDB(sqlDB, oracledialect.New())
 	default:
 		return errors.New("unsupported database type")
 	}
@@ -117,6 +131,7 @@ func (manager *DataSourceManager) UpdateDataSource(id int64, config, dbType, has
 	// 关闭旧连接
 	if oldDB, exists := manager.dbs[id]; exists {
 		if err := oldDB.Close(); err != nil {
+			logx.Errorf("close old datasource failed: %v", err)
 			return err
 		}
 		delete(manager.dbs, id)
@@ -124,6 +139,7 @@ func (manager *DataSourceManager) UpdateDataSource(id int64, config, dbType, has
 
 	// 创建新连接
 	if err := manager.addDataSource(id, config, enum.DBType(dbType)); err != nil {
+		logx.Errorf("create new datasource failed: %v", err)
 		return err
 	}
 

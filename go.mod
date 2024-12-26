@@ -23,6 +23,7 @@ require (
 	github.com/uptrace/bun v1.2.6
 	github.com/uptrace/bun/dialect/mssqldialect v1.2.6
 	github.com/uptrace/bun/dialect/mysqldialect v1.2.6
+	github.com/uptrace/bun/dialect/oracledialect v1.2.6
 	github.com/zeromicro/go-zero v1.7.2
 	github.com/zeromicro/x v0.0.0-20240408115609-8224c482b07e
 	golang.org/x/crypto v0.31.0

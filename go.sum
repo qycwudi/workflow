@@ -308,6 +308,8 @@ github.com/uptrace/bun/dialect/mssqldialect v1.2.6 h1:Hae8Pc2yKnj2sfb7vjwWJ519OT
 github.com/uptrace/bun/dialect/mssqldialect v1.2.6/go.mod h1:+ZvA4AXjbrKVKO9E/PhzR09KFjLZV2C8aO9JPC9qXzc=
 github.com/uptrace/bun/dialect/mysqldialect v1.2.6 h1:ygoS0S7bQNoB6Gj4hz2DlkrZa12irsgCgOussvZLg1I=
 github.com/uptrace/bun/dialect/mysqldialect v1.2.6/go.mod h1:4exripyh2maGdH7E22RE5VTZO4ODNxh7XQV5XKQsO+Y=
+github.com/uptrace/bun/dialect/oracledialect v1.2.6 h1:+fn8fuXNz5CW769XIrLw4NluztqL83WrMCDDi6393D8=
+github.com/uptrace/bun/dialect/oracledialect v1.2.6/go.mod h1:rHtMqmXTf1nuxGQBaENu/0RWo50YotuS3WLhTcct/Kg=
 github.com/vmihailenco/msgpack/v5 v5.4.1 h1:cQriyiUvjTwOHg8QZaPihLWeRAAVoCpE00IUPn0Bjt8=
 github.com/vmihailenco/msgpack/v5 v5.4.1/go.mod h1:GaZTsDaehaPpQVyxrf5mtQlH+pc21PIudVV/E3rRQok=
 github.com/vmihailenco/tagparser/v2 v2.0.0 h1:y09buUbR+b5aycVFQs/g70pqKVZNBmxwAhO7/IwNM9g=
