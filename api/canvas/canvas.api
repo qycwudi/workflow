@@ -5,10 +5,10 @@ type CanvasRunRequest {
 }
 
 type CanvasRunResponse {
-	Ts       int64                  `json:"ts"`
-	Id       string                 `json:"id"`
-	MetaData map[string]string      `json:"metadata"`
-	Data     interface{} `json:"data"`
+	Ts       int64             `json:"ts"`
+	Id       string            `json:"id"`
+	MetaData map[string]string `json:"metadata"`
+	Data     interface{}       `json:"data"`
 }
 
 type CanvasRunSingleRequest {
@@ -17,10 +17,10 @@ type CanvasRunSingleRequest {
 }
 
 type CanvasRunSingleResponse {
-	Ts       int64                  `json:"ts"`
-	Id       string                 `json:"id"`
-	MetaData map[string]string      `json:"metadata"`
-	Data     interface{} `json:"data"`
+	Ts       int64             `json:"ts"`
+	Id       string            `json:"id"`
+	MetaData map[string]string `json:"metadata"`
+	Data     interface{}       `json:"data"`
 }
 
 type CanvasRunSingleDetailRequest {
@@ -29,12 +29,12 @@ type CanvasRunSingleDetailRequest {
 }
 
 type CanvasRunSingleDetailResponse {
-	NodeId    string                 `json:"nodeId"`
-	NodeName  string                 `json:"nodeName"`
-	StartTime int64                  `json:"startTime"`
-	Duration  int64                  `json:"duration"`
-	Status    string                 `json:"status"`
-	Error     string                 `json:"error"`
+	NodeId    string `json:"nodeId"`
+	NodeName  string `json:"nodeName"`
+	StartTime int64  `json:"startTime"`
+	Duration  int64  `json:"duration"`
+	Status    string `json:"status"`
+	Error     string `json:"error"`
 	Input     string `json:"input"`
 	Output    string `json:"output"`
 }
@@ -85,8 +85,9 @@ type (
 )
 
 type CanvasDraftRequest {
-	Id    string                 `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
+	Id     string                   `json:"id"`
+	Graph  map[string]interface{}   `json:"graph"`
+	GlobalParams []map[string]interface{} `json:"globalParams"`
 }
 
 type CanvasDraftResponse {
@@ -144,3 +145,4 @@ service workflow-api {
 	@handler getCanvasRunDetail
 	get /canvas/run/detail/:recordId (GetCanvasRunDetailReq) returns (GetCanvasRunDetailResp)
 }
+

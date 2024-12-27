@@ -4,8 +4,10 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
+	"mime/multipart"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -38,7 +40,9 @@ const (
 	acceptKey       = "Accept"
 	eventStreamMime = "text/event-stream"
 
-	jsonContentType = "application/json"
+	jsonContentType              = "application/json"
+	wwwFormUrlencodedContentType = "application/x-www-form-urlencoded"
+	formContentType              = "multipart/form-data"
 )
 
 // HttpCallNodeConfiguration rest配置
@@ -175,9 +179,19 @@ func (x *HttpCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*ht
 		return http.NewRequest(x.Config.RequestMethod, endpointUrl, nil)
 	}
 
-	reqBody, err := x.prepareRequestBody(msg)
-	if err != nil {
-		return nil, err
+	var reqBody []byte
+	var err error
+	contentType := x.Config.Headers[contentTypeKey]
+	if contentType == wwwFormUrlencodedContentType {
+		reqBody, err = x.prepareFormUrlEncodedRequestBody(msg)
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		reqBody, err = x.prepareRequestBody(msg)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return http.NewRequest(x.Config.RequestMethod, endpointUrl, bytes.NewReader(reqBody))
@@ -186,6 +200,90 @@ func (x *HttpCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*ht
 // prepareRequestBody 准备请求体
 func (x *HttpCallNode) prepareRequestBody(msg types.RuleMsg) ([]byte, error) {
 	return []byte(msg.Data), nil
+}
+
+func (x *HttpCallNode) prepareFormUrlEncodedRequestBody(msg types.RuleMsg) ([]byte, error) {
+	data := make(map[string]interface{})
+	err := json.Unmarshal([]byte(msg.Data), &data)
+	if err != nil {
+		return nil, err
+	}
+
+	form := url.Values{}
+	for key, value := range data {
+		switch v := value.(type) {
+		case string:
+			form.Add(key, v)
+		case float64:
+			form.Add(key, fmt.Sprintf("%v", v))
+		case int:
+			form.Add(key, fmt.Sprintf("%d", v))
+		case bool:
+			form.Add(key, fmt.Sprintf("%v", v))
+		case []interface{}:
+			// 处理数组
+			valueBytes, err := json.Marshal(v)
+			if err == nil {
+				form.Add(key, string(valueBytes))
+			}
+		case map[string]interface{}:
+			// 处理嵌套对象
+			valueBytes, err := json.Marshal(v)
+			if err == nil {
+				form.Add(key, string(valueBytes))
+			}
+		default:
+			// 其他类型转为 JSON 字符串
+			if valueBytes, err := json.Marshal(v); err == nil {
+				form.Add(key, string(valueBytes))
+			}
+		}
+	}
+
+	return []byte(form.Encode()), nil
+}
+
+func (x *HttpCallNode) prepareFormDataRequestBody(msg types.RuleMsg) ([]byte, string, error) {
+	data := make(map[string]interface{})
+	err := json.Unmarshal([]byte(msg.Data), &data)
+	if err != nil {
+		return nil, "", err
+	}
+
+	payload := &bytes.Buffer{}
+	form := multipart.NewWriter(payload)
+	for key, value := range data {
+		switch v := value.(type) {
+		case string:
+			_ = form.WriteField(key, v)
+		case float64:
+			_ = form.WriteField(key, fmt.Sprintf("%v", v))
+		case int:
+			_ = form.WriteField(key, fmt.Sprintf("%d", v))
+		case bool:
+			_ = form.WriteField(key, fmt.Sprintf("%v", v))
+		case []interface{}:
+			// 处理数组
+			valueBytes, err := json.Marshal(v)
+			if err == nil {
+				_ = form.WriteField(key, string(valueBytes))
+			}
+		case map[string]interface{}:
+			// 处理嵌套对象
+			valueBytes, err := json.Marshal(v)
+			if err == nil {
+				_ = form.WriteField(key, string(valueBytes))
+			}
+		default:
+			// 其他类型转为 JSON 字符串
+			if valueBytes, err := json.Marshal(v); err == nil {
+				_ = form.WriteField(key, string(valueBytes))
+			}
+		}
+	}
+
+	defer func() { _ = form.Close() }()
+	return payload.Bytes(), form.FormDataContentType(), nil
 }
 
 // setRequestHeaders 设置请求头

@@ -74,18 +74,18 @@ type ApiSecretKeyListRequest {
 }
 
 type ApiSecretKeyListResponse {
-	Current  int             `json:"current"`
-	PageSize int             `json:"pageSize"`
-	Total    int64           `json:"total"`
+	Current  int            `json:"current"`
+	PageSize int            `json:"pageSize"`
+	Total    int64          `json:"total"`
 	List     []ApiSecretKey `json:"list"`
 }
 
 type ApiSecretKey {
 	ApiId          string `json:"apiId"`
 	Name           string `json:"name"`
-	SecretKey     string `json:"secretKey"`
+	SecretKey      string `json:"secretKey"`
 	ExpirationTime string `json:"expirationTime"`
-	Status    string `json:"status" desc:"状态 ON OFF"`
+	Status         string `json:"status" desc:"状态 ON OFF"`
 }
 
 // 创建API密钥
