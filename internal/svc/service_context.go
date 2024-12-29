@@ -23,6 +23,7 @@ type ServiceContext struct {
 	DatasourceModel          model.DatasourceModel
 	LocksModel               model.LocksModel
 	RedisClient              redis.UniversalClient
+	UserModel                model.UserModel
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -49,5 +50,6 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		DatasourceModel:          model.NewDatasourceModel(conn),
 		LocksModel:               model.NewLocksModel(conn),
 		RedisClient:              redisClient,
+		UserModel:                model.NewUserModel(conn),
 	}
 }

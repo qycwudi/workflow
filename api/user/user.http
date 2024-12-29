@@ -1,0 +1,32 @@
+### 登录
+POST http://127.0.0.1:8888/workflow/user/login
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "name": "admin",
+  "password": "123456"
+} 
+
+### 退出登录
+POST http://127.0.0.1:8899/workflow/user/logout
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer 1ea00ca19d4f47b48c9ed8aec131674d
+
+### 获取用户信息
+POST http://127.0.0.1:8888/workflow/user/info
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU0NzM5OTgsImlhdCI6MTczNTQ3Mzk4OCwidXNlcklkIjoiMSJ9.AIBemx56i1L31GmcPySpoqPbL1j8jTMWBc4d5fxInrI
+
+### 用户注册
+POST http://127.0.0.1:8888/workflow/user/register
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU1NTk0MTcsImlhdCI6MTczNTQ3MzAxNywicGF5bG9hZCI6IjEifQ.y7oA3pRoqr_-ZWOeTMGopM20twPKo2eoNkxt8Jx7c8c
+
+{
+  "name": "admin-1",
+  "password": "123456"
+}

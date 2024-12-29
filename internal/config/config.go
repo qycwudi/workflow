@@ -12,6 +12,10 @@ type Config struct {
 	Redis               RedisConfig `json:"Redis"`
 	RuleServerLimitSize int         `json:"RuleServerLimitSize" default:"4"` // 规则链服务限制大小 单位 M
 	RuleServerTrace     bool        `json:"RuleServerTrace" default:"true"`  // 是否开启规则链服务追踪
+	Auth                struct {    // JWT 认证需要的密钥和过期时间配置
+		AccessSecret string
+		AccessExpire int64
+	}
 }
 
 type RedisConfig struct {

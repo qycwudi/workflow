@@ -1,0 +1,69 @@
+syntax = "v1"
+
+type UserLoginRequest {
+	Name string `json:"name"`
+	Password string `json:"password"`
+}
+
+type UserLoginResponse {
+	Token string `json:"token"`
+}
+
+type UserLogoutRequest {
+}
+
+type UserLogoutResponse {
+	Token string `json:"token"`
+}
+
+type UserInfoRequest {
+}
+
+type UserInfoResponse {
+	Id string `json:"id"`
+	Name string `json:"name"`
+}
+
+type UserRegisterRequest {
+	Name string `json:"name"`
+	Password string `json:"password"`
+}
+
+type UserRegisterResponse {
+	Token string `json:"token"`
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: user
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+)
+
+service workflow-api {
+	@doc "用户登录"
+	@handler UserLoginHandler
+	post /user/login (UserLoginRequest) returns (UserLoginResponse)
+
+    @doc "用户退出登录"
+	@handler UserLogoutHandler
+	post /user/logout (UserLogoutRequest) returns (UserLogoutResponse)
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: user
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+    jwt: Auth // 开启 jwt 认证
+)
+
+service workflow-api {
+	@doc "用户信息"
+	@handler UserInfoHandler
+	post /user/info (UserInfoRequest) returns (UserInfoResponse)
+
+    @doc "用户注册"
+	@handler UserRegisterHandler
+	post /user/register (UserRegisterRequest) returns (UserRegisterResponse)
+}

@@ -6,14 +6,15 @@ package handler
 import (
 	"net/http"
 
+	"github.com/zeromicro/go-zero/rest"
+
 	api "workflow/internal/handler/api"
 	canvas "workflow/internal/handler/canvas"
 	datasource "workflow/internal/handler/datasource"
 	model "workflow/internal/handler/model"
+	user "workflow/internal/handler/user"
 	workspace "workflow/internal/handler/workspace"
 	"workflow/internal/svc"
-
-	"github.com/zeromicro/go-zero/rest"
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
@@ -121,6 +122,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/canvas/run/single/detail",
 				Handler: canvas.CanvasRunSingleDetailHandler(serverCtx),
 			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/canvas/run/history/:workSpaceId",
+				Handler: canvas.GetCanvasRunHistoryHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodGet,
+				Path:    "/canvas/run/detail/:recordId",
+				Handler: canvas.GetCanvasRunDetailHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/workflow"),
 	)
@@ -128,31 +139,98 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
-				// 新增数据源
 				Method:  http.MethodPost,
-				Path:    "/datasource/add",
-				Handler: datasource.DatasourceAddHandler(serverCtx),
+				Path:    "/api/publish",
+				Handler: api.ApiPublishHandler(serverCtx),
 			},
 			{
-				// 删除数据源
 				Method:  http.MethodPost,
-				Path:    "/datasource/delete",
-				Handler: datasource.DatasourceDeleteHandler(serverCtx),
+				Path:    "/api/list",
+				Handler: api.ApiListHandler(serverCtx),
 			},
 			{
-				// 编辑数据源
 				Method:  http.MethodPost,
-				Path:    "/datasource/edit",
-				Handler: datasource.DatasourceEditHandler(serverCtx),
+				Path:    "/api/onoff",
+				Handler: api.ApiOnOffHandler(serverCtx),
 			},
 			{
-				// 数据源列表
+				Method:  http.MethodPost,
+				Path:    "/api/records",
+				Handler: api.ApiRecordsHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretkey/list",
+				Handler: api.ApiSecretKeyListHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretkey/create",
+				Handler: api.ApisecretKeyCreateHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretkey/update/status",
+				Handler: api.ApisecretKeyUpdateStatusHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretkey/update/expirationtime",
+				Handler: api.ApisecretKeyUpdateExpirationTimeHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/api/secretkey/delete",
+				Handler: api.ApisecretKeyDeleteHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				Method:  http.MethodPost,
+				Path:    "/user/login",
+				Handler: user.UserLoginHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/module/new",
+				Handler: model.ModuleNewHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/module/edit",
+				Handler: model.ModuleEditHandler(serverCtx),
+			},
+		},
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
 				Method:  http.MethodPost,
 				Path:    "/datasource/list",
 				Handler: datasource.DatasourceListHandler(serverCtx),
 			},
 			{
-				// 测试数据源
+				Method:  http.MethodPost,
+				Path:    "/datasource/add",
+				Handler: datasource.DatasourceAddHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/datasource/edit",
+				Handler: datasource.DatasourceEditHandler(serverCtx),
+			},
+			{
+				Method:  http.MethodPost,
+				Path:    "/datasource/delete",
+				Handler: datasource.DatasourceDeleteHandler(serverCtx),
+			},
+			{
 				Method:  http.MethodPost,
 				Path:    "/datasource/test",
 				Handler: datasource.DatasourceTestHandler(serverCtx),
@@ -164,22 +242,14 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
-				// 组件编辑
 				Method:  http.MethodPost,
-				Path:    "/module/edit",
-				Handler: model.ModuleEditHandler(serverCtx),
+				Path:    "/user/login",
+				Handler: user.UserLoginHandler(serverCtx),
 			},
 			{
-				// 组件list
 				Method:  http.MethodPost,
-				Path:    "/module/list",
-				Handler: model.ModuleListHandler(serverCtx),
-			},
-			{
-				// 组件新建
-				Method:  http.MethodPost,
-				Path:    "/module/new",
-				Handler: model.ModuleNewHandler(serverCtx),
+				Path:    "/user/logout",
+				Handler: user.UserLogoutHandler(serverCtx),
 			},
 		},
 		rest.WithPrefix("/workflow"),
@@ -188,66 +258,17 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
-				// Mock接口
 				Method:  http.MethodPost,
-				Path:    "/mock",
-				Handler: workspace.MockHandler(serverCtx),
+				Path:    "/user/info",
+				Handler: user.UserInfoHandler(serverCtx),
 			},
 			{
-				// 编辑标签
 				Method:  http.MethodPost,
-				Path:    "/tag/edit",
-				Handler: workspace.TagEditHandler(serverCtx),
-			},
-			{
-				// 列表tag
-				Method:  http.MethodPost,
-				Path:    "/tag/list",
-				Handler: workspace.TagListHandler(serverCtx),
-			},
-			{
-				// 删除标签
-				Method:  http.MethodPost,
-				Path:    "/tag/remove",
-				Handler: workspace.TagRemoveHandler(serverCtx),
-			},
-			{
-				// WorkspaceCopyHandler 画布复制
-				Method:  http.MethodPost,
-				Path:    "/workspace/copy",
-				Handler: workspace.WorkSpaceCopyHandler(serverCtx),
-			},
-			{
-				// 编辑workspace
-				Method:  http.MethodPost,
-				Path:    "/workspace/edit",
-				Handler: workspace.WorkSpaceEditHandler(serverCtx),
-			},
-			{
-				// 编辑workspace标签
-				Method:  http.MethodPost,
-				Path:    "/workspace/edit/tag",
-				Handler: workspace.WorkSpaceEditTagHandler(serverCtx),
-			},
-			{
-				// 列表workspace
-				Method:  http.MethodPost,
-				Path:    "/workspace/list",
-				Handler: workspace.WorkSpaceListHandler(serverCtx),
-			},
-			{
-				// 创建workspace
-				Method:  http.MethodPost,
-				Path:    "/workspace/new",
-				Handler: workspace.WorkSpaceNewHandler(serverCtx),
-			},
-			{
-				// 删除workspace
-				Method:  http.MethodPost,
-				Path:    "/workspace/remove",
-				Handler: workspace.WorkSpaceRemoveHandler(serverCtx),
+				Path:    "/user/register",
+				Handler: user.UserRegisterHandler(serverCtx),
 			},
 		},
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
 		rest.WithPrefix("/workflow"),
 	)
 }

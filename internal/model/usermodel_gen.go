@@ -26,7 +26,6 @@ type (
 	userModel interface {
 		Insert(ctx context.Context, data *User) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*User, error)
-		FindOneByMobile(ctx context.Context, mobile string) (*User, error)
 		FindOneByName(ctx context.Context, name sql.NullString) (*User, error)
 		Update(ctx context.Context, data *User) error
 		Delete(ctx context.Context, id int64) error
@@ -41,10 +40,6 @@ type (
 		Id       int64          `db:"id"`
 		Name     sql.NullString `db:"name"`     // The username
 		Password string         `db:"password"` // The user password
-		Mobile   string         `db:"mobile"`   // The mobile phone number
-		Gender   string         `db:"gender"`   // gender,male|female|unknown
-		Nickname string         `db:"nickname"` // The nickname
-		Type     int64          `db:"type"`     // The user type, 0:normal,1:vip, for test golang keyword
 		CreateAt sql.NullTime   `db:"create_at"`
 		UpdateAt time.Time      `db:"update_at"`
 	}
@@ -84,20 +79,6 @@ func (m *defaultUserModel) FindOne(ctx context.Context, id int64) (*User, error)
 	}
 }
 
-func (m *defaultUserModel) FindOneByMobile(ctx context.Context, mobile string) (*User, error) {
-	var resp User
-	query := fmt.Sprintf("select %s from %s where `mobile` = ? limit 1", userRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, mobile)
-	switch err {
-	case nil:
-		return &resp, nil
-	case sqlc.ErrNotFound:
-		return nil, ErrNotFound
-	default:
-		return nil, err
-	}
-}
-
 func (m *defaultUserModel) FindOneByName(ctx context.Context, name sql.NullString) (*User, error) {
 	var resp User
 	query := fmt.Sprintf("select %s from %s where `name` = ? limit 1", userRows, m.table)
@@ -113,14 +94,14 @@ func (m *defaultUserModel) FindOneByName(ctx context.Context, name sql.NullStrin
 }
 
 func (m *defaultUserModel) Insert(ctx context.Context, data *User) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, userRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Name, data.Password, data.Mobile, data.Gender, data.Nickname, data.Type, data.CreateAt, data.UpdateAt)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, userRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.Name, data.Password, data.CreateAt, data.UpdateAt)
 	return ret, err
 }
 
 func (m *defaultUserModel) Update(ctx context.Context, newData *User) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, userRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.Name, newData.Password, newData.Mobile, newData.Gender, newData.Nickname, newData.Type, newData.CreateAt, newData.UpdateAt, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.Name, newData.Password, newData.CreateAt, newData.UpdateAt, newData.Id)
 	return err
 }
 
