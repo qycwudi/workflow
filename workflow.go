@@ -19,6 +19,7 @@ import (
 	"workflow/internal/datasource"
 	"workflow/internal/handler"
 	"workflow/internal/locks"
+	"workflow/internal/middleware"
 	"workflow/internal/pubsub"
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
@@ -87,6 +88,7 @@ func main() {
 		}, nil, "*"),
 	)
 	defer server.Stop()
+	server.Use(middleware.AuditMiddleware)
 
 	ctx := svc.NewServiceContext(c)
 	handler.RegisterHandlers(server, ctx)
