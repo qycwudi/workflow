@@ -15,6 +15,8 @@ kubectl exec -it xuetu-db-cc774ff4b-pd6pf  -- sh -c 'mysqldump -u root -proot wk
 
 mysql -u root -p workflow < dump.sql
 
+scp -P 22222 mydb_dump.sql xuetu@14.103.249.105:/home/xuetu/mydb_dump.sql
+
 #!/bin/bash
 
 # 指定要处理的文件

@@ -17,7 +17,7 @@ Log:
   Path: ./app/logs
 # MySqlUrn: root:Root@123@tcp(10.99.29.9:3306)/wkflow?charset=utf8mb4&parseTime=True&loc=Local
 # MySqlUrn: root:12345678@tcp(127.0.0.1:3306)/workflow?charset=utf8mb4&parseTime=True&loc=Local
-MySqlUrn: root:root@tcp(192.168.49.2:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local
+MySqlUrn: root:root@tcp(workflow-mysql:31426)/wk?charset=utf8mb4&parseTime=True&loc=Local
 # Redis:
 #   Host: 127.0.0.1:6379
 #   Password: ''
