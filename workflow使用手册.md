@@ -1,5 +1,5 @@
-<h1 id="NPJ2v">功能介绍</h1>
-<h2 id="x7SLR">创建数据源</h2>
+# 功能介绍
+## 创建数据源
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734932660381-1a93171d-faf7-4e97-a9b4-243bf679301b.png)
 
 ```go
@@ -28,16 +28,16 @@
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734934053115-1936318a-97e6-4534-a372-4409d6adf99f.png)
 
-<h3 id="aEeR4">数据源探活规则</h3>
+### 数据源探活规则
 1. 每10分钟自动扫描一次数据库的连接状态【文件服务器不参与扫描】
 2. 开关关闭后不继续扫描，清理数据源连接池 【规则引擎里的对应数据源配置也不可用】
 
-<h2 id="v6OU4">创建画布</h2>
+## 创建画布
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734934374746-2e5d4a1d-f8da-4a8a-9e31-21e7c924e052.png)
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734934393949-ced06e43-a0b1-4e23-ac94-186ca8245391.png)
 
-<h2 id="WY3Qm">画布功能</h2>
+## 画布功能
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734936313866-3e71a7aa-06e1-46be-a633-196433c262ee.png)
 
 1. 全部运行
@@ -48,7 +48,7 @@
 
 
 
-<h2 id="CNhew">组件功能</h2>
+## 组件功能
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734936374921-85ce0ba6-0163-4d61-8dff-6ab3a3b58f2b.png)
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1735006924809-9888cfc3-9049-49b4-af0e-e5b64d26378c.png)
@@ -58,10 +58,10 @@
 3. 组件折叠
 4. 编辑节点名称
 
-<h2 id="AGoih">编排规则</h2>
+## 编排规则
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734936276308-64370af4-b006-4bc4-ae6c-1a98c2597526.png)
 
-<h2 id="ukVjU">发布API</h2>
+## 发布API
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734936544130-b379cc6d-6c9c-475e-bf1b-b3e6eec51e2f.png)
 
 
@@ -70,16 +70,16 @@
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734936583211-528d2fbb-8490-4b1c-a23d-77df57eca27e.png)
 
-<h2 id="OHLqS">创建密钥</h2>
-<h3 id="Au1dw">点击 API 名称跳转到 API 详情页面</h3>
+## 创建密钥
+### 点击 API 名称跳转到 API 详情页面
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734936615787-2f74238c-ab1c-4d8d-8b67-3c1b01e0c6ba.png)
 
-<h3 id="n7HWT">新增密钥</h3>
+### 新增密钥
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734936643134-c2ad3a65-3021-429d-9e7b-03e4a0dc8a61.png)
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734936705151-a00fef3b-8fd8-4c7c-83cf-d1b375f8abf1.png)
 
-<h2 id="sLBth">调用API</h2>
+## 调用API
 `POST <font style="color:#DF2A3F;">http://10.99.29.49:8889</font><font style="color:#117CEE;">/api/role/v1/</font><font style="color:#D22D8D;">ctkgflqflvkqiagjhqrg</font>`
 
 <font style="color:#D22D8D;"> Authorization: Bearer 2fd2ad5b718f4a5a86106d8991a06707</font>
@@ -108,7 +108,7 @@ Authorization: Bearer 2fd2ad5b718f4a5a86106d8991a06707
 
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1734937274865-03d02d88-27ad-45e9-bac6-1d71c45fb906.png)
 
-<h1 id="vmpiW">组件介绍</h1>
+# 组件介绍
 > <font style="color:#DF2A3F;">核心规则: 组件的标准输入都是msg、msgType、metadata，个别组件除外</font>
 >
 > <font style="color:#DF2A3F;">msg：组件之间传递的消息</font>
@@ -118,7 +118,7 @@ Authorization: Bearer 2fd2ad5b718f4a5a86106d8991a06707
 > <font style="color:#DF2A3F;">metadata：单次执行时的环境变量</font>
 >
 
-<h2 id="XAiPS">开始组件</h2>
+## 开始组件
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1735009182415-2d700248-d159-490b-948a-9c8f5dc6f3a6.png)
 
 **功能说明: "开始"** 节点是每个工作空间必备的预设节点，为后续工作流节点以及应用的正常流转提供必要的初始信息
@@ -140,7 +140,7 @@ Authorization: Bearer 2fd2ad5b718f4a5a86106d8991a06707
 
 
 
-<h2 id="L0Urb">结束组件</h2>
+## 结束组件
 ![](https://cdn.nlark.com/yuque/0/2024/png/2983605/1735010421560-96313876-92f6-4d68-a62e-f61be44f3100.png)
 
 **功能说明: "结束"** 节点是每个工作空间必备的预设节点，工作流发布成 API 后，结束节点为请求结果的输出节点
@@ -189,7 +189,7 @@ Content-Length: 42
 
 
 
-<h2 id="ZBAh0">条件组件</h2>
+## 条件组件
 **功能说明: "条件"** 节点根据判断条件将流程拆分成多个分支。
 
 **使用场景: **希望通过单条件或者多重条件判断来使
@@ -222,7 +222,7 @@ msg.name === '张三' || msg.age === 21
 
 
 
-<h2 id="JciZo">迭代组件</h2>
+## 迭代组件
 **功能说明: "迭代"** 节点依次执行迭代桩后相同的规则步骤，全部遍历完成后会走到成功后的逻辑，如果失败则走到失败的分支，可以理解为任务批处理器。
 
 **使用场景: **遍历数组和结构体
@@ -253,7 +253,7 @@ msg.name === '张三' || msg.age === 21
 
 
 
-<h2 id="F2Xjm">执行代码组件</h2>
+## 执行代码组件
 **功能说明: "代码执行"** 节点使用JavaScript脚本对消息进行转换和处理
 
 **使用场景: **可以灵活地修改msg、metadata和msgType的内容，实现数据转换、格式转换、数据增强等功能
@@ -352,7 +352,7 @@ function Filter(msg, metadata, msgType) {
 + 脚本执行超时
 + 返回值格式错误
 
-<h2 id="o2TH4">并发组件</h2>
+## 并发组件
 **功能说明: "并发"** 用于将消息流分成多个并行执行的路径，实现消息的并行处理。每个输出路径都会收到相同的消息副本，并可以独立执行不同的处理逻辑。
 
 **使用场景: **从多个数据源(如不同数据库)获取数据后合并、并行调用多个API后合并结果等
@@ -377,7 +377,7 @@ function Filter(msg, metadata, msgType) {
 
 
 
-<h2 id="ipnZR">聚合组件</h2>
+## 聚合组件
 **功能说明: "聚合"** 节点用于汇聚并合并多个异步并行执行节点的结果
 
 **使用场景: **从多个数据源(如不同数据库)获取数据后合并、并行调用多个API后合并结果等
@@ -409,7 +409,7 @@ function Filter(msg, metadata, msgType) {
 
 
 
-<h2 id="Y99Q4">HTTP组件</h2>
+## HTTP组件
 **功能说明: "HTTP"** 节点用于调用外部REST API服务，支持常见的HTTP方法、自定义请求头
 
 **使用场景: **将msg作为请求体发送给目标服务,并将响应内容回填到msg中
@@ -466,7 +466,7 @@ function Filter(msg, metadata, msgType) {
 
 
 
-<h2 id="P5f8A">HTTP-XML组件</h2>
+## HTTP-XML组件
 **功能说明: "HTTP-XML"** 节点用于调用外部 XML 类型的 API服务，支持常见的HTTP方法、自定义请求头
 
 **使用场景:  **代理 XML 类型接口转 json 类型
@@ -559,7 +559,7 @@ http://www.dneonline.com/calculator.asmx
 
 
 
-<h2 id="nHvjq">数据库组件</h2>
+## 数据库组件
 **功能说明: "数据库"** 节点通过标准sql对数据库进行增删修改查操作。内置支持`mysql`和`oracle`数据库。
 
 **使用场景: **可以执行SQL查询、更新、插入和删除操作
@@ -598,7 +598,7 @@ http://www.dneonline.com/calculator.asmx
 
 **常见问题：**
 
-<h2 id="i9q7J">文件服务器组件</h2>
+## 文件服务器组件
 **功能说明: "文件服务器"** 节点支持 FTP、SFTP 协议，支持文件下载、上传、删除功能
 
 **使用场景:  **从 A 文件服务器下载文件，上传到 B 服务器，然后删除 A 服务器对应文件内容
@@ -644,7 +644,7 @@ http://www.dneonline.com/calculator.asmx
 
 ****
 
-<h1 id="L2202">**环境变量**</h1>
+# **环境变量**
 ```go
 - name: PORT
   value: '8888'
