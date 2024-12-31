@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 	"time"
-	"workflow/internal/rulego"
 
 	"github.com/google/uuid"
 	"github.com/rs/xid"
@@ -15,6 +14,7 @@ import (
 
 	"workflow/internal/logic"
 	"workflow/internal/model"
+	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )

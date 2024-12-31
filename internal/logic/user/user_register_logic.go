@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"database/sql"
 	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -30,17 +29,27 @@ func NewUserRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *User
 }
 
 func (l *UserRegisterLogic) UserRegister(req *types.UserRegisterRequest) (resp *types.UserRegisterResponse, err error) {
-	user := model.User{
-		Name:     sql.NullString{String: req.Name, Valid: true},
-		Password: utils.Md5(req.Password),
-		CreateAt: sql.NullTime{Time: time.Now(), Valid: true},
-		UpdateAt: time.Now(),
+	// 判断用户名是否存在
+	user, err := l.svcCtx.UsersModel.FindOneByUsername(l.ctx, req.Name)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "注册错误")
 	}
-	_, err = l.svcCtx.UserModel.Insert(l.ctx, &user)
+	if user != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "用户名已存在")
+	}
+	// 密码加密 - 加入盐值
+	password := utils.Md5(req.Password + user.Salt)
+	user = &model.Users{
+		Username:  req.Name,
+		Password:  password,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	_, err = l.svcCtx.UsersModel.Insert(l.ctx, user)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "注册失败")
 	}
-	token, err := getJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, user.Name.String)
+	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, user.Username)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "生成token失败")
 	}

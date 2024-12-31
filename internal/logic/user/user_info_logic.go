@@ -33,12 +33,12 @@ func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserIn
 	}
 	userId := value.(string)
 	id, _ := strconv.ParseInt(userId, 10, 64)
-	user, err := l.svcCtx.UserModel.FindOne(l.ctx, id)
+	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取用户信息失败")
 	}
 	return &types.UserInfoResponse{
 		Id:   strconv.FormatInt(user.Id, 10),
-		Name: user.Name.String,
+		Name: user.Username,
 	}, nil
 }

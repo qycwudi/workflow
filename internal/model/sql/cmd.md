@@ -8,6 +8,7 @@ atlas schema diff \
 
 atlas schema inspect -u "mysql://root:root@192.168.49.2:31426/wk" > schema.hcl
 
+atlas schema inspect -u "mysql://root:pass@localhost:3306/example" --format '{{ sql . }}' > schema.sql
 
 
 dump库表

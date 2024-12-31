@@ -43,6 +43,8 @@ type ModuleEditResponse {
 	group: model
 	// 定义路由前缀为 "/v1"
 	prefix: /workflow
+	jwt: Auth // 开启 jwt 认证
+    middleware: PermissionMiddleware // 开启权限认证
 )
 service workflow-api {
 	@doc "组件list"

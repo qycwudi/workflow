@@ -1,10 +1,13 @@
 package svc
 
 import (
+	"net/http"
+
 	"github.com/redis/go-redis/v9"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 
 	"workflow/internal/config"
+	"workflow/internal/middleware"
 	"workflow/internal/model"
 )
 
@@ -21,9 +24,13 @@ type ServiceContext struct {
 	SpaceRecordModel         model.SpaceRecordModel
 	TraceModel               model.TraceModel
 	DatasourceModel          model.DatasourceModel
-	LocksModel               model.LocksModel
 	RedisClient              redis.UniversalClient
-	UserModel                model.UserModel
+	UsersModel               model.UsersModel
+	RolesModel               model.RolesModel
+	PermissionsModel         model.PermissionsModel
+	UserRolesModel           model.UserRolesModel
+	RolePermissionsModel     model.RolePermissionsModel
+	PermissionMiddleware     func(next http.HandlerFunc) http.HandlerFunc
 }
 
 func NewServiceContext(c config.Config) *ServiceContext {
@@ -35,21 +42,26 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		DB:       c.Redis.DB,
 	})
 
+	permissionsModel := model.NewPermissionsModel(conn)
+
 	return &ServiceContext{
-		Config:                   c,
-		WorkSpaceModel:           model.NewWorkspaceModel(conn),
-		WorkSpaceTagModel:        model.NewWorkspaceTagModel(conn),
-		WorkspaceTagMappingModel: model.NewWorkspaceTagMappingModel(conn),
-		ModuleModel:              model.NewModuleModel(conn),
-		CanvasModel:              model.NewCanvasModel(conn),
-		ApiModel:                 model.NewApiModel(conn),
-		ApiRecordModel:           model.NewApiRecordModel(conn),
-		ApiSecretKeyModel:        model.NewApiSecretKeyModel(conn),
-		SpaceRecordModel:         model.NewSpaceRecordModel(conn),
-		TraceModel:               model.NewTraceModel(conn),
-		DatasourceModel:          model.NewDatasourceModel(conn),
-		LocksModel:               model.NewLocksModel(conn),
-		RedisClient:              redisClient,
-		UserModel:                model.NewUserModel(conn),
+		Config:               c,
+		WorkSpaceModel:       model.NewWorkspaceModel(conn),
+		WorkSpaceTagModel:    model.NewWorkspaceTagModel(conn),
+		ModuleModel:          model.NewModuleModel(conn),
+		CanvasModel:          model.NewCanvasModel(conn),
+		ApiModel:             model.NewApiModel(conn),
+		ApiRecordModel:       model.NewApiRecordModel(conn),
+		ApiSecretKeyModel:    model.NewApiSecretKeyModel(conn),
+		SpaceRecordModel:     model.NewSpaceRecordModel(conn),
+		TraceModel:           model.NewTraceModel(conn),
+		DatasourceModel:      model.NewDatasourceModel(conn),
+		RedisClient:          redisClient,
+		UsersModel:           model.NewUsersModel(conn),
+		RolesModel:           model.NewRolesModel(conn),
+		PermissionsModel:     permissionsModel,
+		UserRolesModel:       model.NewUserRolesModel(conn),
+		RolePermissionsModel: model.NewRolePermissionsModel(conn),
+		PermissionMiddleware: middleware.NewPermissionMiddleware(permissionsModel).Handle,
 	}
 }

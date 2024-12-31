@@ -44,10 +44,6 @@ service workflow-api {
 	@doc "用户登录"
 	@handler UserLoginHandler
 	post /user/login (UserLoginRequest) returns (UserLoginResponse)
-
-    @doc "用户退出登录"
-	@handler UserLogoutHandler
-	post /user/logout (UserLogoutRequest) returns (UserLogoutResponse)
 }
 
 @server (
@@ -56,6 +52,7 @@ service workflow-api {
 	// 定义路由前缀为 "/v1"
 	prefix: /workflow
     jwt: Auth // 开启 jwt 认证
+    middleware: PermissionMiddleware // 开启权限认证
 )
 
 service workflow-api {
@@ -66,4 +63,8 @@ service workflow-api {
     @doc "用户注册"
 	@handler UserRegisterHandler
 	post /user/register (UserRegisterRequest) returns (UserRegisterResponse)
+
+	@doc "用户退出登录"
+	@handler UserLogoutHandler
+	post /user/logout (UserLogoutRequest) returns (UserLogoutResponse)
 }
