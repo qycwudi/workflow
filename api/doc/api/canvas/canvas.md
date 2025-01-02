@@ -15,6 +15,7 @@
 type CanvasDraftRequest struct {
 	Id string `json:"id"`
 	Graph map[string]interface{} `json:"graph"`
+	GlobalParams []map[string]interface{} `json:"globalParams"`
 }
 ```
 
@@ -57,6 +58,7 @@ type CanvasDetailRequest struct {
 ```golang
 type CanvasDetailResponse struct {
 	Id string `json:"id"`
+	Name string `json:"name"`
 	Graph map[string]interface{} `json:"graph"`
 }
 ```

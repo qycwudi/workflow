@@ -228,7 +228,7 @@ type WorkSpaceEditTagResponse struct {
 
 ```golang
 type TagListRequest struct {
-	TagName string `json:"tagName,optional"`
+	Name string `json:"name,optional"`
 }
 ```
 
@@ -291,7 +291,6 @@ type TagEditResponse struct {
 ```golang
 type TagRemoveRequest struct {
 	Id int64 `json:"id"`
-	Name string `json:"name"`
 }
 ```
 
@@ -354,6 +353,7 @@ type MockResponse struct {
 ```golang
 type WorkSpaceCopyRequest struct {
 	Id string `json:"id"`
+	Name string `json:"name,optional"`
 }
 ```
 

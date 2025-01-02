@@ -465,8 +465,19 @@ type DatasourceTestResponse struct {
 	Message string `json:"message"`
 }
 
+type User struct {
+	Id        int64  `json:"id"`
+	Username  string `json:"username"`
+	RealName  string `json:"realName"`
+	Phone     string `json:"phone"`
+	Email     string `json:"email"`
+	Status    int64  `json:"status"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+
 type UserLoginRequest struct {
-	Name     string `json:"name"`
+	Username string `json:"username"`
 	Password string `json:"password"`
 }
 
@@ -478,22 +489,204 @@ type UserLogoutRequest struct {
 }
 
 type UserLogoutResponse struct {
-	Token string `json:"token"`
 }
 
 type UserInfoRequest struct {
 }
 
 type UserInfoResponse struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
+	User User `json:"user"`
 }
 
 type UserRegisterRequest struct {
-	Name     string `json:"name"`
+	Username string `json:"username"`
 	Password string `json:"password"`
+	RealName string `json:"realName,optional"`
+	Phone    string `json:"phone,optional"`
+	Email    string `json:"email,optional"`
+	Status   int64  `json:"status,optional"`
 }
 
 type UserRegisterResponse struct {
 	Token string `json:"token"`
+}
+
+type UserBindRoleRequest struct {
+	UserId int64 `json:"userId"`
+	RoleId int64 `json:"roleId"`
+}
+
+type UserBindRoleResponse struct {
+}
+
+type UserListRequest struct {
+	Current  int64  `json:"current"`
+	PageSize int64  `json:"pageSize"`
+	Username string `json:"username,optional"`
+}
+
+type UserListResponse struct {
+	Total int64  `json:"total"`
+	List  []User `json:"list"`
+}
+
+type Role struct {
+	Id          int64  `json:"id"`
+	Name        string `json:"name"`
+	Code        string `json:"code"`
+	Description string `json:"description"`
+	Status      int64  `json:"status"`
+	CreatedAt   string `json:"created_at"`
+	UpdatedAt   string `json:"updated_at"`
+}
+
+type CreateRoleRequest struct {
+	Name        string `json:"name"`
+	Code        string `json:"code"`
+	Description string `json:"description,optional"`
+	Status      int64  `json:"status,optional"`
+}
+
+type CreateRoleResponse struct {
+	Id int64 `json:"id"`
+}
+
+type UpdateRoleRequest struct {
+	Id          int64  `json:"id"`
+	Name        string `json:"name,optional"`
+	Code        string `json:"code,optional"`
+	Description string `json:"description,optional"`
+	Status      int64  `json:"status,optional"`
+}
+
+type UpdateRoleResponse struct {
+}
+
+type DeleteRoleRequest struct {
+	Id int64 `json:"id"`
+}
+
+type DeleteRoleResponse struct {
+}
+
+type GetRoleRequest struct {
+	Id int64 `json:"id"`
+}
+
+type GetRoleResponse struct {
+	Role Role `json:"role"`
+}
+
+type ListRoleRequest struct {
+	Current  int64  `json:"current"`
+	PageSize int64  `json:"pageSize"`
+	Name     string `json:"name,optional"`
+}
+
+type ListRoleResponse struct {
+	Total int64  `json:"total"`
+	List  []Role `json:"list"`
+}
+
+type BindPermissionRequest struct {
+	RoleId       int64 `json:"roleId"`
+	PermissionId int64 `json:"permissionId"`
+}
+
+type BindPermissionResponse struct {
+}
+
+type UnbindPermissionRequest struct {
+	RoleId       int64 `json:"roleId"`
+	PermissionId int64 `json:"permissionId"`
+}
+
+type UnbindPermissionResponse struct {
+}
+
+type GetRolePermissionRequest struct {
+	RoleId   int64 `json:"roleId"`
+	ParentId int64 `json:"parentId,optional"`
+}
+
+type GetRolePermissionResponse struct {
+	RolePermissions []RolePermissions `json:"rolePermissions"`
+}
+
+type RolePermissions struct {
+	Id            int64  `json:"id"`
+	Name          string `json:"name"`
+	Code          string `json:"code"`
+	Type          int64  `json:"type"`
+	ParentId      int64  `json:"parentId,optional"`
+	Path          string `json:"path,optional"`
+	Method        string `json:"method,optional"`
+	Sort          int64  `json:"sort,optional"`
+	HasPermission bool   `json:"hasPermission"`
+	CreatedAt     string `json:"createdAt"`
+	UpdatedAt     string `json:"updatedAt"`
+}
+
+type Permission struct {
+	Id        int64  `json:"id"`
+	Name      string `json:"name"`
+	Code      string `json:"code"`
+	Type      int64  `json:"type"`
+	ParentId  int64  `json:"parentId,optional"`
+	Path      string `json:"path,optional"`
+	Method    string `json:"method,optional"`
+	Sort      int64  `json:"sort,optional"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+
+type CreatePermissionRequest struct {
+	Name     string `json:"name"`
+	Code     string `json:"code"`
+	Type     int64  `json:"type"`
+	ParentId int64  `json:"parentId,optional"`
+	Path     string `json:"path,optional"`
+	Method   string `json:"method,optional"`
+	Sort     int64  `json:"sort,optional"`
+}
+
+type CreatePermissionResponse struct {
+	Id int64 `json:"id"`
+}
+
+type UpdatePermissionRequest struct {
+	Id       int64  `json:"id"`
+	Name     string `json:"name,optional"`
+	Code     string `json:"code,optional"`
+	Type     int64  `json:"type,optional"`
+	ParentId int64  `json:"parentId,optional"`
+	Path     string `json:"path,optional"`
+	Method   string `json:"method,optional"`
+	Sort     int64  `json:"sort,optional"`
+}
+
+type UpdatePermissionResponse struct {
+}
+
+type DeletePermissionRequest struct {
+	Id int64 `json:"id"`
+}
+
+type DeletePermissionResponse struct {
+}
+
+type GetPermissionRequest struct {
+	Id int64 `json:"id"`
+}
+
+type GetPermissionResponse struct {
+	Permission Permission `json:"permission"`
+}
+
+type GetPermissionTreeRequest struct {
+	ParentId int64 `json:"parentId,optional"`
+}
+
+type GetPermissionTreeResponse struct {
+	List []Permission `json:"list"`
 }

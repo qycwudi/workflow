@@ -1,0 +1,58 @@
+### 创建角色
+POST http://127.0.0.1:8888/workflow/role/create
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
+
+{
+  "name": "管理员",
+  "code": "admin5",
+  "description": "系统管理员",
+  "status": 1
+}
+
+### 更新角色
+POST http://127.0.0.1:8888/workflow/role/update
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
+
+{
+  "id": 1,
+  "name": "管理员1",
+  "code": "admin",
+  "description": "系统管理员1",
+  "status": 0
+}
+
+### 删除角色
+POST http://127.0.0.1:8888/workflow/role/delete
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
+
+{
+  "id": 6
+}
+
+### 获取角色详情
+POST http://127.0.0.1:8888/workflow/role/get
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
+
+{
+  "id": 1
+}
+
+### 获取角色列表
+POST http://127.0.0.1:8888/workflow/role/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
+
+{
+  "name": "",
+  "current": 2,
+  "pageSize": 2
+}

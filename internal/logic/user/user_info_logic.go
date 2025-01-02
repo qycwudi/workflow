@@ -38,7 +38,13 @@ func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserIn
 		return nil, errors.New(int(logic.SystemOrmError), "获取用户信息失败")
 	}
 	return &types.UserInfoResponse{
-		Id:   strconv.FormatInt(user.Id, 10),
-		Name: user.Username,
+		User: types.User{
+			Id:       user.Id,
+			Username: user.Username,
+			RealName: user.RealName.String,
+			Phone:    user.Phone.String,
+			Email:    user.Email.String,
+			Status:   user.Status,
+		},
 	}, nil
 }

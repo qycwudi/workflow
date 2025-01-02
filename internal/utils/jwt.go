@@ -6,7 +6,7 @@ import "github.com/golang-jwt/jwt/v5"
 // @iat: 时间戳
 // @seconds: 过期时间，单位秒
 // @userId: 用户id
-func GenerateJwtToken(secretKey string, iat, seconds int64, userId string) (string, error) {
+func GenerateJwtToken(secretKey string, iat, seconds int64, userId int64) (string, error) {
 	claims := make(jwt.MapClaims)
 	claims["exp"] = iat + seconds
 	claims["iat"] = iat

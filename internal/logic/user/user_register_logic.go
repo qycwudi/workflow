@@ -2,9 +2,11 @@ package user
 
 import (
 	"context"
+	"database/sql"
 	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/logic"
@@ -30,26 +32,32 @@ func NewUserRegisterLogic(ctx context.Context, svcCtx *svc.ServiceContext) *User
 
 func (l *UserRegisterLogic) UserRegister(req *types.UserRegisterRequest) (resp *types.UserRegisterResponse, err error) {
 	// 判断用户名是否存在
-	user, err := l.svcCtx.UsersModel.FindOneByUsername(l.ctx, req.Name)
-	if err != nil {
+	user, err := l.svcCtx.UsersModel.FindOneByUsername(l.ctx, req.Username)
+	if err != nil && err != sqlc.ErrNotFound {
 		return nil, errors.New(int(logic.SystemOrmError), "注册错误")
 	}
 	if user != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "用户名已存在")
 	}
 	// 密码加密 - 加入盐值
-	password := utils.Md5(req.Password + user.Salt)
+	salt := utils.FormatDate(time.Now())
+	password := utils.Md5(req.Password + salt)
 	user = &model.Users{
-		Username:  req.Name,
+		Username:  req.Username,
+		Salt:      salt,
 		Password:  password,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
+		Status:    req.Status,
+		RealName:  sql.NullString{String: req.RealName, Valid: req.RealName != ""},
+		Phone:     sql.NullString{String: req.Phone, Valid: req.Phone != ""},
+		Email:     sql.NullString{String: req.Email, Valid: req.Email != ""},
 	}
 	_, err = l.svcCtx.UsersModel.Insert(l.ctx, user)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "注册失败")
 	}
-	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, user.Username)
+	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, user.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "生成token失败")
 	}

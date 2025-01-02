@@ -1,0 +1,139 @@
+syntax = "v1"
+
+type Role {
+    Id int64 `json:"id"`
+    Name string `json:"name"`
+    Code string `json:"code"`
+    Description string `json:"description"`
+    Status int64 `json:"status"`
+    CreatedAt string `json:"created_at"`
+    UpdatedAt string `json:"updated_at"`
+}
+
+type CreateRoleRequest {
+    Name string `json:"name"`
+    Code string `json:"code"`
+    Description string `json:"description,optional"`
+    Status int64 `json:"status,optional"`
+}
+
+type CreateRoleResponse {
+    Id int64 `json:"id"`
+}
+
+type UpdateRoleRequest {
+    Id int64 `json:"id"`
+    Name string `json:"name,optional"`
+    Code string `json:"code,optional"`
+    Description string `json:"description,optional"`
+    Status int64 `json:"status,optional"`
+}
+
+type UpdateRoleResponse {
+}
+
+type DeleteRoleRequest {
+    Id int64 `json:"id"`
+}
+
+type DeleteRoleResponse {
+}
+
+type GetRoleRequest {
+    Id int64 `json:"id"`
+}
+
+type GetRoleResponse {
+    Role Role `json:"role"`
+}
+
+type ListRoleRequest {
+   	Current  int64    `json:"current"`
+	PageSize int64    `json:"pageSize"`
+    Name     string `json:"name,optional"`
+}
+
+type ListRoleResponse {
+    Total int64 `json:"total"`
+    List []Role `json:"list"`
+}
+
+type BindPermissionRequest {
+    RoleId int64 `json:"roleId"`
+    PermissionId int64 `json:"permissionId"`
+}
+
+type BindPermissionResponse {
+}
+
+type UnbindPermissionRequest {
+    RoleId int64 `json:"roleId"`
+    PermissionId int64 `json:"permissionId"`
+}
+
+type UnbindPermissionResponse {
+}
+
+type GetRolePermissionRequest {
+    RoleId int64 `json:"roleId"`
+	ParentId int64 `json:"parentId,optional"`
+}
+
+type GetRolePermissionResponse {
+    RolePermissions []RolePermissions `json:"rolePermissions"`
+}
+
+type RolePermissions {
+    Id int64 `json:"id"`
+    Name string `json:"name"`
+    Code string `json:"code"` 
+    Type int64 `json:"type"`
+    ParentId int64 `json:"parentId,optional"`
+    Path string `json:"path,optional"`
+    Method string `json:"method,optional"`
+    Sort int64 `json:"sort,optional"`
+	HasPermission bool `json:"hasPermission"`
+    CreatedAt string `json:"createdAt"`
+    UpdatedAt string `json:"updatedAt"`
+}
+
+@server (
+    group: role
+    prefix: /workflow
+    jwt: Auth
+    middleware: PermissionMiddleware
+)
+
+service workflow-api {
+    @doc "创建角色"
+    @handler CreateRoleHandler
+    post /role/create (CreateRoleRequest) returns (CreateRoleResponse)
+    
+    @doc "更新角色"
+    @handler UpdateRoleHandler
+    post /role/update (UpdateRoleRequest) returns (UpdateRoleResponse)
+    
+    @doc "删除角色"
+    @handler DeleteRoleHandler
+    post /role/delete (DeleteRoleRequest) returns (DeleteRoleResponse)
+    
+    @doc "获取角色详情"
+    @handler GetRoleHandler	
+    post /role/get (GetRoleRequest) returns (GetRoleResponse)
+    
+    @doc "获取角色列表"
+    @handler ListRoleHandler
+    post /role/list (ListRoleRequest) returns (ListRoleResponse)
+
+	@doc "绑定权限"
+	@handler BindPermissionHandler
+	post /role/bindpermission (BindPermissionRequest) returns (BindPermissionResponse)
+
+	@doc "解绑权限"
+	@handler UnbindPermissionHandler
+	post /role/unbindpermission (UnbindPermissionRequest) returns (UnbindPermissionResponse)
+
+	@doc "获取角色权限"
+	@handler GetRolePermissionHandler
+	post /role/getpermission (GetRolePermissionRequest) returns (GetRolePermissionResponse)
+}

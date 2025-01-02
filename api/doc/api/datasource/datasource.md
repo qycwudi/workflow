@@ -16,6 +16,7 @@ type DatasourceListRequest struct {
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
 	Type string `json:"type,optional"`
+	Name string `json:"name,optional"`
 	Status string `json:"status,optional"`
 	Switch int `json:"switch,optional"`
 }

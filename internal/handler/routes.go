@@ -4,15 +4,17 @@ package handler
 import (
 	"net/http"
 
-	"github.com/zeromicro/go-zero/rest"
-
 	api "workflow/internal/handler/api"
 	canvas "workflow/internal/handler/canvas"
 	datasource "workflow/internal/handler/datasource"
 	model "workflow/internal/handler/model"
+	permission "workflow/internal/handler/permission"
+	role "workflow/internal/handler/role"
 	user "workflow/internal/handler/user"
 	workspace "workflow/internal/handler/workspace"
 	"workflow/internal/svc"
+
+	"github.com/zeromicro/go-zero/rest"
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
@@ -265,6 +267,101 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/user/logout",
 					Handler: user.UserLogoutHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/list",
+					Handler: user.UserListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/bindrole",
+					Handler: user.UserBindRoleHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/create",
+					Handler: role.CreateRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/update",
+					Handler: role.UpdateRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/delete",
+					Handler: role.DeleteRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/get",
+					Handler: role.GetRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/list",
+					Handler: role.ListRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/bindpermission",
+					Handler: role.BindPermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/unbindpermission",
+					Handler: role.UnbindPermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/getpermission",
+					Handler: role.GetRolePermissionHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/create",
+					Handler: permission.CreatePermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/update",
+					Handler: permission.UpdatePermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/delete",
+					Handler: permission.DeletePermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/get",
+					Handler: permission.GetPermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/tree",
+					Handler: permission.GetPermissionTreeHandler(serverCtx),
 				},
 			}...,
 		),

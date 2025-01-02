@@ -228,7 +228,7 @@ type WorkSpaceEditTagResponse struct {
 
 ```golang
 type TagListRequest struct {
-	TagName string `json:"tagName,optional"`
+	Name string `json:"name,optional"`
 }
 ```
 
@@ -291,7 +291,6 @@ type TagEditResponse struct {
 ```golang
 type TagRemoveRequest struct {
 	Id int64 `json:"id"`
-	Name string `json:"name"`
 }
 ```
 
@@ -354,6 +353,7 @@ type MockResponse struct {
 ```golang
 type WorkSpaceCopyRequest struct {
 	Id string `json:"id"`
+	Name string `json:"name,optional"`
 }
 ```
 
@@ -400,6 +400,7 @@ type WorkSpaceBase struct {
 type CanvasDraftRequest struct {
 	Id string `json:"id"`
 	Graph map[string]interface{} `json:"graph"`
+	GlobalParams []map[string]interface{} `json:"globalParams"`
 }
 ```
 
@@ -442,6 +443,7 @@ type CanvasDetailRequest struct {
 ```golang
 type CanvasDetailResponse struct {
 	Id string `json:"id"`
+	Name string `json:"name"`
 	Graph map[string]interface{} `json:"graph"`
 }
 ```
@@ -1032,6 +1034,7 @@ type DatasourceListRequest struct {
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
 	Type string `json:"type,optional"`
+	Name string `json:"name,optional"`
 	Status string `json:"status,optional"`
 	Switch int `json:"switch,optional"`
 }
@@ -1177,6 +1180,636 @@ type DatasourceTestRequest struct {
 type DatasourceTestResponse struct {
 	Status string `json:"status"`
 	Message string `json:"message"`
+}
+```
+
+### 35. "用户登录"
+
+1. route definition
+
+- Url: /workflow/user/login
+- Method: POST
+- Request: `UserLoginRequest`
+- Response: `UserLoginResponse`
+
+2. request definition
+
+
+
+```golang
+type UserLoginRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserLoginResponse struct {
+	Token string `json:"token"`
+}
+```
+
+### 36. "用户信息"
+
+1. route definition
+
+- Url: /workflow/user/info
+- Method: POST
+- Request: `UserInfoRequest`
+- Response: `UserInfoResponse`
+
+2. request definition
+
+
+
+```golang
+type UserInfoRequest struct {
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserInfoResponse struct {
+	User User `json:"user"`
+}
+
+type User struct {
+	Id int64 `json:"id"`
+	Username string `json:"username"`
+	RealName string `json:"realName"`
+	Phone string `json:"phone"`
+	Email string `json:"email"`
+	Status int64 `json:"status"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+```
+
+### 37. "用户注册"
+
+1. route definition
+
+- Url: /workflow/user/register
+- Method: POST
+- Request: `UserRegisterRequest`
+- Response: `UserRegisterResponse`
+
+2. request definition
+
+
+
+```golang
+type UserRegisterRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+	RealName string `json:"realName,optional"`
+	Phone string `json:"phone,optional"`
+	Email string `json:"email,optional"`
+	Status int64 `json:"status,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserRegisterResponse struct {
+	Token string `json:"token"`
+}
+```
+
+### 38. "用户退出登录"
+
+1. route definition
+
+- Url: /workflow/user/logout
+- Method: POST
+- Request: `UserLogoutRequest`
+- Response: `UserLogoutResponse`
+
+2. request definition
+
+
+
+```golang
+type UserLogoutRequest struct {
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserLogoutResponse struct {
+}
+```
+
+### 39. "获取用户列表"
+
+1. route definition
+
+- Url: /workflow/user/list
+- Method: POST
+- Request: `UserListRequest`
+- Response: `UserListResponse`
+
+2. request definition
+
+
+
+```golang
+type UserListRequest struct {
+	Current int64 `json:"current"`
+	PageSize int64 `json:"pageSize"`
+	Username string `json:"username,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserListResponse struct {
+	Total int64 `json:"total"`
+	List []User `json:"list"`
+}
+```
+
+### 40. "绑定角色"
+
+1. route definition
+
+- Url: /workflow/user/bindrole
+- Method: POST
+- Request: `UserBindRoleRequest`
+- Response: `UserBindRoleResponse`
+
+2. request definition
+
+
+
+```golang
+type UserBindRoleRequest struct {
+	UserId int64 `json:"userId"`
+	RoleId int64 `json:"roleId"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserBindRoleResponse struct {
+}
+```
+
+### 41. "创建角色"
+
+1. route definition
+
+- Url: /workflow/role/create
+- Method: POST
+- Request: `CreateRoleRequest`
+- Response: `CreateRoleResponse`
+
+2. request definition
+
+
+
+```golang
+type CreateRoleRequest struct {
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Description string `json:"description,optional"`
+	Status int64 `json:"status,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CreateRoleResponse struct {
+	Id int64 `json:"id"`
+}
+```
+
+### 42. "更新角色"
+
+1. route definition
+
+- Url: /workflow/role/update
+- Method: POST
+- Request: `UpdateRoleRequest`
+- Response: `UpdateRoleResponse`
+
+2. request definition
+
+
+
+```golang
+type UpdateRoleRequest struct {
+	Id int64 `json:"id"`
+	Name string `json:"name,optional"`
+	Code string `json:"code,optional"`
+	Description string `json:"description,optional"`
+	Status int64 `json:"status,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UpdateRoleResponse struct {
+}
+```
+
+### 43. "删除角色"
+
+1. route definition
+
+- Url: /workflow/role/delete
+- Method: POST
+- Request: `DeleteRoleRequest`
+- Response: `DeleteRoleResponse`
+
+2. request definition
+
+
+
+```golang
+type DeleteRoleRequest struct {
+	Id int64 `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type DeleteRoleResponse struct {
+}
+```
+
+### 44. "获取角色详情"
+
+1. route definition
+
+- Url: /workflow/role/get
+- Method: POST
+- Request: `GetRoleRequest`
+- Response: `GetRoleResponse`
+
+2. request definition
+
+
+
+```golang
+type GetRoleRequest struct {
+	Id int64 `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type GetRoleResponse struct {
+	Role Role `json:"role"`
+}
+
+type Role struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Description string `json:"description"`
+	Status int64 `json:"status"`
+	CreatedAt string `json:"created_at"`
+	UpdatedAt string `json:"updated_at"`
+}
+```
+
+### 45. "获取角色列表"
+
+1. route definition
+
+- Url: /workflow/role/list
+- Method: POST
+- Request: `ListRoleRequest`
+- Response: `ListRoleResponse`
+
+2. request definition
+
+
+
+```golang
+type ListRoleRequest struct {
+	Current int64 `json:"current"`
+	PageSize int64 `json:"pageSize"`
+	Name string `json:"name,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ListRoleResponse struct {
+	Total int64 `json:"total"`
+	List []Role `json:"list"`
+}
+```
+
+### 46. "绑定权限"
+
+1. route definition
+
+- Url: /workflow/role/bindpermission
+- Method: POST
+- Request: `BindPermissionRequest`
+- Response: `BindPermissionResponse`
+
+2. request definition
+
+
+
+```golang
+type BindPermissionRequest struct {
+	RoleId int64 `json:"roleId"`
+	PermissionId int64 `json:"permissionId"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type BindPermissionResponse struct {
+}
+```
+
+### 47. "解绑权限"
+
+1. route definition
+
+- Url: /workflow/role/unbindpermission
+- Method: POST
+- Request: `UnbindPermissionRequest`
+- Response: `UnbindPermissionResponse`
+
+2. request definition
+
+
+
+```golang
+type UnbindPermissionRequest struct {
+	RoleId int64 `json:"roleId"`
+	PermissionId int64 `json:"permissionId"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UnbindPermissionResponse struct {
+}
+```
+
+### 48. "获取角色权限"
+
+1. route definition
+
+- Url: /workflow/role/getpermission
+- Method: POST
+- Request: `GetRolePermissionRequest`
+- Response: `GetRolePermissionResponse`
+
+2. request definition
+
+
+
+```golang
+type GetRolePermissionRequest struct {
+	RoleId int64 `json:"roleId"`
+	ParentId int64 `json:"parentId,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type GetRolePermissionResponse struct {
+	RolePermissions []RolePermissions `json:"rolePermissions"`
+}
+```
+
+### 49. "创建权限"
+
+1. route definition
+
+- Url: /workflow/permission/create
+- Method: POST
+- Request: `CreatePermissionRequest`
+- Response: `CreatePermissionResponse`
+
+2. request definition
+
+
+
+```golang
+type CreatePermissionRequest struct {
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Type int64 `json:"type"`
+	ParentId int64 `json:"parentId,optional"`
+	Path string `json:"path,optional"`
+	Method string `json:"method,optional"`
+	Sort int64 `json:"sort,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CreatePermissionResponse struct {
+	Id int64 `json:"id"`
+}
+```
+
+### 50. "更新权限"
+
+1. route definition
+
+- Url: /workflow/permission/update
+- Method: POST
+- Request: `UpdatePermissionRequest`
+- Response: `UpdatePermissionResponse`
+
+2. request definition
+
+
+
+```golang
+type UpdatePermissionRequest struct {
+	Id int64 `json:"id"`
+	Name string `json:"name,optional"`
+	Code string `json:"code,optional"`
+	Type int64 `json:"type,optional"`
+	ParentId int64 `json:"parentId,optional"`
+	Path string `json:"path,optional"`
+	Method string `json:"method,optional"`
+	Sort int64 `json:"sort,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UpdatePermissionResponse struct {
+}
+```
+
+### 51. "删除权限"
+
+1. route definition
+
+- Url: /workflow/permission/delete
+- Method: POST
+- Request: `DeletePermissionRequest`
+- Response: `DeletePermissionResponse`
+
+2. request definition
+
+
+
+```golang
+type DeletePermissionRequest struct {
+	Id int64 `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type DeletePermissionResponse struct {
+}
+```
+
+### 52. "获取权限详情"
+
+1. route definition
+
+- Url: /workflow/permission/get
+- Method: POST
+- Request: `GetPermissionRequest`
+- Response: `GetPermissionResponse`
+
+2. request definition
+
+
+
+```golang
+type GetPermissionRequest struct {
+	Id int64 `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type GetPermissionResponse struct {
+	Permission Permission `json:"permission"`
+}
+
+type Permission struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+	Code string `json:"code"`
+	Type int64 `json:"type"`
+	ParentId int64 `json:"parentId,optional"`
+	Path string `json:"path,optional"`
+	Method string `json:"method,optional"`
+	Sort int64 `json:"sort,optional"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+}
+```
+
+### 53. "获取权限树"
+
+1. route definition
+
+- Url: /workflow/permission/tree
+- Method: POST
+- Request: `GetPermissionTreeRequest`
+- Response: `GetPermissionTreeResponse`
+
+2. request definition
+
+
+
+```golang
+type GetPermissionTreeRequest struct {
+	ParentId int64 `json:"parentId,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type GetPermissionTreeResponse struct {
+	List []Permission `json:"list"`
 }
 ```
 

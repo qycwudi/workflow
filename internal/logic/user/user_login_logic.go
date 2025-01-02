@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"strconv"
 	"time"
 
 	"github.com/zeromicro/go-zero/core/logx"
@@ -30,7 +29,7 @@ func NewUserLoginLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserLog
 
 func (l *UserLoginLogic) UserLogin(req *types.UserLoginRequest) (resp *types.UserLoginResponse, err error) {
 	// 判断用户名密码是否正确
-	user, err := l.svcCtx.UsersModel.FindOneByUsername(l.ctx, req.Name)
+	user, err := l.svcCtx.UsersModel.FindOneByUsername(l.ctx, req.Username)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "用户名错误")
 	}
@@ -41,7 +40,7 @@ func (l *UserLoginLogic) UserLogin(req *types.UserLoginRequest) (resp *types.Use
 		return nil, errors.New(int(logic.SystemOrmError), "密码错误")
 	}
 	// 生成token
-	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, strconv.FormatInt(user.Id, 10))
+	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, user.Id)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "生成token失败")
 	}
