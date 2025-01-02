@@ -31,6 +31,7 @@ type UserInfoRequest {
 
 type UserInfoResponse {
     User User `json:"user"`
+	RoleName string `json:"roleName"`
 }
 
 type UserRegisterRequest {

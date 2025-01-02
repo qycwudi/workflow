@@ -530,7 +530,8 @@ type UserInfoRequest struct {
 }
 
 type UserInfoResponse struct {
-	User User `json:"user"`
+	User     User   `json:"user"`
+	RoleName string `json:"roleName"`
 }
 
 type UserRegisterRequest struct {

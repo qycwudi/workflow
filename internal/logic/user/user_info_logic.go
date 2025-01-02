@@ -2,7 +2,6 @@ package user
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
@@ -10,6 +9,7 @@ import (
 	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type UserInfoLogic struct {
@@ -27,16 +27,21 @@ func NewUserInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *UserInfo
 }
 
 func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserInfoResponse, err error) {
-	value := l.ctx.Value("userId")
-	if value == nil {
-		return nil, errors.New(int(logic.SystemOrmError), "获取userId失败")
-	}
-	userId := value.(string)
-	id, _ := strconv.ParseInt(userId, 10, 64)
-	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, id)
+	userId, err := utils.GetUserId(l.ctx)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取用户信息失败")
 	}
+	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, userId)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "获取用户信息失败")
+	}
+
+	// 获取角色名称
+	role, err := l.svcCtx.RolesModel.FindOneByUserId(l.ctx, user.Id)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "获取角色名称失败")
+	}
+
 	return &types.UserInfoResponse{
 		User: types.User{
 			Id:       user.Id,
@@ -46,5 +51,6 @@ func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserIn
 			Email:    user.Email.String,
 			Status:   user.Status,
 		},
+		RoleName: role.Name,
 	}, nil
 }

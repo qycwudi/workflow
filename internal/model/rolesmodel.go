@@ -17,6 +17,7 @@ type (
 	RolesModel interface {
 		rolesModel
 		FindPage(ctx context.Context, name string, current, pageSize int64) ([]*Roles, int64, error)
+		FindOneByUserId(ctx context.Context, userId int64) (*Roles, error)
 	}
 
 	customRolesModel struct {
@@ -73,4 +74,15 @@ func NewRolesModel(conn sqlx.SqlConn) RolesModel {
 	return &customRolesModel{
 		defaultRolesModel: newRolesModel(conn),
 	}
+}
+
+func (c customRolesModel) FindOneByUserId(ctx context.Context, userId int64) (*Roles, error) {
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE `user_id` = ? limit 1", rolesRows, c.table)
+	var resp Roles
+	err := c.conn.QueryRowCtx(ctx, &resp, query, userId)
+	if err != nil {
+		logc.Infov(ctx, err)
+		return nil, err
+	}
+	return &resp, nil
 }

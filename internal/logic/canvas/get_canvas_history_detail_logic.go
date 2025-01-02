@@ -3,10 +3,13 @@ package canvas
 import (
 	"context"
 
+	"github.com/rulego/rulego/utils/json"
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type GetCanvasHistoryDetailLogic struct {
@@ -24,7 +27,21 @@ func NewGetCanvasHistoryDetailLogic(ctx context.Context, svcCtx *svc.ServiceCont
 }
 
 func (l *GetCanvasHistoryDetailLogic) GetCanvasHistoryDetail(req *types.GetCanvasHistoryDetailReq) (resp *types.GetCanvasHistoryDetailResp, err error) {
-	// todo: add your logic here and delete this line
+	canvasHistory, err := l.svcCtx.CanvasHistoryModel.FindOne(l.ctx, req.Id)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "查询画布历史版本失败")
+	}
 
-	return
+	// 转map
+	graph := make(map[string]interface{})
+	err = json.Unmarshal([]byte(canvasHistory.Draft), &graph)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "查询画布历史版本失败")
+	}
+
+	return &types.GetCanvasHistoryDetailResp{
+		Id:    canvasHistory.Id,
+		Name:  canvasHistory.Name,
+		Graph: graph,
+	}, nil
 }
