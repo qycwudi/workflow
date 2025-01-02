@@ -64,10 +64,10 @@ Content-Type: application/json
 }
 
 ### API调用-单结构
-POST http://127.0.0.1:8889/api/role/v1/ctl4m0t3sjtkr9cvi3eg
+POST http://127.0.0.1:8889/api/role/v1/ctr9h8d3sjtuumdejvng
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 051d029fcb6241deb9a7a32c41e07e39
+Authorization: Bearer 0241411184b34ffe8f0e38d78bb03771
 
 {
     "name": "张三",

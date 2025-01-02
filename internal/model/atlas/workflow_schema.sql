@@ -86,7 +86,8 @@ CREATE TABLE `user_roles` (
     UNIQUE KEY `idx_user_role` (`user_id`,`role_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='用户角色关联表';
 
-CREATE TABLE `workflow_dev`.`canvas_history` (
+-- Create "canvas_history" table
+CREATE TABLE `canvas_history` (
 	`id` INT   NOT NULL   AUTO_INCREMENT  ,
 	`workspace_id` VARCHAR(255)   NOT NULL     ,
 	`draft` JSON   NOT NULL     ,
@@ -94,3 +95,12 @@ CREATE TABLE `workflow_dev`.`canvas_history` (
 	`create_time` DATETIME   NOT NULL     ,
 	PRIMARY KEY  (`id`)  
 ) COMMENT='画布历史表';
+
+-- Create "kv" table
+CREATE TABLE `kv` (
+	`id` INT   NOT NULL   AUTO_INCREMENT  ,
+	`key` VARCHAR(255)   NOT NULL     ,
+	`value` JSON   NOT NULL     ,
+	UNIQUE INDEX `uni_key` (`key` ASC)  ,
+	PRIMARY KEY  (`id`)  
+);

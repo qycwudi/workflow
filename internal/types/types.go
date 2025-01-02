@@ -726,3 +726,50 @@ type GetPermissionTreeRequest struct {
 type GetPermissionTreeResponse struct {
 	List []Permission `json:"list"`
 }
+
+type Kv struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type CreateKvRequest struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type CreateKvResponse struct {
+}
+
+type UpdateKvRequest struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+type UpdateKvResponse struct {
+}
+
+type DeleteKvRequest struct {
+	Key string `json:"key"`
+}
+
+type DeleteKvResponse struct {
+}
+
+type GetKvRequest struct {
+	Key string `json:"key"`
+}
+
+type GetKvResponse struct {
+	Kv Kv `json:"kv"`
+}
+
+type ListKvRequest struct {
+	Current  int64  `json:"current"`
+	PageSize int64  `json:"pageSize"`
+	Key      string `json:"key,optional"`
+}
+
+type ListKvResponse struct {
+	Total int64 `json:"total"`
+	List  []Kv  `json:"list"`
+}

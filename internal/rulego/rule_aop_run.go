@@ -1,6 +1,7 @@
 package rulego
 
 import (
+	"strconv"
 	"time"
 
 	"github.com/rulego/rulego/api/types"
@@ -21,40 +22,9 @@ type RunAop struct {
 }
 
 func (aspect *RunAop) Start(ctx types.RuleContext, msg types.RuleMsg) (types.RuleMsg, error) {
-	if msg.Type == enums.CanvasMsg {
-		// 画布运行
-		logx.Infof("CANVAS START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
-		_, err := RoleChain.svc.SpaceRecordModel.Insert(ctx.GetContext(), &model.SpaceRecord{
-			WorkspaceId:  ctx.RuleChain().GetNodeId().Id,
-			Status:       enums.TraceStatusRunning,
-			SerialNumber: msg.Id,
-			RunTime:      time.Now(),
-			RecordName:   msg.Id,
-			Other:        "{}",
-		})
-		if err != nil {
-			logx.Errorf("create space record err:%s", err.Error())
-			return msg, err
-		}
-	} else {
-		// API 调用
-		logx.Infof("API START ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v", ctx.RuleChain().GetNodeId().Id, "Start", ctx.Self().GetNodeId().Id, msg)
-		_, err := RoleChain.svc.ApiRecordModel.Insert(ctx.GetContext(), &model.ApiRecord{
-			Status:     enums.RecordStatusRunning,
-			TraceId:    msg.Id,
-			Param:      msg.Data,
-			Extend:     "{}",
-			CallTime:   time.Now(),
-			ApiId:      msg.Metadata["api_id"],
-			ApiName:    msg.Metadata["api_name"],
-			SecretyKey: msg.Metadata["secret_key"],
-			ErrorMsg:   "",
-		})
-		if err != nil {
-			logx.Errorf("create api record err:%s", err.Error())
-			return msg, err
-		}
-	}
+	msg.Metadata[msg.Id+"_param"] = msg.Data
+	msg.Metadata["startTime"] = strconv.Itoa(int(time.Now().UnixMilli()))
+	logx.Infof("rulego aop run start:%+v", msg)
 	return msg, nil
 }
 
@@ -67,26 +37,34 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		errMsg = err.Error()
 	}
 	if msg.Type == enums.CanvasMsg {
-		logx.Infof("CANVAS END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
 		// 获取开始时间
 		startTime := msg.Metadata.Values()["startTime"]
 		if startTime == "" {
 			logx.Errorf("start time is empty")
 			startTime = time.Now().Format(time.DateTime)
 		}
-		start, _ := time.ParseInLocation(time.DateTime, startTime, time.Local)
-		duration := time.Since(start).Milliseconds()
-		err = RoleChain.svc.SpaceRecordModel.UpdateStatusBySid(ctx.GetContext(), msg.Id, status, duration)
-		if err != nil {
-			logx.Errorf("update space record status err:%s", err.Error())
-			ctx.TellFailure(msg, err)
+		start, _ := strconv.Atoi(startTime)
+		duration := time.Since(time.UnixMilli(int64(start))).Milliseconds()
+		spaceRecordQueue <- &model.SpaceRecord{
+			SerialNumber: msg.Id,
+			Status:       status,
+			Duration:     duration,
+			WorkspaceId:  ctx.RuleChain().GetNodeId().Id,
+			RunTime:      time.Now(),
+			RecordName:   msg.Id,
+			Other:        "{}",
 		}
 	} else {
-		logx.Infof("API END ruleChainId:%s,flowType:%s,nodeId:%s,msg:%+v,relationType:%s", ctx.RuleChain().GetNodeId().Id, "End", ctx.Self().GetNodeId().Id, msg, relationType)
-		err = RoleChain.svc.ApiRecordModel.UpdateStatusAndResultByTraceId(ctx.GetContext(), msg.Id, status, msg.Data, errMsg)
-		if err != nil {
-			logx.Errorf("update api record status err:%s", err.Error())
-			ctx.TellFailure(msg, err)
+		apiRecordQueue <- &model.ApiRecord{
+			TraceId:    msg.Id,
+			Status:     status,
+			Extend:     msg.Data,
+			Param:      msg.Metadata[msg.Id+"_param"],
+			CallTime:   time.Now(),
+			ApiId:      msg.Metadata["api_id"],
+			ApiName:    msg.Metadata["api_name"],
+			SecretyKey: msg.Metadata["secret_key"],
+			ErrorMsg:   errMsg,
 		}
 	}
 	return msg

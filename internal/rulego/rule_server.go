@@ -34,6 +34,12 @@ func InitRoleServer(trace bool, apiPort int, limitSize int) {
 		log.Fatal(err)
 	}
 	restEndpoint.AddInterceptors(func(router endpoint2.Router, exchange *endpoint.Exchange) bool {
+		startTime := time.Now()
+		defer func() {
+			endTime := time.Now()
+			duration := endTime.Sub(startTime)
+			logx.Infof("请求耗时: %v毫秒", duration.Milliseconds())
+		}()
 
 		// 检查请求体大小  1*1024*1024  1MB
 		if len(exchange.In.Body()) > limitSize*1024*1024 { // 1MB = 1024 * 1024 bytes
@@ -46,35 +52,28 @@ func InitRoleServer(trace bool, apiPort int, limitSize int) {
 			return false
 		}
 
-		// 检查 token
+		// 检查 api 状态和 token
+		chainId := exchange.In.GetParam("chainId")
 		token := exchange.In.Headers().Get("Authorization")
 		if token == "" {
 			exchange.Out.SetStatusCode(http.StatusUnauthorized)
 			exchange.Out.SetBody([]byte("token is required"))
 			return false
 		}
-
-		// 检查 api 状态
-		chainId := exchange.In.GetParam("chainId")
-		var apiName string
-		if api, err := checkApi(chainId); err != nil {
-			exchange.Out.SetStatusCode(http.StatusNotFound)
-			exchange.Out.SetBody([]byte(err.Error()))
-			return false
-		} else {
-			apiName = api.ApiName
-		}
-
-		// 检查 token 是否正确
 		token = strings.TrimPrefix(token, "Bearer ")
-		if err := checkToken(chainId, token); err != nil {
+
+		checkStartTime := time.Now()
+		if err := checkApiAndToken(chainId, token); err != nil {
 			exchange.Out.SetStatusCode(http.StatusUnauthorized)
 			exchange.Out.SetBody([]byte(err.Error()))
 			return false
 		}
+		checkDuration := time.Since(checkStartTime)
+		logx.Infof("检查API和Token耗时: %v毫秒", checkDuration.Milliseconds())
+
 		exchange.In.GetMsg().Metadata["secret_key"] = token
 		exchange.In.GetMsg().Metadata["api_id"] = chainId
-		exchange.In.GetMsg().Metadata["api_name"] = apiName
+		exchange.In.GetMsg().Metadata["api_name"] = chainId
 		return true
 	})
 	_, err = restEndpoint.AddRouter(Route(), "POST")
@@ -125,126 +124,82 @@ func Route() endpoint2.Router {
 	return router
 }
 
-// 检查token
-func checkToken(chainId, secretKey string) error {
-	// 查 token 是否存在且未过期
-	redisKey := fmt.Sprintf(cache.ApiSecretKeyRedisKey, chainId, secretKey)
+// 检查api和token
+func checkApiAndToken(apiId, secretKey string) error {
+	redisKey := fmt.Sprintf(cache.ApiSecretKeyRedisKey, apiId, secretKey)
 	value, err := cache.Redis.Get(context.Background(), redisKey)
 
 	// 如果Redis查询出错(非key不存在)
 	if err != nil && err != red.Nil {
-		logx.Errorf("get token error: %s", err.Error())
-		return errors.New("get token error")
+		logx.Errorf("get api and token error: %s", err.Error())
+		return errors.New("get api and token error")
 	}
 
 	// key不存在,从数据库查询并缓存
 	if err == red.Nil {
-		return checkAndCacheToken(chainId, secretKey, redisKey)
+		return checkAndCacheApiAndToken(apiId, secretKey, redisKey)
 	}
 
-	// Redis中存在,检查token状态
-	return validateTokenStatus(value)
+	// Redis中存在,检查状态
+	return validateApiAndTokenStatus(value)
 }
 
-func checkAndCacheToken(chainId, secretKey, redisKey string) error {
-	logx.Infof("token not exists, create new token")
-	api, err := RoleChain.svc.ApiSecretKeyModel.FindOneByApiIdAndSecretKey(context.Background(), chainId, secretKey)
-	if err != nil {
-		logx.Errorf("this token is not found: %s", err.Error())
-		_ = cache.Redis.Set(context.Background(), redisKey, "0", time.Hour*24)
-		return errors.New("this token is not found")
-	}
+func checkAndCacheApiAndToken(apiId, secretKey, redisKey string) error {
+	logx.Info("api and token not exists in cache, query from db")
 
-	if api.Status != model.ApiSecretKeyStatusOn {
-		logx.Errorf("this token status is off")
-		_ = cache.Redis.Set(context.Background(), redisKey, "-1", time.Hour*24)
-		return errors.New("this token status is off")
-	}
-
-	_ = cache.Redis.Set(context.Background(), redisKey, strconv.Itoa(int(api.ExpirationTime.Unix())), time.Hour*24)
-	return nil
-}
-
-func validateTokenStatus(value string) error {
-	expirationTime, err := strconv.Atoi(value)
-	if err != nil {
-		logx.Errorf("invalid token value: %s", err.Error())
-		return errors.New("this token is not found")
-	}
-
-	switch {
-	case expirationTime == -1:
-		logx.Error("this token status is off")
-		return errors.New("this token status is off")
-	case expirationTime == 0:
-		logx.Error("this token is not found")
-		return errors.New("this token is not found")
-	case time.Now().Unix() > int64(expirationTime):
-		logx.Error("this token is expired")
-		return errors.New("this token is expired")
-	}
-	return nil
-}
-
-// 检查api是否存在且状态正常
-func checkApi(apiId string) (model.Api, error) {
-	redisKey := fmt.Sprintf(cache.ApiInfoRedisKey, apiId)
-	value, err := cache.Redis.Get(context.Background(), redisKey)
-
-	// 如果Redis查询出错(非key不存在)
-	if err != nil && err != red.Nil {
-		logx.Errorf("get api error: %s", err.Error())
-		return model.Api{}, errors.New("get api error")
-	}
-
-	// key不存在,从数据库查询并缓存
-	if err == red.Nil {
-		return checkAndCacheApi(apiId, redisKey)
-	}
-
-	// Redis中存在,检查api状态
-	return validateApiStatus(value)
-}
-
-func checkAndCacheApi(apiId string, redisKey string) (model.Api, error) {
-	logx.Infof("api not exists in cache, query from db")
+	// 检查API
 	api, err := RoleChain.svc.ApiModel.FindOneByApiId(context.Background(), apiId)
 	if err != nil {
 		logx.Errorf("api not found: %s", err.Error())
-		_ = cache.Redis.Set(context.Background(), redisKey, "0", time.Hour*24)
-		return model.Api{}, errors.New("api not found")
+		_ = cache.Redis.Set(context.Background(), redisKey, "api_not_found", time.Hour*24)
+		return errors.New("api not found")
 	}
-
 	if api.Status != model.ApiStatusOn {
 		logx.Errorf("api status is off")
-		_ = cache.Redis.Set(context.Background(), redisKey, "-1", time.Hour*24)
-		return model.Api{}, errors.New("api status is off")
+		_ = cache.Redis.Set(context.Background(), redisKey, "api_off", time.Hour*24)
+		return errors.New("api status is off")
 	}
 
-	// 设置api的dsl为空,因为暂时用不到
-	api.Dsl = "{}"
-	apiJson, _ := json.Marshal(api)
-	_ = cache.Redis.Set(context.Background(), redisKey, string(apiJson), time.Hour*24)
-	return *api, nil
+	// 检查Token
+	token, err := RoleChain.svc.ApiSecretKeyModel.FindOneByApiIdAndSecretKey(context.Background(), apiId, secretKey)
+	if err != nil {
+		logx.Errorf("token not found: %s", err.Error())
+		_ = cache.Redis.Set(context.Background(), redisKey, "token_not_found", time.Hour*24)
+		return errors.New("token not found")
+	}
+	if token.Status != model.ApiSecretKeyStatusOn {
+		logx.Errorf("token status is off")
+		_ = cache.Redis.Set(context.Background(), redisKey, "token_off", time.Hour*24)
+		return errors.New("token status is off")
+	}
+
+	// 缓存过期时间
+	value := fmt.Sprintf("valid:%d", token.ExpirationTime.Unix())
+	_ = cache.Redis.Set(context.Background(), redisKey, value, time.Hour*24)
+	return nil
 }
 
-func validateApiStatus(value string) (model.Api, error) {
-	if value == "0" {
-		return model.Api{}, errors.New("api not found")
-	}
-	if value == "-1" {
-		return model.Api{}, errors.New("api status is off")
-	}
-
-	var api model.Api
-	if err := json.Unmarshal([]byte(value), &api); err != nil {
-		logx.Errorf("invalid api cache: %s", err.Error())
-		return model.Api{}, errors.New("api cache error")
+func validateApiAndTokenStatus(value string) error {
+	switch value {
+	case "api_not_found":
+		return errors.New("api not found")
+	case "api_off":
+		return errors.New("api status is off")
+	case "token_not_found":
+		return errors.New("token not found")
+	case "token_off":
+		return errors.New("token status is off")
 	}
 
-	if api.Status != model.ApiStatusOn {
-		return model.Api{}, errors.New("api status is off")
+	// 检查token过期时间
+	if strings.HasPrefix(value, "valid:") {
+		expireStr := strings.TrimPrefix(value, "valid:")
+		expirationTime, _ := strconv.ParseInt(expireStr, 10, 64)
+		if time.Now().Unix() > expirationTime {
+			return errors.New("token is expired")
+		}
+		return nil
 	}
 
-	return api, nil
+	return errors.New("invalid cache value")
 }

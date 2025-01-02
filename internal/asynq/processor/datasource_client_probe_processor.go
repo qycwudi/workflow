@@ -28,7 +28,7 @@ func (processor *DatasourceClientProbeProcessor) ProcessTask(ctx context.Context
 	total, datasourceList, err := processor.datasourceModel.FindDataSourcePageList(ctx, model.PageListBuilder{
 		Switch: model.DatasourceSwitchOn,
 	}, 1, 9999)
-	if err != nil {
+	if err != nil && err != model.ErrNotFound {
 		logx.Errorf("%s Failed to get datasource list: %v", TOPIC_DATA_SOURCE_CLIENT_PROBE, err)
 		return err
 	}

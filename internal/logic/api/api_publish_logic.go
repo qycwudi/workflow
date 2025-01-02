@@ -16,6 +16,7 @@ import (
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type ApiPublishLogic struct {
@@ -46,7 +47,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 	history, err := l.svcCtx.CanvasHistoryModel.Insert(l.ctx, &model.CanvasHistory{
 		WorkspaceId: req.Id,
 		Draft:       canvas.Draft,
-		Name:        req.ApiName,
+		Name:        utils.FormatDate(time.Now()) + "-" + req.ApiName,
 		CreateTime:  time.Now(),
 	})
 	if err != nil {
@@ -57,26 +58,50 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		return nil, errors.New(int(logic.SystemOrmError), "获取历史版本ID失败")
 	}
 
-	// 1. 解析画布 dsl
 	_, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
-	// 2. 生成 api-id
-	apiId := xid.New().String()
-	_, err = l.svcCtx.ApiModel.Insert(l.ctx, &model.Api{
-		WorkspaceId: req.Id,
-		ApiId:       apiId,
-		ApiName:     req.ApiName,
-		ApiDesc:     req.ApiDesc,
-		Dsl:         string(ruleChain),
-		Status:      model.ApiStatusOn,
-		HistoryId:   int64(historyId),
-		CreateTime:  time.Now(),
-		UpdateTime:  time.Now(),
-	})
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "发布 API 失败")
+	// 查询有没有发布过api
+	api, err := l.svcCtx.ApiModel.FindByWorkspaceId(l.ctx, req.Id)
+	if err != nil && err != sqlc.ErrNotFound {
+		return nil, errors.New(int(logic.SystemStoreError), "查询API失败")
+	}
+	var apiId string
+	if api == nil {
+		apiId = xid.New().String()
+		_, err = l.svcCtx.ApiModel.Insert(l.ctx, &model.Api{
+			WorkspaceId: req.Id,
+			ApiId:       apiId,
+			ApiName:     req.ApiName,
+			ApiDesc:     req.ApiDesc,
+			Dsl:         string(ruleChain),
+			Status:      model.ApiStatusOn,
+			HistoryId:   int64(historyId),
+			CreateTime:  time.Now(),
+			UpdateTime:  time.Now(),
+		})
+		if err != nil {
+			return nil, errors.New(int(logic.SystemError), "发布 API 失败")
+		}
+	} else {
+		apiId = api.ApiId
+		// 如果发布过，则更新
+		err = l.svcCtx.ApiModel.Update(l.ctx, &model.Api{
+			Id:          api.Id,
+			WorkspaceId: api.WorkspaceId,
+			ApiId:       api.ApiId,
+			ApiName:     req.ApiName,
+			ApiDesc:     req.ApiDesc,
+			Dsl:         string(ruleChain),
+			Status:      model.ApiStatusOn,
+			HistoryId:   int64(historyId),
+			CreateTime:  api.CreateTime,
+			UpdateTime:  time.Now(),
+		})
+		if err != nil {
+			return nil, errors.New(int(logic.SystemError), "更新 API 失败")
+		}
 	}
 
 	// 3. 发送加载链服务消息

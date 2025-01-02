@@ -20,6 +20,7 @@ type (
 		FindByOn(ctx context.Context) ([]*Api, error)
 		UpdateStatusByApiId(ctx context.Context, apiId string, status string) error
 		Page(ctx context.Context, current, size int, apiId, name string) (*PageResponse[Api], error)
+		FindByWorkspaceId(ctx context.Context, workspaceId string) (*Api, error)
 	}
 
 	customApiModel struct {
@@ -76,6 +77,20 @@ func (c customApiModel) FindByName(ctx context.Context, name string) (*Api, erro
 	query := fmt.Sprintf("select %s from %s where `api_name` = ? limit 1", apiRows, c.table)
 	var resp Api
 	err := c.conn.QueryRowCtx(ctx, &resp, query, name)
+	switch err {
+	case nil:
+		return &resp, nil
+	case sqlc.ErrNotFound:
+		return nil, ErrNotFound
+	default:
+		return nil, err
+	}
+}
+
+func (c customApiModel) FindByWorkspaceId(ctx context.Context, workspaceId string) (*Api, error) {
+	query := fmt.Sprintf("select %s from %s where `workspace_id` = ? limit 1", apiRows, c.table)
+	var resp Api
+	err := c.conn.QueryRowCtx(ctx, &resp, query, workspaceId)
 	switch err {
 	case nil:
 		return &resp, nil

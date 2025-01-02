@@ -619,7 +619,108 @@ type GetCanvasRunDetailResp struct {
 }
 ```
 
-### 18. "API发布"
+### 18. "保存历史版本"
+
+1. route definition
+
+- Url: /workflow/canvas/history/save
+- Method: POST
+- Request: `SaveCanvasHistoryReq`
+- Response: `SaveCanvasHistoryResp`
+
+2. request definition
+
+
+
+```golang
+type SaveCanvasHistoryReq struct {
+	WorkspaceId string `json:"workspaceId"`
+	Name string `json:"name"`
+	CanvasDraft CanvasDraftRequest `json:"canvasDraft"`
+}
+
+type CanvasDraftRequest struct {
+	Id string `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
+	GlobalParams []map[string]interface{} `json:"globalParams"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type SaveCanvasHistoryResp struct {
+	Id int64 `json:"id"`
+}
+```
+
+### 19. "获取历史版本列表"
+
+1. route definition
+
+- Url: /workflow/canvas/history/list
+- Method: GET
+- Request: `GetCanvasHistoryListReq`
+- Response: `GetCanvasHistoryListResp`
+
+2. request definition
+
+
+
+```golang
+type GetCanvasHistoryListReq struct {
+	WorkspaceId string `json:"workspaceId"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type GetCanvasHistoryListResp struct {
+	Records []CanvasHistoryRecord `json:"records"`
+	Total int64 `json:"total"` // 总记录数
+}
+```
+
+### 20. "获取历史版本详情"
+
+1. route definition
+
+- Url: /workflow/canvas/history/detail
+- Method: GET
+- Request: `GetCanvasHistoryDetailReq`
+- Response: `GetCanvasHistoryDetailResp`
+
+2. request definition
+
+
+
+```golang
+type GetCanvasHistoryDetailReq struct {
+	Id int64 `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type GetCanvasHistoryDetailResp struct {
+	Id int64 `json:"id"`
+	Name string `json:"name"`
+	Graph map[string]interface{} `json:"graph"`
+}
+```
+
+### 21. "API发布"
 
 1. route definition
 
@@ -651,7 +752,7 @@ type ApiPublishResponse struct {
 }
 ```
 
-### 19. "API发布列表"
+### 22. "API发布列表"
 
 1. route definition
 
@@ -687,7 +788,7 @@ type ApiPublishListResponse struct {
 }
 ```
 
-### 20. "APIOnOff"
+### 23. "APIOnOff"
 
 1. route definition
 
@@ -719,7 +820,7 @@ type ApiOnOffResponse struct {
 }
 ```
 
-### 21. "API调用记录"
+### 24. "API调用记录"
 
 1. route definition
 
@@ -755,7 +856,7 @@ type ApiRecordsResponse struct {
 }
 ```
 
-### 22. "secretKeyList"
+### 25. "secretKeyList"
 
 1. route definition
 
@@ -790,7 +891,7 @@ type ApiSecretKeyListResponse struct {
 }
 ```
 
-### 23. "创建API密钥"
+### 26. "创建API密钥"
 
 1. route definition
 
@@ -825,7 +926,7 @@ type ApiSecretKeyCreateResponse struct {
 }
 ```
 
-### 24. "修改API密钥状态"
+### 27. "修改API密钥状态"
 
 1. route definition
 
@@ -857,7 +958,7 @@ type ApiSecretKeyUpdateStatusResponse struct {
 }
 ```
 
-### 25. "修改API密钥到期时间"
+### 28. "修改API密钥到期时间"
 
 1. route definition
 
@@ -889,7 +990,7 @@ type ApiSecretKeyUpdateExpirationTimeResponse struct {
 }
 ```
 
-### 26. "删除API密钥"
+### 29. "删除API密钥"
 
 1. route definition
 
@@ -919,7 +1020,7 @@ type ApiSecretKeyDeleteResponse struct {
 }
 ```
 
-### 27. "组件list"
+### 30. "组件list"
 
 1. route definition
 
@@ -949,7 +1050,7 @@ type ModuleListResponse struct {
 }
 ```
 
-### 28. "组件新建"
+### 31. "组件新建"
 
 1. route definition
 
@@ -982,7 +1083,7 @@ type ModuleNewResponse struct {
 }
 ```
 
-### 29. "组件编辑"
+### 32. "组件编辑"
 
 1. route definition
 
@@ -1016,7 +1117,7 @@ type ModuleEditResponse struct {
 }
 ```
 
-### 30. "数据源列表"
+### 33. "数据源列表"
 
 1. route definition
 
@@ -1054,7 +1155,7 @@ type DatasourceListResponse struct {
 }
 ```
 
-### 31. "新增数据源"
+### 34. "新增数据源"
 
 1. route definition
 
@@ -1087,7 +1188,7 @@ type DatasourceAddResponse struct {
 }
 ```
 
-### 32. "编辑数据源"
+### 35. "编辑数据源"
 
 1. route definition
 
@@ -1121,7 +1222,7 @@ type DatasourceEditResponse struct {
 }
 ```
 
-### 33. "删除数据源"
+### 36. "删除数据源"
 
 1. route definition
 
@@ -1151,7 +1252,7 @@ type DatasourceDeleteResponse struct {
 }
 ```
 
-### 34. "测试数据源"
+### 37. "测试数据源"
 
 1. route definition
 
@@ -1183,7 +1284,7 @@ type DatasourceTestResponse struct {
 }
 ```
 
-### 35. "用户登录"
+### 38. "用户登录"
 
 1. route definition
 
@@ -1214,7 +1315,7 @@ type UserLoginResponse struct {
 }
 ```
 
-### 36. "用户信息"
+### 39. "用户信息"
 
 1. route definition
 
@@ -1240,6 +1341,7 @@ type UserInfoRequest struct {
 ```golang
 type UserInfoResponse struct {
 	User User `json:"user"`
+	RoleName string `json:"roleName"`
 }
 
 type User struct {
@@ -1254,7 +1356,7 @@ type User struct {
 }
 ```
 
-### 37. "用户注册"
+### 40. "用户注册"
 
 1. route definition
 
@@ -1289,7 +1391,7 @@ type UserRegisterResponse struct {
 }
 ```
 
-### 38. "用户退出登录"
+### 41. "用户退出登录"
 
 1. route definition
 
@@ -1317,7 +1419,7 @@ type UserLogoutResponse struct {
 }
 ```
 
-### 39. "获取用户列表"
+### 42. "获取用户列表"
 
 1. route definition
 
@@ -1350,7 +1452,7 @@ type UserListResponse struct {
 }
 ```
 
-### 40. "绑定角色"
+### 43. "绑定角色"
 
 1. route definition
 
@@ -1380,7 +1482,7 @@ type UserBindRoleResponse struct {
 }
 ```
 
-### 41. "创建角色"
+### 44. "创建角色"
 
 1. route definition
 
@@ -1413,7 +1515,7 @@ type CreateRoleResponse struct {
 }
 ```
 
-### 42. "更新角色"
+### 45. "更新角色"
 
 1. route definition
 
@@ -1446,7 +1548,7 @@ type UpdateRoleResponse struct {
 }
 ```
 
-### 43. "删除角色"
+### 46. "删除角色"
 
 1. route definition
 
@@ -1475,7 +1577,7 @@ type DeleteRoleResponse struct {
 }
 ```
 
-### 44. "获取角色详情"
+### 47. "获取角色详情"
 
 1. route definition
 
@@ -1515,7 +1617,7 @@ type Role struct {
 }
 ```
 
-### 45. "获取角色列表"
+### 48. "获取角色列表"
 
 1. route definition
 
@@ -1548,7 +1650,7 @@ type ListRoleResponse struct {
 }
 ```
 
-### 46. "绑定权限"
+### 49. "绑定权限"
 
 1. route definition
 
@@ -1578,7 +1680,7 @@ type BindPermissionResponse struct {
 }
 ```
 
-### 47. "解绑权限"
+### 50. "解绑权限"
 
 1. route definition
 
@@ -1608,7 +1710,7 @@ type UnbindPermissionResponse struct {
 }
 ```
 
-### 48. "获取角色权限"
+### 51. "获取角色权限"
 
 1. route definition
 
@@ -1639,7 +1741,7 @@ type GetRolePermissionResponse struct {
 }
 ```
 
-### 49. "创建权限"
+### 52. "创建权限"
 
 1. route definition
 
@@ -1675,7 +1777,7 @@ type CreatePermissionResponse struct {
 }
 ```
 
-### 50. "更新权限"
+### 53. "更新权限"
 
 1. route definition
 
@@ -1711,7 +1813,7 @@ type UpdatePermissionResponse struct {
 }
 ```
 
-### 51. "删除权限"
+### 54. "删除权限"
 
 1. route definition
 
@@ -1740,7 +1842,7 @@ type DeletePermissionResponse struct {
 }
 ```
 
-### 52. "获取权限详情"
+### 55. "获取权限详情"
 
 1. route definition
 
@@ -1783,7 +1885,7 @@ type Permission struct {
 }
 ```
 
-### 53. "获取权限树"
+### 56. "获取权限树"
 
 1. route definition
 
@@ -1810,6 +1912,163 @@ type GetPermissionTreeRequest struct {
 ```golang
 type GetPermissionTreeResponse struct {
 	List []Permission `json:"list"`
+}
+```
+
+### 57. "创建键值对"
+
+1. route definition
+
+- Url: /workflow/kv/create
+- Method: POST
+- Request: `CreateKvRequest`
+- Response: `CreateKvResponse`
+
+2. request definition
+
+
+
+```golang
+type CreateKvRequest struct {
+	Key string `json:"key"`
+	Value string `json:"value"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type CreateKvResponse struct {
+}
+```
+
+### 58. "更新键值对"
+
+1. route definition
+
+- Url: /workflow/kv/update
+- Method: POST
+- Request: `UpdateKvRequest`
+- Response: `UpdateKvResponse`
+
+2. request definition
+
+
+
+```golang
+type UpdateKvRequest struct {
+	Key string `json:"key"`
+	Value string `json:"value"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UpdateKvResponse struct {
+}
+```
+
+### 59. "删除键值对"
+
+1. route definition
+
+- Url: /workflow/kv/delete
+- Method: POST
+- Request: `DeleteKvRequest`
+- Response: `DeleteKvResponse`
+
+2. request definition
+
+
+
+```golang
+type DeleteKvRequest struct {
+	Key string `json:"key"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type DeleteKvResponse struct {
+}
+```
+
+### 60. "获取键值对详情"
+
+1. route definition
+
+- Url: /workflow/kv/get
+- Method: POST
+- Request: `GetKvRequest`
+- Response: `GetKvResponse`
+
+2. request definition
+
+
+
+```golang
+type GetKvRequest struct {
+	Key string `json:"key"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type GetKvResponse struct {
+	Kv Kv `json:"kv"`
+}
+
+type Kv struct {
+	Key string `json:"key"`
+	Value string `json:"value"`
+}
+```
+
+### 61. "获取键值对列表"
+
+1. route definition
+
+- Url: /workflow/kv/list
+- Method: POST
+- Request: `ListKvRequest`
+- Response: `ListKvResponse`
+
+2. request definition
+
+
+
+```golang
+type ListKvRequest struct {
+	Current int64 `json:"current"`
+	PageSize int64 `json:"pageSize"`
+	Key string `json:"key,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ListKvResponse struct {
+	Total int64 `json:"total"`
+	List []Kv `json:"list"`
 }
 ```
 

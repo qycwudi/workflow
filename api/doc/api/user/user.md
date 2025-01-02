@@ -55,6 +55,7 @@ type UserInfoRequest struct {
 ```golang
 type UserInfoResponse struct {
 	User User `json:"user"`
+	RoleName string `json:"roleName"`
 }
 
 type User struct {

@@ -139,15 +139,29 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 	return result
 }
 
-var traceQueue = make(chan *model.Trace, 10000) // 带缓冲的通道
+var traceQueue = make(chan *model.Trace, 10000)             // 带缓冲的通道
+var spaceRecordQueue = make(chan *model.SpaceRecord, 10000) // 带缓冲的通道
+var apiRecordQueue = make(chan *model.ApiRecord, 10000)     // 带缓冲的通道
 
 func asyncTraceWriter() {
 	for entry := range traceQueue {
-		writeLogEntry(entry)
+		writeTraceLogEntry(entry)
 	}
 }
 
-func writeLogEntry(trace *model.Trace) {
+func asyncSpaceRecordWriter() {
+	for entry := range spaceRecordQueue {
+		writeSpaceRecordLogEntry(entry)
+	}
+}
+
+func asyncApiRecordWriter() {
+	for entry := range apiRecordQueue {
+		writeApiRecordLogEntry(entry)
+	}
+}
+
+func writeTraceLogEntry(trace *model.Trace) {
 	if trace.Status == enum.TraceStatusRunning {
 		// 新增
 		_, err := RoleChain.svc.TraceModel.Insert(context.Background(), trace)
@@ -166,7 +180,23 @@ func writeLogEntry(trace *model.Trace) {
 	}
 }
 
+func writeSpaceRecordLogEntry(spaceRecord *model.SpaceRecord) {
+	_, err := RoleChain.svc.SpaceRecordModel.Insert(context.Background(), spaceRecord)
+	if err != nil {
+		logx.Errorf("roleChain create space record info error: %s", err.Error())
+	}
+}
+
+func writeApiRecordLogEntry(apiRecord *model.ApiRecord) {
+	_, err := RoleChain.svc.ApiRecordModel.Insert(context.Background(), apiRecord)
+	if err != nil {
+		logx.Errorf("roleChain create api record info error: %s", err.Error())
+	}
+}
+
 func init() {
 	logx.Infov("start trace log async store")
 	go asyncTraceWriter()
+	go asyncSpaceRecordWriter()
+	go asyncApiRecordWriter()
 }

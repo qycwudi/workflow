@@ -31,6 +31,7 @@ type ServiceContext struct {
 	UserRolesModel           model.UserRolesModel
 	RolePermissionsModel     model.RolePermissionsModel
 	CanvasHistoryModel       model.CanvasHistoryModel
+	KvModel                  model.KvModel
 	PermissionMiddleware     func(next http.HandlerFunc) http.HandlerFunc
 }
 
@@ -65,6 +66,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		RolePermissionsModel:     model.NewRolePermissionsModel(conn),
 		CanvasHistoryModel:       model.NewCanvasHistoryModel(conn),
 		WorkspaceTagMappingModel: model.NewWorkspaceTagMappingModel(conn),
+		KvModel:                  model.NewKvModel(conn),
 		PermissionMiddleware:     middleware.NewPermissionMiddleware(permissionsModel).Handle,
 	}
 }

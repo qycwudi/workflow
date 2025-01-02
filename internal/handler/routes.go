@@ -7,6 +7,7 @@ import (
 	api "workflow/internal/handler/api"
 	canvas "workflow/internal/handler/canvas"
 	datasource "workflow/internal/handler/datasource"
+	kv "workflow/internal/handler/kv"
 	model "workflow/internal/handler/model"
 	permission "workflow/internal/handler/permission"
 	role "workflow/internal/handler/role"
@@ -377,6 +378,41 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/permission/tree",
 					Handler: permission.GetPermissionTreeHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/create",
+					Handler: kv.CreateKvHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/update",
+					Handler: kv.UpdateKvHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/delete",
+					Handler: kv.DeleteKvHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/get",
+					Handler: kv.GetKvHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/list",
+					Handler: kv.ListKvHandler(serverCtx),
 				},
 			}...,
 		),

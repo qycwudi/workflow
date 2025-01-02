@@ -23,7 +23,7 @@ function randomAge() {
 }
 
 export default function () {
-  const url = 'http://198.19.249.3:9999/api/role/v1/ctdpe7l3sjtsoutieu20';
+  const url = 'http://198.19.249.3:8889/api/role/v1/ctr9h8d3sjtuumdejvng';
   const payload = JSON.stringify({
     "name": randomName(),
     "age": randomAge()
@@ -32,7 +32,7 @@ export default function () {
   const params = {
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer 1ea00ca19d4f47b48c9ed8aec131674d'
+      'Authorization': 'Bearer 0241411184b34ffe8f0e38d78bb03771'
     },
   };
 
