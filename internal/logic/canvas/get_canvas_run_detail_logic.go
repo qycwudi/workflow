@@ -27,7 +27,6 @@ func NewGetCanvasRunDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext)
 }
 
 func (l *GetCanvasRunDetailLogic) GetCanvasRunDetail(req *types.GetCanvasRunDetailReq) (resp *types.GetCanvasRunDetailResp, err error) {
-	l.Infof("GetCanvasRunDetail req:%+v", req)
 
 	traces, err := l.svcCtx.TraceModel.FindByTraceId(l.ctx, req.RecordId)
 	if err != nil {

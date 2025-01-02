@@ -42,6 +42,20 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 	if !errors2.Is(err, sqlc.ErrNotFound) {
 		return nil, errors.New(int(logic.SystemStoreError), "API 名称重复")
 	}
+	// 自动保存一个历史版本
+	history, err := l.svcCtx.CanvasHistoryModel.Insert(l.ctx, &model.CanvasHistory{
+		WorkspaceId: req.Id,
+		Draft:       canvas.Draft,
+		Name:        req.ApiName,
+		CreateTime:  time.Now(),
+	})
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "保存历史版本失败")
+	}
+	historyId, err := history.LastInsertId()
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "获取历史版本ID失败")
+	}
 
 	// 1. 解析画布 dsl
 	_, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
@@ -57,6 +71,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		ApiDesc:     req.ApiDesc,
 		Dsl:         string(ruleChain),
 		Status:      model.ApiStatusOn,
+		HistoryId:   int64(historyId),
 		CreateTime:  time.Now(),
 		UpdateTime:  time.Now(),
 	})

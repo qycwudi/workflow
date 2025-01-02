@@ -26,7 +26,6 @@ func NewGetCanvasRunHistoryLogic(ctx context.Context, svcCtx *svc.ServiceContext
 }
 
 func (l *GetCanvasRunHistoryLogic) GetCanvasRunHistory(req *types.GetCanvasRunHistoryReq) (resp *types.GetCanvasRunHistoryResp, err error) {
-	l.Infof("GetCanvasRunHistory req:%+v", req)
 	// 查询
 	records, err := l.svcCtx.SpaceRecordModel.FindHistory(l.ctx, req.WorkSpaceId)
 	if err != nil {

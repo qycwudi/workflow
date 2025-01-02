@@ -5,6 +5,7 @@ CREATE TABLE `api` (
   `api_name` varchar(255) NOT NULL,
   `api_desc` text NOT NULL,
   `dsl` json NOT NULL,
+  `history_id` int(11) NOT NULL,
   `status` varchar(255) NOT NULL,
   `create_time` datetime NOT NULL,
   `update_time` datetime NOT NULL,
