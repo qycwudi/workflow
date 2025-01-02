@@ -117,6 +117,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/canvas/run/detail/:recordId",
 					Handler: canvas.GetCanvasRunDetailHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/history/save",
+					Handler: canvas.SaveCanvasHistoryHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/canvas/history/list",
+					Handler: canvas.GetCanvasHistoryListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/canvas/history/detail",
+					Handler: canvas.GetCanvasHistoryDetailHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

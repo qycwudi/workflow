@@ -228,6 +228,41 @@ type CanvasDetailResponse struct {
 	Graph map[string]interface{} `json:"graph"`
 }
 
+type SaveCanvasHistoryReq struct {
+	WorkspaceId string             `json:"workspaceId"`
+	Name        string             `json:"name"`
+	CanvasDraft CanvasDraftRequest `json:"canvasDraft"`
+}
+
+type SaveCanvasHistoryResp struct {
+	Id int64 `json:"id"`
+}
+
+type GetCanvasHistoryListReq struct {
+	WorkspaceId string `json:"workspaceId"`
+}
+
+type GetCanvasHistoryListResp struct {
+	Records []CanvasHistoryRecord `json:"records"`
+	Total   int64                 `json:"total"` // 总记录数
+}
+
+type CanvasHistoryRecord struct {
+	Id         int64  `json:"id"`
+	CreateTime string `json:"createTime"`
+	Name       string `json:"name"`
+}
+
+type GetCanvasHistoryDetailReq struct {
+	Id int64 `json:"id"`
+}
+
+type GetCanvasHistoryDetailResp struct {
+	Id    int64                  `json:"id"`
+	Name  string                 `json:"name"`
+	Graph map[string]interface{} `json:"graph"`
+}
+
 type ApiPublishRequest struct {
 	Id      string `json:"id" desc:"空间ID"`
 	ApiName string `json:"apiName" desc:"名称"`

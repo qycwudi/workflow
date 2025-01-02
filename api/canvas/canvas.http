@@ -65,3 +65,14 @@ Content-Type: application/json
   "id": "ctdp4353sjtrlkhmrvb0",
   "nodeId": "jsTransform-af381ef9-cc1c-4419-89d7-a632482c9132"
 }
+
+### 画布-保存历史版本
+POST http://127.0.0.1:8899/workflow/canvas/history/save
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workspaceId": "crvpmf53sjtsppvoiogg",
+  "name": "雪兔测试并行1"
+}
+    

@@ -40,7 +40,7 @@ func (l *UserRegisterLogic) UserRegister(req *types.UserRegisterRequest) (resp *
 		return nil, errors.New(int(logic.SystemOrmError), "用户名已存在")
 	}
 	// 密码加密 - 加入盐值
-	salt := utils.FormatDate(time.Now())
+	salt := time.Now().Format("20060102150405")
 	password := utils.Md5(req.Password + salt)
 	user = &model.Users{
 		Username:  req.Username,

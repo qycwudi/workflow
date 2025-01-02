@@ -110,6 +110,43 @@ type CanvasDetailResponse {
 	Graph map[string]interface{} `json:"graph"`
 }
 
+type SaveCanvasHistoryReq {
+	WorkspaceId string `json:"workspaceId"`
+	Name string `json:"name"`
+	CanvasDraft CanvasDraftRequest `json:"canvasDraft"`
+}
+
+type SaveCanvasHistoryResp {
+	Id int64 `json:"id"`
+}
+
+type GetCanvasHistoryListReq {
+	WorkspaceId string `json:"workspaceId"`
+}
+
+type GetCanvasHistoryListResp {
+	Records []CanvasHistoryRecord `json:"records"`
+	Total   int64               `json:"total"` // 总记录数
+}
+
+type CanvasHistoryRecord {
+	Id int64 `json:"id"`
+	CreateTime string `json:"createTime"`
+	Name string `json:"name"`
+}
+
+type GetCanvasHistoryDetailReq {
+	Id int64 `json:"id"`
+}
+
+type GetCanvasHistoryDetailResp {
+	Id    int64                 `json:"id"`
+	Name  string                 `json:"name"`
+	Graph map[string]interface{} `json:"graph"`
+}
+
+
+
 @server (
 	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
 	group: canvas
@@ -146,5 +183,17 @@ service workflow-api {
 	@doc "获取画布运行详情"
 	@handler getCanvasRunDetail
 	get /canvas/run/detail/:recordId (GetCanvasRunDetailReq) returns (GetCanvasRunDetailResp)
+
+	@doc "保存历史版本"
+	@handler saveCanvasHistory
+	post /canvas/history/save (SaveCanvasHistoryReq) returns (SaveCanvasHistoryResp)
+
+	@doc "获取历史版本列表"
+	@handler getCanvasHistoryList
+	get /canvas/history/list (GetCanvasHistoryListReq) returns (GetCanvasHistoryListResp)
+
+	@doc "获取历史版本详情"
+	@handler getCanvasHistoryDetail
+	get /canvas/history/detail (GetCanvasHistoryDetailReq) returns (GetCanvasHistoryDetailResp)
 }
 

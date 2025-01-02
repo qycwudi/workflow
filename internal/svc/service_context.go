@@ -30,6 +30,7 @@ type ServiceContext struct {
 	PermissionsModel         model.PermissionsModel
 	UserRolesModel           model.UserRolesModel
 	RolePermissionsModel     model.RolePermissionsModel
+	CanvasHistoryModel       model.CanvasHistoryModel
 	PermissionMiddleware     func(next http.HandlerFunc) http.HandlerFunc
 }
 
@@ -45,23 +46,25 @@ func NewServiceContext(c config.Config) *ServiceContext {
 	permissionsModel := model.NewPermissionsModel(conn)
 
 	return &ServiceContext{
-		Config:               c,
-		WorkSpaceModel:       model.NewWorkspaceModel(conn),
-		WorkSpaceTagModel:    model.NewWorkspaceTagModel(conn),
-		ModuleModel:          model.NewModuleModel(conn),
-		CanvasModel:          model.NewCanvasModel(conn),
-		ApiModel:             model.NewApiModel(conn),
-		ApiRecordModel:       model.NewApiRecordModel(conn),
-		ApiSecretKeyModel:    model.NewApiSecretKeyModel(conn),
-		SpaceRecordModel:     model.NewSpaceRecordModel(conn),
-		TraceModel:           model.NewTraceModel(conn),
-		DatasourceModel:      model.NewDatasourceModel(conn),
-		RedisClient:          redisClient,
-		UsersModel:           model.NewUsersModel(conn),
-		RolesModel:           model.NewRolesModel(conn),
-		PermissionsModel:     permissionsModel,
-		UserRolesModel:       model.NewUserRolesModel(conn),
-		RolePermissionsModel: model.NewRolePermissionsModel(conn),
-		PermissionMiddleware: middleware.NewPermissionMiddleware(permissionsModel).Handle,
+		Config:                   c,
+		WorkSpaceModel:           model.NewWorkspaceModel(conn),
+		WorkSpaceTagModel:        model.NewWorkspaceTagModel(conn),
+		ModuleModel:              model.NewModuleModel(conn),
+		CanvasModel:              model.NewCanvasModel(conn),
+		ApiModel:                 model.NewApiModel(conn),
+		ApiRecordModel:           model.NewApiRecordModel(conn),
+		ApiSecretKeyModel:        model.NewApiSecretKeyModel(conn),
+		SpaceRecordModel:         model.NewSpaceRecordModel(conn),
+		TraceModel:               model.NewTraceModel(conn),
+		DatasourceModel:          model.NewDatasourceModel(conn),
+		RedisClient:              redisClient,
+		UsersModel:               model.NewUsersModel(conn),
+		RolesModel:               model.NewRolesModel(conn),
+		PermissionsModel:         permissionsModel,
+		UserRolesModel:           model.NewUserRolesModel(conn),
+		RolePermissionsModel:     model.NewRolePermissionsModel(conn),
+		CanvasHistoryModel:       model.NewCanvasHistoryModel(conn),
+		WorkspaceTagMappingModel: model.NewWorkspaceTagMappingModel(conn),
+		PermissionMiddleware:     middleware.NewPermissionMiddleware(permissionsModel).Handle,
 	}
 }

@@ -11,7 +11,7 @@ func TestMd5(t *testing.T) {
 		args args
 		want string
 	}{
-		{name: "admin", args: args{str: "admin" + "21232f297a57a5a74"}, want: "367c89b4fa60756687a1b1d172ca20d9"},
+		{name: "admin", args: args{str: "21232f297a57a5a743894a0e4a801fc3" + "21232f297a57a5a74"}, want: "3c3d20cf4936b81600306b09ab1f6cf4"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
