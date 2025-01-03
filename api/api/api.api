@@ -92,6 +92,7 @@ type ApiSecretKey {
 type ApiSecretKeyCreateRequest {
 	ApiId          string `json:"apiId"`
 	Name           string `json:"name"`
+	SecretKey      string `json:"secretKey,optional"`
 	ExpirationTime int64  `json:"expirationTime"`
 }
 
@@ -133,13 +134,33 @@ type ApiSecretKeyDeleteResponse {
 	SecretKey string `json:"secretKey"`
 }
 
+type ApiHistoryRequest {
+	WorkspaceId string `json:"workspaceId"`
+	Current     int    `json:"current"`
+	PageSize    int    `json:"pageSize"`
+}
+
+type ApiHistoryResponse {
+	Current  int          `json:"current"`
+	PageSize int          `json:"pageSize"`
+	Total    int64        `json:"total"`
+	List     []ApiHistory `json:"list"`
+}
+
+type ApiHistory {
+	Id          int64  `json:"id"`
+	WorkspaceId string `json:"workspaceId"`
+	Name        string `json:"name"`
+	CreateTime  string `json:"createTime"`
+}
+
 @server (
 	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
 	group: api
 	// 定义路由前缀为 "/v1"
 	prefix: /workflow
 	jwt: Auth // 开启 jwt 认证
-    middleware: PermissionMiddleware // 开启权限认证
+	middleware: PermissionMiddleware // 开启权限认证
 )
 service workflow-api {
 	@doc "API发布"
@@ -177,5 +198,9 @@ service workflow-api {
 	@doc "删除API密钥"
 	@handler ApisecretKeyDeleteHandler
 	post /api/secretkey/delete (ApiSecretKeyDeleteRequest) returns (ApiSecretKeyDeleteResponse)
-}
 
+	@doc "API历史版本"
+	@handler ApiHistoryHandler
+	post /api/history (ApiHistoryRequest) returns (ApiHistoryResponse)
+
+}

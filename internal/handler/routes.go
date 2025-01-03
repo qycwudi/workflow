@@ -188,6 +188,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/api/secretkey/delete",
 					Handler: api.ApisecretKeyDeleteHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/history",
+					Handler: api.ApiHistoryHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

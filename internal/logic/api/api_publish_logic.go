@@ -49,6 +49,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		Draft:       canvas.Draft,
 		Name:        utils.FormatDate(time.Now()) + "-" + req.ApiName,
 		CreateTime:  time.Now(),
+		IsApi:       1,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "保存历史版本失败")

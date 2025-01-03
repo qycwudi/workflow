@@ -13,6 +13,12 @@ atlas schema apply \
   --to "file://workflow_schema.sql" \
   --dev-url "mysql://root:Root@123@10.99.29.9:3306/atlas_database"
 
+  <!-- 同步测试库 -->
+  atlas schema apply \
+  --url "mysql://root:Root@123@10.99.43.9:3306/workflow" \
+  --to "file://workflow_schema.sql" \
+  --dev-url "mysql://root:Root@123@10.99.43.9:3306/atlas_database"
+
 
 <!-- 对比 -->
 atlas schema diff \

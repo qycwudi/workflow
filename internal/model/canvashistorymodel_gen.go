@@ -41,6 +41,7 @@ type (
 		Draft       string    `db:"draft"`
 		Name        string    `db:"name"`
 		CreateTime  time.Time `db:"create_time"`
+		IsApi       int64     `db:"is_api"` // 0-no 1-yes
 	}
 )
 
@@ -79,14 +80,14 @@ func (m *defaultCanvasHistoryModel) FindOne(ctx context.Context, id int64) (*Can
 }
 
 func (m *defaultCanvasHistoryModel) Insert(ctx context.Context, data *CanvasHistory) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?)", m.table, canvasHistoryRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.Draft, data.Name, data.CreateTime)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?)", m.table, canvasHistoryRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.Draft, data.Name, data.CreateTime, data.IsApi)
 	return ret, err
 }
 
 func (m *defaultCanvasHistoryModel) Update(ctx context.Context, data *CanvasHistory) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, canvasHistoryRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.Draft, data.Name, data.CreateTime, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.Draft, data.Name, data.CreateTime, data.IsApi, data.Id)
 	return err
 }
 
