@@ -37,7 +37,11 @@ func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserIn
 	}
 
 	// 获取角色名称
-	role, err := l.svcCtx.RolesModel.FindOneByUserId(l.ctx, user.Id)
+	role, err := l.svcCtx.UserRolesModel.FindOneByUserId(l.ctx, user.Id)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "获取用户角色关系失败")
+	}
+	roleName, err := l.svcCtx.RolesModel.FindOne(l.ctx, role.RoleId)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取角色名称失败")
 	}
@@ -51,6 +55,6 @@ func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserIn
 			Email:    user.Email.String,
 			Status:   user.Status,
 		},
-		RoleName: role.Name,
+		RoleName: roleName.Name,
 	}, nil
 }
