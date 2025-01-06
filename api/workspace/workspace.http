@@ -74,3 +74,30 @@ Content-Type: application/json
 {
   "id": "ctftkoaflvki1l4dkcog"
 }
+
+
+### 画布环境变量列表
+POST http://127.0.0.1:8888/workflow/workspace/env/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYwNTY4NzAsImlhdCI6MTczNTk3MDQ3MCwidXNlcklkIjoxfQ.EjlBJNnhusTWL999OKWekQIIvoWKdOrIhB8k5p17-F0
+
+
+{
+  "id": "ctr5lfd3sjtqhn40t93g"
+}
+
+### 画布环境变量修改
+POST http://127.0.0.1:8888/workflow/workspace/env/edit
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYwNTY4NzAsImlhdCI6MTczNTk3MDQ3MCwidXNlcklkIjoxfQ.EjlBJNnhusTWL999OKWekQIIvoWKdOrIhB8k5p17-F0
+
+
+{
+  "id": "ctr5lfd3sjtqhn40t93g",
+  "env": {
+    "key1": "value1",
+    "key2": "value4"
+  }
+}

@@ -15,9 +15,11 @@ type (
 	PermissionsModel interface {
 		permissionsModel
 		CheckPermission(ctx context.Context, userId int64, path string, method string) (bool, error)
-		GetPermissionTree(ctx context.Context, parentId int64) ([]*Permissions, error)
+		GetPermissionTree(ctx context.Context) ([]*Permissions, error)
 
 		DeleteBindPermission(ctx context.Context, roleId int64, permissionId int64) error
+
+		DeleteByKey(ctx context.Context, key string) error
 	}
 
 	customPermissionsModel struct {
@@ -52,10 +54,10 @@ func (s *defaultPermissionsModel) CheckPermission(ctx context.Context, userId in
 }
 
 // GetPermissionTree 获取权限树
-func (s *defaultPermissionsModel) GetPermissionTree(ctx context.Context, parentId int64) ([]*Permissions, error) {
-	query := fmt.Sprintf("select %s from %s where parent_id = ? order by sort asc", permissionsRows, s.table)
+func (s *defaultPermissionsModel) GetPermissionTree(ctx context.Context) ([]*Permissions, error) {
+	query := fmt.Sprintf("select %s from %s order by sort asc", permissionsRows, s.table)
 	var permissions []*Permissions
-	err := s.conn.QueryRowsCtx(ctx, &permissions, query, parentId)
+	err := s.conn.QueryRowsCtx(ctx, &permissions, query)
 	if err != nil {
 		return nil, err
 	}
@@ -64,7 +66,14 @@ func (s *defaultPermissionsModel) GetPermissionTree(ctx context.Context, parentI
 
 // DeleteBindPermission 删除角色与权限的绑定关系
 func (s *defaultPermissionsModel) DeleteBindPermission(ctx context.Context, roleId int64, permissionId int64) error {
-	query := fmt.Sprintf("delete from %s where `role_id` = ? and `permission_id` = ?", "`role_permissions`")
+	query := fmt.Sprintf("delete from %s where `role_id` = ? and `permission_id` = ?", s.table)
 	_, err := s.conn.ExecCtx(ctx, query, roleId, permissionId)
+	return err
+}
+
+// DeleteByKey 删除权限
+func (s *defaultPermissionsModel) DeleteByKey(ctx context.Context, key string) error {
+	query := fmt.Sprintf("delete from %s where `key` = ?", s.table)
+	_, err := s.conn.ExecCtx(ctx, query, key)
 	return err
 }

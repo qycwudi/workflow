@@ -121,6 +121,23 @@ type WorkSpaceCopyResponse struct {
 	WorkSpaceConfig string `json:"workSpaceConfig"`
 }
 
+type WorkSpaceEnvListRequest struct {
+	Id string `json:"id"`
+}
+
+type WorkSpaceEnvListResponse struct {
+	Env map[string]string `json:"env"`
+}
+
+type WorkSpaceEnvEditRequest struct {
+	Id  string            `json:"id"`
+	Env map[string]string `json:"env"`
+}
+
+type WorkSpaceEnvEditResponse struct {
+	Env map[string]string `json:"env"`
+}
+
 type CanvasRunRequest struct {
 	Id string `json:"id" desc:"空间ID"`
 }
@@ -530,6 +547,8 @@ type User struct {
 	Status    int64  `json:"status"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
+	RoleId    int64  `json:"roleId"`
+	RoleName  string `json:"roleName"`
 }
 
 type UserLoginRequest struct {
@@ -585,6 +604,25 @@ type UserListRequest struct {
 type UserListResponse struct {
 	Total int64  `json:"total"`
 	List  []User `json:"list"`
+}
+
+type UserUpdateStatusRequest struct {
+	UserId int64 `json:"userId"`
+	Status int64 `json:"status" comment:"状态 1:正常 0:禁用"`
+}
+
+type UserUpdateStatusResponse struct {
+}
+
+type UserUpdateInfoRequest struct {
+	UserId   int64  `json:"userId"`
+	Username string `json:"username,optional"`
+	Phone    string `json:"phone,optional"`
+	Email    string `json:"email,optional"`
+	Password string `json:"password,optional"`
+}
+
+type UserUpdateInfoResponse struct {
 }
 
 type Role struct {
@@ -662,8 +700,7 @@ type UnbindPermissionResponse struct {
 }
 
 type GetRolePermissionRequest struct {
-	RoleId   int64 `json:"roleId"`
-	ParentId int64 `json:"parentId,optional"`
+	RoleId int64 `json:"roleId"`
 }
 
 type GetRolePermissionResponse struct {
@@ -671,40 +708,41 @@ type GetRolePermissionResponse struct {
 }
 
 type RolePermissions struct {
-	Id            int64  `json:"id"`
-	Name          string `json:"name"`
-	Code          string `json:"code"`
-	Type          int64  `json:"type"`
-	ParentId      int64  `json:"parentId,optional"`
-	Path          string `json:"path,optional"`
-	Method        string `json:"method,optional"`
-	Sort          int64  `json:"sort,optional"`
-	HasPermission bool   `json:"hasPermission"`
-	CreatedAt     string `json:"createdAt"`
-	UpdatedAt     string `json:"updatedAt"`
+	Id            int64             `json:"id"`
+	Title         string            `json:"title"`
+	Key           string            `json:"key"`
+	Type          int64             `json:"type"`
+	ParentKey     string            `json:"parentKey,optional"`
+	Path          string            `json:"path,optional"`
+	Method        string            `json:"method,optional"`
+	Sort          int64             `json:"sort,optional"`
+	HasPermission bool              `json:"hasPermission"`
+	CreatedAt     string            `json:"createdAt"`
+	UpdatedAt     string            `json:"updatedAt"`
+	Children      []RolePermissions `json:"children"`
 }
 
 type Permission struct {
-	Id        int64  `json:"id"`
-	Name      string `json:"name"`
-	Code      string `json:"code"`
-	Type      int64  `json:"type"`
-	ParentId  int64  `json:"parentId,optional"`
-	Path      string `json:"path,optional"`
-	Method    string `json:"method,optional"`
-	Sort      int64  `json:"sort,optional"`
-	CreatedAt string `json:"createdAt"`
-	UpdatedAt string `json:"updatedAt"`
+	Title     string       `json:"title"`
+	Key       string       `json:"key"`
+	Type      int64        `json:"type"`
+	ParentKey string       `json:"parentKey,optional"`
+	Path      string       `json:"path,optional"`
+	Method    string       `json:"method,optional"`
+	Sort      int64        `json:"sort,optional"`
+	CreatedAt string       `json:"createdAt"`
+	UpdatedAt string       `json:"updatedAt"`
+	Children  []Permission `json:"children,optional"`
 }
 
 type CreatePermissionRequest struct {
-	Name     string `json:"name"`
-	Code     string `json:"code"`
-	Type     int64  `json:"type"`
-	ParentId int64  `json:"parentId,optional"`
-	Path     string `json:"path,optional"`
-	Method   string `json:"method,optional"`
-	Sort     int64  `json:"sort,optional"`
+	Title     string `json:"title"`
+	Key       string `json:"key"`
+	Type      int64  `json:"type"`
+	ParentKey string `json:"parentKey,optional"`
+	Path      string `json:"path,optional"`
+	Method    string `json:"method,optional"`
+	Sort      int64  `json:"sort,optional"`
 }
 
 type CreatePermissionResponse struct {
@@ -712,28 +750,27 @@ type CreatePermissionResponse struct {
 }
 
 type UpdatePermissionRequest struct {
-	Id       int64  `json:"id"`
-	Name     string `json:"name,optional"`
-	Code     string `json:"code,optional"`
-	Type     int64  `json:"type,optional"`
-	ParentId int64  `json:"parentId,optional"`
-	Path     string `json:"path,optional"`
-	Method   string `json:"method,optional"`
-	Sort     int64  `json:"sort,optional"`
+	Key       string `json:"key"`
+	Title     string `json:"title,optional"`
+	Type      int64  `json:"type,optional"`
+	ParentKey string `json:"parentKey,optional"`
+	Path      string `json:"path,optional"`
+	Method    string `json:"method,optional"`
+	Sort      int64  `json:"sort,optional"`
 }
 
 type UpdatePermissionResponse struct {
 }
 
 type DeletePermissionRequest struct {
-	Id int64 `json:"id"`
+	Key string `json:"key"`
 }
 
 type DeletePermissionResponse struct {
 }
 
 type GetPermissionRequest struct {
-	Id int64 `json:"id"`
+	Key string `json:"key"`
 }
 
 type GetPermissionResponse struct {
@@ -741,7 +778,7 @@ type GetPermissionResponse struct {
 }
 
 type GetPermissionTreeRequest struct {
-	ParentId int64 `json:"parentId,optional"`
+	ParentKey string `json:"parentKey,optional"`
 }
 
 type GetPermissionTreeResponse struct {

@@ -18,6 +18,7 @@ type (
 		rolesModel
 		FindPage(ctx context.Context, name string, current, pageSize int64) ([]*Roles, int64, error)
 		FindOneByUserId(ctx context.Context, userId int64) (*Roles, error)
+		FindByRoleIds(ctx context.Context, roleIds []int64) ([]*Roles, error)
 	}
 
 	customRolesModel struct {
@@ -85,4 +86,19 @@ func (c customRolesModel) FindOneByUserId(ctx context.Context, userId int64) (*R
 		return nil, err
 	}
 	return &resp, nil
+}
+func (c customRolesModel) FindByRoleIds(ctx context.Context, roleIds []int64) ([]*Roles, error) {
+	// 将 roleIds 转换为逗号分隔的字符串
+	var idStr string
+	for i, id := range roleIds {
+		if i == 0 {
+			idStr = fmt.Sprintf("%d", id)
+		} else {
+			idStr = fmt.Sprintf("%s,%d", idStr, id)
+		}
+	}
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE `id` IN (%s)", rolesRows, c.table, idStr)
+	var resp []*Roles
+	err := c.conn.QueryRowsCtx(ctx, &resp, query)
+	return resp, err
 }

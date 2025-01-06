@@ -29,13 +29,22 @@ func NewCreatePermissionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *CreatePermissionLogic) CreatePermission(req *types.CreatePermissionRequest) (resp *types.CreatePermissionResponse, err error) {
-	permission, err := l.svcCtx.PermissionsModel.Insert(l.ctx, &model.Permissions{
-		Name:      req.Name,
-		Code:      req.Code,
+	// 查询是否存在
+	permission, err := l.svcCtx.PermissionsModel.FindOneByKey(l.ctx, req.Key)
+	if err != nil && err != sql.ErrNoRows {
+		return nil, errors.New(int(logic.SystemOrmError), "创建权限失败")
+	}
+	if permission != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "权限已存在")
+	}
+
+	newPermission, err := l.svcCtx.PermissionsModel.Insert(l.ctx, &model.Permissions{
+		Title:     req.Title,
+		Key:       req.Key,
 		Type:      req.Type,
-		ParentId:  sql.NullInt64{Int64: req.ParentId, Valid: req.ParentId != 0},
-		Path:      sql.NullString{String: req.Path, Valid: req.Path != ""},
-		Method:    sql.NullString{String: req.Method, Valid: req.Method != ""},
+		ParentKey: req.ParentKey,
+		Path:      sql.NullString{String: req.Path, Valid: true},
+		Method:    sql.NullString{String: req.Method, Valid: true},
 		Sort:      req.Sort,
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
@@ -43,7 +52,7 @@ func (l *CreatePermissionLogic) CreatePermission(req *types.CreatePermissionRequ
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "创建权限失败")
 	}
-	id, err := permission.LastInsertId()
+	id, err := newPermission.LastInsertId()
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "创建权限失败")
 	}

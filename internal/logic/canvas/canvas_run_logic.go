@@ -76,9 +76,17 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 
 func (l *CanvasRunLogic) readMetadata(canvasId string) (map[string]string, error) {
 	// 读取环境变量
+	workspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceId(l.ctx, canvasId)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "查询空间失败")
+	}
+	metadata := make(map[string]string)
+	err = json.Unmarshal([]byte(workspace.Configuration), &metadata)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "解析环境变量失败")
+	}
 
 	// 初始化值
-	metadata := make(map[string]string)
 	metadata["traceId"] = uuid.New().String()
 	metadata["startTime"] = time.Now().Format("2006-01-02 15:04:05")
 	return metadata, nil

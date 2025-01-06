@@ -26,8 +26,11 @@ func NewDeletePermissionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *DeletePermissionLogic) DeletePermission(req *types.DeletePermissionRequest) (resp *types.DeletePermissionResponse, err error) {
-
-	err = l.svcCtx.PermissionsModel.Delete(l.ctx, req.Id)
+	// 如果是root节点,则不能删除
+	if req.Key == "root" {
+		return nil, errors.New(int(logic.SystemOrmError), "根节点不能删除")
+	}
+	err = l.svcCtx.PermissionsModel.DeleteByKey(l.ctx, req.Key)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "删除权限失败")
 	}

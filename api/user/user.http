@@ -35,12 +35,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4NzUwN
 POST http://127.0.0.1:8888/workflow/user/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4NzUwNTUsImlhdCI6MTczNTc4ODY1NSwidXNlcklkIjoxfQ.KK2pD8Jkk_BoAxuEqlpTVmVbjhIy1aM7XvwNTTvatpA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYwNTY4NzAsImlhdCI6MTczNTk3MDQ3MCwidXNlcklkIjoxfQ.EjlBJNnhusTWL999OKWekQIIvoWKdOrIhB8k5p17-F0
 
 {
   "current": 1,
   "pageSize": 10,
-  "username": "admin"
+  "username": ""
 }
 
 ### 绑定用户角色

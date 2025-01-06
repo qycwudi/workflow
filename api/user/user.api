@@ -1,23 +1,25 @@
 syntax = "v1"
 
 type User {
-    Id int64 `json:"id"`
-    Username string `json:"username"`
-    RealName string `json:"realName"`
-    Phone string `json:"phone"`
-    Email string `json:"email"`
-    Status int64 `json:"status"`
-    CreatedAt string `json:"createdAt"`
-    UpdatedAt string `json:"updatedAt"`
+	Id        int64  `json:"id"`
+	Username  string `json:"username"`
+	RealName  string `json:"realName"`
+	Phone     string `json:"phone"`
+	Email     string `json:"email"`
+	Status    int64  `json:"status"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
+	RoleId    int64  `json:"roleId"`
+	RoleName  string `json:"roleName"`
 }
 
 type UserLoginRequest {
-    Username string `json:"username"`
-    Password string `json:"password"`
+	Username string `json:"username"`
+	Password string `json:"password"`
 }
 
 type UserLoginResponse {
-    Token string `json:"token"`
+	Token string `json:"token"`
 }
 
 type UserLogoutRequest {
@@ -30,82 +32,109 @@ type UserInfoRequest {
 }
 
 type UserInfoResponse {
-    User User `json:"user"`
+	User     User   `json:"user"`
 	RoleName string `json:"roleName"`
 }
 
 type UserRegisterRequest {
-    Username string `json:"username"`
-    Password string `json:"password"`
-    RealName string `json:"realName,optional"`
-    Phone string `json:"phone,optional"`
-    Email string `json:"email,optional"`
-    Status int64 `json:"status,optional"`
+	Username string `json:"username"`
+	Password string `json:"password"`
+	RealName string `json:"realName,optional"`
+	Phone    string `json:"phone,optional"`
+	Email    string `json:"email,optional"`
+	Status   int64  `json:"status,optional"`
 }
 
 type UserRegisterResponse {
-    Token string `json:"token"`
+	Token string `json:"token"`
 }
 
 type UserBindRoleRequest {
-    UserId int64 `json:"userId"`
-    RoleId int64 `json:"roleId"`
+	UserId int64 `json:"userId"`
+	RoleId int64 `json:"roleId"`
 }
 
 type UserBindRoleResponse {
 }   
 
 type UserListRequest {
-    Current int64 `json:"current"`
-    PageSize int64 `json:"pageSize"`
-    Username string `json:"username,optional"`
+	Current  int64  `json:"current"`
+	PageSize int64  `json:"pageSize"`
+	Username string `json:"username,optional"`
 }
 
 type UserListResponse {
-    Total int64 `json:"total"`
-    List []User `json:"list"`
+	Total int64  `json:"total"`
+	List  []User `json:"list"`
+}
+
+type UserUpdateStatusRequest {
+	UserId int64 `json:"userId"`
+	Status int64 `json:"status" comment:"状态 1:正常 0:禁用"`
+}
+
+type UserUpdateStatusResponse {
+}
+
+type UserUpdateInfoRequest {
+	UserId   int64  `json:"userId"`
+	Username string `json:"username,optional"`
+	Phone    string `json:"phone,optional"`
+	Email    string `json:"email,optional"`
+	Password string `json:"password,optional"`
+}
+
+type UserUpdateInfoResponse {
 }
 
 @server (
-    // 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
-    group: user
-    // 定义路由前缀为 "/v1"
-    prefix: /workflow
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: user
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
 )
 
 service workflow-api {
-    @doc "用户登录"
-    @handler UserLoginHandler
-    post /user/login (UserLoginRequest) returns (UserLoginResponse)
+	@doc "用户登录"
+	@handler UserLoginHandler
+	post /user/login (UserLoginRequest) returns (UserLoginResponse)
 }
 
 @server (
-    // 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
-    group: user
-    // 定义路由前缀为 "/v1"
-    prefix: /workflow
-    jwt: Auth // 开启 jwt 认证
-    middleware: PermissionMiddleware // 开启权限认证
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: user
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+	jwt: Auth // 开启 jwt 认证
+	middleware: PermissionMiddleware // 开启权限认证
 )
 
 service workflow-api {
-    @doc "用户信息"
-    @handler UserInfoHandler
-    post /user/info (UserInfoRequest) returns (UserInfoResponse)
+	@doc "用户信息"
+	@handler UserInfoHandler
+	post /user/info (UserInfoRequest) returns (UserInfoResponse)
 
-    @doc "用户注册"
-    @handler UserRegisterHandler
-    post /user/register (UserRegisterRequest) returns (UserRegisterResponse)
+	@doc "用户注册"
+	@handler UserRegisterHandler
+	post /user/register (UserRegisterRequest) returns (UserRegisterResponse)
 
-    @doc "用户退出登录"
-    @handler UserLogoutHandler
-    post /user/logout (UserLogoutRequest) returns (UserLogoutResponse)
+	@doc "用户退出登录"
+	@handler UserLogoutHandler
+	post /user/logout (UserLogoutRequest) returns (UserLogoutResponse)
 
-    @doc "获取用户列表"
-    @handler UserListHandler
-    post /user/list (UserListRequest) returns (UserListResponse)
+	@doc "获取用户列表"
+	@handler UserListHandler
+	post /user/list (UserListRequest) returns (UserListResponse)
 
-    @doc "绑定角色"
-    @handler UserBindRoleHandler
-    post /user/bindrole (UserBindRoleRequest) returns (UserBindRoleResponse)
+	@doc "绑定角色"
+	@handler UserBindRoleHandler
+	post /user/bindrole (UserBindRoleRequest) returns (UserBindRoleResponse)
+
+	@doc "修改用户状态"
+	@handler UserUpdateStatusHandler
+	post /user/update/status (UserUpdateStatusRequest) returns (UserUpdateStatusResponse)
+
+	@doc "更新用户信息"
+	@handler UserUpdateInfoHandler
+	post /user/update/info (UserUpdateInfoRequest) returns (UserUpdateInfoResponse)
 }

@@ -26,7 +26,7 @@ type (
 	permissionsModel interface {
 		Insert(ctx context.Context, data *Permissions) (sql.Result, error)
 		FindOne(ctx context.Context, id int64) (*Permissions, error)
-		FindOneByCode(ctx context.Context, code string) (*Permissions, error)
+		FindOneByKey(ctx context.Context, key string) (*Permissions, error)
 		Update(ctx context.Context, data *Permissions) error
 		Delete(ctx context.Context, id int64) error
 	}
@@ -38,13 +38,13 @@ type (
 
 	Permissions struct {
 		Id        int64          `db:"id"`
-		Name      string         `db:"name"`      // 权限名称
-		Code      string         `db:"code"`      // 权限编码
-		Type      int64          `db:"type"`      // 类型 1:菜单 2:按钮 3:接口
-		ParentId  sql.NullInt64  `db:"parent_id"` // 父级ID
-		Path      sql.NullString `db:"path"`      // 路径
-		Method    sql.NullString `db:"method"`    // HTTP方法
-		Sort      int64          `db:"sort"`      // 排序
+		Title     string         `db:"title"`      // 权限名称
+		Key       string         `db:"key"`        // 权限编码
+		Type      int64          `db:"type"`       // 类型 1:菜单 2:按钮 3:接口
+		ParentKey string         `db:"parent_key"` // 父级权限编码
+		Path      sql.NullString `db:"path"`       // 路径
+		Method    sql.NullString `db:"method"`     // HTTP方法
+		Sort      int64          `db:"sort"`       // 排序
 		CreatedAt time.Time      `db:"created_at"`
 		UpdatedAt time.Time      `db:"updated_at"`
 	}
@@ -84,10 +84,10 @@ func (m *defaultPermissionsModel) FindOne(ctx context.Context, id int64) (*Permi
 	}
 }
 
-func (m *defaultPermissionsModel) FindOneByCode(ctx context.Context, code string) (*Permissions, error) {
+func (m *defaultPermissionsModel) FindOneByKey(ctx context.Context, key string) (*Permissions, error) {
 	var resp Permissions
-	query := fmt.Sprintf("select %s from %s where `code` = ? limit 1", permissionsRows, m.table)
-	err := m.conn.QueryRowCtx(ctx, &resp, query, code)
+	query := fmt.Sprintf("select %s from %s where `key` = ? limit 1", permissionsRows, m.table)
+	err := m.conn.QueryRowCtx(ctx, &resp, query, key)
 	switch err {
 	case nil:
 		return &resp, nil
@@ -100,13 +100,13 @@ func (m *defaultPermissionsModel) FindOneByCode(ctx context.Context, code string
 
 func (m *defaultPermissionsModel) Insert(ctx context.Context, data *Permissions) (sql.Result, error) {
 	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, permissionsRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Name, data.Code, data.Type, data.ParentId, data.Path, data.Method, data.Sort, data.CreatedAt, data.UpdatedAt)
+	ret, err := m.conn.ExecCtx(ctx, query, data.Title, data.Key, data.Type, data.ParentKey, data.Path, data.Method, data.Sort, data.CreatedAt, data.UpdatedAt)
 	return ret, err
 }
 
 func (m *defaultPermissionsModel) Update(ctx context.Context, newData *Permissions) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, permissionsRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.Name, newData.Code, newData.Type, newData.ParentId, newData.Path, newData.Method, newData.Sort, newData.CreatedAt, newData.UpdatedAt, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.Title, newData.Key, newData.Type, newData.ParentKey, newData.Path, newData.Method, newData.Sort, newData.CreatedAt, newData.UpdatedAt, newData.Id)
 	return err
 }
 

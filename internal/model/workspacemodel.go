@@ -56,6 +56,10 @@ func (c customWorkspaceModel) UpdateByWorkspaceId(ctx context.Context, data *Wor
 		setters = append(setters, "`update_time` = ?")
 		args = append(args, data.UpdateTime)
 	}
+	if data.Configuration != "" {
+		setters = append(setters, "`configuration` = ?")
+		args = append(args, data.Configuration)
+	}
 
 	// 构建最终的SQL语句
 	query := fmt.Sprintf("UPDATE %s SET %s WHERE `workspace_id` = ?", c.table, strings.Join(setters, ", "))

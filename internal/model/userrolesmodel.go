@@ -15,6 +15,7 @@ type (
 	UserRolesModel interface {
 		userRolesModel
 		FindOneByUserId(ctx context.Context, userId int64) (*UserRoles, error)
+		FindByUserIds(ctx context.Context, userIds []int64) ([]*UserRoles, error)
 	}
 
 	customUserRolesModel struct {
@@ -39,4 +40,20 @@ func (m *customUserRolesModel) FindOneByUserId(ctx context.Context, userId int64
 	default:
 		return nil, err
 	}
+}
+
+func (m *customUserRolesModel) FindByUserIds(ctx context.Context, userIds []int64) ([]*UserRoles, error) {
+	// 将 userIds 转换为逗号分隔的字符串
+	var idStr string
+	for i, id := range userIds {
+		if i == 0 {
+			idStr = fmt.Sprintf("%d", id)
+		} else {
+			idStr = fmt.Sprintf("%s,%d", idStr, id)
+		}
+	}
+	query := fmt.Sprintf("SELECT %s FROM %s WHERE `user_id` IN (%s)", userRolesRows, m.table, idStr)
+	var resp []*UserRoles
+	err := m.conn.QueryRowsCtx(ctx, &resp, query)
+	return resp, err
 }

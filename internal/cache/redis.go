@@ -16,6 +16,12 @@ const (
 	ApiSecretKeyRedisKey       = ApiSecretKeyPrefixRedisKey + "%s"
 )
 
+// 环境变量缓存
+const (
+	EnvPrefixRedisKey = "env:"
+	EnvRedisKey       = EnvPrefixRedisKey + "%s"
+)
+
 type RedisCache struct {
 	client redis.UniversalClient
 }

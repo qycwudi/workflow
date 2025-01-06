@@ -73,6 +73,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/workspace/copy",
 					Handler: workspace.WorkSpaceCopyHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/env/list",
+					Handler: workspace.WorkSpaceEnvListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/env/edit",
+					Handler: workspace.WorkSpaceEnvEditHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
@@ -298,6 +308,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/user/bindrole",
 					Handler: user.UserBindRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/update/status",
+					Handler: user.UserUpdateStatusHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/update/info",
+					Handler: user.UserUpdateInfoHandler(serverCtx),
 				},
 			}...,
 		),

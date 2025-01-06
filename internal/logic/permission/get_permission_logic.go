@@ -27,17 +27,16 @@ func NewGetPermissionLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Get
 }
 
 func (l *GetPermissionLogic) GetPermission(req *types.GetPermissionRequest) (resp *types.GetPermissionResponse, err error) {
-	permission, err := l.svcCtx.PermissionsModel.FindOne(l.ctx, req.Id)
+	permission, err := l.svcCtx.PermissionsModel.FindOneByKey(l.ctx, req.Key)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取权限失败")
 	}
 	return &types.GetPermissionResponse{
 		Permission: types.Permission{
-			Id:        permission.Id,
-			Name:      permission.Name,
-			Code:      permission.Code,
+			Title:     permission.Title,
+			Key:       permission.Key,
 			Type:      permission.Type,
-			ParentId:  permission.ParentId.Int64,
+			ParentKey: permission.ParentKey,
 			Path:      permission.Path.String,
 			Method:    permission.Method.String,
 			Sort:      permission.Sort,

@@ -3,6 +3,7 @@ package api
 import (
 	"context"
 	errors2 "errors"
+	"fmt"
 	"time"
 
 	"github.com/rs/xid"
@@ -10,6 +11,7 @@ import (
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/x/errors"
 
+	"workflow/internal/cache"
 	"workflow/internal/logic"
 	"workflow/internal/model"
 	"workflow/internal/pubsub"
@@ -112,6 +114,11 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")
+	}
+	// 删除redis缓存
+	err = cache.Redis.Del(l.ctx, fmt.Sprintf(cache.EnvRedisKey, apiId))
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "删除API环境变量缓存失败")
 	}
 
 	resp = &types.ApiPublishResponse{ApiId: apiId}

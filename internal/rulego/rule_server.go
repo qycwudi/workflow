@@ -70,7 +70,11 @@ func InitRoleServer(trace bool, apiPort int, limitSize int) {
 		}
 		checkDuration := time.Since(checkStartTime)
 		logx.Infof("检查API和Token耗时: %v毫秒", checkDuration.Milliseconds())
-
+		// 设置metadata
+		env := getApiEnvCache(chainId)
+		for k, v := range env {
+			exchange.In.GetMsg().Metadata[k] = v
+		}
 		exchange.In.GetMsg().Metadata["secret_key"] = token
 		exchange.In.GetMsg().Metadata["api_id"] = chainId
 		exchange.In.GetMsg().Metadata["api_name"] = chainId
@@ -122,6 +126,43 @@ func Route() endpoint2.Router {
 			return true
 		}).End()
 	return router
+}
+
+// 读取环境变量缓存
+func getApiEnvCache(chainId string) map[string]string {
+	var env map[string]string
+	value, err := cache.Redis.Get(context.Background(), fmt.Sprintf(cache.EnvRedisKey, chainId))
+	if err != nil {
+		if err == red.Nil {
+			logx.Errorf("Create new API environment variable cache %v", err)
+			api, err := RoleChain.svc.ApiModel.FindOneByApiId(context.Background(), chainId)
+			if err != nil {
+				logx.Errorf("Failed to query API from database: %v", err)
+			}
+			// 查询API的环境变量
+			workspace, err := RoleChain.svc.WorkSpaceModel.FindOneByWorkspaceId(context.Background(), api.WorkspaceId)
+			if err != nil {
+				logx.Errorf("Failed to query workspace from database: %v", err)
+			}
+			err = json.Unmarshal([]byte(workspace.Configuration), &env)
+			if err != nil {
+				logx.Errorf("Failed to parse workspace configuration: %v", err)
+			}
+			// 缓存环境变量
+			err = cache.Redis.Set(context.Background(), fmt.Sprintf(cache.EnvRedisKey, chainId), workspace.Configuration, time.Hour*24)
+			if err != nil {
+				logx.Errorf("Failed to set API environment variable cache: %v", err)
+			}
+		} else {
+			logx.Errorf("Failed to read API environment variable from Redis cache: %v", err)
+		}
+	} else {
+		err = json.Unmarshal([]byte(value), &env)
+		if err != nil {
+			logx.Errorf("Failed to parse API environment variable from Redis cache: %v", err)
+		}
+	}
+	return env
 }
 
 // 检查api和token
