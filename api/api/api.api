@@ -47,7 +47,10 @@ type ApiRecordsRequest {
 	Current  int    `json:"current"`
 	PageSize int    `json:"pageSize"`
 	ApiId    string `json:"apiId,optional" desc:"apiId"`
-	ApiName  string `json:"apiName,optional" desc:"api名称"`
+	StartTime int64 `json:"startTime,optional" desc:"开始时间"`
+	EndTime   int64 `json:"endTime,optional" desc:"结束时间"`
+	Request   string `json:"request,optional" desc:"请求参数"`
+	Response  string `json:"response,optional" desc:"响应参数"`
 }
 
 type ApiRecordsResponse {

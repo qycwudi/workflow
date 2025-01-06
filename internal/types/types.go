@@ -126,16 +126,20 @@ type WorkSpaceEnvListRequest struct {
 }
 
 type WorkSpaceEnvListResponse struct {
-	Env map[string]string `json:"env"`
+	EnvList []EnvList `json:"envList"`
+}
+
+type EnvList struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
 }
 
 type WorkSpaceEnvEditRequest struct {
-	Id  string            `json:"id"`
-	Env map[string]string `json:"env"`
+	Id  string    `json:"id"`
+	Env []EnvList `json:"env"`
 }
 
 type WorkSpaceEnvEditResponse struct {
-	Env map[string]string `json:"env"`
 }
 
 type CanvasRunRequest struct {
@@ -220,9 +224,8 @@ type ComponentDetail struct {
 }
 
 type CanvasDraftRequest struct {
-	Id           string                   `json:"id"`
-	Graph        map[string]interface{}   `json:"graph"`
-	GlobalParams []map[string]interface{} `json:"globalParams"`
+	Id    string                 `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
 }
 
 type CanvasDraftResponse struct {
@@ -246,9 +249,8 @@ type CanvasDetailResponse struct {
 }
 
 type SaveCanvasHistoryReq struct {
-	WorkspaceId string             `json:"workspaceId"`
-	Name        string             `json:"name"`
-	CanvasDraft CanvasDraftRequest `json:"canvasDraft"`
+	WorkspaceId string `json:"workspaceId"`
+	Name        string `json:"name"`
 }
 
 type SaveCanvasHistoryResp struct {
@@ -256,7 +258,10 @@ type SaveCanvasHistoryResp struct {
 }
 
 type GetCanvasHistoryListReq struct {
+	Name        string `json:"name,optional"`
 	WorkspaceId string `json:"workspaceId"`
+	Current     int    `json:"current"`
+	PageSize    int    `json:"pageSize"`
 }
 
 type GetCanvasHistoryListResp struct {
@@ -278,6 +283,15 @@ type GetCanvasHistoryDetailResp struct {
 	Id    int64                  `json:"id"`
 	Name  string                 `json:"name"`
 	Graph map[string]interface{} `json:"graph"`
+}
+
+type RestoreCanvasHistoryReq struct {
+	Id int64 `json:"id"`
+}
+
+type RestoreCanvasHistoryResp struct {
+	Id          int64  `json:"id"`
+	WorkspaceId string `json:"workspaceId"`
 }
 
 type ApiPublishRequest struct {
@@ -324,10 +338,13 @@ type ApiOnOffResponse struct {
 }
 
 type ApiRecordsRequest struct {
-	Current  int    `json:"current"`
-	PageSize int    `json:"pageSize"`
-	ApiId    string `json:"apiId,optional" desc:"apiId"`
-	ApiName  string `json:"apiName,optional" desc:"api名称"`
+	Current   int    `json:"current"`
+	PageSize  int    `json:"pageSize"`
+	ApiId     string `json:"apiId,optional" desc:"apiId"`
+	StartTime int64  `json:"startTime,optional" desc:"开始时间"`
+	EndTime   int64  `json:"endTime,optional" desc:"结束时间"`
+	Request   string `json:"request,optional" desc:"请求参数"`
+	Response  string `json:"response,optional" desc:"响应参数"`
 }
 
 type ApiRecordsResponse struct {
@@ -783,6 +800,22 @@ type GetPermissionTreeRequest struct {
 
 type GetPermissionTreeResponse struct {
 	List []Permission `json:"list"`
+}
+
+type GetPermissionListRequest struct {
+	Title     string `json:"title,optional"`
+	Key       string `json:"key,optional"`
+	Type      int64  `json:"type,optional"`
+	Method    string `json:"method,optional"`
+	Path      string `json:"path,optional"`
+	ParentKey string `json:"parentKey,optional"`
+	Current   int64  `json:"current"`
+	PageSize  int64  `json:"pageSize"`
+}
+
+type GetPermissionListResponse struct {
+	List  []Permission `json:"list"`
+	Total int64        `json:"total"`
 }
 
 type Kv struct {

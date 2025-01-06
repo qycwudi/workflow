@@ -7,7 +7,6 @@ import (
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/logic"
-	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -27,9 +26,7 @@ func NewGetCanvasHistoryListLogic(ctx context.Context, svcCtx *svc.ServiceContex
 }
 
 func (l *GetCanvasHistoryListLogic) GetCanvasHistoryList(req *types.GetCanvasHistoryListReq) (resp *types.GetCanvasHistoryListResp, err error) {
-	canvasHistoryList, err := l.svcCtx.CanvasHistoryModel.FindAll(l.ctx, &model.CanvasHistory{
-		WorkspaceId: req.WorkspaceId,
-	})
+	canvasHistoryList, total, err := l.svcCtx.CanvasHistoryModel.FindPage(l.ctx, req.WorkspaceId, req.Name, req.Current, req.PageSize)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取画布历史版本列表失败")
 	}
@@ -44,7 +41,7 @@ func (l *GetCanvasHistoryListLogic) GetCanvasHistoryList(req *types.GetCanvasHis
 	}
 	resp = &types.GetCanvasHistoryListResp{
 		Records: records,
-		Total:   int64(len(canvasHistoryList)),
+		Total:   total,
 	}
 	return
 }

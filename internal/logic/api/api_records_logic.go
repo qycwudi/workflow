@@ -29,13 +29,11 @@ func NewApiRecordsLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiRec
 }
 
 func (l *ApiRecordsLogic) ApiRecords(req *types.ApiRecordsRequest) (resp *types.ApiRecordsResponse, err error) {
-	var total int64 = 0
+	var total int64
 	var apiRecords []*model.ApiRecord
-	if req.ApiId != "" {
-		total, apiRecords, err = l.svcCtx.ApiRecordModel.FindByApiId(l.ctx, req.ApiId, req.Current, req.PageSize)
-	} else if req.ApiName != "" {
-		total, apiRecords, err = l.svcCtx.ApiRecordModel.FindByApiName(l.ctx, req.ApiName, req.Current, req.PageSize)
-	}
+	// 查询API调用记录
+	total, apiRecords, err = l.svcCtx.ApiRecordModel.FindByApiId(l.ctx, req.ApiId, req.StartTime, req.EndTime, req.Request, req.Response, req.Current, req.PageSize)
+
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询 API 调用记录失败")
 	}

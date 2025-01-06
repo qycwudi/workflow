@@ -47,14 +47,14 @@ func (l *ApisecretKeyCreateLogic) ApisecretKeyCreate(req *types.ApiSecretKeyCrea
 		if len(req.SecretKey) != 32 {
 			return nil, errors.New(int(logic.ParamError), "密钥长度错误,必须为32位")
 		}
-		_, err = l.svcCtx.ApiSecretKeyModel.FindOneByApiIdAndSecretKey(l.ctx, req.ApiId, req.SecretKey)
-		if err != nil {
-			if err == model.ErrNotFound {
-				return nil, errors.New(int(logic.SystemOrmError), "密钥已存在")
-			} else {
-				return nil, errors.New(int(logic.SystemOrmError), "密钥查询失败")
-			}
+		apiSecretKey, err := l.svcCtx.ApiSecretKeyModel.FindOneByApiIdAndSecretKey(l.ctx, req.ApiId, req.SecretKey)
+		if err != nil && err != model.ErrNotFound {
+			return nil, errors.New(int(logic.SystemOrmError), "密钥查询失败")
 		}
+		if apiSecretKey != nil {
+			return nil, errors.New(int(logic.ParamError), "密钥已存在")
+		}
+		secretKey = req.SecretKey
 	} else {
 		// 生成密钥
 		secretKey = utils.GenerateUUID()

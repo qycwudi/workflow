@@ -36,7 +36,12 @@ func (l *WorkSpaceEnvListLogic) WorkSpaceEnvList(req *types.WorkSpaceEnvListRequ
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "解析环境变量失败")
 	}
+	// 转换为EnvList
+	envList := make([]types.EnvList, 0)
+	for k, v := range env {
+		envList = append(envList, types.EnvList{Key: k, Value: v})
+	}
 	return &types.WorkSpaceEnvListResponse{
-		Env: env,
+		EnvList: envList,
 	}, nil
 }

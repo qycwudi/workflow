@@ -87,7 +87,6 @@ type (
 type CanvasDraftRequest {
 	Id     string                   `json:"id"`
 	Graph  map[string]interface{}   `json:"graph"`
-	GlobalParams []map[string]interface{} `json:"globalParams"`
 }
 
 type CanvasDraftResponse {
@@ -113,7 +112,6 @@ type CanvasDetailResponse {
 type SaveCanvasHistoryReq {
 	WorkspaceId string `json:"workspaceId"`
 	Name string `json:"name"`
-	CanvasDraft CanvasDraftRequest `json:"canvasDraft"`
 }
 
 type SaveCanvasHistoryResp {
@@ -121,7 +119,10 @@ type SaveCanvasHistoryResp {
 }
 
 type GetCanvasHistoryListReq {
+	Name string `json:"name,optional"`
 	WorkspaceId string `json:"workspaceId"`
+	Current int `json:"current"`
+	PageSize int `json:"pageSize"`
 }
 
 type GetCanvasHistoryListResp {
@@ -145,7 +146,14 @@ type GetCanvasHistoryDetailResp {
 	Graph map[string]interface{} `json:"graph"`
 }
 
+type RestoreCanvasHistoryReq {
+	Id int64 `json:"id"`
+}
 
+type RestoreCanvasHistoryResp {
+	Id int64 `json:"id"`
+	WorkspaceId string `json:"workspaceId"`
+}
 
 @server (
 	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
@@ -190,10 +198,10 @@ service workflow-api {
 
 	@doc "获取历史版本列表"
 	@handler getCanvasHistoryList
-	get /canvas/history/list (GetCanvasHistoryListReq) returns (GetCanvasHistoryListResp)
+	post /canvas/history/list (GetCanvasHistoryListReq) returns (GetCanvasHistoryListResp)
 
-	@doc "获取历史版本详情"
-	@handler getCanvasHistoryDetail
-	get /canvas/history/detail (GetCanvasHistoryDetailReq) returns (GetCanvasHistoryDetailResp)
+	@doc "恢复历史版本"
+	@handler restoreCanvasHistory
+	post /canvas/history/restore (RestoreCanvasHistoryReq) returns (RestoreCanvasHistoryResp)
 }
 

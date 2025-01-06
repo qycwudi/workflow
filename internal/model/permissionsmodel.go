@@ -14,6 +14,7 @@ type (
 	// and implement the added methods in customPermissionsModel.
 	PermissionsModel interface {
 		permissionsModel
+		FindPage(ctx context.Context, title string, key string, types int64, method string, path string, current int64, pageSize int64) (int64, []*Permissions, error)
 		CheckPermission(ctx context.Context, userId int64, path string, method string) (bool, error)
 		GetPermissionTree(ctx context.Context) ([]*Permissions, error)
 
@@ -32,6 +33,68 @@ func NewPermissionsModel(conn sqlx.SqlConn) PermissionsModel {
 	return &customPermissionsModel{
 		defaultPermissionsModel: newPermissionsModel(conn),
 	}
+}
+
+func (s *defaultPermissionsModel) FindPage(ctx context.Context, title string, key string, types int64, method string, path string, current int64, pageSize int64) (int64, []*Permissions, error) {
+	var count int64
+	var list []*Permissions
+
+	// 构建查询条件
+	conditions := make([]string, 0)
+	args := make([]interface{}, 0)
+
+	if title != "" {
+		conditions = append(conditions, "title like ?")
+		args = append(args, "%"+title+"%")
+	}
+
+	if key != "" {
+		conditions = append(conditions, "`key` like ?")
+		args = append(args, "%"+key+"%")
+	}
+
+	if types != 0 {
+		conditions = append(conditions, "`type` = ?")
+		args = append(args, types)
+	}
+
+	if method != "" {
+		conditions = append(conditions, "method = ?")
+		args = append(args, method)
+	}
+
+	if path != "" {
+		conditions = append(conditions, "path = ?")
+		args = append(args, path)
+	}
+
+	// 构建WHERE子句
+	whereClause := ""
+	if len(conditions) > 0 {
+		whereClause = "WHERE " + conditions[0]
+		for i := 1; i < len(conditions); i++ {
+			whereClause += " AND " + conditions[i]
+		}
+	}
+
+	// 查询总数
+	countQuery := "SELECT COUNT(*) FROM " + s.table + " " + whereClause
+	err := s.conn.QueryRowCtx(ctx, &count, countQuery, args...)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	// 查询列表
+	offset := (current - 1) * pageSize
+	query := fmt.Sprintf("SELECT %s FROM %s %s ORDER BY id DESC LIMIT ?, ?", permissionsRows, s.table, whereClause)
+	args = append(args, offset, pageSize)
+
+	err = s.conn.QueryRowsCtx(ctx, &list, query, args...)
+	if err != nil {
+		return 0, nil, err
+	}
+
+	return count, list, nil
 }
 
 // CheckPermission 检查用户是否有权限

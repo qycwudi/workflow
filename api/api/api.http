@@ -53,14 +53,19 @@ Content-Type: application/json
 }
 
 ### API调用记录
-POST http://127.0.0.1:8899/workflow/api/records
+POST http://127.0.0.1:8888/workflow/api/records
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYyMTUwNjIsImlhdCI6MTczNjEyODY2MiwidXNlcklkIjoxfQ.ZeCBni0FALYoA4Dqf7JRrRjJ9MRsDOKl1-LS02OAT28
+
 
 {
   "current": 1,
   "pageSize": 10,
-  "apiId": "ctdder53sjtn9c6t20j0"
+  "apiId": "ctr9h8d3sjtuumdejvng",
+  "startTime": "2024-01-01 00:00:00",
+  "endTime": "2026-01-01 00:00:00",
+  "request": "张静"
 }
 
 ### API调用-单结构

@@ -127,16 +127,21 @@ type WorkSpaceEnvListRequest {
 }
 
 type WorkSpaceEnvListResponse {
-	Env map[string]string `json:"env"`
+	EnvList []EnvList `json:"envList"`
+}
+
+type EnvList {
+	Key string `json:"key"`
+	Value string `json:"value"`
 }
 
 type WorkSpaceEnvEditRequest {
 	Id string `json:"id"`
-	Env map[string]string `json:"env"`
+	Env []EnvList `json:"env"`
 }
 
 type WorkSpaceEnvEditResponse {
-	Env map[string]string `json:"env"`
+	
 }
 
 @server (

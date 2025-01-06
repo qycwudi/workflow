@@ -63,6 +63,22 @@ type GetPermissionTreeResponse {
 	List []Permission `json:"list"`
 }
 
+type GetPermissionListRequest {
+	Title     string `json:"title,optional"`
+	Key       string `json:"key,optional"`
+	Type      int64  `json:"type,optional"`
+	Method    string `json:"method,optional"`
+	Path      string `json:"path,optional"`
+	ParentKey string `json:"parentKey,optional"`
+	Current   int64  `json:"current"`
+	PageSize  int64  `json:"pageSize"`
+}
+
+type GetPermissionListResponse {
+	List []Permission `json:"list"`
+	Total int64        `json:"total"`
+}
+
 @server (
 	group: permission
 	prefix: /workflow
@@ -90,4 +106,9 @@ service workflow-api {
 	@doc "获取权限树"
 	@handler GetPermissionTreeHandler
 	post /permission/tree (GetPermissionTreeRequest) returns (GetPermissionTreeResponse)
+
+
+	@doc "权限列表"
+	@handler GetPermissionListHandler
+	post /permission/list (GetPermissionListRequest) returns (GetPermissionListResponse)
 }

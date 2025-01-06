@@ -31,16 +31,19 @@ func (l *WorkSpaceEnvEditLogic) WorkSpaceEnvEdit(req *types.WorkSpaceEnvEditRequ
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询环境变量失败")
 	}
-	env, err := json.Marshal(req.Env)
+	// 转换为map
+	env := make(map[string]string)
+	for _, v := range req.Env {
+		env[v.Key] = v.Value
+	}
+	envJson, err := json.Marshal(env)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "解析环境变量失败")
 	}
-	workspace.Configuration = string(env)
+	workspace.Configuration = string(envJson)
 	err = l.svcCtx.WorkSpaceModel.UpdateByWorkspaceId(l.ctx, workspace)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "更新环境变量失败")
 	}
-	return &types.WorkSpaceEnvEditResponse{
-		Env: req.Env,
-	}, nil
+	return &types.WorkSpaceEnvEditResponse{}, nil
 }
