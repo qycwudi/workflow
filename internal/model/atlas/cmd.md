@@ -19,10 +19,15 @@ atlas schema apply \
   --to "file://workflow_schema.sql" \
   --dev-url "mysql://root:Root@123@10.99.43.9:3306/atlas_database"
 
+  atlas schema apply \
+  --url "mysql://root:Root@123@10.100.66.5:10857/flow" \
+  --to "file://workflow_schema.sql" \
+  --dev-url "mysql://root:Root@123@10.100.66.5:10857/atlas_database"
+
 
 <!-- 对比 -->
 atlas schema diff \
-  --from "mysql://root:root@14.103.249.105:30006/workflow_dev" \
+  --from "mysql://root:root@14.103.249.105:30006/flow" \
   --to "mysql://root:root@14.103.249.105:30006/workflow_prod" \
   --format '{{ sql . "  " }}' > workflow_diff.sql
 

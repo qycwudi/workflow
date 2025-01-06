@@ -55,7 +55,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0O
 POST http://127.0.0.1:8888/workflow/permission/tree
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYwNTY4NzAsImlhdCI6MTczNTk3MDQ3MCwidXNlcklkIjoxfQ.EjlBJNnhusTWL999OKWekQIIvoWKdOrIhB8k5p17-F0
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYyMTUwNjIsImlhdCI6MTczNjEyODY2MiwidXNlcklkIjoxfQ.ZeCBni0FALYoA4Dqf7JRrRjJ9MRsDOKl1-LS02OAT28
 
 {
 

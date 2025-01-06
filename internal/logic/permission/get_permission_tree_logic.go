@@ -67,19 +67,61 @@ func buildPermissionTree(permissions []*model.Permissions) []types.Permission {
 			// 如果是根节点,直接添加到结果集
 			rootPermissions = append(rootPermissions, *permissionMap[p.Key])
 		} else {
-			// 如果不是根节点,将其添加到父节点的children中
-			if parent, exists := permissionMap[p.ParentKey]; exists {
-				parent.Children = append(parent.Children, *permissionMap[p.Key])
-				// 根据 sort 降序排序
-				sort.Slice(parent.Children, func(i, j int) bool {
-					return parent.Children[i].Sort > parent.Children[j].Sort
-				})
+			// 如果不是根节点,递归查找父节点并添加
+			current := permissionMap[p.Key]
+			parent := permissionMap[p.ParentKey]
+
+			// 递归向上查找,直到找到根节点
+			for parent != nil && parent.ParentKey != "/" {
+				// 将当前节点添加到父节点
+				tempParent := permissionMap[parent.ParentKey]
+				if tempParent != nil {
+					found := false
+					// 检查父节点的children中是否已存在当前节点
+					for i, child := range parent.Children {
+						if child.Key == current.Key {
+							parent.Children[i] = *current
+							found = true
+							break
+						}
+					}
+					if !found {
+						parent.Children = append(parent.Children, *current)
+						// 根据 sort 降序排序
+						sort.Slice(parent.Children, func(i, j int) bool {
+							return parent.Children[i].Sort > parent.Children[j].Sort
+						})
+					}
+				}
+				current = parent
+				parent = tempParent
+			}
+
+			// 最后将节点添加到直接父节点
+			if parent != nil {
+				found := false
+				for i, child := range parent.Children {
+					if child.Key == current.Key {
+						parent.Children[i] = *current
+						found = true
+						break
+					}
+				}
+				if !found {
+					parent.Children = append(parent.Children, *current)
+					// 根据 sort 降序排序
+					sort.Slice(parent.Children, func(i, j int) bool {
+						return parent.Children[i].Sort > parent.Children[j].Sort
+					})
+				}
 			}
 		}
 	}
+
 	// 根据 sort 降序排序
 	sort.Slice(rootPermissions, func(i, j int) bool {
 		return rootPermissions[i].Sort > rootPermissions[j].Sort
 	})
+
 	return rootPermissions
 }
