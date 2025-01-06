@@ -62,10 +62,9 @@ func (s *defaultPermissionsModel) FindPage(ctx context.Context, title string, ke
 		conditions = append(conditions, "method = ?")
 		args = append(args, method)
 	}
-
 	if path != "" {
-		conditions = append(conditions, "path = ?")
-		args = append(args, path)
+		conditions = append(conditions, "path like ?")
+		args = append(args, "%"+path+"%")
 	}
 
 	// 构建WHERE子句
