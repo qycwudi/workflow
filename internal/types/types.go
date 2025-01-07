@@ -566,6 +566,7 @@ type User struct {
 	UpdatedAt string `json:"updatedAt"`
 	RoleId    int64  `json:"roleId"`
 	RoleName  string `json:"roleName"`
+	Password  string `json:"password"`
 }
 
 type UserLoginRequest struct {

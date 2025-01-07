@@ -48,12 +48,15 @@ func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserIn
 
 	return &types.UserInfoResponse{
 		User: types.User{
-			Id:       user.Id,
-			Username: user.Username,
-			RealName: user.RealName.String,
-			Phone:    user.Phone.String,
-			Email:    user.Email.String,
-			Status:   user.Status,
+			Id:        user.Id,
+			Username:  user.Username,
+			RealName:  user.RealName.String,
+			Phone:     user.Phone.String,
+			Email:     user.Email.String,
+			Status:    user.Status,
+			Password:  user.Password,
+			CreatedAt: user.CreatedAt.Format("2006-01-02 15:04:05"),
+			UpdatedAt: user.UpdatedAt.Format("2006-01-02 15:04:05"),
 		},
 		RoleName: roleName.Name,
 	}, nil

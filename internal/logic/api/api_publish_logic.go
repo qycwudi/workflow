@@ -18,7 +18,6 @@ import (
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
-	"workflow/internal/utils"
 )
 
 type ApiPublishLogic struct {
@@ -49,7 +48,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 	history, err := l.svcCtx.CanvasHistoryModel.Insert(l.ctx, &model.CanvasHistory{
 		WorkspaceId: req.Id,
 		Draft:       canvas.Draft,
-		Name:        utils.FormatDate(time.Now()) + "-" + req.ApiName,
+		Name:        req.ApiName,
 		CreateTime:  time.Now(),
 		IsApi:       1,
 	})
