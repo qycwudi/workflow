@@ -9,7 +9,7 @@ atlas schema apply \
 
 <!-- 同步测试库 -->
   atlas schema apply \
-  --url "mysql://root:Root@123@10.99.29.9:3306/workflow_test" \
+  --url "mysql://root:Root@123@10.99.29.9:3306/wkflow" \
   --to "file://workflow_schema.sql" \
   --dev-url "mysql://root:Root@123@10.99.29.9:3306/atlas_database"
 
@@ -27,8 +27,13 @@ atlas schema apply \
 
 <!-- 对比 -->
 atlas schema diff \
-  --from "mysql://root:root@14.103.249.105:30006/flow" \
-  --to "mysql://root:root@14.103.249.105:30006/workflow_prod" \
+  --from "mysql://root:root@14.103.249.105:30006/workflow_changzhou" \
+  --to "mysql://root:root@14.103.249.105:30006/workflow_dev" \
+  --format '{{ sql . "  " }}' > workflow_diff.sql
+
+  atlas schema diff \
+  --from "mysql://root:root@14.103.249.105:30006/workflow_dev" \
+  --to "mysql://root:root@14.103.249.105:30006/workflow_tmp" \
   --format '{{ sql . "  " }}' > workflow_diff.sql
 
 
