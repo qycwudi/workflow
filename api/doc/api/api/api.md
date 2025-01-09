@@ -116,7 +116,10 @@ type ApiRecordsRequest struct {
 	Current int `json:"current"`
 	PageSize int `json:"pageSize"`
 	ApiId string `json:"apiId,optional" desc:"apiId"`
-	ApiName string `json:"apiName,optional" desc:"api名称"`
+	StartTime int64 `json:"startTime,optional" desc:"开始时间"`
+	EndTime int64 `json:"endTime,optional" desc:"结束时间"`
+	Request string `json:"request,optional" desc:"请求参数"`
+	Response string `json:"response,optional" desc:"响应参数"`
 }
 ```
 
@@ -186,6 +189,7 @@ type ApiSecretKeyListResponse struct {
 type ApiSecretKeyCreateRequest struct {
 	ApiId string `json:"apiId"`
 	Name string `json:"name"`
+	SecretKey string `json:"secretKey,optional"`
 	ExpirationTime int64 `json:"expirationTime"`
 }
 ```
@@ -295,6 +299,41 @@ type ApiSecretKeyDeleteRequest struct {
 ```golang
 type ApiSecretKeyDeleteResponse struct {
 	SecretKey string `json:"secretKey"`
+}
+```
+
+### 10. "API历史版本"
+
+1. route definition
+
+- Url: /workflow/api/history
+- Method: POST
+- Request: `ApiHistoryRequest`
+- Response: `ApiHistoryResponse`
+
+2. request definition
+
+
+
+```golang
+type ApiHistoryRequest struct {
+	WorkspaceId string `json:"workspaceId"`
+	Current int `json:"current"`
+	PageSize int `json:"pageSize"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type ApiHistoryResponse struct {
+	Current int `json:"current"`
+	PageSize int `json:"pageSize"`
+	Total int64 `json:"total"`
+	List []ApiHistory `json:"list"`
 }
 ```
 

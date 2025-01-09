@@ -15,7 +15,6 @@
 type CanvasDraftRequest struct {
 	Id string `json:"id"`
 	Graph map[string]interface{} `json:"graph"`
-	GlobalParams []map[string]interface{} `json:"globalParams"`
 }
 ```
 
@@ -251,13 +250,6 @@ type GetCanvasRunDetailResp struct {
 type SaveCanvasHistoryReq struct {
 	WorkspaceId string `json:"workspaceId"`
 	Name string `json:"name"`
-	CanvasDraft CanvasDraftRequest `json:"canvasDraft"`
-}
-
-type CanvasDraftRequest struct {
-	Id string `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
-	GlobalParams []map[string]interface{} `json:"globalParams"`
 }
 ```
 
@@ -277,7 +269,7 @@ type SaveCanvasHistoryResp struct {
 1. route definition
 
 - Url: /workflow/canvas/history/list
-- Method: GET
+- Method: POST
 - Request: `GetCanvasHistoryListReq`
 - Response: `GetCanvasHistoryListResp`
 
@@ -287,7 +279,10 @@ type SaveCanvasHistoryResp struct {
 
 ```golang
 type GetCanvasHistoryListReq struct {
+	Name string `json:"name,optional"`
 	WorkspaceId string `json:"workspaceId"`
+	Current int `json:"current"`
+	PageSize int `json:"pageSize"`
 }
 ```
 
@@ -303,21 +298,21 @@ type GetCanvasHistoryListResp struct {
 }
 ```
 
-### 10. "获取历史版本详情"
+### 10. "恢复历史版本"
 
 1. route definition
 
-- Url: /workflow/canvas/history/detail
-- Method: GET
-- Request: `GetCanvasHistoryDetailReq`
-- Response: `GetCanvasHistoryDetailResp`
+- Url: /workflow/canvas/history/restore
+- Method: POST
+- Request: `RestoreCanvasHistoryReq`
+- Response: `RestoreCanvasHistoryResp`
 
 2. request definition
 
 
 
 ```golang
-type GetCanvasHistoryDetailReq struct {
+type RestoreCanvasHistoryReq struct {
 	Id int64 `json:"id"`
 }
 ```
@@ -328,10 +323,9 @@ type GetCanvasHistoryDetailReq struct {
 
 
 ```golang
-type GetCanvasHistoryDetailResp struct {
+type RestoreCanvasHistoryResp struct {
 	Id int64 `json:"id"`
-	Name string `json:"name"`
-	Graph map[string]interface{} `json:"graph"`
+	WorkspaceId string `json:"workspaceId"`
 }
 ```
 

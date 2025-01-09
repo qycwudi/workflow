@@ -16,7 +16,7 @@ Log:
   Encoding: plain
   Path: ./app/logs
 # 指定开发mysql
-MySqlUrn: root:root@tcp(14.103.249.105:30006)/workflow_changzhou?charset=utf8mb4&parseTime=True&loc=Local
+MySqlUrn: root:root@tcp(14.103.249.105:30006)/workflow_dev?charset=utf8mb4&parseTime=True&loc=Local
 # 指定开发redis db5
 Redis:
   Host: 14.103.249.105:30007

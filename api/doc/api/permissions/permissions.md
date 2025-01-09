@@ -13,10 +13,10 @@
 
 ```golang
 type CreatePermissionRequest struct {
-	Name string `json:"name"`
-	Code string `json:"code"`
+	Title string `json:"title"`
+	Key string `json:"key"`
 	Type int64 `json:"type"`
-	ParentId int64 `json:"parentId,optional"`
+	ParentKey string `json:"parentKey,optional"`
 	Path string `json:"path,optional"`
 	Method string `json:"method,optional"`
 	Sort int64 `json:"sort,optional"`
@@ -49,11 +49,10 @@ type CreatePermissionResponse struct {
 
 ```golang
 type UpdatePermissionRequest struct {
-	Id int64 `json:"id"`
-	Name string `json:"name,optional"`
-	Code string `json:"code,optional"`
+	Key string `json:"key"`
+	Title string `json:"title,optional"`
 	Type int64 `json:"type,optional"`
-	ParentId int64 `json:"parentId,optional"`
+	ParentKey string `json:"parentKey,optional"`
 	Path string `json:"path,optional"`
 	Method string `json:"method,optional"`
 	Sort int64 `json:"sort,optional"`
@@ -85,7 +84,7 @@ type UpdatePermissionResponse struct {
 
 ```golang
 type DeletePermissionRequest struct {
-	Id int64 `json:"id"`
+	Key string `json:"key"`
 }
 ```
 
@@ -114,7 +113,7 @@ type DeletePermissionResponse struct {
 
 ```golang
 type GetPermissionRequest struct {
-	Id int64 `json:"id"`
+	Key string `json:"key"`
 }
 ```
 
@@ -129,16 +128,16 @@ type GetPermissionResponse struct {
 }
 
 type Permission struct {
-	Id int64 `json:"id"`
-	Name string `json:"name"`
-	Code string `json:"code"`
+	Title string `json:"title"`
+	Key string `json:"key"`
 	Type int64 `json:"type"`
-	ParentId int64 `json:"parentId,optional"`
+	ParentKey string `json:"parentKey,optional"`
 	Path string `json:"path,optional"`
 	Method string `json:"method,optional"`
 	Sort int64 `json:"sort,optional"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
+	Children []Permission `json:"children,optional"`
 }
 ```
 
@@ -157,7 +156,7 @@ type Permission struct {
 
 ```golang
 type GetPermissionTreeRequest struct {
-	ParentId int64 `json:"parentId,optional"`
+	ParentKey string `json:"parentKey,optional"`
 }
 ```
 
@@ -169,6 +168,44 @@ type GetPermissionTreeRequest struct {
 ```golang
 type GetPermissionTreeResponse struct {
 	List []Permission `json:"list"`
+}
+```
+
+### 6. "权限列表"
+
+1. route definition
+
+- Url: /workflow/permission/list
+- Method: POST
+- Request: `GetPermissionListRequest`
+- Response: `GetPermissionListResponse`
+
+2. request definition
+
+
+
+```golang
+type GetPermissionListRequest struct {
+	Title string `json:"title,optional"`
+	Key string `json:"key,optional"`
+	Type int64 `json:"type,optional"`
+	Method string `json:"method,optional"`
+	Path string `json:"path,optional"`
+	ParentKey string `json:"parentKey,optional"`
+	Current int64 `json:"current"`
+	PageSize int64 `json:"pageSize"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type GetPermissionListResponse struct {
+	List []Permission `json:"list"`
+	Total int64 `json:"total"`
 }
 ```
 

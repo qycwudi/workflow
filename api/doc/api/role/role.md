@@ -128,8 +128,8 @@ type Role struct {
 	Code string `json:"code"`
 	Description string `json:"description"`
 	Status int64 `json:"status"`
-	CreatedAt string `json:"created_at"`
-	UpdatedAt string `json:"updated_at"`
+	CreatedAt string `json:"createdAt"`
+	UpdatedAt string `json:"updatedAt"`
 }
 ```
 
@@ -242,7 +242,6 @@ type UnbindPermissionResponse struct {
 ```golang
 type GetRolePermissionRequest struct {
 	RoleId int64 `json:"roleId"`
-	ParentId int64 `json:"parentId,optional"`
 }
 ```
 

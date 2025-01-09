@@ -67,6 +67,9 @@ type User struct {
 	Status int64 `json:"status"`
 	CreatedAt string `json:"createdAt"`
 	UpdatedAt string `json:"updatedAt"`
+	RoleId int64 `json:"roleId"`
+	RoleName string `json:"roleName"`
+	Password string `json:"password"`
 }
 ```
 
@@ -193,6 +196,69 @@ type UserBindRoleRequest struct {
 
 ```golang
 type UserBindRoleResponse struct {
+}
+```
+
+### 7. "修改用户状态"
+
+1. route definition
+
+- Url: /workflow/user/update/status
+- Method: POST
+- Request: `UserUpdateStatusRequest`
+- Response: `UserUpdateStatusResponse`
+
+2. request definition
+
+
+
+```golang
+type UserUpdateStatusRequest struct {
+	UserId int64 `json:"userId"`
+	Status int64 `json:"status" comment:"状态 1:正常 0:禁用"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserUpdateStatusResponse struct {
+}
+```
+
+### 8. "更新用户信息"
+
+1. route definition
+
+- Url: /workflow/user/update/info
+- Method: POST
+- Request: `UserUpdateInfoRequest`
+- Response: `UserUpdateInfoResponse`
+
+2. request definition
+
+
+
+```golang
+type UserUpdateInfoRequest struct {
+	UserId int64 `json:"userId"`
+	Username string `json:"username,optional"`
+	Phone string `json:"phone,optional"`
+	Email string `json:"email,optional"`
+	Password string `json:"password,optional"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type UserUpdateInfoResponse struct {
 }
 ```
 

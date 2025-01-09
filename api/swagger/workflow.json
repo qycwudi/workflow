@@ -1,0 +1,5176 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "title": "",
+    "version": ""
+  },
+  "host": "127.0.0.1",
+  "basePath": "/api",
+  "schemes": [
+    "https",
+    "wss"
+  ],
+  "consumes": [
+    "application/json"
+  ],
+  "produces": [
+    "application/json"
+  ],
+  "paths": {
+    "/workflow/api/history": {
+      "post": {
+        "summary": "API历史版本",
+        "operationId": "ApiHistoryHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiHistoryResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiHistoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/list": {
+      "post": {
+        "summary": "API发布列表",
+        "operationId": "ApiListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiPublishListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiPublishListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/onoff": {
+      "post": {
+        "summary": "APIOnOff",
+        "operationId": "ApiOnOffHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiOnOffResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiOnOffRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/publish": {
+      "post": {
+        "summary": "API发布",
+        "operationId": "ApiPublishHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiPublishResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiPublishRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/records": {
+      "post": {
+        "summary": "API调用记录",
+        "operationId": "ApiRecordsHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiRecordsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiRecordsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/secretkey/create": {
+      "post": {
+        "summary": "创建API密钥",
+        "operationId": "ApisecretKeyCreateHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyCreateResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 创建API密钥",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyCreateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/secretkey/delete": {
+      "post": {
+        "summary": "删除API密钥",
+        "operationId": "ApisecretKeyDeleteHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyDeleteResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 删除API密钥",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyDeleteRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/secretkey/list": {
+      "post": {
+        "summary": "secretKeyList",
+        "operationId": "ApiSecretKeyListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/secretkey/update/expirationtime": {
+      "post": {
+        "summary": "修改API密钥到期时间",
+        "operationId": "ApisecretKeyUpdateExpirationTimeHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyUpdateExpirationTimeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 修改API密钥到期时间",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyUpdateExpirationTimeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/secretkey/update/status": {
+      "post": {
+        "summary": "修改API密钥状态",
+        "operationId": "ApisecretKeyUpdateStatusHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyUpdateStatusResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "description": " 修改API密钥状态",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiSecretKeyUpdateStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/detail": {
+      "post": {
+        "summary": "画布详情",
+        "operationId": "CanvasDetailHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CanvasDetailResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CanvasDetailRequest"
+            }
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/draft": {
+      "post": {
+        "summary": "画布更新",
+        "operationId": "CanvasDraftHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CanvasDraftResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CanvasDraftRequest"
+            }
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/history/list": {
+      "post": {
+        "summary": "获取历史版本列表",
+        "operationId": "getCanvasHistoryList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetCanvasHistoryListResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetCanvasHistoryListReq"
+            }
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/history/restore": {
+      "post": {
+        "summary": "恢复历史版本",
+        "operationId": "restoreCanvasHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/RestoreCanvasHistoryResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/RestoreCanvasHistoryReq"
+            }
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/history/save": {
+      "post": {
+        "summary": "保存历史版本",
+        "operationId": "saveCanvasHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/SaveCanvasHistoryResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/SaveCanvasHistoryReq"
+            }
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/run": {
+      "post": {
+        "summary": "全部运行",
+        "operationId": "CanvasRunHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CanvasRunResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CanvasRunRequest"
+            }
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/run/detail/{recordId}": {
+      "get": {
+        "summary": "获取画布运行详情",
+        "operationId": "getCanvasRunDetail",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetCanvasRunDetailResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "recordId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/run/history/{workSpaceId}": {
+      "get": {
+        "summary": "获取画布运行历史",
+        "operationId": "getCanvasRunHistory",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetCanvasRunHistoryResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "workSpaceId",
+            "in": "path",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/run/single": {
+      "post": {
+        "summary": "单组件运行",
+        "operationId": "CanvasRunSingleHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CanvasRunSingleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CanvasRunSingleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/canvas/run/single/detail": {
+      "post": {
+        "summary": "组件运行详情",
+        "operationId": "CanvasRunSingleDetailHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CanvasRunSingleDetailResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CanvasRunSingleDetailRequest"
+            }
+          }
+        ],
+        "tags": [
+          "canvas"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/datasource/add": {
+      "post": {
+        "summary": "新增数据源",
+        "operationId": "DatasourceAddHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DatasourceAddResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasourceAddRequest"
+            }
+          }
+        ],
+        "tags": [
+          "datasource"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/datasource/delete": {
+      "post": {
+        "summary": "删除数据源",
+        "operationId": "DatasourceDeleteHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DatasourceDeleteResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasourceDeleteRequest"
+            }
+          }
+        ],
+        "tags": [
+          "datasource"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/datasource/edit": {
+      "post": {
+        "summary": "编辑数据源",
+        "operationId": "DatasourceEditHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DatasourceEditResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasourceEditRequest"
+            }
+          }
+        ],
+        "tags": [
+          "datasource"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/datasource/list": {
+      "post": {
+        "summary": "数据源列表",
+        "operationId": "DatasourceListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DatasourceListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasourceListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "datasource"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/datasource/test": {
+      "post": {
+        "summary": "测试数据源",
+        "operationId": "DatasourceTestHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DatasourceTestResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DatasourceTestRequest"
+            }
+          }
+        ],
+        "tags": [
+          "datasource"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/kv/create": {
+      "post": {
+        "summary": "创建键值对",
+        "operationId": "CreateKvHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateKvResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateKvRequest"
+            }
+          }
+        ],
+        "tags": [
+          "kv"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/kv/delete": {
+      "post": {
+        "summary": "删除键值对",
+        "operationId": "DeleteKvHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteKvResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeleteKvRequest"
+            }
+          }
+        ],
+        "tags": [
+          "kv"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/kv/get": {
+      "post": {
+        "summary": "获取键值对详情",
+        "operationId": "GetKvHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetKvResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetKvRequest"
+            }
+          }
+        ],
+        "tags": [
+          "kv"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/kv/list": {
+      "post": {
+        "summary": "获取键值对列表",
+        "operationId": "ListKvHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListKvResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListKvRequest"
+            }
+          }
+        ],
+        "tags": [
+          "kv"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/kv/update": {
+      "post": {
+        "summary": "更新键值对",
+        "operationId": "UpdateKvHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateKvResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateKvRequest"
+            }
+          }
+        ],
+        "tags": [
+          "kv"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/mock": {
+      "post": {
+        "summary": "Mock接口",
+        "operationId": "MockHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/MockResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/MockRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/module/edit": {
+      "post": {
+        "summary": "组件编辑",
+        "operationId": "ModuleEditHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ModuleEditResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ModuleEditRequest"
+            }
+          }
+        ],
+        "tags": [
+          "model"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/module/list": {
+      "post": {
+        "summary": "组件list",
+        "operationId": "ModuleListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ModuleListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ModuleListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "model"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/module/new": {
+      "post": {
+        "summary": "组件新建",
+        "operationId": "ModuleNewHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ModuleNewResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ModuleNewRequest"
+            }
+          }
+        ],
+        "tags": [
+          "model"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/permission/create": {
+      "post": {
+        "summary": "创建权限",
+        "operationId": "CreatePermissionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreatePermissionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreatePermissionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/permission/delete": {
+      "post": {
+        "summary": "删除权限",
+        "operationId": "DeletePermissionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeletePermissionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeletePermissionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/permission/get": {
+      "post": {
+        "summary": "获取权限详情",
+        "operationId": "GetPermissionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetPermissionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetPermissionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/permission/list": {
+      "post": {
+        "summary": "权限列表",
+        "operationId": "GetPermissionListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetPermissionListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetPermissionListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/permission/tree": {
+      "post": {
+        "summary": "获取权限树",
+        "operationId": "GetPermissionTreeHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetPermissionTreeResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetPermissionTreeRequest"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/permission/update": {
+      "post": {
+        "summary": "更新权限",
+        "operationId": "UpdatePermissionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdatePermissionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdatePermissionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "permission"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/role/bindpermission": {
+      "post": {
+        "summary": "绑定权限",
+        "operationId": "BindPermissionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/BindPermissionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/BindPermissionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/role/create": {
+      "post": {
+        "summary": "创建角色",
+        "operationId": "CreateRoleHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/CreateRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/CreateRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/role/delete": {
+      "post": {
+        "summary": "删除角色",
+        "operationId": "DeleteRoleHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/DeleteRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/DeleteRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/role/get": {
+      "post": {
+        "summary": "获取角色详情",
+        "operationId": "GetRoleHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/role/getpermission": {
+      "post": {
+        "summary": "获取角色权限",
+        "operationId": "GetRolePermissionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetRolePermissionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetRolePermissionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/role/list": {
+      "post": {
+        "summary": "获取角色列表",
+        "operationId": "ListRoleHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ListRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ListRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/role/unbindpermission": {
+      "post": {
+        "summary": "解绑权限",
+        "operationId": "UnbindPermissionHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UnbindPermissionResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UnbindPermissionRequest"
+            }
+          }
+        ],
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/role/update": {
+      "post": {
+        "summary": "更新角色",
+        "operationId": "UpdateRoleHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UpdateRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UpdateRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "role"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/tag/edit": {
+      "post": {
+        "summary": "编辑标签",
+        "operationId": "TagEditHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TagEditResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TagEditRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/tag/list": {
+      "post": {
+        "summary": "列表tag",
+        "operationId": "TagListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TagListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TagListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/tag/remove": {
+      "post": {
+        "summary": "删除标签",
+        "operationId": "TagRemoveHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/TagRemoveResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/TagRemoveRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/user/bindrole": {
+      "post": {
+        "summary": "绑定角色",
+        "operationId": "UserBindRoleHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserBindRoleResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserBindRoleRequest"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/user/info": {
+      "post": {
+        "summary": "用户信息",
+        "operationId": "UserInfoHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserInfoRequest"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/user/list": {
+      "post": {
+        "summary": "获取用户列表",
+        "operationId": "UserListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/user/login": {
+      "post": {
+        "summary": "用户登录",
+        "operationId": "UserLoginHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserLoginResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLoginRequest"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ]
+      }
+    },
+    "/workflow/user/logout": {
+      "post": {
+        "summary": "用户退出登录",
+        "operationId": "UserLogoutHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserLogoutResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserLogoutRequest"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/user/register": {
+      "post": {
+        "summary": "用户注册",
+        "operationId": "UserRegisterHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserRegisterResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserRegisterRequest"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/user/update/info": {
+      "post": {
+        "summary": "更新用户信息",
+        "operationId": "UserUpdateInfoHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserUpdateInfoResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserUpdateInfoRequest"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/user/update/status": {
+      "post": {
+        "summary": "修改用户状态",
+        "operationId": "UserUpdateStatusHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/UserUpdateStatusResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/UserUpdateStatusRequest"
+            }
+          }
+        ],
+        "tags": [
+          "user"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/copy": {
+      "post": {
+        "summary": "WorkspaceCopyHandler 画布复制",
+        "operationId": "WorkSpaceCopyHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceCopyResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceCopyRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/edit": {
+      "post": {
+        "summary": "编辑workspace",
+        "operationId": "WorkSpaceEditHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceEditResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceEditRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/edit/tag": {
+      "post": {
+        "summary": "编辑workspace标签",
+        "operationId": "WorkSpaceEditTagHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceEditTagResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceEditTagRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/env/edit": {
+      "post": {
+        "summary": "画布环境变量修改",
+        "operationId": "WorkSpaceEnvEditHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceEnvEditResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceEnvEditRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/env/list": {
+      "post": {
+        "summary": "画布环境变量列表",
+        "operationId": "WorkSpaceEnvListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceEnvListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceEnvListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/list": {
+      "post": {
+        "summary": "列表workspace",
+        "operationId": "WorkSpaceListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/new": {
+      "post": {
+        "summary": "创建workspace",
+        "operationId": "WorkSpaceNewHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceNewResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceNewRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/remove": {
+      "post": {
+        "summary": "删除workspace",
+        "operationId": "WorkSpaceRemoveHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceRemoveResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkRemoveRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "ApiHistory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "workspaceId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string"
+        }
+      },
+      "title": "ApiHistory",
+      "required": [
+        "id",
+        "workspaceId",
+        "name",
+        "createTime"
+      ]
+    },
+    "ApiHistoryRequest": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "type": "string"
+        },
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "ApiHistoryRequest",
+      "required": [
+        "workspaceId",
+        "current",
+        "pageSize"
+      ]
+    },
+    "ApiHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApiHistory"
+          }
+        }
+      },
+      "title": "ApiHistoryResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "list"
+      ]
+    },
+    "ApiOnOffRequest": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "ApiOnOffRequest",
+      "required": [
+        "apiId",
+        "status",
+        "上下线状态ON OFF"
+      ]
+    },
+    "ApiOnOffResponse": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "ApiOnOffResponse",
+      "required": [
+        "apiId",
+        "status",
+        "上下线状态ON OFF"
+      ]
+    },
+    "ApiPublishList": {
+      "type": "object",
+      "properties": {
+        "workSpaceId": {
+          "type": "string"
+        },
+        "apiId": {
+          "type": "string"
+        },
+        "apiName": {
+          "type": "string"
+        },
+        "apiDesc": {
+          "type": "string"
+        },
+        "publishTime": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "ApiPublishList",
+      "required": [
+        "workSpaceId",
+        "apiId",
+        "apiName",
+        "apiDesc",
+        "publishTime",
+        "status",
+        "上下线状态ON OFF"
+      ]
+    },
+    "ApiPublishListRequest": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "ApiPublishListRequest",
+      "required": [
+        "current",
+        "pageSize",
+        "空间ID 非必填"
+      ]
+    },
+    "ApiPublishListResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApiPublishList"
+          }
+        }
+      },
+      "title": "ApiPublishListResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "list"
+      ]
+    },
+    "ApiPublishRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "apiName": {
+          "type": "string"
+        },
+        "apiDesc": {
+          "type": "string"
+        }
+      },
+      "title": "ApiPublishRequest",
+      "required": [
+        "id",
+        "空间ID",
+        "apiName",
+        "名称",
+        "apiDesc",
+        "描述"
+      ]
+    },
+    "ApiPublishResponse": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        }
+      },
+      "title": "ApiPublishResponse",
+      "required": [
+        "apiId"
+      ]
+    },
+    "ApiRecords": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "apiName": {
+          "type": "string"
+        },
+        "callTime": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "traceId": {
+          "type": "string"
+        },
+        "param": {
+          "type": "string"
+        },
+        "extend": {
+          "type": "string"
+        }
+      },
+      "title": "ApiRecords",
+      "required": [
+        "apiId",
+        "apiName",
+        "名称",
+        "callTime",
+        "status",
+        "traceId",
+        "param",
+        "extend"
+      ]
+    },
+    "ApiRecordsRequest": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "apiId": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "endTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "request": {
+          "type": "string"
+        },
+        "response": {
+          "type": "string"
+        }
+      },
+      "title": "ApiRecordsRequest",
+      "required": [
+        "current",
+        "pageSize",
+        "apiId",
+        "开始时间",
+        "结束时间",
+        "请求参数",
+        "响应参数"
+      ]
+    },
+    "ApiRecordsResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApiRecords"
+          }
+        }
+      },
+      "title": "ApiRecordsResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "list"
+      ]
+    },
+    "ApiSecretKey": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "secretKey": {
+          "type": "string"
+        },
+        "expirationTime": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "ApiSecretKey",
+      "required": [
+        "apiId",
+        "name",
+        "secretKey",
+        "expirationTime",
+        "status",
+        "状态 ON OFF"
+      ]
+    },
+    "ApiSecretKeyCreateRequest": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "secretKey": {
+          "type": "string"
+        },
+        "expirationTime": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "ApiSecretKeyCreateRequest",
+      "required": [
+        "apiId",
+        "name",
+        "expirationTime"
+      ]
+    },
+    "ApiSecretKeyCreateResponse": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "secretKey": {
+          "type": "string"
+        },
+        "expirationTime": {
+          "type": "string"
+        }
+      },
+      "title": "ApiSecretKeyCreateResponse",
+      "required": [
+        "apiId",
+        "name",
+        "secretKey",
+        "expirationTime"
+      ]
+    },
+    "ApiSecretKeyDeleteRequest": {
+      "type": "object",
+      "properties": {
+        "secretKey": {
+          "type": "string"
+        }
+      },
+      "title": "ApiSecretKeyDeleteRequest",
+      "required": [
+        "secretKey"
+      ]
+    },
+    "ApiSecretKeyDeleteResponse": {
+      "type": "object",
+      "properties": {
+        "secretKey": {
+          "type": "string"
+        }
+      },
+      "title": "ApiSecretKeyDeleteResponse",
+      "required": [
+        "secretKey"
+      ]
+    },
+    "ApiSecretKeyListRequest": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "ApiSecretKeyListRequest",
+      "required": [
+        "apiId",
+        "current",
+        "pageSize"
+      ]
+    },
+    "ApiSecretKeyListResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ApiSecretKey"
+          }
+        }
+      },
+      "title": "ApiSecretKeyListResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "list"
+      ]
+    },
+    "ApiSecretKeyUpdateExpirationTimeRequest": {
+      "type": "object",
+      "properties": {
+        "secretKey": {
+          "type": "string"
+        },
+        "expirationTime": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "ApiSecretKeyUpdateExpirationTimeRequest",
+      "required": [
+        "secretKey",
+        "expirationTime"
+      ]
+    },
+    "ApiSecretKeyUpdateExpirationTimeResponse": {
+      "type": "object",
+      "properties": {
+        "secretKey": {
+          "type": "string"
+        },
+        "expirationTime": {
+          "type": "string"
+        }
+      },
+      "title": "ApiSecretKeyUpdateExpirationTimeResponse",
+      "required": [
+        "secretKey",
+        "expirationTime"
+      ]
+    },
+    "ApiSecretKeyUpdateStatusRequest": {
+      "type": "object",
+      "properties": {
+        "secretKey": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "ApiSecretKeyUpdateStatusRequest",
+      "required": [
+        "secretKey",
+        "status",
+        "状态 ON OFF"
+      ]
+    },
+    "ApiSecretKeyUpdateStatusResponse": {
+      "type": "object",
+      "properties": {
+        "secretKey": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "ApiSecretKeyUpdateStatusResponse",
+      "required": [
+        "secretKey",
+        "status",
+        "状态 ON OFF"
+      ]
+    },
+    "BindPermissionRequest": {
+      "type": "object",
+      "properties": {
+        "roleId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "permissionId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "BindPermissionRequest",
+      "required": [
+        "roleId",
+        "permissionId"
+      ]
+    },
+    "BindPermissionResponse": {
+      "type": "object",
+      "title": "BindPermissionResponse"
+    },
+    "CanvasDetailRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "CanvasDetailRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "CanvasDetailResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "graph": {
+          "$ref": "#/definitions/mapstringinterface"
+        }
+      },
+      "title": "CanvasDetailResponse",
+      "required": [
+        "id",
+        "name",
+        "graph"
+      ]
+    },
+    "CanvasDraftRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "graph": {
+          "$ref": "#/definitions/mapstringinterface"
+        }
+      },
+      "title": "CanvasDraftRequest",
+      "required": [
+        "id",
+        "graph"
+      ]
+    },
+    "CanvasDraftResponse": {
+      "type": "object",
+      "properties": {
+        "hash": {
+          "type": "string"
+        },
+        "updateTime": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CanvasDraftResponse",
+      "required": [
+        "hash",
+        "updateTime"
+      ]
+    },
+    "CanvasHistoryRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "createTime": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "CanvasHistoryRecord",
+      "required": [
+        "id",
+        "createTime",
+        "name"
+      ]
+    },
+    "CanvasRunRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "CanvasRunRequest",
+      "required": [
+        "id",
+        "空间ID"
+      ]
+    },
+    "CanvasRunResponse": {
+      "type": "object",
+      "properties": {
+        "ts": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "data": {
+          "type": "object"
+        }
+      },
+      "title": "CanvasRunResponse",
+      "required": [
+        "ts",
+        "id",
+        "metadata",
+        "data"
+      ]
+    },
+    "CanvasRunSingleDetailRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": " 空间ID"
+        },
+        "nodeId": {
+          "type": "string",
+          "description": " 节点ID"
+        }
+      },
+      "title": "CanvasRunSingleDetailRequest",
+      "required": [
+        "id",
+        "nodeId"
+      ]
+    },
+    "CanvasRunSingleDetailResponse": {
+      "type": "object",
+      "properties": {
+        "nodeId": {
+          "type": "string"
+        },
+        "nodeName": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "duration": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "status": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
+        },
+        "input": {
+          "type": "string"
+        },
+        "output": {
+          "type": "string"
+        }
+      },
+      "title": "CanvasRunSingleDetailResponse",
+      "required": [
+        "nodeId",
+        "nodeName",
+        "startTime",
+        "duration",
+        "status",
+        "error",
+        "input",
+        "output"
+      ]
+    },
+    "CanvasRunSingleRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "nodeId": {
+          "type": "string"
+        }
+      },
+      "title": "CanvasRunSingleRequest",
+      "required": [
+        "id",
+        "空间ID",
+        "nodeId",
+        "节点ID"
+      ]
+    },
+    "CanvasRunSingleResponse": {
+      "type": "object",
+      "properties": {
+        "ts": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "id": {
+          "type": "string"
+        },
+        "metadata": {
+          "type": "object"
+        },
+        "data": {
+          "type": "object"
+        }
+      },
+      "title": "CanvasRunSingleResponse",
+      "required": [
+        "ts",
+        "id",
+        "metadata",
+        "data"
+      ]
+    },
+    "ComponentDetail": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": " 组件ID"
+        },
+        "name": {
+          "type": "string",
+          "description": " 组件名称"
+        },
+        "logic": {
+          "type": "string",
+          "description": " 组件类型"
+        },
+        "startTime": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 开始时间戳"
+        },
+        "duration": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 耗时(ms)"
+        },
+        "status": {
+          "type": "string",
+          "description": " 组件运行状态 success/failed"
+        },
+        "error": {
+          "type": "string",
+          "description": " 组件错误信息"
+        },
+        "input": {
+          "$ref": "#/definitions/mapstringinterface",
+          "description": " 输入参数"
+        },
+        "output": {
+          "$ref": "#/definitions/mapstringinterface",
+          "description": " 输出结果"
+        }
+      },
+      "title": "ComponentDetail",
+      "required": [
+        "id",
+        "name",
+        "logic",
+        "startTime",
+        "duration",
+        "status",
+        "error",
+        "input",
+        "output"
+      ]
+    },
+    "CreateKvRequest": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "title": "CreateKvRequest",
+      "required": [
+        "key",
+        "value"
+      ]
+    },
+    "CreateKvResponse": {
+      "type": "object",
+      "title": "CreateKvResponse"
+    },
+    "CreatePermissionRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "parentKey": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreatePermissionRequest",
+      "required": [
+        "title",
+        "key",
+        "type"
+      ]
+    },
+    "CreatePermissionResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreatePermissionResponse",
+      "required": [
+        "id"
+      ]
+    },
+    "CreateRoleRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateRoleRequest",
+      "required": [
+        "name",
+        "code"
+      ]
+    },
+    "CreateRoleResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "CreateRoleResponse",
+      "required": [
+        "id"
+      ]
+    },
+    "DatasourceAddRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "switch": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DatasourceAddRequest",
+      "required": [
+        "name",
+        "type",
+        "config",
+        "switch"
+      ]
+    },
+    "DatasourceAddResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DatasourceAddResponse",
+      "required": [
+        "id"
+      ]
+    },
+    "DatasourceDeleteRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DatasourceDeleteRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "DatasourceDeleteResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DatasourceDeleteResponse",
+      "required": [
+        "id"
+      ]
+    },
+    "DatasourceEditRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "switch": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DatasourceEditRequest",
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "DatasourceEditResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DatasourceEditResponse",
+      "required": [
+        "id"
+      ]
+    },
+    "DatasourceInfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        },
+        "type": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        },
+        "switch": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "hash": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string"
+        },
+        "updateTime": {
+          "type": "string"
+        }
+      },
+      "title": "DatasourceInfo",
+      "required": [
+        "id",
+        "name",
+        "type",
+        "config",
+        "switch",
+        "hash",
+        "status",
+        "createTime",
+        "updateTime"
+      ]
+    },
+    "DatasourceListRequest": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "switch": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "DatasourceListRequest",
+      "required": [
+        "current",
+        "pageSize"
+      ]
+    },
+    "DatasourceListResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/DatasourceInfo"
+          }
+        }
+      },
+      "title": "DatasourceListResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "list"
+      ]
+    },
+    "DatasourceTestRequest": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string"
+        },
+        "config": {
+          "type": "string"
+        }
+      },
+      "title": "DatasourceTestRequest"
+    },
+    "DatasourceTestResponse": {
+      "type": "object",
+      "properties": {
+        "status": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        }
+      },
+      "title": "DatasourceTestResponse",
+      "required": [
+        "status",
+        "message"
+      ]
+    },
+    "DeleteKvRequest": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        }
+      },
+      "title": "DeleteKvRequest",
+      "required": [
+        "key"
+      ]
+    },
+    "DeleteKvResponse": {
+      "type": "object",
+      "title": "DeleteKvResponse"
+    },
+    "DeletePermissionRequest": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        }
+      },
+      "title": "DeletePermissionRequest",
+      "required": [
+        "key"
+      ]
+    },
+    "DeletePermissionResponse": {
+      "type": "object",
+      "title": "DeletePermissionResponse"
+    },
+    "DeleteRoleRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "DeleteRoleRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "DeleteRoleResponse": {
+      "type": "object",
+      "title": "DeleteRoleResponse"
+    },
+    "EdgeCustomData": {
+      "type": "object",
+      "properties": {
+        "sourcePoint": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "targetPoint": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "EdgeCustomData",
+      "required": [
+        "sourcePoint",
+        "targetPoint"
+      ]
+    },
+    "EnvList": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "title": "EnvList",
+      "required": [
+        "key",
+        "value"
+      ]
+    },
+    "GetCanvasHistoryDetailReq": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "GetCanvasHistoryDetailReq",
+      "required": [
+        "id"
+      ]
+    },
+    "GetCanvasHistoryDetailResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "graph": {
+          "$ref": "#/definitions/mapstringinterface"
+        }
+      },
+      "title": "GetCanvasHistoryDetailResp",
+      "required": [
+        "id",
+        "name",
+        "graph"
+      ]
+    },
+    "GetCanvasHistoryListReq": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "workspaceId": {
+          "type": "string"
+        },
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "GetCanvasHistoryListReq",
+      "required": [
+        "workspaceId",
+        "current",
+        "pageSize"
+      ]
+    },
+    "GetCanvasHistoryListResp": {
+      "type": "object",
+      "properties": {
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/CanvasHistoryRecord"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 总记录数"
+        }
+      },
+      "title": "GetCanvasHistoryListResp",
+      "required": [
+        "records",
+        "total"
+      ]
+    },
+    "GetCanvasRunDetailReq": {
+      "type": "object",
+      "title": "GetCanvasRunDetailReq"
+    },
+    "GetCanvasRunDetailResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": " 运行记录ID"
+        },
+        "startTime": {
+          "type": "string",
+          "description": " 开始时间"
+        },
+        "duration": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 总耗时(ms)"
+        },
+        "status": {
+          "type": "string",
+          "description": " 运行状态 success/failed"
+        },
+        "error": {
+          "type": "string",
+          "description": " 错误信息"
+        },
+        "components": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ComponentDetail"
+          },
+          "description": " 组件列表"
+        }
+      },
+      "title": "GetCanvasRunDetailResp",
+      "required": [
+        "id",
+        "startTime",
+        "duration",
+        "status",
+        "error",
+        "components"
+      ]
+    },
+    "GetCanvasRunHistoryReq": {
+      "type": "object",
+      "title": "GetCanvasRunHistoryReq"
+    },
+    "GetCanvasRunHistoryResp": {
+      "type": "object",
+      "properties": {
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RunHistoryRecord"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 总记录数"
+        }
+      },
+      "title": "GetCanvasRunHistoryResp",
+      "required": [
+        "records",
+        "total"
+      ]
+    },
+    "GetKvRequest": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        }
+      },
+      "title": "GetKvRequest",
+      "required": [
+        "key"
+      ]
+    },
+    "GetKvResponse": {
+      "type": "object",
+      "properties": {
+        "kv": {
+          "$ref": "#/definitions/Kv"
+        }
+      },
+      "title": "GetKvResponse",
+      "required": [
+        "kv"
+      ]
+    },
+    "GetPermissionListRequest": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "method": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "parentKey": {
+          "type": "string"
+        },
+        "current": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "GetPermissionListRequest",
+      "required": [
+        "current",
+        "pageSize"
+      ]
+    },
+    "GetPermissionListResponse": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Permission"
+          }
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "GetPermissionListResponse",
+      "required": [
+        "list",
+        "total"
+      ]
+    },
+    "GetPermissionRequest": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        }
+      },
+      "title": "GetPermissionRequest",
+      "required": [
+        "key"
+      ]
+    },
+    "GetPermissionResponse": {
+      "type": "object",
+      "properties": {
+        "permission": {
+          "$ref": "#/definitions/Permission"
+        }
+      },
+      "title": "GetPermissionResponse",
+      "required": [
+        "permission"
+      ]
+    },
+    "GetPermissionTreeRequest": {
+      "type": "object",
+      "properties": {
+        "parentKey": {
+          "type": "string"
+        }
+      },
+      "title": "GetPermissionTreeRequest"
+    },
+    "GetPermissionTreeResponse": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Permission"
+          }
+        }
+      },
+      "title": "GetPermissionTreeResponse",
+      "required": [
+        "list"
+      ]
+    },
+    "GetRolePermissionRequest": {
+      "type": "object",
+      "properties": {
+        "roleId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "GetRolePermissionRequest",
+      "required": [
+        "roleId"
+      ]
+    },
+    "GetRolePermissionResponse": {
+      "type": "object",
+      "properties": {
+        "rolePermissions": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RolePermissions"
+          }
+        }
+      },
+      "title": "GetRolePermissionResponse",
+      "required": [
+        "rolePermissions"
+      ]
+    },
+    "GetRoleRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "GetRoleRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "GetRoleResponse": {
+      "type": "object",
+      "properties": {
+        "role": {
+          "$ref": "#/definitions/Role"
+        }
+      },
+      "title": "GetRoleResponse",
+      "required": [
+        "role"
+      ]
+    },
+    "Kv": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "title": "Kv",
+      "required": [
+        "key",
+        "value"
+      ]
+    },
+    "ListKvRequest": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "key": {
+          "type": "string"
+        }
+      },
+      "title": "ListKvRequest",
+      "required": [
+        "current",
+        "pageSize"
+      ]
+    },
+    "ListKvResponse": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Kv"
+          }
+        }
+      },
+      "title": "ListKvResponse",
+      "required": [
+        "total",
+        "list"
+      ]
+    },
+    "ListRoleRequest": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "ListRoleRequest",
+      "required": [
+        "current",
+        "pageSize"
+      ]
+    },
+    "ListRoleResponse": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Role"
+          }
+        }
+      },
+      "title": "ListRoleResponse",
+      "required": [
+        "total",
+        "list"
+      ]
+    },
+    "MockInfo": {
+      "type": "object",
+      "properties": {
+        "address": {
+          "type": "string"
+        },
+        "phoneNums": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "MockInfo",
+      "required": [
+        "address",
+        "phoneNums"
+      ]
+    },
+    "MockRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "age": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "MockRequest",
+      "required": [
+        "name",
+        "age"
+      ]
+    },
+    "MockResponse": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "age": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "MockResponse",
+      "required": [
+        "name",
+        "age"
+      ]
+    },
+    "ModuleData": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "moduleId": {
+          "type": "string"
+        },
+        "moduleName": {
+          "type": "string"
+        },
+        "moduleType": {
+          "type": "string"
+        },
+        "moduleConfig": {
+          "type": "string"
+        }
+      },
+      "title": "ModuleData",
+      "required": [
+        "index",
+        "moduleId",
+        "moduleName",
+        "moduleType",
+        "moduleConfig"
+      ]
+    },
+    "ModuleEditRequest": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "moduleId": {
+          "type": "string"
+        },
+        "moduleName": {
+          "type": "string"
+        },
+        "moduleType": {
+          "type": "string"
+        },
+        "moduleConfig": {
+          "type": "string"
+        }
+      },
+      "title": "ModuleEditRequest",
+      "required": [
+        "index",
+        "moduleId",
+        "moduleName",
+        "moduleType",
+        "moduleConfig"
+      ]
+    },
+    "ModuleEditResponse": {
+      "type": "object",
+      "properties": {
+        "moduleId": {
+          "type": "string"
+        }
+      },
+      "title": "ModuleEditResponse",
+      "required": [
+        "moduleId"
+      ]
+    },
+    "ModuleListRequest": {
+      "type": "object",
+      "title": "ModuleListRequest"
+    },
+    "ModuleListResponse": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "modules": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/ModuleData"
+          }
+        }
+      },
+      "title": "ModuleListResponse",
+      "required": [
+        "total",
+        "modules"
+      ]
+    },
+    "ModuleNewRequest": {
+      "type": "object",
+      "properties": {
+        "index": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "moduleName": {
+          "type": "string"
+        },
+        "moduleType": {
+          "type": "string"
+        },
+        "moduleConfig": {
+          "type": "string"
+        }
+      },
+      "title": "ModuleNewRequest",
+      "required": [
+        "index",
+        "moduleName",
+        "moduleType",
+        "moduleConfig"
+      ]
+    },
+    "ModuleNewResponse": {
+      "type": "object",
+      "properties": {
+        "moduleId": {
+          "type": "string"
+        }
+      },
+      "title": "ModuleNewResponse",
+      "required": [
+        "moduleId"
+      ]
+    },
+    "Permission": {
+      "type": "object",
+      "properties": {
+        "title": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "parentKey": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Permission"
+          }
+        }
+      },
+      "title": "Permission",
+      "required": [
+        "title",
+        "key",
+        "type",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "RestoreCanvasHistoryReq": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "RestoreCanvasHistoryReq",
+      "required": [
+        "id"
+      ]
+    },
+    "RestoreCanvasHistoryResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "workspaceId": {
+          "type": "string"
+        }
+      },
+      "title": "RestoreCanvasHistoryResp",
+      "required": [
+        "id",
+        "workspaceId"
+      ]
+    },
+    "Role": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        }
+      },
+      "title": "Role",
+      "required": [
+        "id",
+        "name",
+        "code",
+        "description",
+        "status",
+        "createdAt",
+        "updatedAt"
+      ]
+    },
+    "RolePermissions": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "title": {
+          "type": "string"
+        },
+        "key": {
+          "type": "string"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "parentKey": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "hasPermission": {
+          "type": "boolean",
+          "format": "boolean"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "children": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/RolePermissions"
+          }
+        }
+      },
+      "title": "RolePermissions",
+      "required": [
+        "id",
+        "title",
+        "key",
+        "type",
+        "hasPermission",
+        "createdAt",
+        "updatedAt",
+        "children"
+      ]
+    },
+    "RunHistoryRecord": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": " 运行记录ID"
+        },
+        "startTime": {
+          "type": "string",
+          "description": " 开始时间，ISO格式"
+        },
+        "duration": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 总耗时(ms)"
+        },
+        "status": {
+          "type": "string",
+          "description": " 运行状态"
+        },
+        "componentCount": {
+          "type": "integer",
+          "format": "int64",
+          "description": " 组件数量"
+        }
+      },
+      "title": "RunHistoryRecord",
+      "required": [
+        "id",
+        "startTime",
+        "duration",
+        "status",
+        "componentCount"
+      ]
+    },
+    "SaveCanvasHistoryReq": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "SaveCanvasHistoryReq",
+      "required": [
+        "workspaceId",
+        "name"
+      ]
+    },
+    "SaveCanvasHistoryResp": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "SaveCanvasHistoryResp",
+      "required": [
+        "id"
+      ]
+    },
+    "TagEditRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "TagEditRequest",
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "TagEditResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "TagEditResponse",
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "TagEntity": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "TagEntity",
+      "required": [
+        "id",
+        "name"
+      ]
+    },
+    "TagListRequest": {
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "TagListRequest"
+    },
+    "TagListResponse": {
+      "type": "object",
+      "properties": {
+        "tagList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/TagEntity"
+          }
+        }
+      },
+      "title": "TagListResponse",
+      "required": [
+        "tagList"
+      ]
+    },
+    "TagRemoveRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "TagRemoveRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "TagRemoveResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "TagRemoveResponse",
+      "required": [
+        "id"
+      ]
+    },
+    "UnbindPermissionRequest": {
+      "type": "object",
+      "properties": {
+        "roleId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "permissionId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UnbindPermissionRequest",
+      "required": [
+        "roleId",
+        "permissionId"
+      ]
+    },
+    "UnbindPermissionResponse": {
+      "type": "object",
+      "title": "UnbindPermissionResponse"
+    },
+    "UpdateKvRequest": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "title": "UpdateKvRequest",
+      "required": [
+        "key",
+        "value"
+      ]
+    },
+    "UpdateKvResponse": {
+      "type": "object",
+      "title": "UpdateKvResponse"
+    },
+    "UpdatePermissionRequest": {
+      "type": "object",
+      "properties": {
+        "key": {
+          "type": "string"
+        },
+        "title": {
+          "type": "string"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "parentKey": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "method": {
+          "type": "string"
+        },
+        "sort": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UpdatePermissionRequest",
+      "required": [
+        "key"
+      ]
+    },
+    "UpdatePermissionResponse": {
+      "type": "object",
+      "title": "UpdatePermissionResponse"
+    },
+    "UpdateRoleRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "name": {
+          "type": "string"
+        },
+        "code": {
+          "type": "string"
+        },
+        "description": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UpdateRoleRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "UpdateRoleResponse": {
+      "type": "object",
+      "title": "UpdateRoleResponse"
+    },
+    "User": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "username": {
+          "type": "string"
+        },
+        "realName": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "createdAt": {
+          "type": "string"
+        },
+        "updatedAt": {
+          "type": "string"
+        },
+        "roleId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "roleName": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "title": "User",
+      "required": [
+        "id",
+        "username",
+        "realName",
+        "phone",
+        "email",
+        "status",
+        "createdAt",
+        "updatedAt",
+        "roleId",
+        "roleName",
+        "password"
+      ]
+    },
+    "UserBindRoleRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "roleId": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UserBindRoleRequest",
+      "required": [
+        "userId",
+        "roleId"
+      ]
+    },
+    "UserBindRoleResponse": {
+      "type": "object",
+      "title": "UserBindRoleResponse"
+    },
+    "UserInfoRequest": {
+      "type": "object",
+      "title": "UserInfoRequest"
+    },
+    "UserInfoResponse": {
+      "type": "object",
+      "properties": {
+        "user": {
+          "$ref": "#/definitions/User"
+        },
+        "roleName": {
+          "type": "string"
+        }
+      },
+      "title": "UserInfoResponse",
+      "required": [
+        "user",
+        "roleName"
+      ]
+    },
+    "UserListRequest": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "username": {
+          "type": "string"
+        }
+      },
+      "title": "UserListRequest",
+      "required": [
+        "current",
+        "pageSize"
+      ]
+    },
+    "UserListResponse": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/User"
+          }
+        }
+      },
+      "title": "UserListResponse",
+      "required": [
+        "total",
+        "list"
+      ]
+    },
+    "UserLoginRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "title": "UserLoginRequest",
+      "required": [
+        "username",
+        "password"
+      ]
+    },
+    "UserLoginResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "UserLoginResponse",
+      "required": [
+        "token"
+      ]
+    },
+    "UserLogoutRequest": {
+      "type": "object",
+      "title": "UserLogoutRequest"
+    },
+    "UserLogoutResponse": {
+      "type": "object",
+      "title": "UserLogoutResponse"
+    },
+    "UserRegisterRequest": {
+      "type": "object",
+      "properties": {
+        "username": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        },
+        "realName": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UserRegisterRequest",
+      "required": [
+        "username",
+        "password"
+      ]
+    },
+    "UserRegisterResponse": {
+      "type": "object",
+      "properties": {
+        "token": {
+          "type": "string"
+        }
+      },
+      "title": "UserRegisterResponse",
+      "required": [
+        "token"
+      ]
+    },
+    "UserUpdateInfoRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "username": {
+          "type": "string"
+        },
+        "phone": {
+          "type": "string"
+        },
+        "email": {
+          "type": "string"
+        },
+        "password": {
+          "type": "string"
+        }
+      },
+      "title": "UserUpdateInfoRequest",
+      "required": [
+        "userId"
+      ]
+    },
+    "UserUpdateInfoResponse": {
+      "type": "object",
+      "title": "UserUpdateInfoResponse"
+    },
+    "UserUpdateStatusRequest": {
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "status": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "UserUpdateStatusRequest",
+      "required": [
+        "userId",
+        "status",
+        "状态 1:正常 0:禁用"
+      ]
+    },
+    "UserUpdateStatusResponse": {
+      "type": "object",
+      "title": "UserUpdateStatusResponse"
+    },
+    "WorkRemoveRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "WorkRemoveRequest"
+    },
+    "WorkSpaceBase": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceBase",
+      "required": [
+        "workSpaceName",
+        "workSpaceType"
+      ]
+    },
+    "WorkSpaceCopyRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "name": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceCopyRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "WorkSpaceCopyResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        },
+        "workSpaceConfig": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceCopyResponse",
+      "required": [
+        "workSpaceConfig"
+      ]
+    },
+    "WorkSpaceEditRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        },
+        "workSpaceConfig": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceEditRequest"
+    },
+    "WorkSpaceEditResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        },
+        "workSpaceConfig": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceEditResponse",
+      "required": [
+        "workSpaceConfig"
+      ]
+    },
+    "WorkSpaceEditTagRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "title": "WorkSpaceEditTagRequest",
+      "required": [
+        "id",
+        "workSpaceTag"
+      ]
+    },
+    "WorkSpaceEditTagResponse": {
+      "type": "object",
+      "title": "WorkSpaceEditTagResponse"
+    },
+    "WorkSpaceEnvEditRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "env": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EnvList"
+          }
+        }
+      },
+      "title": "WorkSpaceEnvEditRequest",
+      "required": [
+        "id",
+        "env"
+      ]
+    },
+    "WorkSpaceEnvEditResponse": {
+      "type": "object",
+      "title": "WorkSpaceEnvEditResponse"
+    },
+    "WorkSpaceEnvListRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceEnvListRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "WorkSpaceEnvListResponse": {
+      "type": "object",
+      "properties": {
+        "envList": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/EnvList"
+          }
+        }
+      },
+      "title": "WorkSpaceEnvListResponse",
+      "required": [
+        "envList"
+      ]
+    },
+    "WorkSpaceListRequest": {
+      "type": "object",
+      "properties": {
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        },
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "WorkSpaceListRequest",
+      "required": [
+        "current",
+        "pageSize"
+      ]
+    },
+    "WorkSpaceListResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "data": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/WorkSpacePage"
+          }
+        }
+      },
+      "title": "WorkSpaceListResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "data"
+      ]
+    },
+    "WorkSpaceNewRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceNewRequest"
+    },
+    "WorkSpaceNewResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        },
+        "workSpaceConfig": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceNewResponse",
+      "required": [
+        "workSpaceConfig"
+      ]
+    },
+    "WorkSpacePage": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string"
+        },
+        "updateTime": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpacePage",
+      "required": [
+        "createTime",
+        "updateTime"
+      ]
+    },
+    "WorkSpaceRemoveResponse": {
+      "type": "object",
+      "title": "WorkSpaceRemoveResponse"
+    }
+  },
+  "securityDefinitions": {
+    "apiKey": {
+      "type": "apiKey",
+      "description": "Enter JWT Bearer token **_only_**",
+      "name": "Authorization",
+      "in": "header"
+    }
+  }
+}

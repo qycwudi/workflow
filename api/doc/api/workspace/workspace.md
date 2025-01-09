@@ -383,3 +383,63 @@ type WorkSpaceBase struct {
 }
 ```
 
+### 11. "画布环境变量列表"
+
+1. route definition
+
+- Url: /workflow/workspace/env/list
+- Method: POST
+- Request: `WorkSpaceEnvListRequest`
+- Response: `WorkSpaceEnvListResponse`
+
+2. request definition
+
+
+
+```golang
+type WorkSpaceEnvListRequest struct {
+	Id string `json:"id"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type WorkSpaceEnvListResponse struct {
+	EnvList []EnvList `json:"envList"`
+}
+```
+
+### 12. "画布环境变量修改"
+
+1. route definition
+
+- Url: /workflow/workspace/env/edit
+- Method: POST
+- Request: `WorkSpaceEnvEditRequest`
+- Response: `WorkSpaceEnvEditResponse`
+
+2. request definition
+
+
+
+```golang
+type WorkSpaceEnvEditRequest struct {
+	Id string `json:"id"`
+	Env []EnvList `json:"env"`
+}
+```
+
+
+3. response definition
+
+
+
+```golang
+type WorkSpaceEnvEditResponse struct {
+}
+```
+
