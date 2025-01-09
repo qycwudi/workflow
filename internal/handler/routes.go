@@ -356,13 +356,8 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 				{
 					Method:  http.MethodPost,
-					Path:    "/role/bindpermission",
-					Handler: role.BindPermissionHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/role/unbindpermission",
-					Handler: role.UnbindPermissionHandler(serverCtx),
+					Path:    "/role/batchbindpermission",
+					Handler: role.BatchBindPermissionHandler(serverCtx),
 				},
 				{
 					Method:  http.MethodPost,

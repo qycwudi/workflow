@@ -79,6 +79,17 @@ Authorization: Bearer 0241411184b34ffe8f0e38d78bb03771
     "age": 10
 }
 
+# 测试
+POST http://14.103.24:30000/api/ctpoucuhbuqs73fdg3v0
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer e00b62bfb33045efb9675e7fc7e0853b
+
+{
+    "name": "张三",
+    "age": 10
+}
+
 ### API调用-单结构
 POST http://127.0.0.1:8889/api/role/v1/ctu0kht3sjtua2i4o8a0
 User-Agent: Apifox/1.0.0 (https://apifox.com)

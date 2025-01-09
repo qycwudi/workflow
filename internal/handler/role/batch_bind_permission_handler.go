@@ -9,16 +9,16 @@ import (
 	"workflow/response"
 )
 
-func BindPermissionHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
+func BatchBindPermissionHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var req types.BindPermissionRequest
+		var req types.BatchBindPermissionRequest
 		if err := httpx.Parse(r, &req); err != nil {
 			httpx.Error(w, err)
 			return
 		}
 
-		l := role.NewBindPermissionLogic(r.Context(), svcCtx)
-		resp, err := l.BindPermission(&req)
+		l := role.NewBatchBindPermissionLogic(r.Context(), svcCtx)
+		resp, err := l.BatchBindPermission(&req)
 		response.Response(w, resp, err)
 
 	}

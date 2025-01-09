@@ -47,6 +47,7 @@ func buildPermissionTree(permissions []*model.Permissions) []types.Permission {
 	// 第一次遍历,创建所有节点
 	for _, p := range permissions {
 		permissionMap[p.Key] = &types.Permission{
+			Id:        p.Id,
 			Title:     p.Title,
 			Key:       p.Key,
 			Type:      p.Type,

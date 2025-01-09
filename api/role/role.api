@@ -58,20 +58,20 @@ type ListRoleResponse {
     List []Role `json:"list"`
 }
 
-type BindPermissionRequest {
+type BatchBindPermissionRequest {
     RoleId int64 `json:"roleId"`
-    PermissionId int64 `json:"permissionId"`
+    PermissionIds []int64 `json:"permissionIds"`
 }
 
-type BindPermissionResponse {
+type BatchBindPermissionResponse {
 }
 
-type UnbindPermissionRequest {
+type BatchUnbindPermissionRequest {
     RoleId int64 `json:"roleId"`
-    PermissionId int64 `json:"permissionId"`
+    PermissionIds []int64 `json:"permissionIds"`
 }
 
-type UnbindPermissionResponse {
+type BatchUnbindPermissionResponse {
 }
 
 type GetRolePermissionRequest {
@@ -79,22 +79,7 @@ type GetRolePermissionRequest {
 }
 
 type GetRolePermissionResponse {
-    RolePermissions []RolePermissions `json:"rolePermissions"`
-}
-
-type RolePermissions {
-    Id int64 `json:"id"`
-    Title string `json:"title"`
-    Key string `json:"key"` 
-    Type int64 `json:"type"`
-    ParentKey string `json:"parentKey,optional"`
-    Path string `json:"path,optional"`
-    Method string `json:"method,optional"`
-    Sort int64 `json:"sort,optional"`
-	HasPermission bool `json:"hasPermission"`
-    CreatedAt string `json:"createdAt"`
-    UpdatedAt string `json:"updatedAt"`
-	Children []RolePermissions `json:"children"`
+    RolePermissions []int64 `json:"rolePermissions"`
 }
 
 @server (
@@ -125,13 +110,9 @@ service workflow-api {
     @handler ListRoleHandler
     post /role/list (ListRoleRequest) returns (ListRoleResponse)
 
-	@doc "绑定权限"
-	@handler BindPermissionHandler
-	post /role/bindpermission (BindPermissionRequest) returns (BindPermissionResponse)
-
-	@doc "解绑权限"
-	@handler UnbindPermissionHandler
-	post /role/unbindpermission (UnbindPermissionRequest) returns (UnbindPermissionResponse)
+	@doc "批量绑定权限"
+	@handler BatchBindPermissionHandler
+	post /role/batchbindpermission (BatchBindPermissionRequest) returns (BatchBindPermissionResponse)
 
 	@doc "获取角色权限"
 	@handler GetRolePermissionHandler

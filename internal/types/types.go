@@ -701,20 +701,20 @@ type ListRoleResponse struct {
 	List  []Role `json:"list"`
 }
 
-type BindPermissionRequest struct {
-	RoleId       int64 `json:"roleId"`
-	PermissionId int64 `json:"permissionId"`
+type BatchBindPermissionRequest struct {
+	RoleId        int64   `json:"roleId"`
+	PermissionIds []int64 `json:"permissionIds"`
 }
 
-type BindPermissionResponse struct {
+type BatchBindPermissionResponse struct {
 }
 
-type UnbindPermissionRequest struct {
-	RoleId       int64 `json:"roleId"`
-	PermissionId int64 `json:"permissionId"`
+type BatchUnbindPermissionRequest struct {
+	RoleId        int64   `json:"roleId"`
+	PermissionIds []int64 `json:"permissionIds"`
 }
 
-type UnbindPermissionResponse struct {
+type BatchUnbindPermissionResponse struct {
 }
 
 type GetRolePermissionRequest struct {
@@ -722,25 +722,11 @@ type GetRolePermissionRequest struct {
 }
 
 type GetRolePermissionResponse struct {
-	RolePermissions []RolePermissions `json:"rolePermissions"`
-}
-
-type RolePermissions struct {
-	Id            int64             `json:"id"`
-	Title         string            `json:"title"`
-	Key           string            `json:"key"`
-	Type          int64             `json:"type"`
-	ParentKey     string            `json:"parentKey,optional"`
-	Path          string            `json:"path,optional"`
-	Method        string            `json:"method,optional"`
-	Sort          int64             `json:"sort,optional"`
-	HasPermission bool              `json:"hasPermission"`
-	CreatedAt     string            `json:"createdAt"`
-	UpdatedAt     string            `json:"updatedAt"`
-	Children      []RolePermissions `json:"children"`
+	RolePermissions []int64 `json:"rolePermissions"`
 }
 
 type Permission struct {
+	Id        int64        `json:"id"`
 	Title     string       `json:"title"`
 	Key       string       `json:"key"`
 	Type      int64        `json:"type"`
