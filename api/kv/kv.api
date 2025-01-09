@@ -1,0 +1,77 @@
+syntax = "v1"
+
+type Kv {
+    Key string `json:"key"` 
+    Value string `json:"value"`
+}
+
+type CreateKvRequest {
+    Key string `json:"key"`
+    Value string `json:"value"`
+}
+
+type CreateKvResponse {
+}
+
+type UpdateKvRequest {
+    Key string `json:"key"`
+    Value string `json:"value"`
+}
+
+type UpdateKvResponse {
+}
+
+type DeleteKvRequest {
+    Key string `json:"key"`
+}
+
+type DeleteKvResponse {
+}
+
+type GetKvRequest {
+    Key string `json:"key"`
+}
+
+type GetKvResponse {
+    Kv Kv `json:"kv"`
+}
+
+type ListKvRequest {
+    Current int64 `json:"current"`
+    PageSize int64 `json:"pageSize"`
+    Key string `json:"key,optional"`
+}
+
+type ListKvResponse {
+    Total int64 `json:"total"`
+    List []Kv `json:"list"`
+}
+
+@server (
+    group: kv
+    prefix: /workflow
+    jwt: Auth
+    middleware: PermissionMiddleware
+)
+
+service workflow-api {
+    @doc "创建键值对"
+    @handler CreateKvHandler
+    post /kv/create (CreateKvRequest) returns (CreateKvResponse)
+    
+    @doc "更新键值对"
+    @handler UpdateKvHandler
+    post /kv/update (UpdateKvRequest) returns (UpdateKvResponse)
+    
+    @doc "删除键值对"
+    @handler DeleteKvHandler
+    post /kv/delete (DeleteKvRequest) returns (DeleteKvResponse)
+    
+    @doc "获取键值对详情"
+    @handler GetKvHandler
+    post /kv/get (GetKvRequest) returns (GetKvResponse)
+    
+    @doc "获取键值对列表"
+    @handler ListKvHandler
+    post /kv/list (ListKvRequest) returns (ListKvResponse)
+}

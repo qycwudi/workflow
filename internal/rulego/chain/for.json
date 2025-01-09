@@ -1,0 +1,67 @@
+{
+  "ruleChain": {
+    "id": "rule8848",
+    "name": "测试规则链-for",
+    "root": true
+  },
+  "metadata": {
+    "nodes": [
+      {
+        "id": "s1",
+        "type": "jsFilter",
+        "name": "开始",
+        "debugMode": true,
+        "configuration": {
+          "jsScript": "return true;"
+        }
+      },
+      {
+        "id": "s2",
+        "type": "for",
+        "name": "迭代",
+        "debugMode": true,
+        "configuration": {
+          "range": "msg.slice",
+          "mode": 1,
+          "do": "s3"
+        }
+      },
+      {
+        "id": "s3",
+        "type": "jsTransform",
+        "name": "输出",
+        "configuration": {
+          "jsScript": "var name = msg.name;msg.name = name + metadata._loopIndex;\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};"
+        }
+      },
+      {
+        "id": "s5",
+        "type": "jsTransform",
+        "name": "迭代结束",
+        "configuration": {
+          "jsScript": "return {'msg':msg,'metadata':metadata,'msgType':msgType};"
+        }
+      },
+      {
+        "id": "s4",
+        "type": "jsTransform",
+        "name": "结束",
+        "configuration": {
+          "jsScript": "return {'msg':msg,'metadata':metadata,'msgType':msgType};"
+        }
+      }
+    ],
+    "connections": [
+      {
+        "fromId": "s1",
+        "toId": "s2",
+        "type": "True"
+      },
+      {
+        "fromId": "s3",
+        "toId": "s5",
+        "type": "Success"
+      }
+    ]
+  }
+}

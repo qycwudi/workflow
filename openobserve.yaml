@@ -1,0 +1,168 @@
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  annotations: {}
+  labels:
+    app: openobserve
+    group: openobserve
+  name: openobserve
+  namespace: uat-43
+  resourceVersion: '461634374'
+spec:
+  podManagementPolicy: OrderedReady
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: openobserve
+      group: openobserve
+  serviceName: openobserve
+  template:
+    metadata:
+      creationTimestamp: null
+      labels:
+        app: openobserve
+        group: openobserve
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: kubernetes.io/hostname
+                    operator: In
+                    values:
+                      - share-83
+      containers:
+        - env:
+            - name: ZO_ROOT_USER_EMAIL
+              value: root@123456789.com
+            - name: ZO_ROOT_USER_PASSWORD
+              value: '123456789'
+            - name: ZO_DATA_DIR
+              value: /data
+          image: 'public.ecr.aws/zinclabs/openobserve:latest'
+          imagePullPolicy: Always
+          name: openobserve
+          ports:
+            - containerPort: 5080
+              name: http
+              protocol: TCP
+          resources:
+            limits:
+              cpu: '4'
+              memory: 8Gi
+            requests:
+              cpu: 100m
+              memory: 2Gi
+          terminationMessagePath: /dev/termination-log
+          terminationMessagePolicy: File
+      dnsPolicy: ClusterFirst
+      restartPolicy: Always
+      schedulerName: default-scheduler
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      terminationGracePeriodSeconds: 30
+      volumes:
+        - name: data
+          persistentVolumeClaim:
+            claimName: gaia
+  updateStrategy:
+    rollingUpdate:
+      partition: 0
+    type: RollingUpdate
+status:
+  collisionCount: 0
+  currentReplicas: 1
+  currentRevision: openobserve-6fb6585fc4
+  observedGeneration: 8
+  readyReplicas: 1
+  replicas: 1
+  updateRevision: openobserve-6fb6585fc4
+  updatedReplicas: 1
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: node
+    meta.helm.sh/release-namespace: uat-43
+  labels:
+    app: openobserve
+    app.kubernetes.io/managed-by: Helm
+    group: openobserve
+  name: openobserve
+  namespace: uat-43
+  resourceVersion: '461636606'
+spec:
+  clusterIP: 10.99.43.100
+  clusterIPs:
+    - 10.99.43.100
+  externalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: tcp5080
+      nodePort: 16683
+      port: 5080
+      protocol: TCP
+      targetPort: 5080
+    - name: tcp5081
+      nodePort: 11461
+      port: 5081
+      protocol: TCP
+      targetPort: 5081
+  selector:
+    app: openobserve
+    group: openobserve
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    meta.helm.sh/release-name: node
+    meta.helm.sh/release-namespace: uat-43
+  labels:
+    app: openobserve
+    app.kubernetes.io/managed-by: Helm
+    group: openobserve
+  name: openobserve
+  namespace: uat-43
+  resourceVersion: '461636606'
+spec:
+  clusterIP: 10.99.43.100
+  clusterIPs:
+    - 10.99.43.100
+  externalTrafficPolicy: Cluster
+  ipFamilies:
+    - IPv4
+  ipFamilyPolicy: SingleStack
+  ports:
+    - name: tcp5080
+      nodePort: 16683
+      port: 5080
+      protocol: TCP
+      targetPort: 5080
+    - name: tcp5081
+      nodePort: 11461
+      port: 5081
+      protocol: TCP
+      targetPort: 5081
+  selector:
+    app: openobserve
+    group: openobserve
+  sessionAffinity: None
+  type: NodePort
+status:
+  loadBalancer: {}
+

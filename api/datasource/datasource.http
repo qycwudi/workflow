@@ -1,0 +1,64 @@
+### 数据源-列表
+POST http://127.0.0.1:8899/workflow/datasource/list
+Content-Type: application/json
+
+{
+  "current": 1,
+  "pageSize": 4,
+  "type": "",
+  "status": "connected",
+  "switch": 1
+}
+
+### 数据源-列表
+POST http://10.99.43.99:8899/workflow/datasource/list
+Content-Type: application/json
+
+{
+  "current": 1,
+  "pageSize": 100,
+  "type": "",
+  "switch": 1
+}
+
+### 数据源-新增
+POST http://10.99.43.99:8899/workflow/datasource/add
+Content-Type: application/json
+
+{
+  "switch": 1,
+  "name": "test-1",
+  "type": "mysql",
+  "config": "{\"host\": \"10.99.43.9\", \"port\": 3306, \"user\": \"root\", \"database\": \"workflow\", \"password\": \"Root@123\"}"
+}
+
+### 数据源-编辑
+POST http://127.0.0.1:8899/workflow/datasource/edit
+Content-Type: application/json
+
+{
+  "id": 26,
+  "name": "test-1",
+  "type": "mysql",
+  "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/w\"}",
+  "switch": 1
+}
+
+### 数据源-删除
+POST http://127.0.0.1:8899/workflow/datasource/delete
+Content-Type: application/json
+
+{
+  "id": 33
+}
+
+### 数据源-测试
+POST http://10.99.43.99:8899/workflow/datasource/test
+Content-Type: application/json
+
+{
+  "switch": 1,
+  "name": "test-1",
+  "type": "mysql",
+  "config": "{\"host\": \"10.99.43.9\", \"port\": 3306, \"user\": \"root\", \"database\": \"workflow\", \"password\": \"Root@123\"}"
+}

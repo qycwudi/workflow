@@ -1,0 +1,57 @@
+{
+  "metadata": {
+    "nodes": [
+      {
+        "id": "database-bc45b03b-7142-40cb-9bc8-90d20ad0cee2",
+        "name": "数据库",
+        "type": "database",
+        "configuration": {
+          "datasourceId": 26,
+          "datasourceSql": "select * from (select ROWNUM r, t.* from (select * from T_ACCOUNT t order by USENUM desc) t where ROWNUM <=20) where r > 10;",
+          "datasourceType": "Oracle",
+          "datasourceParamMapper": {
+            "${table1}": "table1",
+            "${table2}": "table2"
+          }
+        }
+      },
+      {
+        "id": "jsTransform-3067969b-3c18-419a-abd6-29292c276fa6",
+        "name": "代码执行💻",
+        "type": "jsTransform",
+        "configuration": {
+          "jsScript": "const resultMsg = {\n    original: msg\n  };\n  return { msg: resultMsg, metadata: metadata, msgType: msgType };"
+        }
+      },
+      {
+        "id": "start-d8f61cb8-5ae1-4912-b878-a08482546534",
+        "name": "开始",
+        "type": "start",
+        "configuration": {
+          "Num": 0,
+          "Raw": "{\"param\":{\"name\":\"wuyuli\",\"age\":18}}",
+          "Str": "",
+          "Type": 5,
+          "Index": 4040,
+          "Indexes": null
+        }
+      }
+    ],
+    "connections": [
+      {
+        "toId": "jsTransform-3067969b-3c18-419a-abd6-29292c276fa6",
+        "type": "Success",
+        "fromId": "database-bc45b03b-7142-40cb-9bc8-90d20ad0cee2"
+      },
+      {
+        "toId": "database-bc45b03b-7142-40cb-9bc8-90d20ad0cee2",
+        "type": "Success",
+        "fromId": "start-d8f61cb8-5ae1-4912-b878-a08482546534"
+      }
+    ],
+    "firstNodeIndex": 2
+  },
+  "ruleChain": {
+    "id": "ctg1kid3sjti2l614lp0"
+  }
+}

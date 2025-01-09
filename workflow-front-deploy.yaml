@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflow-front
+  namespace: workflow
+  labels:
+    app: workflow-front
+spec:
+  replicas: 1
+  revisionHistoryLimit: 1
+  selector:
+    matchLabels:
+      app: workflow-front
+  template:
+    metadata:
+      labels:
+        app: workflow-front
+    spec:
+      containers:
+      - name: workflow-front
+        image: registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:f2
+        ports:
+        - containerPort: 9999
+        readinessProbe:
+          tcpSocket:
+            port: 9999
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 9999
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1024Mi
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: workflow-front-svc
+  namespace: workflow
+spec:
+  ports:                                                                                                                       
+  - nodePort: 30001                                                                                                            
+    port: 9999                                                                                                                 
+    protocol: TCP                                                                                                              
+    targetPort: 9999                                                                                                           
+  selector:                                                                                                                    
+    app: workflow-front                                                                                                        
+  sessionAffinity: None                                                                                                        
+  type: NodePort

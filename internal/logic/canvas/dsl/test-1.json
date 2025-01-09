@@ -1,0 +1,429 @@
+{
+  "id": "cs34put3sjtg42ghcf8g",
+  "hash": "",
+  "graph": {
+    "edges": [
+      {
+        "id": "1728466171666-source-1728545773293-target",
+        "data": {
+          "sourceType": "start",
+          "targetType": "http-request",
+          "isInIteration": false
+        },
+        "relation": "Success",
+        "type": "custom",
+        "source": "1728466171666",
+        "target": "1728545773293",
+        "zIndex": 0,
+
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545773293-source-1728545776762-target",
+        "data": {
+          "sourceType": "http-request",
+          "targetType": "code",
+          "isInIteration": false
+        },
+        "relation": "Success",
+        "type": "custom",
+        "source": "1728545773293",
+        "target": "1728545776762",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545773293-source-1728545782933-target",
+        "data": {
+          "sourceType": "http-request",
+          "targetType": "code",
+          "isInIteration": false
+        },
+        "type": "custom",
+        "relation": "Failure",
+        "source": "1728545773293",
+        "target": "1728545782933",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545773293-source-1728545791400-target",
+        "data": {
+          "sourceType": "http-request",
+          "targetType": "code",
+          "isInIteration": false
+        },
+        "type": "custom",
+        "relation": "Failure",
+        "source": "1728545773293",
+        "target": "1728545791400",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545776762-source-1728545968361-target",
+        "data": {
+          "sourceType": "code",
+          "targetType": "parameter-extractor",
+          "isInIteration": false
+        },
+        "type": "custom",
+        "relation": "Success",
+        "source": "1728545776762",
+        "target": "1728545974147",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545776762-source-1728545968361-target",
+        "data": {
+          "sourceType": "code",
+          "targetType": "parameter-extractor",
+          "isInIteration": false
+        },
+        "type": "custom",
+        "relation": "Failure",
+        "source": "1728545776762",
+        "target": "1728545968361",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545968361-source-1728545974147-target",
+        "data": {
+          "sourceType": "parameter-extractor",
+          "targetType": "end",
+          "isInIteration": false
+        },
+        "type": "custom",
+        "relation": "Success",
+        "source": "1728545968361",
+        "target": "1728545974147",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545782933-source-1728546004783-target",
+        "data": {
+          "sourceType": "code",
+          "targetType": "parameter-extractor",
+          "isInIteration": false
+        },
+        "type": "custom",
+        "relation": "Success",
+        "source": "1728545782933",
+        "target": "1728546004783",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728546004783-source-1728545974147-target",
+        "data": {
+          "sourceType": "parameter-extractor",
+          "targetType": "end",
+          "isInIteration": false
+        },
+        "type": "custom",
+        "relation": "Success",
+        "source": "1728546004783",
+        "target": "1728545974147",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      },
+      {
+        "id": "1728545791400-source-1728545974147-target",
+        "data": {
+          "sourceType": "code",
+          "targetType": "end",
+          "isInIteration": false
+        },
+        "type": "custom",
+        "relation": "Success",
+        "source": "1728545791400",
+        "target": "1728545974147",
+        "zIndex": 0,
+        "sourceHandle": "source",
+        "targetHandle": "target"
+      }
+    ],
+    "nodes": [
+      {
+        "id": "1728466171666",
+        "data": {
+          "desc": "",
+          "type": "start",
+          "title": "开始",
+          "selected": false,
+          "variables": []
+        },
+        "type": "custom",
+        "width": 244,
+        "height": 54,
+        "position": {
+          "x": 30,
+          "y": 233
+        },
+        "selected": false,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "positionAbsolute": {
+          "x": 30,
+          "y": 233
+        }
+      },
+      {
+        "id": "1728545773293",
+        "data": {
+          "url": "http://127.0.0.1:8899/workflow/mock",
+          "body": {
+            "data": "{\n    \"name\": \"xuetu\",\n    \"age\": 11\n}",
+            "type": "json"
+          },
+          "code": "metadata['name']= 'xuetu-error';\nmetadata['age']= msg['age'] + 10;\n\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
+          "desc": "",
+          "type": "http",
+          "title": "接口请求",
+          "method": "post",
+          "params": "",
+          "headers": "auth:1232131414124124,auth1:12321314141241242",
+          "timeout": {
+            "max_read_timeout": 0,
+            "max_write_timeout": 0,
+            "max_connect_timeout": 0
+          },
+          "selected": false,
+          "variables": [],
+          "authorization": {
+            "type": "no-auth",
+            "config": null
+          }
+        },
+        "type": "custom",
+        "width": 244,
+        "height": 106,
+        "position": {
+          "x": 334,
+          "y": 233
+        },
+        "selected": true,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "positionAbsolute": {
+          "x": 334,
+          "y": 233
+        }
+      },
+      {
+        "id": "1728545776762",
+        "data": {
+          "code": "metadata['name']= 'xuetu';\nmetadata['age']= msg.data.age + 10;\nmsg.data.age=msg.data.age + 10;\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
+          "desc": "",
+          "type": "jsTransform",
+          "title": "求和（成功）",
+          "outputs": {},
+          "selected": false,
+          "variables": [],
+          "code_language": "javascript"
+        },
+        "type": "custom",
+        "width": 244,
+        "height": 54,
+        "position": {
+          "x": 638,
+          "y": 233
+        },
+        "selected": false,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "positionAbsolute": {
+          "x": 638,
+          "y": 233
+        }
+      },
+      {
+        "id": "1728545782933",
+        "data": {
+          "code": "metadata['name']= 'xuetu-error';\nmetadata['age']= msg['age'] + 10;\n\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
+          "desc": "",
+          "type": "jsTransform",
+          "title": "接口自定义返回错误文案（失败）",
+          "outputs": {},
+          "selected": false,
+          "variables": [],
+          "code_language": "javascript"
+        },
+        "type": "custom",
+        "width": 244,
+        "height": 54,
+        "position": {
+          "x": 638,
+          "y": 339
+        },
+        "selected": false,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "positionAbsolute": {
+          "x": 638,
+          "y": 339
+        }
+      },
+      {
+        "id": "1728545791400",
+        "data": {
+          "code": "metadata['name']= 'xuetu-http-error';\nmetadata['age']= msg['age'] + 10;\n\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
+          "desc": "",
+          "type": "jsTransform",
+          "title": "http接口请求失败",
+          "outputs": {},
+          "selected": false,
+          "variables": [],
+          "code_language": "javascript"
+        },
+        "type": "custom",
+        "width": 244,
+        "height": 54,
+        "position": {
+          "x": 638,
+          "y": 495.0000000000001
+        },
+        "selected": false,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "positionAbsolute": {
+          "x": 638,
+          "y": 495.0000000000001
+        }
+      },
+      {
+        "id": "1728545968361",
+        "data": {
+          "code": "metadata['name']= 'xuetu-http-error';\nmetadata['age']= msg['age'] + 10;\n\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
+          "desc": "",
+          "type": "jsTransform",
+          "title": "http接口请求失败",
+          "outputs": {},
+          "selected": false,
+          "variables": [],
+          "code_language": "javascript"
+        },
+        "type": "custom",
+        "width": 244,
+        "height": 66,
+        "position": {
+          "x": 942,
+          "y": 233
+        },
+        "selected": false,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "positionAbsolute": {
+          "x": 942,
+          "y": 233
+        }
+      },
+      {
+        "id": "1728545974147",
+        "data": {
+          "desc": "",
+          "type": "end",
+          "title": "得到雪兔有多少钱",
+          "outputs": [
+            {
+              "variable": "money",
+              "value_selector": []
+            }
+          ],
+          "selected": false
+        },
+        "type": "custom",
+        "width": 244,
+        "height": 54,
+        "position": {
+          "x": 1246,
+          "y": 339
+        },
+        "selected": false,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "positionAbsolute": {
+          "x": 1246,
+          "y": 339
+        }
+      },
+      {
+        "id": "1728546004783",
+        "data": {
+          "code": "metadata['name']= 'xuetu-http-error';\nmetadata['age']= msg['age'] + 10;\n\nreturn {'msg':msg,'metadata':metadata,'msgType':msgType};",
+          "desc": "",
+          "type": "jsTransform",
+          "title": "http接口请求失败",
+          "outputs": {},
+          "selected": false,
+          "variables": [],
+          "code_language": "javascript"
+        },
+        "type": "custom",
+        "width": 244,
+        "height": 66,
+        "position": {
+          "x": 942,
+          "y": 339
+        },
+        "selected": false,
+        "sourcePosition": "right",
+        "targetPosition": "left",
+        "positionAbsolute": {
+          "x": 942,
+          "y": 339
+        }
+      }
+    ],
+    "viewport": {
+      "x": -181.9343395313032,
+      "y": 47.18154635918915,
+      "zoom": 0.5781143654550039
+    }
+  },
+  "features": {
+    "file_upload": {
+      "image": {
+        "enabled": false,
+        "number_limits": 3,
+        "transfer_methods": [
+          "local_file",
+          "remote_url"
+        ]
+      }
+    },
+    "speech_to_text": {
+      "enabled": false
+    },
+    "text_to_speech": {
+      "voice": "",
+      "enabled": false,
+      "language": ""
+    },
+    "opening_statement": "",
+    "retriever_resource": {
+      "enabled": true
+    },
+    "suggested_questions": [],
+    "sensitive_word_avoidance": {
+      "enabled": false
+    },
+    "suggested_questions_after_answer": {
+      "enabled": false
+    }
+  },
+  "environment_variables": [],
+  "conversation_variables": []
+}

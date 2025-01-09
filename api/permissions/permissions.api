@@ -1,0 +1,114 @@
+syntax = "v1"
+
+type Permission {
+	Id        int64        `json:"id"`
+	Title     string       `json:"title"`
+	Key       string       `json:"key"`
+	Type      int64        `json:"type"`
+	ParentKey string       `json:"parentKey,optional"`
+	Path      string       `json:"path,optional"`
+	Method    string       `json:"method,optional"`
+	Sort      int64        `json:"sort,optional"`
+	CreatedAt string       `json:"createdAt"`
+	UpdatedAt string       `json:"updatedAt"`
+	Children  []Permission `json:"children,optional"`
+}
+
+type CreatePermissionRequest {
+	Title     string `json:"title"`
+	Key       string `json:"key"`
+	Type      int64  `json:"type"`
+	ParentKey string `json:"parentKey,optional"`
+	Path      string `json:"path,optional"`
+	Method    string `json:"method,optional"`
+	Sort      int64  `json:"sort,optional"`
+}
+
+type CreatePermissionResponse {
+	Id int64 `json:"id"`
+}
+
+type UpdatePermissionRequest {
+	Key       string `json:"key"`
+	Title     string `json:"title,optional"`
+	Type      int64  `json:"type,optional"`
+	ParentKey string `json:"parentKey,optional"`
+	Path      string `json:"path,optional"`
+	Method    string `json:"method,optional"`
+	Sort      int64  `json:"sort,optional"`
+}
+
+type UpdatePermissionResponse {
+}
+
+type DeletePermissionRequest {
+	Key string `json:"key"`
+}
+
+type DeletePermissionResponse {
+}
+
+type GetPermissionRequest {
+	Key string `json:"key"`
+}
+
+type GetPermissionResponse {
+	Permission Permission `json:"permission"`
+}
+
+type GetPermissionTreeRequest {
+	ParentKey string `json:"parentKey,optional"`
+}
+
+type GetPermissionTreeResponse {
+	List []Permission `json:"list"`
+}
+
+type GetPermissionListRequest {
+	Title     string `json:"title,optional"`
+	Key       string `json:"key,optional"`
+	Type      int64  `json:"type,optional"`
+	Method    string `json:"method,optional"`
+	Path      string `json:"path,optional"`
+	ParentKey string `json:"parentKey,optional"`
+	Current   int64  `json:"current"`
+	PageSize  int64  `json:"pageSize"`
+}
+
+type GetPermissionListResponse {
+	List  []Permission `json:"list"`
+	Total int64        `json:"total"`
+}
+
+@server (
+	group: permission
+	prefix: /workflow
+	jwt: Auth
+	middleware: PermissionMiddleware
+)
+
+service workflow-api {
+	@doc "创建权限"
+	@handler CreatePermissionHandler
+	post /permission/create (CreatePermissionRequest) returns (CreatePermissionResponse)
+
+	@doc "更新权限"
+	@handler UpdatePermissionHandler
+	post /permission/update (UpdatePermissionRequest) returns (UpdatePermissionResponse)
+
+	@doc "删除权限"
+	@handler DeletePermissionHandler
+	post /permission/delete (DeletePermissionRequest) returns (DeletePermissionResponse)
+
+	@doc "获取权限详情"
+	@handler GetPermissionHandler
+	post /permission/get (GetPermissionRequest) returns (GetPermissionResponse)
+
+	@doc "获取权限树"
+	@handler GetPermissionTreeHandler
+	post /permission/tree (GetPermissionTreeRequest) returns (GetPermissionTreeResponse)
+
+	@doc "权限列表"
+	@handler GetPermissionListHandler
+	post /permission/list (GetPermissionListRequest) returns (GetPermissionListResponse)
+}

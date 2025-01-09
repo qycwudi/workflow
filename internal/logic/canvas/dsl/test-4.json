@@ -1,0 +1,43 @@
+{
+    "id": "ctcmh2qflvknu5pe3tqg",
+    "graph": {
+      "nodes": [
+        {
+          "data": {
+            "custom": {
+              "param": "{\n  \"name\": \"zhangsan\",\n  \"age\": 18\n}"
+            },
+            "moduleConfig": "{\"type\": \"start\", \"point\": {\"inputs\": [], \"outputs\": [{\"id\": \"success\", \"type\": \"source\", \"label\": \"成功\", \"position\": \"right\", \"handleType\": \"Success\"}]}, \"fields\": [{\"id\": \"param\", \"type\": \"json-input\", \"label\": \"请求头\", \"config\": {\"height\": 150, \"defaultValue\": \"{\\\"Accept\\\": \\\"application/json\\\",\\\"Content-Type\\\": \\\"application/json\\\"}\"}}]}",
+            "name": "开始😄",
+            "type": "start"
+          },
+          "dragging": true,
+          "height": 306,
+          "id": "custom-19a4692c-92fa-4540-8b43-792d4a7af5ad",
+          "position": {
+            "x": -90,
+            "y": 315
+          },
+          "positionAbsolute": {
+            "x": -90,
+            "y": 315
+          },
+          "selected": false,
+          "type": "custom",
+          "width": 400
+        }
+      ],
+      "edges": [
+        
+      ],
+      "description": "Canvas configuration",
+      "name": "AI Flow Canvas",
+      "version": "1.0",
+      "exportedAt": "2024-12-11T10:28:13.828Z",
+      "metadata": {
+        "nodeCount": 3,
+        "edgeCount": 7,
+        "lastModified": "2024-12-11T10:28:13.828Z"
+      }
+    }
+  }

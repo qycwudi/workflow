@@ -1,8 +1,0 @@
-Name: GoGOGO-api
-Host: 0.0.0.0
-Port: 8888
-Timeout: 50000
-Log:
-  Mode: console #file
-  Encoding: plain #json
-MySqlDataSource: root:123456@tcp(127.0.0.1:3306)/col?charset=utf8mb4&parseTime=True&loc=Local

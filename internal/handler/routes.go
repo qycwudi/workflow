@@ -4,34 +4,444 @@ package handler
 import (
 	"net/http"
 
-	"gogogo/internal/svc"
+	api "workflow/internal/handler/api"
+	canvas "workflow/internal/handler/canvas"
+	datasource "workflow/internal/handler/datasource"
+	kv "workflow/internal/handler/kv"
+	model "workflow/internal/handler/model"
+	permission "workflow/internal/handler/permission"
+	role "workflow/internal/handler/role"
+	user "workflow/internal/handler/user"
+	workspace "workflow/internal/handler/workspace"
+	"workflow/internal/svc"
 
 	"github.com/zeromicro/go-zero/rest"
 )
 
 func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
-		[]rest.Route{
-			{
-				Method:  http.MethodPost,
-				Path:    "/common/set/kv",
-				Handler: CommonSetKvHandler(serverCtx),
-			},
-			{
-				Method:  http.MethodPost,
-				Path:    "/common/get/vByk",
-				Handler: CommonGetVByKHandler(serverCtx),
-			},
-		},
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/new",
+					Handler: workspace.WorkSpaceNewHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/remove",
+					Handler: workspace.WorkSpaceRemoveHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/edit",
+					Handler: workspace.WorkSpaceEditHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/list",
+					Handler: workspace.WorkSpaceListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/edit/tag",
+					Handler: workspace.WorkSpaceEditTagHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/tag/list",
+					Handler: workspace.TagListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/tag/edit",
+					Handler: workspace.TagEditHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/tag/remove",
+					Handler: workspace.TagRemoveHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/mock",
+					Handler: workspace.MockHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/copy",
+					Handler: workspace.WorkSpaceCopyHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/env/list",
+					Handler: workspace.WorkSpaceEnvListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/env/edit",
+					Handler: workspace.WorkSpaceEnvEditHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/draft",
+					Handler: canvas.CanvasDraftHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/detail",
+					Handler: canvas.CanvasDetailHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/run",
+					Handler: canvas.CanvasRunHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/run/single",
+					Handler: canvas.CanvasRunSingleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/run/single/detail",
+					Handler: canvas.CanvasRunSingleDetailHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/canvas/run/history/:workSpaceId",
+					Handler: canvas.GetCanvasRunHistoryHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodGet,
+					Path:    "/canvas/run/detail/:recordId",
+					Handler: canvas.GetCanvasRunDetailHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/history/save",
+					Handler: canvas.SaveCanvasHistoryHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/history/list",
+					Handler: canvas.GetCanvasHistoryListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/canvas/history/restore",
+					Handler: canvas.RestoreCanvasHistoryHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/publish",
+					Handler: api.ApiPublishHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/list",
+					Handler: api.ApiListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/onoff",
+					Handler: api.ApiOnOffHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/records",
+					Handler: api.ApiRecordsHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/list",
+					Handler: api.ApiSecretKeyListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/create",
+					Handler: api.ApisecretKeyCreateHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/update/status",
+					Handler: api.ApisecretKeyUpdateStatusHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/update/expirationtime",
+					Handler: api.ApisecretKeyUpdateExpirationTimeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/delete",
+					Handler: api.ApisecretKeyDeleteHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/history",
+					Handler: api.ApiHistoryHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/module/list",
+					Handler: model.ModuleListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/module/new",
+					Handler: model.ModuleNewHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/module/edit",
+					Handler: model.ModuleEditHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/datasource/list",
+					Handler: datasource.DatasourceListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/datasource/add",
+					Handler: datasource.DatasourceAddHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/datasource/edit",
+					Handler: datasource.DatasourceEditHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/datasource/delete",
+					Handler: datasource.DatasourceDeleteHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/datasource/test",
+					Handler: datasource.DatasourceTestHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
 	)
 
 	server.AddRoutes(
 		[]rest.Route{
 			{
 				Method:  http.MethodPost,
-				Path:    "/flow/set/kv",
-				Handler: FlowSetKvHandler(serverCtx),
+				Path:    "/user/login",
+				Handler: user.UserLoginHandler(serverCtx),
 			},
 		},
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/info",
+					Handler: user.UserInfoHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/register",
+					Handler: user.UserRegisterHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/logout",
+					Handler: user.UserLogoutHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/list",
+					Handler: user.UserListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/bindrole",
+					Handler: user.UserBindRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/update/status",
+					Handler: user.UserUpdateStatusHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/user/update/info",
+					Handler: user.UserUpdateInfoHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/create",
+					Handler: role.CreateRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/update",
+					Handler: role.UpdateRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/delete",
+					Handler: role.DeleteRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/get",
+					Handler: role.GetRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/list",
+					Handler: role.ListRoleHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/batchbindpermission",
+					Handler: role.BatchBindPermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/role/getpermission",
+					Handler: role.GetRolePermissionHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/create",
+					Handler: permission.CreatePermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/update",
+					Handler: permission.UpdatePermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/delete",
+					Handler: permission.DeletePermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/get",
+					Handler: permission.GetPermissionHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/tree",
+					Handler: permission.GetPermissionTreeHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/permission/list",
+					Handler: permission.GetPermissionListHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/create",
+					Handler: kv.CreateKvHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/update",
+					Handler: kv.UpdateKvHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/delete",
+					Handler: kv.DeleteKvHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/get",
+					Handler: kv.GetKvHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/kv/list",
+					Handler: kv.ListKvHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
 	)
 }

@@ -1,0 +1,204 @@
+syntax = "v1"
+
+type WorkSpaceBase {
+	Id            string   `json:"id,optional"`
+	WorkSpaceName string   `json:"workSpaceName"`
+	WorkSpaceDesc string   `json:"workSpaceDesc,optional"`
+	WorkSpaceType string   `json:"workSpaceType"`
+	WorkSpaceTag  []string `json:"workSpaceTag,optional"`
+	WorkSpaceIcon string   `json:"workSpaceIcon,optional"`
+}
+
+type WorkSpaceNewRequest {
+	WorkSpaceBase
+}
+
+type WorkSpaceNewResponse {
+	WorkSpaceBase
+	WorkSpaceConfig string `json:"workSpaceConfig"`
+}
+
+type WorkSpaceEditRequest {
+	WorkSpaceBase
+	WorkSpaceConfig string `json:"workSpaceConfig,optional"`
+}
+
+type WorkSpaceEditResponse {
+	WorkSpaceBase
+	WorkSpaceConfig string `json:"workSpaceConfig"`
+}
+
+type WorkRemoveRequest {
+	Id string `json:"id,optional"`
+}
+
+type WorkSpaceRemoveResponse {}
+
+type WorkSpaceListRequest {
+	WorkSpaceName string  `json:"workSpaceName,optional"`
+	WorkSpaceType string  `json:"workSpaceType,optional"`
+	WorkSpaceTag  []int64 `json:"workSpaceTag,optional"`
+	Current       int     `json:"current"`
+	PageSize      int     `json:"pageSize"`
+}
+
+type WorkSpaceListResponse {
+	Current  int             `json:"current"`
+	PageSize int             `json:"pageSize"`
+	Total    int64           `json:"total"`
+	Data     []WorkSpacePage `json:"data"`
+}
+
+type WorkSpacePage {
+	WorkSpaceBase
+	CreateTime string `json:"createTime"`
+	UpdateTime string `json:"updateTime"`
+}
+
+type WorkSpaceEditTagRequest {
+	Id           string   `json:"id"`
+	WorkSpaceTag []string `json:"workSpaceTag"`
+}
+
+type WorkSpaceEditTagResponse {}
+
+type TagListRequest {
+	Name string `json:"name,optional"`
+}
+
+type TagListResponse {
+	Tag []TagEntity `json:"tagList"`
+}
+
+type TagEntity {
+	Id   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type TagEditRequest {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+type TagEditResponse {
+	Id   int64  `json:"id"`
+	Name string `json:"name"`
+}
+
+type TagRemoveRequest {
+	Id int64 `json:"id"`
+}
+
+type TagRemoveResponse {
+	Id int64 `json:"id"`
+}
+
+type MockRequest {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+//    Info MockInfo `json:"info"`
+}
+
+type MockInfo {
+	Address   string   `json:"address"`
+	PhoneNums []string `json:"phoneNums"`
+}
+
+type MockResponse {
+	Name string `json:"name"`
+	Age  int    `json:"age"`
+//    Info MockInfo `json:"info"`
+}
+
+// 画布复制
+type (
+	WorkSpaceCopyRequest {
+		Id   string `json:"id"`
+		Name string `json:"name,optional"`
+	}
+	WorkSpaceCopyResponse {
+		WorkSpaceBase
+		WorkSpaceConfig string `json:"workSpaceConfig"`
+	}
+)
+
+type WorkSpaceEnvListRequest {
+	Id string `json:"id"`
+}
+
+type WorkSpaceEnvListResponse {
+	EnvList []EnvList `json:"envList"`
+}
+
+type EnvList {
+	Key string `json:"key"`
+	Value string `json:"value"`
+}
+
+type WorkSpaceEnvEditRequest {
+	Id string `json:"id"`
+	Env []EnvList `json:"env"`
+}
+
+type WorkSpaceEnvEditResponse {
+	
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: workspace
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+	jwt: Auth // 开启 jwt 认证
+    middleware: PermissionMiddleware // 开启权限认证
+)
+service workflow-api {
+	@doc "创建workspace"
+	@handler WorkSpaceNewHandler
+	post /workspace/new (WorkSpaceNewRequest) returns (WorkSpaceNewResponse)
+
+	@doc "删除workspace"
+	@handler WorkSpaceRemoveHandler
+	post /workspace/remove (WorkRemoveRequest) returns (WorkSpaceRemoveResponse)
+
+	@doc "编辑workspace"
+	@handler WorkSpaceEditHandler
+	post /workspace/edit (WorkSpaceEditRequest) returns (WorkSpaceEditResponse)
+
+	@doc "列表workspace"
+	@handler WorkSpaceListHandler
+	post /workspace/list (WorkSpaceListRequest) returns (WorkSpaceListResponse)
+
+	@doc "编辑workspace标签"
+	@handler WorkSpaceEditTagHandler
+	post /workspace/edit/tag (WorkSpaceEditTagRequest) returns (WorkSpaceEditTagResponse)
+
+	@doc "列表tag"
+	@handler TagListHandler
+	post /tag/list (TagListRequest) returns (TagListResponse)
+
+	@doc "编辑标签"
+	@handler TagEditHandler
+	post /tag/edit (TagEditRequest) returns (TagEditResponse)
+
+	@doc "删除标签"
+	@handler TagRemoveHandler
+	post /tag/remove (TagRemoveRequest) returns (TagRemoveResponse)
+
+	@doc "Mock接口"
+	@handler MockHandler
+	post /mock (MockRequest) returns (MockResponse)
+
+	@doc "WorkspaceCopyHandler 画布复制"
+	@handler WorkSpaceCopyHandler
+	post /workspace/copy (WorkSpaceCopyRequest) returns (WorkSpaceCopyResponse)
+
+	@doc "画布环境变量列表"
+	@handler WorkSpaceEnvListHandler
+	post /workspace/env/list (WorkSpaceEnvListRequest) returns (WorkSpaceEnvListResponse)
+
+	@doc "画布环境变量修改"
+	@handler WorkSpaceEnvEditHandler
+	post /workspace/env/edit (WorkSpaceEnvEditRequest) returns (WorkSpaceEnvEditResponse)
+}
+

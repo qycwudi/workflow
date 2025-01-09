@@ -1,0 +1,106 @@
+{
+    "id": "ctcmh2qflvknu5pe3tqg",
+    "graph": {
+      "nodes": [
+        {
+          "data": {
+            "custom": {
+              "param": "{\n  \"name\": \"zhangsan\",\n  \"age\": 18\n}"
+            },
+            "moduleConfig": "{\"type\": \"start\", \"point\": {\"inputs\": [], \"outputs\": [{\"id\": \"success\", \"type\": \"source\", \"label\": \"成功\", \"position\": \"right\", \"handleType\": \"Success\"}]}, \"fields\": [{\"id\": \"param\", \"type\": \"json-input\", \"label\": \"请求头\", \"config\": {\"height\": 150, \"defaultValue\": \"{\\\"Accept\\\": \\\"application/json\\\",\\\"Content-Type\\\": \\\"application/json\\\"}\"}}]}",
+            "name": "开始😄",
+            "type": "start"
+          },
+          "dragging": true,
+          "height": 306,
+          "id": "custom-19a4692c-92fa-4540-8b43-792d4a7af5ad",
+          "position": {
+            "x": -90,
+            "y": 315
+          },
+          "positionAbsolute": {
+            "x": -90,
+            "y": 315
+          },
+          "selected": false,
+          "type": "custom",
+          "width": 400
+        },
+        {
+          "data": {
+            "custom": {
+              "script": "function Filter(msg, metadata, msgType) {\n  return { msg: msg, metadata: metadata, msgType: msgType };\n}\n"
+            },
+            "moduleConfig": "{\"type\": \"code-execution-js\", \"point\": {\"inputs\": [{\"id\": \"input\", \"type\": \"target\", \"label\": \"输入数据\", \"position\": \"left\", \"handleType\": \"Data\"}], \"outputs\": [{\"id\": \"success\", \"type\": \"source\", \"label\": \"成功\", \"position\": \"right\", \"handleType\": \"Success\"}, {\"id\": \"error\", \"type\": \"source\", \"label\": \"失败\", \"position\": \"right\", \"handleType\": \"Fail\"}]}, \"fields\": [{\"id\": \"script\", \"type\": \"code-input\", \"label\": \"处理脚本\", \"config\": {\"theme\": \"vs-dark\", \"height\": 200, \"options\": {\"minimap\": {\"enabled\": false}, \"fontSize\": 14, \"lineNumbers\": true}, \"language\": \"javascript\", \"defaultValue\": \"function Filter(msg, metadata, msgType) {  \\n  return { msg: msg, metadata: metadata, msgType: msgType };\\n}\"}}], \"runnable\": true}",
+            "name": "代码执行💻",
+            "type": "jsTransform"
+          },
+          "dragging": true,
+          "height": 356,
+          "id": "custom-a0df3721-544c-44e1-b05a-d593e6d50761",
+          "position": {
+            "x": 360,
+            "y": 210
+          },
+          "positionAbsolute": {
+            "x": 360,
+            "y": 210
+          },
+          "selected": false,
+          "type": "custom",
+          "width": 400
+        },
+        {
+          "data": {
+            "custom": {},
+            "moduleConfig": "{\"type\": \"end\", \"point\": {\"inputs\": [{\"id\": \"input\", \"type\": \"target\", \"label\": \"输入数据\", \"position\": \"left\", \"handleType\": \"Data\"}]}, \"fields\": []}",
+            "name": "结束🩷",
+            "type": "end"
+          },
+          "dragging": true,
+          "height": 71,
+          "id": "custom-1eeab59a-911f-483d-802f-dae76a42808b",
+          "position": {
+            "x": 1080,
+            "y": 390
+          },
+          "positionAbsolute": {
+            "x": 1080,
+            "y": 390
+          },
+          "selected": false,
+          "type": "custom",
+          "width": 400
+        }
+      ],
+      "edges": [
+        {
+          "animated": true,
+          "id": "reactflow__edge-custom-19a4692c-92fa-4540-8b43-792d4a7af5adsuccess-custom-a0df3721-544c-44e1-b05a-d593e6d50761input",
+          "source": "custom-19a4692c-92fa-4540-8b43-792d4a7af5ad",
+          "sourceHandle": "Success",
+          "target": "custom-a0df3721-544c-44e1-b05a-d593e6d50761",
+          "targetHandle": "input",
+          "type": "custom"
+        },
+        {
+          "animated": true,
+          "id": "reactflow__edge-custom-a0df3721-544c-44e1-b05a-d593e6d50761error-custom-1eeab59a-911f-483d-802f-dae76a42808binput",
+          "source": "custom-a0df3721-544c-44e1-b05a-d593e6d50761",
+          "sourceHandle": "Success",
+          "target": "custom-1eeab59a-911f-483d-802f-dae76a42808b",
+          "targetHandle": "input",
+          "type": "custom"
+        }
+      ],
+      "description": "Canvas configuration",
+      "name": "AI Flow Canvas",
+      "version": "1.0",
+      "exportedAt": "2024-12-11T10:28:13.828Z",
+      "metadata": {
+        "nodeCount": 3,
+        "edgeCount": 7,
+        "lastModified": "2024-12-11T10:28:13.828Z"
+      }
+    }
+  }

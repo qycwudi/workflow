@@ -1,0 +1,176 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: workflow-back
+  namespace: workflow
+  labels:
+    app: workflow-back
+spec:
+  replicas: 3
+  revisionHistoryLimit: 5
+  selector:
+    matchLabels:
+      app: workflow-back
+  template:
+    metadata:
+      labels:
+        app: workflow-back
+    spec:
+      containers:
+      - name: workflow-back
+        image: registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:b2
+        ports:
+        - containerPort: 8888
+        readinessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: 5
+          periodSeconds: 10
+        livenessProbe:
+          tcpSocket:
+            port: 8888
+          initialDelaySeconds: 15
+          periodSeconds: 20
+        resources:
+          requests:
+            cpu: 500m
+            memory: 512Mi
+          limits:
+            cpu: 1000m
+            memory: 1024Mi
+        volumeMounts:
+        - name: timezone
+          mountPath: /etc/localtime
+        - name: config-volume
+          mountPath: /app/etc/workflow-api.yaml  # 挂载路径更新为 /etc/workflow-api.yaml
+          subPath: workflow-api.yaml  # 指定子路径
+      volumes:
+        - name: timezone
+          hostPath:
+            path: /usr/share/zoneinfo/Asia/Shanghai
+        - name: config-volume
+          configMap:
+            name: workflow-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: workflow-back-svc
+  namespace: workflow
+spec:
+  ports:
+  - nodePort: 30000                                                                                                            
+    port: 8889                                                                                                                 
+    protocol: TCP                                                                                                              
+    targetPort: 8889  
+  selector:
+    app: workflow-back
+  type: NodePort  
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: workflow
+  namespace: workflow
+spec:
+  ports:                                                                                                       
+  - port: 8888                                                                                                                 
+    protocol: TCP                                                                                                              
+    targetPort: 8888
+  selector:
+    app: workflow-back
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: workflow-back-hpa-c
+  namespace: workflow
+  labels:
+    app: workflow-back-hpa-c
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: workflow-back
+  minReplicas: 3
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: cpu
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+
+apiVersion: autoscaling/v2
+kind: HorizontalPodAutoscaler
+metadata:
+  name: workflow-back-hpa-m
+  namespace: workflow
+  labels:
+    app: workflow-back-hpa-m
+spec:
+  scaleTargetRef:
+    apiVersion: apps/v1
+    kind: Deployment
+    name: workflow-back
+  minReplicas: 3
+  maxReplicas: 5
+  metrics:
+  - type: Resource
+    resource:
+      name: memory
+      target:
+        type: Utilization
+        averageUtilization: 80
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: workflow-config
+  namespace: workflow
+data:
+  workflow-api.yaml: |  # 更新键名为 workflow-api.yaml
+    Name: workflow
+    Host: 0.0.0.0
+    Port: 8888
+    ApiPort: 8889
+    Timeout: 50000
+    RuleServerLimitSize: 1
+    RuleServerTrace: true
+    Auth:
+      AccessSecret: "2ea00ca19k4f47b48c8ed8aec131684d"
+      AccessExpire: 86400
+    Log:
+      Level: debug
+      Mode: console
+      Encoding: plain
+      Path: ./app/logs
+    MySqlUrn: root:root@tcp(workflow-mysql-svc:3306)/workflow_prod?charset=utf8mb4&parseTime=True&loc=Local
+    Redis:
+      Host: workflow-redis-svc:6379
+      Password: '123456'
+      DB: 11
+    DevServer:
+      Enabled: true
+      Port: 8080
+      HealthPath: "/v1/ping"
+    Job:
+      - Name: DataSourceClientProbe
+        Enable: true
+        Cron: '0 0/10 * * * *'
+        Topic: 'datasource_client_probe'
+      - Name: DataSourceClientSync
+        Enable: true
+        Cron: '0 0 0/10 * * *'
+        Topic: 'datasource_client_sync'

@@ -1,9 +1,7 @@
-CREATE TABLE `gogogo_kv`
-(
-    `id`          INT          NOT NULL,
-    `spider_name` VARCHAR(255) NOT NULL,
-    `k`           VARCHAR(255) NOT NULL,
-    `v`           VARCHAR(255) NOT NULL,
-    `timestamp`   BIGINT       NOT NULL,
-    PRIMARY KEY (`id`)
+CREATE TABLE `workflow_dev`.`kv` (
+	`id` INT   NOT NULL   AUTO_INCREMENT  ,
+	`key` VARCHAR(255)   NOT NULL     ,
+	`value` JSON   NOT NULL     ,
+	UNIQUE INDEX `uni_key` (`key` ASC)  ,
+	PRIMARY KEY  (`id`)  
 );

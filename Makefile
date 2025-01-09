@@ -1,3 +1,4 @@
+
 #
 #   Copyright (c) 2021, 2121, trustbe and/or its affiliates. All rights reserved.
 #   TRUSTBE PROPRIETARY/CONFIDENTIAL. Use is subject to license terms.
@@ -27,8 +28,8 @@ setenv:
 	$(eval ImageRegistryUsername:=$(or $(HARBOR_USERNAME),admin))
 	$(eval ImageRegistryPassword:=$(or $(HARBOR_PASSWORD),Harbor12345))
 	$(eval ImageRegistryUrl:=$(or $(REGISTRY_URL),10.12.0.78:5000))
-	$(eval ImageID:=$(ImageRegistryUrl)/middleware-$(Stage)/gogogo:$(Version)-$(CommitID))
-	$(call set,ImageID,$(Stage),release,$(ImageRegistryUrl)/middleware-$(Version)/gogogo:$(MinaVersion)-beta-$(CommitID))
+	$(eval ImageID:=$(ImageRegistryUrl)/middleware-$(Stage)/workflow:$(Version)-$(CommitID))
+	$(call set,ImageID,$(Stage),release,$(ImageRegistryUrl)/middleware-$(Version)/workflow:$(MinaVersion)-beta-$(CommitID))
 
 .PHONY: gogogo
 gogogo:setenv

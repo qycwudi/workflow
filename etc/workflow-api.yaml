@@ -1,0 +1,39 @@
+Name: workflow
+Host: 0.0.0.0
+Port: 8888
+ApiPort: 8889
+Timeout: 50000
+RuleServerLimitSize: 1
+RuleServerTrace: false
+Auth:
+  AccessSecret: "2ea00ca19k4f47b48c8ed8aec131684d"
+  AccessExpire: 86400 # 1天
+Log:
+  Level: debug
+  # file console
+  Mode: console
+  # json plain
+  Encoding: plain
+  Path: ./app/logs
+# 指定开发mysql
+MySqlUrn: root:root@tcp(14.103.249.105:30006)/workflow_dev?charset=utf8mb4&parseTime=True&loc=Local
+# 指定开发redis db5
+Redis:
+  Host: 14.103.249.105:30007
+  Password: '123456'
+  DB: 5
+
+DevServer:
+    Enabled: true
+    Port: 8080
+    HealthPath: "/v1/ping"
+
+Job:
+  - Name: DataSourceClientProbe
+    Enable: true
+    Cron: '0 0/10 * * * *'
+    Topic: 'datasource_client_probe'
+  - Name: DataSourceClientSync
+    Enable: true
+    Cron: '0 0 0/10 * * *'
+    Topic: 'datasource_client_sync'

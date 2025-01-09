@@ -1,6 +1,0 @@
-syntax = "v1"
-
-// goctl api go -api gogogo.api -dir ../
-
-import "kv.api"
-import "flow.api"

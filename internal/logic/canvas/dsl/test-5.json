@@ -1,0 +1,96 @@
+{
+    "id": "ctdbgr2flvkk9k4q7t7g",
+    "graph": {
+        "name": "AI Flow Canvas",
+        "edges": [
+            {
+                "id": "reactflow__edge-start-3ce20aed-4ea6-4e45-ab1a-06ec65b31d01success-code-execution-js-9c96c149-ab76-4bde-aa57-fb5542858660input",
+                "type": "custom",
+                "source": "start-3ce20aed-4ea6-4e45-ab1a-06ec65b31d01",
+                "target": "code-execution-js-9c96c149-ab76-4bde-aa57-fb5542858660",
+                "animated": true,
+                "sourceHandle": "success",
+                "targetHandle": "input"
+            },
+            {
+                "id": "reactflow__edge-code-execution-js-9c96c149-ab76-4bde-aa57-fb5542858660success-end-2743fd46-e166-4a5f-939d-d5bf9462b8bdinput",
+                "type": "custom",
+                "source": "code-execution-js-9c96c149-ab76-4bde-aa57-fb5542858660",
+                "target": "end-2743fd46-e166-4a5f-939d-d5bf9462b8bd",
+                "animated": true,
+                "sourceHandle": "success",
+                "targetHandle": "input"
+            }
+        ],
+        "nodes": [
+            {
+                "id": "start-3ce20aed-4ea6-4e45-ab1a-06ec65b31d01",
+                "data": {
+                    "name": "开始😄",
+                    "type": "input",
+                    "custom": {
+                        "param": "{\n  \"Accept\": \"application/json\",\n  \"Content-Type\": \"application/json\"\n}"
+                    },
+                    "moduleConfig": "{\"type\": \"start\", \"point\": {\"inputs\": [], \"outputs\": [{\"id\": \"success\", \"type\": \"source\", \"label\": \"成功\", \"position\": \"right\", \"handleType\": \"Success\"}]}, \"fields\": [{\"id\": \"param\", \"type\": \"json-input\", \"label\": \"请求头\", \"config\": {\"height\": 150, \"defaultValue\": \"{\\\"Accept\\\": \\\"application/json\\\",\\\"Content-Type\\\": \\\"application/json\\\"}\"}}]}"
+                },
+                "type": "custom",
+                "width": 400,
+                "height": 356,
+                "dragging": true,
+                "position": {
+                    "x": 50,
+                    "y": 50
+                },
+                "selected": true,
+                "positionAbsolute": {
+                    "x": 45,
+                    "y": 465
+                }
+            },
+            {
+                "id": "end-2743fd46-e166-4a5f-939d-d5bf9462b8bd",
+                "data": {
+                    "name": "结束🩷",
+                    "type": "output",
+                    "moduleConfig": "{\"type\": \"end\", \"point\": {\"inputs\": [{\"id\": \"input\", \"type\": \"target\", \"label\": \"输入数据\", \"position\": \"left\", \"handleType\": \"Data\"}]}, \"fields\": []}"
+                },
+                "type": "custom",
+                "width": 400,
+                "height": 356,
+                "position": {
+                    "x": 1150,
+                    "y": 50
+                }
+            },
+            {
+                "id": "code-execution-js-9c96c149-ab76-4bde-aa57-fb5542858660",
+                "data": {
+                    "name": "代码执行💻",
+                    "type": "process",
+                    "moduleConfig": "{\"type\": \"code-execution-js\", \"point\": {\"inputs\": [{\"id\": \"input\", \"type\": \"target\", \"label\": \"输入数据\", \"position\": \"left\", \"handleType\": \"Data\"}], \"outputs\": [{\"id\": \"success\", \"type\": \"source\", \"label\": \"成功\", \"position\": \"right\", \"handleType\": \"Success\"}, {\"id\": \"error\", \"type\": \"source\", \"label\": \"失败\", \"position\": \"right\", \"handleType\": \"Fail\"}]}, \"fields\": [{\"id\": \"script\", \"type\": \"code-input\", \"label\": \"处理脚本\", \"config\": {\"theme\": \"vs-dark\", \"height\": 200, \"options\": {\"minimap\": {\"enabled\": false}, \"fontSize\": 14, \"lineNumbers\": true}, \"language\": \"javascript\", \"defaultValue\": \"function Filter(msg, metadata, msgType) { \\n return { msg: msg, metadata: metadata, msgType: msgType };\\n}\"}}], \"runnable\": true}"
+                },
+                "type": "custom",
+                "width": 400,
+                "height": 356,
+                "dragging": true,
+                "position": {
+                    "x": 600,
+                    "y": 50
+                },
+                "selected": false,
+                "positionAbsolute": {
+                    "x": 495,
+                    "y": 420
+                }
+            }
+        ],
+        "version": "1.0",
+        "metadata": {
+            "edgeCount": 2,
+            "nodeCount": 3,
+            "lastModified": "2024-12-12T10:40:41.228Z"
+        },
+        "exportedAt": "2024-12-12T10:40:41.228Z",
+        "description": "Canvas configuration"
+    }
+}

@@ -1,0 +1,23 @@
+syntax = "v1"
+
+// 接口生成: goctl api go -api workflow.api -dir ../ --home /Users/qiangyuecheng/.goctl/1.5.6 --style go_zero
+// goctl api go -api workflow.api --style go_zero -dir ../
+// 文档生成: goctl api doc -dir ../ -o ./doc
+/*
+自定义返回
+{
+	"code": 0,
+	"msg": "OK",
+	"data": {}
+}
+
+*/
+import "workspace/workspace.api"
+import "canvas/canvas.api"
+import "api/api.api"
+import "model/model.api"
+import "datasource/datasource.api"
+import "user/user.api"
+import "role/role.api"
+import "permissions/permissions.api"
+import "kv/kv.api"

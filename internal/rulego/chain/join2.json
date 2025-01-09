@@ -1,0 +1,258 @@
+{
+    "metadata": {
+        "nodes": [
+            {
+                "id": "start-1b358f93-8449-40e5-b4e4-19319522936a",
+                "name": "开始😄",
+                "type": "start",
+                "configuration": {
+                    "Num": 0,
+                    "Raw": "{\"param\": \"{\\n  \\\"name\\\": \\\"张三\\\",\\n  \\\"age\\\": 10\\n}\"}",
+                    "Str": "",
+                    "Type": 5,
+                    "Index": 5533,
+                    "Indexes": null
+                }
+            },
+            {
+                "id": "jsTransform-c5afa969-e26a-4e3f-8cd6-fefcaac72324",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "msg.name = msg.name + '-接口1';\n  msg.age = msg.age + 1;\n  return { msg: msg, metadata: metadata, msgType: msgType };"
+                }
+            },
+            {
+                "id": "http-a2ba283b-9822-418b-9a78-2ef5bea96966",
+                "name": "HTTP",
+                "type": "http",
+                "configuration": {
+                    "script": "",
+                    "Headers": {
+                        "key": "value"
+                    },
+                    "ProxyHost": "",
+                    "ProxyPort": 0,
+                    "ProxyUser": "",
+                    "EnableProxy": false,
+                    "ProxyScheme": "",
+                    "ProxyPassword": "",
+                    "ReadTimeoutMs": 0,
+                    "RequestMethod": "post",
+                    "WithoutRequestBody": false,
+                    "RestEndpointUrlPattern": "http://127.0.0.1:8899/workflow/mock",
+                    "MaxParallelRequestsCount": 200,
+                    "UseSystemProxyProperties": false
+                }
+            },
+            {
+                "id": "jsTransform-58cab61b-0bc7-4658-95a3-6cb6b1b1419d",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "msg.name = msg.name + '-并行前添加';\n  msg.age = msg.age + 1;\n  return { msg: msg, metadata: metadata, msgType: msgType };"
+                }
+            },
+            {
+                "id": "fork-fc017ed7-8405-452c-ba03-1b606a093265",
+                "name": "并发",
+                "type": "fork",
+                "configuration": {}
+            },
+            {
+                "id": "jsTransform-bf68d5a6-8fa7-4efa-9455-40979a633898",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "msg.name = msg.name + '-接口2';\n  msg.age = msg.age + 2;\n  return { msg: msg, metadata: metadata, msgType: msgType };"
+                }
+            },
+            {
+                "id": "http-ca7f1a1a-3be4-4b1d-b5ba-8488a41ab3be",
+                "name": "HTTP",
+                "type": "http",
+                "configuration": {
+                    "script": "",
+                    "Headers": {
+                        "key": "value"
+                    },
+                    "ProxyHost": "",
+                    "ProxyPort": 0,
+                    "ProxyUser": "",
+                    "EnableProxy": false,
+                    "ProxyScheme": "",
+                    "ProxyPassword": "",
+                    "ReadTimeoutMs": 0,
+                    "RequestMethod": "post",
+                    "WithoutRequestBody": false,
+                    "RestEndpointUrlPattern": "http://127.0.0.1:8899/workflow/mock",
+                    "MaxParallelRequestsCount": 200,
+                    "UseSystemProxyProperties": false
+                }
+            },
+            {
+                "id": "jsTransform-bee1c047-5d63-47d3-b146-40815b189ca1",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "msg.name = msg.name + '-接口3';\n  msg.age = msg.age + 3;\n  return { msg: msg, metadata: metadata, msgType: msgType };"
+                }
+            },
+            {
+                "id": "http-5a960636-6bba-4065-9934-033d3aa94627",
+                "name": "HTTP",
+                "type": "http",
+                "configuration": {
+                    "script": "",
+                    "Headers": {
+                        "key": "value"
+                    },
+                    "ProxyHost": "",
+                    "ProxyPort": 0,
+                    "ProxyUser": "",
+                    "EnableProxy": false,
+                    "ProxyScheme": "",
+                    "ProxyPassword": "",
+                    "ReadTimeoutMs": 0,
+                    "RequestMethod": "post",
+                    "WithoutRequestBody": false,
+                    "RestEndpointUrlPattern": "http://127.0.0.1:8899/workflow/mock",
+                    "MaxParallelRequestsCount": 200,
+                    "UseSystemProxyProperties": false
+                }
+            },
+            {
+                "id": "join-f9f6f269-10b4-4a92-8b70-3ac4a5ff9085",
+                "name": "聚合",
+                "type": "join",
+                "configuration": {
+                    "timeout": 10
+                }
+            },
+            {
+                "id": "jsTransform-39c2fb60-2f14-4d4a-8829-3b93c97acda1",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "// 用于聚合的结果对象\n  const aggregatedData = {\n    age: 0,\n    names: [],\n    count: 0,\n  };\n\n  // 遍历 msg 数组\n   msg.forEach((item) => {\n   const message = item.msg;\n// 获取 msg 对象\n    const data = JSON.parse(message.data);// 获取具体的数据\n\n    // 聚合年龄\n log(data.name)\n    aggregatedData.age += data.age; \n\n log(data)\n;   // 收集名字\n    aggregatedData.names.push(data.name);\n\n    // 计数\n    aggregatedData.count++;\n  });\n\n  // 计算平均年龄\n  const averageAge =\n    aggregatedData.count > 0 ? aggregatedData.age / aggregatedData.count : 0;\n\n log(aggregatedData)\n // 重新定义 msg 对象\n  const resultMsg = {\n    averageAge: averageAge,\n    names: aggregatedData.names,\n    totalCount: aggregatedData.count,\n  };\n\n  return { msg: resultMsg, metadata: metadata, msgType: msgType };"
+                }
+            },
+            {
+                "id": "end-19f73fd9-633e-4e1d-8e30-6f5a32b3dac8",
+                "name": "结束🩷",
+                "type": "end",
+                "configuration": {}
+            },
+            {
+                "id": "jsTransform-fdaaeb69-0a6b-4541-9cbc-cfbaff9ed3d6",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "return { msg: msg.data, metadata: metadata, msgType: msgType };"
+                }
+            },
+            {
+                "id": "jsTransform-fda4b71c-ad5c-44da-8ef4-7effd30b4b14",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "return { msg: msg.data, metadata: metadata, msgType: msgType };"
+                }
+            },
+            {
+                "id": "jsTransform-18a3afc5-89ed-4f62-9d79-9f6147be61d4",
+                "name": "代码执行💻",
+                "type": "jsTransform",
+                "configuration": {
+                    "jsScript": "return { msg: msg.data, metadata: metadata, msgType: msgType };"
+                }
+            }
+        ],
+        "connections": [
+            {
+                "toId": "http-a2ba283b-9822-418b-9a78-2ef5bea96966",
+                "type": "Success",
+                "fromId": "jsTransform-c5afa969-e26a-4e3f-8cd6-fefcaac72324"
+            },
+            {
+                "toId": "jsTransform-58cab61b-0bc7-4658-95a3-6cb6b1b1419d",
+                "type": "Success",
+                "fromId": "start-1b358f93-8449-40e5-b4e4-19319522936a"
+            },
+            {
+                "toId": "fork-fc017ed7-8405-452c-ba03-1b606a093265",
+                "type": "Success",
+                "fromId": "jsTransform-58cab61b-0bc7-4658-95a3-6cb6b1b1419d"
+            },
+            {
+                "toId": "jsTransform-c5afa969-e26a-4e3f-8cd6-fefcaac72324",
+                "type": "Success",
+                "fromId": "fork-fc017ed7-8405-452c-ba03-1b606a093265"
+            },
+            {
+                "toId": "jsTransform-bf68d5a6-8fa7-4efa-9455-40979a633898",
+                "type": "Success",
+                "fromId": "fork-fc017ed7-8405-452c-ba03-1b606a093265"
+            },
+            {
+                "toId": "http-ca7f1a1a-3be4-4b1d-b5ba-8488a41ab3be",
+                "type": "Success",
+                "fromId": "jsTransform-bf68d5a6-8fa7-4efa-9455-40979a633898"
+            },
+            {
+                "toId": "jsTransform-bee1c047-5d63-47d3-b146-40815b189ca1",
+                "type": "Success",
+                "fromId": "fork-fc017ed7-8405-452c-ba03-1b606a093265"
+            },
+            {
+                "toId": "http-5a960636-6bba-4065-9934-033d3aa94627",
+                "type": "Success",
+                "fromId": "jsTransform-bee1c047-5d63-47d3-b146-40815b189ca1"
+            },
+            {
+                "toId": "jsTransform-39c2fb60-2f14-4d4a-8829-3b93c97acda1",
+                "type": "Success",
+                "fromId": "join-f9f6f269-10b4-4a92-8b70-3ac4a5ff9085"
+            },
+            {
+                "toId": "end-19f73fd9-633e-4e1d-8e30-6f5a32b3dac8",
+                "type": "Success",
+                "fromId": "jsTransform-39c2fb60-2f14-4d4a-8829-3b93c97acda1"
+            },
+            {
+                "toId": "join-f9f6f269-10b4-4a92-8b70-3ac4a5ff9085",
+                "type": "Success",
+                "fromId": "jsTransform-fda4b71c-ad5c-44da-8ef4-7effd30b4b14"
+            },
+            {
+                "toId": "join-f9f6f269-10b4-4a92-8b70-3ac4a5ff9085",
+                "type": "Success",
+                "fromId": "jsTransform-18a3afc5-89ed-4f62-9d79-9f6147be61d4"
+            },
+            {
+                "toId": "join-f9f6f269-10b4-4a92-8b70-3ac4a5ff9085",
+                "type": "Success",
+                "fromId": "jsTransform-fdaaeb69-0a6b-4541-9cbc-cfbaff9ed3d6"
+            },
+            {
+                "toId": "jsTransform-fda4b71c-ad5c-44da-8ef4-7effd30b4b14",
+                "type": "Success",
+                "fromId": "http-a2ba283b-9822-418b-9a78-2ef5bea96966"
+            },
+            {
+                "toId": "jsTransform-18a3afc5-89ed-4f62-9d79-9f6147be61d4",
+                "type": "Success",
+                "fromId": "http-ca7f1a1a-3be4-4b1d-b5ba-8488a41ab3be"
+            },
+            {
+                "toId": "jsTransform-fdaaeb69-0a6b-4541-9cbc-cfbaff9ed3d6",
+                "type": "Success",
+                "fromId": "http-5a960636-6bba-4065-9934-033d3aa94627"
+            }
+        ],
+        "firstNodeIndex": 0
+    },
+    "ruleChain": {
+        "id": "ctf8rjt3sjthmsql4a20"
+    }
+}

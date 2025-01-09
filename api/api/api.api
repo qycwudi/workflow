@@ -1,0 +1,209 @@
+syntax = "v1"
+
+type ApiPublishRequest {
+	Id      string `json:"id" desc:"空间ID"`
+	ApiName string `json:"apiName" desc:"名称"`
+	ApiDesc string `json:"apiDesc" desc:"描述"`
+}
+
+type ApiPublishResponse {
+	ApiId string `json:"apiId"`
+}
+
+type ApiPublishListRequest {
+	Current  int    `json:"current"`
+	PageSize int    `json:"pageSize"`
+	Id       string `json:"id,optional" desc:"空间ID 非必填"`
+	Name     string `json:"name,optional"`
+}
+
+type ApiPublishListResponse {
+	Current  int              `json:"current"`
+	PageSize int              `json:"pageSize"`
+	Total    int64            `json:"total"`
+	List     []ApiPublishList `json:"list"`
+}
+
+type ApiPublishList {
+	WorkSpaceId string `json:"workSpaceId"`
+	ApiId       string `json:"apiId"`
+	ApiName     string `json:"apiName"`
+	ApiDesc     string `json:"apiDesc"`
+	PublishTime string `json:"publishTime"`
+	Status      string `json:"status" desc:"上下线状态ON OFF"`
+}
+
+type ApiOnOffRequest {
+	ApiId  string `json:"apiId"`
+	Status string `json:"status" desc:"上下线状态ON OFF"`
+}
+
+type ApiOnOffResponse {
+	ApiId  string `json:"apiId"`
+	Status string `json:"status" desc:"上下线状态ON OFF"`
+}
+
+type ApiRecordsRequest {
+	Current  int    `json:"current"`
+	PageSize int    `json:"pageSize"`
+	ApiId    string `json:"apiId,optional" desc:"apiId"`
+	StartTime int64 `json:"startTime,optional" desc:"开始时间"`
+	EndTime   int64 `json:"endTime,optional" desc:"结束时间"`
+	Request   string `json:"request,optional" desc:"请求参数"`
+	Response  string `json:"response,optional" desc:"响应参数"`
+}
+
+type ApiRecordsResponse {
+	Current  int          `json:"current"`
+	PageSize int          `json:"pageSize"`
+	Total    int64        `json:"total"`
+	List     []ApiRecords `json:"list"`
+}
+
+type ApiRecords {
+	ApiId    string `json:"apiId"`
+	ApiName  string `json:"apiName" desc:"名称"`
+	CallTime string `json:"callTime"`
+	Status   string `json:"status"`
+	TraceId  string `json:"traceId"`
+	Param    string `json:"param"`
+	Extend   string `json:"extend"`
+}
+
+type ApiSecretKeyListRequest {
+	ApiId    string `json:"apiId"`
+	Current  int    `json:"current"`
+	PageSize int    `json:"pageSize"`
+}
+
+type ApiSecretKeyListResponse {
+	Current  int            `json:"current"`
+	PageSize int            `json:"pageSize"`
+	Total    int64          `json:"total"`
+	List     []ApiSecretKey `json:"list"`
+}
+
+type ApiSecretKey {
+	ApiId          string `json:"apiId"`
+	Name           string `json:"name"`
+	SecretKey      string `json:"secretKey"`
+	ExpirationTime string `json:"expirationTime"`
+	Status         string `json:"status" desc:"状态 ON OFF"`
+}
+
+// 创建API密钥
+type ApiSecretKeyCreateRequest {
+	ApiId          string `json:"apiId"`
+	Name           string `json:"name"`
+	SecretKey      string `json:"secretKey,optional"`
+	ExpirationTime int64  `json:"expirationTime"`
+}
+
+type ApiSecretKeyCreateResponse {
+	ApiId          string `json:"apiId"`
+	Name           string `json:"name"`
+	SecretKey      string `json:"secretKey"`
+	ExpirationTime string `json:"expirationTime"`
+}
+
+// 修改API密钥状态
+type ApiSecretKeyUpdateStatusRequest {
+	SecretKey string `json:"secretKey"`
+	Status    string `json:"status" desc:"状态 ON OFF"`
+}
+
+type ApiSecretKeyUpdateStatusResponse {
+	SecretKey string `json:"secretKey"`
+	Status    string `json:"status" desc:"状态 ON OFF"`
+}
+
+// 修改API密钥到期时间
+type ApiSecretKeyUpdateExpirationTimeRequest {
+	SecretKey      string `json:"secretKey"`
+	ExpirationTime int64  `json:"expirationTime"`
+}
+
+type ApiSecretKeyUpdateExpirationTimeResponse {
+	SecretKey      string `json:"secretKey"`
+	ExpirationTime string `json:"expirationTime"`
+}
+
+// 删除API密钥
+type ApiSecretKeyDeleteRequest {
+	SecretKey string `json:"secretKey"`
+}
+
+type ApiSecretKeyDeleteResponse {
+	SecretKey string `json:"secretKey"`
+}
+
+type ApiHistoryRequest {
+	WorkspaceId string `json:"workspaceId"`
+	Current     int    `json:"current"`
+	PageSize    int    `json:"pageSize"`
+}
+
+type ApiHistoryResponse {
+	Current  int          `json:"current"`
+	PageSize int          `json:"pageSize"`
+	Total    int64        `json:"total"`
+	List     []ApiHistory `json:"list"`
+}
+
+type ApiHistory {
+	Id          int64  `json:"id"`
+	WorkspaceId string `json:"workspaceId"`
+	Name        string `json:"name"`
+	CreateTime  string `json:"createTime"`
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: api
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+	jwt: Auth // 开启 jwt 认证
+	middleware: PermissionMiddleware // 开启权限认证
+)
+service workflow-api {
+	@doc "API发布"
+	@handler ApiPublishHandler
+	post /api/publish (ApiPublishRequest) returns (ApiPublishResponse)
+
+	@doc "API发布列表"
+	@handler ApiListHandler
+	post /api/list (ApiPublishListRequest) returns (ApiPublishListResponse)
+
+	@doc "APIOnOff"
+	@handler ApiOnOffHandler
+	post /api/onoff (ApiOnOffRequest) returns (ApiOnOffResponse)
+
+	@doc "API调用记录"
+	@handler ApiRecordsHandler
+	post /api/records (ApiRecordsRequest) returns (ApiRecordsResponse)
+
+	@doc "secretKeyList"
+	@handler ApiSecretKeyListHandler
+	post /api/secretkey/list (ApiSecretKeyListRequest) returns (ApiSecretKeyListResponse)
+
+	@doc "创建API密钥"
+	@handler ApisecretKeyCreateHandler
+	post /api/secretkey/create (ApiSecretKeyCreateRequest) returns (ApiSecretKeyCreateResponse)
+
+	@doc "修改API密钥状态"
+	@handler ApisecretKeyUpdateStatusHandler
+	post /api/secretkey/update/status (ApiSecretKeyUpdateStatusRequest) returns (ApiSecretKeyUpdateStatusResponse)
+
+	@doc "修改API密钥到期时间"
+	@handler ApisecretKeyUpdateExpirationTimeHandler
+	post /api/secretkey/update/expirationtime (ApiSecretKeyUpdateExpirationTimeRequest) returns (ApiSecretKeyUpdateExpirationTimeResponse)
+
+	@doc "删除API密钥"
+	@handler ApisecretKeyDeleteHandler
+	post /api/secretkey/delete (ApiSecretKeyDeleteRequest) returns (ApiSecretKeyDeleteResponse)
+
+	@doc "API历史版本"
+	@handler ApiHistoryHandler
+	post /api/history (ApiHistoryRequest) returns (ApiHistoryResponse)
+
+}

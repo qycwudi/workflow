@@ -1,0 +1,120 @@
+syntax = "v1"
+
+type Role {
+    Id int64 `json:"id"`
+    Name string `json:"name"`
+    Code string `json:"code"`
+    Description string `json:"description"`
+    Status int64 `json:"status"`
+    CreatedAt string `json:"createdAt"`
+    UpdatedAt string `json:"updatedAt"`
+}
+
+type CreateRoleRequest {
+    Name string `json:"name"`
+    Code string `json:"code"`
+    Description string `json:"description,optional"`
+    Status int64 `json:"status,optional"`
+}
+
+type CreateRoleResponse {
+    Id int64 `json:"id"`
+}
+
+type UpdateRoleRequest {
+    Id int64 `json:"id"`
+    Name string `json:"name,optional"`
+    Code string `json:"code,optional"`
+    Description string `json:"description,optional"`
+    Status int64 `json:"status,optional"`
+}
+
+type UpdateRoleResponse {
+}
+
+type DeleteRoleRequest {
+    Id int64 `json:"id"`
+}
+
+type DeleteRoleResponse {
+}
+
+type GetRoleRequest {
+    Id int64 `json:"id"`
+}
+
+type GetRoleResponse {
+    Role Role `json:"role"`
+}
+
+type ListRoleRequest {
+   	Current  int64    `json:"current"`
+	PageSize int64    `json:"pageSize"`
+    Name     string `json:"name,optional"`
+}
+
+type ListRoleResponse {
+    Total int64 `json:"total"`
+    List []Role `json:"list"`
+}
+
+type BatchBindPermissionRequest {
+    RoleId int64 `json:"roleId"`
+    PermissionIds []int64 `json:"permissionIds"`
+}
+
+type BatchBindPermissionResponse {
+}
+
+type BatchUnbindPermissionRequest {
+    RoleId int64 `json:"roleId"`
+    PermissionIds []int64 `json:"permissionIds"`
+}
+
+type BatchUnbindPermissionResponse {
+}
+
+type GetRolePermissionRequest {
+    RoleId int64 `json:"roleId"`
+}
+
+type GetRolePermissionResponse {
+    RolePermissions []int64 `json:"rolePermissions"`
+}
+
+@server (
+    group: role
+    prefix: /workflow
+    jwt: Auth
+    middleware: PermissionMiddleware
+)
+
+service workflow-api {
+    @doc "创建角色"
+    @handler CreateRoleHandler
+    post /role/create (CreateRoleRequest) returns (CreateRoleResponse)
+    
+    @doc "更新角色"
+    @handler UpdateRoleHandler
+    post /role/update (UpdateRoleRequest) returns (UpdateRoleResponse)
+    
+    @doc "删除角色"
+    @handler DeleteRoleHandler
+    post /role/delete (DeleteRoleRequest) returns (DeleteRoleResponse)
+    
+    @doc "获取角色详情"
+    @handler GetRoleHandler	
+    post /role/get (GetRoleRequest) returns (GetRoleResponse)
+    
+    @doc "获取角色列表"
+    @handler ListRoleHandler
+    post /role/list (ListRoleRequest) returns (ListRoleResponse)
+
+	@doc "批量绑定权限"
+	@handler BatchBindPermissionHandler
+	post /role/batchbindpermission (BatchBindPermissionRequest) returns (BatchBindPermissionResponse)
+
+	@doc "获取角色权限"
+	@handler GetRolePermissionHandler
+	post /role/getpermission (GetRolePermissionRequest) returns (GetRolePermissionResponse)
+}

@@ -1,0 +1,55 @@
+### 登录
+POST http://10.100.66.5:8888/workflow/user/login
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "username": "admin",
+  "password": "admin"
+}
+
+### 退出登录
+POST http://127.0.0.1:8899/workflow/user/logout
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer 1ea00ca19d4f47b48c9ed8aec131674d
+
+### 获取用户信息
+POST http://127.0.0.1:8888/workflow/user/info
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU0NzM5OTgsImlhdCI6MTczNTQ3Mzk4OCwidXNlcklkIjoiMSJ9.AIBemx56i1L31GmcPySpoqPbL1j8jTMWBc4d5fxInrI
+
+### 用户注册
+POST http://127.0.0.1:8888/workflow/user/register
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4NzUwNTUsImlhdCI6MTczNTc4ODY1NSwidXNlcklkIjoxfQ.KK2pD8Jkk_BoAxuEqlpTVmVbjhIy1aM7XvwNTTvatpA
+
+{
+  "username": "admin-1",
+  "password": "123456"
+}
+
+### 获取用户列表
+POST http://127.0.0.1:8888/workflow/user/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYwNTY4NzAsImlhdCI6MTczNTk3MDQ3MCwidXNlcklkIjoxfQ.EjlBJNnhusTWL999OKWekQIIvoWKdOrIhB8k5p17-F0
+
+{
+  "current": 1,
+  "pageSize": 10,
+  "username": ""
+}
+
+### 绑定用户角色
+POST http://127.0.0.1:8888/workflow/user/bindrole
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4NzUwNTUsImlhdCI6MTczNTc4ODY1NSwidXNlcklkIjoxfQ.KK2pD8Jkk_BoAxuEqlpTVmVbjhIy1aM7XvwNTTvatpA
+
+{
+  "userId": 1,
+  "roleId": 7
+}

@@ -1,4 +1,10 @@
-FROM 10.12.0.78:5000/cosmos/ci:glite-build-go22 AS builder
+FROM m.daocloud.io/docker.io/library/golang:1.23-alpine AS builder
+# docker build --platform linux/amd64 -t workflow:b2 .
+# docker login --username=qiangyuecheng registry.cn-hangzhou.aliyuncs.com
+# Qycssg00
+# docker tag dc042e770f24 registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:b3
+# docker push registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:b3
+# goctl kube deploy --name workflow-back --namespace workflow --port 8888 --o workflow-back-deploy.yaml
 
 LABEL stage=gobuilder
 
@@ -15,17 +21,18 @@ ADD go.sum .
 RUN go mod download
 COPY . .
 COPY ./etc /app/etc
-RUN go build -ldflags="-s -w" -o /app/gogogo gogogo.go
+RUN go build -ldflags="-s -w" -o /app/workflow workflow.go
+# RUN GOARCH=arm64 GOOS=linux go build -ldflags="-s -w" -o /app/workflow workflow.go
 
 
-FROM scratch
+FROM alpine
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Shanghai
 ENV TZ Asia/Shanghai
 
 WORKDIR /app
-COPY --from=builder /app/gogogo /app/gogogo
+COPY --from=builder /app/workflow /app/workflow
 COPY --from=builder /app/etc /app/etc
 
-CMD ["./gogogo", "-f", "etc/gogogo-api.yaml"]
+CMD ["./workflow", "-f", "etc/workflow-api.yaml"]
