@@ -1,4 +1,4 @@
-package pubsub
+package broadcast
 
 import (
 	"context"
@@ -12,10 +12,22 @@ import (
 )
 
 const (
+	// JobLoadSyncEvent 任务加载同步事件 当任务配置发生变化后,需要同步服务的数据源连接池
 	JobLoadSyncEvent = "event_job_load_sync"
 )
 
-func PublishJobLoadSyncEvent(ctx context.Context, payload interface{}) error {
+type JobLoadSyncMsg struct {
+	JobId     string `json:"job_id"`
+	RuleChain string `json:"rule_chain"`
+}
+
+type JobLoadSync struct{}
+
+func NewJobLoadSync() *JobLoadSync {
+	return &JobLoadSync{}
+}
+
+func (j *JobLoadSync) Publish(ctx context.Context, payload interface{}) error {
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -23,7 +35,7 @@ func PublishJobLoadSyncEvent(ctx context.Context, payload interface{}) error {
 	return cache.Redis.Publish(ctx, JobLoadSyncEvent, payloadBytes)
 }
 
-func SubscribeJobLoadSyncEvent(ctx context.Context, handler func(ctx context.Context, msg *redis.Message)) error {
+func (j *JobLoadSync) Subscribe(ctx context.Context, handler func(ctx context.Context, msg *redis.Message)) error {
 	subscriber := cache.Redis.Subscribe(ctx, JobLoadSyncEvent)
 	defer subscriber.Close()
 
@@ -44,12 +56,7 @@ func SubscribeJobLoadSyncEvent(ctx context.Context, handler func(ctx context.Con
 	}
 }
 
-type JobLoadSyncMsg struct {
-	JobId     string `json:"job_id"`
-	RuleChain string `json:"rule_chain"`
-}
-
-func JobLoadSyncHandler(ctx context.Context, msg *redis.Message) {
+func (j *JobLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 	// 读取 msg 消息
 	var syncMsg JobLoadSyncMsg
 	err := json.Unmarshal([]byte(msg.Payload), &syncMsg)

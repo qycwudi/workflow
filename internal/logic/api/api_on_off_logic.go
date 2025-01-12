@@ -8,9 +8,9 @@ import (
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/cache"
+	"workflow/internal/dispatch/broadcast"
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/pubsub"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -41,7 +41,7 @@ func (l *ApiOnOffLogic) ApiOnOff(req *types.ApiOnOffRequest) (resp *types.ApiOnO
 
 	if req.Status == model.ApiStatusOn {
 		// 发送加载链服务消息
-		err = pubsub.PublishApiLoadSyncEvent(l.ctx, &pubsub.ApiLoadSyncMsg{
+		err = broadcast.NewApiLoadSync().Publish(l.ctx, &broadcast.ApiLoadSyncMsg{
 			ApiId:     api.ApiId,
 			RuleChain: api.Dsl,
 		})

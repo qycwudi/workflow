@@ -12,9 +12,9 @@ import (
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/cache"
+	"workflow/internal/dispatch/broadcast"
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/pubsub"
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -107,7 +107,7 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 	}
 
 	// 3. 发送加载链服务消息
-	err = pubsub.PublishJobLoadSyncEvent(l.ctx, &pubsub.JobLoadSyncMsg{
+	err = broadcast.NewJobLoadSync().Publish(l.ctx, &broadcast.JobLoadSyncMsg{
 		JobId:     jobId,
 		RuleChain: string(ruleChain),
 	})

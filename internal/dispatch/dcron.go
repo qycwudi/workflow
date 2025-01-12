@@ -14,6 +14,7 @@ import (
 	"github.com/libi/dcron"
 	"github.com/zeromicro/go-zero/core/logx"
 
+	"workflow/internal/dispatch/job"
 	"workflow/internal/svc"
 )
 
@@ -67,6 +68,28 @@ func InitDcron(ctx *svc.ServiceContext) {
 			cancel()
 		}
 	}()
+
+	// 初始化系统任务
+	for _, jobConfig := range ctx.Config.Job {
+		if jobConfig.Enable {
+			var jobInstance dcron.Job
+			switch jobConfig.Name {
+			case job.ProbDatasourceJobName:
+				jobInstance = &job.ProbDatasourceJob{}
+			case job.SyncDatasourceJobName:
+				jobInstance = &job.SyncDatasourceJob{}
+			case job.ChainJobName:
+				jobInstance = &job.ChainJob{}
+			default:
+				logx.Errorf("Unknown job name: %s", jobConfig.Name)
+				continue
+			}
+			if err := d.AddJob(jobConfig.Name, jobConfig.Cron, jobInstance); err != nil {
+				logx.Errorf("Failed to add %s job: %v", jobConfig.Name, err)
+			}
+		}
+	}
+
 	fmt.Println("dcron init success")
 }
 

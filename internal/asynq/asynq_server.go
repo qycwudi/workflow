@@ -1,7 +1,6 @@
 package asynq
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/hibiken/asynq"
@@ -11,10 +10,8 @@ import (
 	"workflow/internal/svc"
 )
 
-var ErrResourceNotAvailable = errors.New("no resource is available")
-
 // 创建Asynq服务
-func NewAsynqServer(ctx *svc.ServiceContext) {
+func InitAsynqServer(ctx *svc.ServiceContext) {
 	server := asynq.NewServerFromRedisClient(ctx.RedisClient, asynq.Config{
 		// IsFailure: func(err error) bool {
 		// 	// If resource is not available, it's a non-failure error  false不记重试次数
@@ -28,12 +25,12 @@ func NewAsynqServer(ctx *svc.ServiceContext) {
 		// },
 		Concurrency: 10,
 	})
-	// 注册任务 和 JOB
+	// 注册处理器
 	mux := asynq.NewServeMux()
 	// 数据源客户端探测
 	mux.Handle(processor.TOPIC_DATA_SOURCE_CLIENT_PROBE, processor.NewDatasourceClientProbeProcessor(ctx.DatasourceModel))
-	// 数据源客户端同步
-	mux.Handle(processor.TOPIC_DATA_SOURCE_CLIENT_SYNC, processor.NewDatasourceClientSyncProcessor())
+	// 任务JOB执行器
+	mux.Handle(processor.TOPIC_CHAIN_JOB, processor.NewChainJobProcessor(ctx.WorkSpaceModel, ctx.JobModel, ctx.JobRecordModel))
 	// 启动服务
 	go func() {
 		if err := server.Run(mux); err != nil {

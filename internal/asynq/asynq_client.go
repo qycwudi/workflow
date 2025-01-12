@@ -6,8 +6,9 @@ import (
 	"workflow/internal/svc"
 )
 
+var AsynqClient *asynq.Client
+
 // 创建Asynq客户端
-func NewAsynqClient(ctx *svc.ServiceContext) *asynq.Client {
-	client := asynq.NewClientFromRedisClient(ctx.RedisClient)
-	return client
+func InitAsynqClient(ctx *svc.ServiceContext) {
+	AsynqClient = asynq.NewClientFromRedisClient(ctx.RedisClient)
 }

@@ -1,4 +1,4 @@
-package pubsub
+package broadcast
 
 import (
 	"context"
@@ -12,10 +12,22 @@ import (
 )
 
 const (
+	// ApiLoadSyncEvent API加载同步事件 当接口配置发生变化后,需要同步服务的数据源连接池
 	ApiLoadSyncEvent = "event_api_load_sync"
 )
 
-func PublishApiLoadSyncEvent(ctx context.Context, payload interface{}) error {
+type ApiLoadSyncMsg struct {
+	ApiId     string `json:"api_id"`
+	RuleChain string `json:"rule_chain"`
+}
+
+type ApiLoadSync struct{}
+
+func NewApiLoadSync() *ApiLoadSync {
+	return &ApiLoadSync{}
+}
+
+func (a *ApiLoadSync) Publish(ctx context.Context, payload interface{}) error {
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -23,7 +35,7 @@ func PublishApiLoadSyncEvent(ctx context.Context, payload interface{}) error {
 	return cache.Redis.Publish(ctx, ApiLoadSyncEvent, payloadBytes)
 }
 
-func SubscribeApiLoadSyncEvent(ctx context.Context, handler func(ctx context.Context, msg *redis.Message)) error {
+func (a *ApiLoadSync) Subscribe(ctx context.Context, handler func(ctx context.Context, msg *redis.Message)) error {
 	subscriber := cache.Redis.Subscribe(ctx, ApiLoadSyncEvent)
 	defer subscriber.Close()
 
@@ -44,12 +56,7 @@ func SubscribeApiLoadSyncEvent(ctx context.Context, handler func(ctx context.Con
 	}
 }
 
-type ApiLoadSyncMsg struct {
-	ApiId     string `json:"api_id"`
-	RuleChain string `json:"rule_chain"`
-}
-
-func ApiLoadSyncHandler(ctx context.Context, msg *redis.Message) {
+func (a *ApiLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 	// 读取 msg 消息
 	var syncMsg ApiLoadSyncMsg
 	err := json.Unmarshal([]byte(msg.Payload), &syncMsg)

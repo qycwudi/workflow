@@ -1,4 +1,4 @@
-package pubsub
+package broadcast
 
 import (
 	"context"
@@ -18,11 +18,25 @@ const (
 	DatasourceClientSyncEvent = "event_datasource_client_sync"
 )
 
-func PublishDatasourceClientSyncEvent(ctx context.Context) error {
+type DatasourceClientSyncMsg struct{}
+
+type DatasourceClientSync struct {
+	datasourceModel model.DatasourceModel
+}
+
+func NewDatasourceClientSync(datasourceModel model.DatasourceModel) *DatasourceClientSync {
+	return &DatasourceClientSync{datasourceModel: datasourceModel}
+}
+
+func NewDatasourceClientSyncConstructor() *DatasourceClientSync {
+	return &DatasourceClientSync{}
+}
+
+func (d *DatasourceClientSync) Publish(ctx context.Context) error {
 	return cache.Redis.Publish(ctx, DatasourceClientSyncEvent, "")
 }
 
-func SubscribeDatasourceClientSyncEvent(ctx context.Context, handler func(ctx context.Context, msg *redis.Message)) error {
+func (d *DatasourceClientSync) Subscribe(ctx context.Context, handler func(ctx context.Context, msg *redis.Message)) error {
 	subscriber := cache.Redis.Subscribe(ctx, DatasourceClientSyncEvent)
 	defer subscriber.Close()
 	ch := subscriber.Channel()
@@ -42,9 +56,9 @@ func SubscribeDatasourceClientSyncEvent(ctx context.Context, handler func(ctx co
 	}
 }
 
-func DatasourceClientSyncHandler(ctx context.Context, msg *redis.Message) {
+func (d *DatasourceClientSync) Handler(ctx context.Context, msg *redis.Message) {
 	logx.Infof("%s start at: %s", DatasourceClientSyncEvent, time.Now().Format("2006-01-02 15:04:05"))
-	total, datasourceList, err := datasourceModel.FindDataSourcePageList(ctx, model.PageListBuilder{
+	total, datasourceList, err := d.datasourceModel.FindDataSourcePageList(ctx, model.PageListBuilder{
 		Switch: model.DatasourceSwitchOn,
 	}, 1, 9999)
 	if err != nil {

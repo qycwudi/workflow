@@ -5,6 +5,7 @@ CREATE TABLE `job` (
   `job_name` varchar(255) NOT NULL,
   `job_cron` varchar(255) NOT NULL,
   `job_desc` text NOT NULL,
+  `params` json NOT NULL,
   `dsl` json NOT NULL,
   `status` varchar(255) NOT NULL,
   `create_time` datetime NOT NULL,

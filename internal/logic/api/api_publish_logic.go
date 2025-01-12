@@ -12,9 +12,9 @@ import (
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/cache"
+	"workflow/internal/dispatch/broadcast"
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/pubsub"
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -107,7 +107,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 	}
 
 	// 3. 发送加载链服务消息
-	err = pubsub.PublishApiLoadSyncEvent(l.ctx, &pubsub.ApiLoadSyncMsg{
+	err = broadcast.NewApiLoadSync().Publish(l.ctx, &broadcast.ApiLoadSyncMsg{
 		ApiId:     apiId,
 		RuleChain: string(ruleChain),
 	})

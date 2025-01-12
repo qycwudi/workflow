@@ -25,8 +25,7 @@ type RedisConfig struct {
 }
 
 type JobBase struct {
-	Name   string `json:"name"`   // 任务名称
-	Enable bool   `json:"enable"` // 是否启用
-	Cron   string `json:"cron"`   // cron表达式
-	Topic  string `json:"topic"`  // 任务主题
+	Name   string `json:"name"`                  // 任务名称
+	Enable bool   `json:"enable" default:"true"` // 是否启用
+	Cron   string `json:"cron"`                  // cron表达式
 }

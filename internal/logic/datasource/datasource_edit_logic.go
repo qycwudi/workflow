@@ -12,10 +12,10 @@ import (
 	"github.com/zeromicro/x/errors"
 
 	"workflow/internal/datasource"
+	"workflow/internal/dispatch/broadcast"
 	"workflow/internal/enum"
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/pubsub"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -93,7 +93,7 @@ func (l *DatasourceEditLogic) DatasourceEdit(req *types.DatasourceEditRequest) (
 	// 异步JOB更新 internal/asynq/processor/datasource_client_sync_processor.go
 	// 发布数据源客户端同步事件 通知数据源客户端同步 【全量】
 	// 双重保险 防止数据源客户端消息消费失败后,导致一直有副本同步失败
-	err = pubsub.PublishDatasourceClientSyncEvent(l.ctx)
+	err = broadcast.NewDatasourceClientSyncConstructor().Publish(l.ctx)
 	if err != nil {
 		logx.Errorf("%s publish event failed: %s", "DatasourceClientSync", err.Error())
 		return nil, err

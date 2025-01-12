@@ -1,4 +1,4 @@
-package pubsub
+package dispatch
 
 import (
 	"context"
@@ -7,18 +7,16 @@ import (
 	"os/signal"
 	"syscall"
 
-	"workflow/internal/model"
+	"github.com/zeromicro/go-zero/core/logx"
+
+	"workflow/internal/dispatch/broadcast"
 	"workflow/internal/svc"
 )
 
-var datasourceModel model.DatasourceModel
-
 // 初始化订阅
-func NewPubSub(ctx *svc.ServiceContext) {
+func InitPubSub(ctx *svc.ServiceContext) {
 	// 创建带取消的上下文
 	subCtx, cancel := context.WithCancel(context.Background())
-	// 添加依赖
-	datasourceModel = ctx.DatasourceModel
 
 	// 创建信号通道
 	sigChan := make(chan os.Signal, 1)
@@ -26,24 +24,30 @@ func NewPubSub(ctx *svc.ServiceContext) {
 
 	// 开启协程处理数据源客户端同步事件
 	go func() {
-		if err := SubscribeDatasourceClientSyncEvent(subCtx, DatasourceClientSyncHandler); err != nil {
+		sync := broadcast.NewDatasourceClientSync(ctx.DatasourceModel)
+		if err := sync.Subscribe(subCtx, sync.Handler); err != nil {
 			// 记录错误但不影响主程序
+			logx.Errorf("SubscribeDatasourceClientSyncEvent failed: %s", err.Error())
 			return
 		}
 	}()
 
 	// 开启协程处理API策略同步事件
 	go func() {
-		if err := SubscribeApiLoadSyncEvent(subCtx, ApiLoadSyncHandler); err != nil {
+		sync := broadcast.NewApiLoadSync()
+		if err := sync.Subscribe(subCtx, sync.Handler); err != nil {
 			// 记录错误但不影响主程序
+			logx.Errorf("SubscribeApiLoadSyncEvent failed: %s", err.Error())
 			return
 		}
 	}()
 
 	// 开启协程处理Job加载同步事件
 	go func() {
-		if err := SubscribeJobLoadSyncEvent(subCtx, JobLoadSyncHandler); err != nil {
+		sync := broadcast.NewJobLoadSync()
+		if err := sync.Subscribe(subCtx, sync.Handler); err != nil {
 			// 记录错误但不影响主程序
+			logx.Errorf("SubscribeJobLoadSyncEvent failed: %s", err.Error())
 			return
 		}
 	}()

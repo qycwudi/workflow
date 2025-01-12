@@ -43,6 +43,7 @@ type (
 		JobName     string    `db:"job_name"`
 		JobCron     string    `db:"job_cron"`
 		JobDesc     string    `db:"job_desc"`
+		Params      string    `db:"params"`
 		Dsl         string    `db:"dsl"`
 		Status      string    `db:"status"`
 		CreateTime  time.Time `db:"create_time"`
@@ -100,14 +101,14 @@ func (m *defaultJobModel) FindOneByJobId(ctx context.Context, jobId string) (*Jo
 }
 
 func (m *defaultJobModel) Insert(ctx context.Context, data *Job) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, jobRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.JobId, data.JobName, data.JobCron, data.JobDesc, data.Dsl, data.Status, data.CreateTime, data.UpdateTime, data.HistoryId)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, jobRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.JobId, data.JobName, data.JobCron, data.JobDesc, data.Params, data.Dsl, data.Status, data.CreateTime, data.UpdateTime, data.HistoryId)
 	return ret, err
 }
 
 func (m *defaultJobModel) Update(ctx context.Context, newData *Job) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, jobRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.JobId, newData.JobName, newData.JobCron, newData.JobDesc, newData.Dsl, newData.Status, newData.CreateTime, newData.UpdateTime, newData.HistoryId, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.JobId, newData.JobName, newData.JobCron, newData.JobDesc, newData.Params, newData.Dsl, newData.Status, newData.CreateTime, newData.UpdateTime, newData.HistoryId, newData.Id)
 	return err
 }
 

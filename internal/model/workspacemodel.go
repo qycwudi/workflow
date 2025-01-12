@@ -20,6 +20,7 @@ type (
 		FindInWorkSpaceId(ctx context.Context, workspaceId []string) ([]*Workspace, error)
 		Remove(ctx context.Context, workSpaceId string) error
 		UpdateByWorkspaceId(ctx context.Context, data *Workspace) error
+		GetWorkspaceById(ctx context.Context, workspaceId string) (*Workspace, error)
 	}
 
 	customWorkspaceModel struct {
@@ -163,6 +164,18 @@ func (c customWorkspaceModel) Remove(ctx context.Context, workSpaceId string) er
 		}
 		return nil
 	})
+}
+
+func (c customWorkspaceModel) GetWorkspaceById(ctx context.Context, workspaceId string) (*Workspace, error) {
+	query := fmt.Sprintf("select %s from %s where `workspace_id` = ? limit 1", workspaceRows, c.table)
+	var resp Workspace
+	err := c.conn.QueryRowCtx(ctx, &resp, query, workspaceId)
+	switch err {
+	case nil:
+		return &resp, nil
+	default:
+		return nil, err
+	}
 }
 
 // NewWorkspaceModel returns a model for the database table.
