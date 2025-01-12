@@ -14,6 +14,7 @@ import (
 	"workflow/internal/cache"
 	"workflow/internal/config"
 	"workflow/internal/datasource"
+	"workflow/internal/dispatch"
 	"workflow/internal/handler"
 	"workflow/internal/pubsub"
 	"workflow/internal/rulego"
@@ -95,12 +96,18 @@ func main() {
 	rulego.InitRoleServer(c.RuleServerTrace, c.ApiPort, ctx.Config.RuleServerLimitSize)
 	// 初始化数据源连接池
 	datasource.InitDataSourceManager(ctx)
+	// 加载Job链
+	rulego.LoadJobChain()
+	// 加载Api链
+	rulego.LoadApiChain()
 	// 初始化 asynq
 	asynq.NewAsynqServer(ctx)
 	// 初始化 asynq 周期性任务
 	asynq.NewAsynqJob(ctx)
 	// 初始化订阅
 	pubsub.NewPubSub(ctx)
+	// 初始化 dcron
+	dispatch.InitDcron(ctx)
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 
 	// go func() {

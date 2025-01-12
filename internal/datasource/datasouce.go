@@ -76,7 +76,7 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 		}
 	}
 	logx.Infof("datasource init success: %d, failed: %d, skip: %d", successCount, failCount, skipCount)
-
+	fmt.Println("datasource init success")
 	DataSourcePool = pool
 }
 

@@ -2,6 +2,7 @@ package asynq
 
 import (
 	"errors"
+	"fmt"
 
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -39,4 +40,5 @@ func NewAsynqServer(ctx *svc.ServiceContext) {
 			logx.Errorf("could not run server: %v", err)
 		}
 	}()
+	fmt.Println("asynq server init success")
 }

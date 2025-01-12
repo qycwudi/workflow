@@ -1,4 +1,4 @@
-package api
+package job
 
 import (
 	"context"
@@ -20,37 +20,37 @@ import (
 	"workflow/internal/types"
 )
 
-type ApiPublishLogic struct {
+type JobPublishLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewApiPublishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiPublishLogic {
-	return &ApiPublishLogic{
+func NewJobPublishLogic(ctx context.Context, svcCtx *svc.ServiceContext) *JobPublishLogic {
+	return &JobPublishLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.ApiPublishResponse, err error) {
-	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
+func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.JobPublishResponse, err error) {
+	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.WorkspaceId)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
 	}
 	// 检查画布名称重复
-	_, err = l.svcCtx.ApiModel.FindByName(l.ctx, req.ApiName)
+	_, err = l.svcCtx.JobModel.FindByName(l.ctx, req.JobName)
 	if !errors2.Is(err, sqlc.ErrNotFound) {
-		return nil, errors.New(int(logic.SystemStoreError), "API 名称重复")
+		return nil, errors.New(int(logic.SystemStoreError), "Job 名称重复")
 	}
 	// 自动保存一个历史版本
 	history, err := l.svcCtx.CanvasHistoryModel.Insert(l.ctx, &model.CanvasHistory{
-		WorkspaceId: req.Id,
+		WorkspaceId: req.WorkspaceId,
 		Draft:       canvas.Draft,
-		Name:        req.ApiName,
+		Name:        req.JobName,
 		CreateTime:  time.Now(),
-		Mode:        model.CanvasHistoryModeApi,
+		Mode:        model.CanvasHistoryModeJob,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "保存历史版本失败")
@@ -64,62 +64,62 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
-	// 查询有没有发布过api
-	api, err := l.svcCtx.ApiModel.FindByWorkspaceId(l.ctx, req.Id)
+	// 查询有没有发布过job
+	job, err := l.svcCtx.JobModel.FindByWorkspaceId(l.ctx, req.WorkspaceId)
 	if err != nil && err != sqlc.ErrNotFound {
-		return nil, errors.New(int(logic.SystemStoreError), "查询API失败")
+		return nil, errors.New(int(logic.SystemStoreError), "查询Job失败")
 	}
-	var apiId string
-	if api == nil {
-		apiId = xid.New().String()
-		_, err = l.svcCtx.ApiModel.Insert(l.ctx, &model.Api{
-			WorkspaceId: req.Id,
-			ApiId:       apiId,
-			ApiName:     req.ApiName,
-			ApiDesc:     req.ApiDesc,
+	var jobId string
+	if job == nil {
+		jobId = xid.New().String()
+		_, err = l.svcCtx.JobModel.Insert(l.ctx, &model.Job{
+			WorkspaceId: req.WorkspaceId,
+			JobId:       jobId,
+			JobName:     req.JobName,
+			JobDesc:     req.JobDesc,
 			Dsl:         string(ruleChain),
-			Status:      model.ApiStatusOn,
+			Status:      model.JobStatusOn,
 			HistoryId:   int64(historyId),
 			CreateTime:  time.Now(),
 			UpdateTime:  time.Now(),
 		})
 		if err != nil {
-			return nil, errors.New(int(logic.SystemError), "发布 API 失败")
+			return nil, errors.New(int(logic.SystemError), "发布 Job 失败")
 		}
 	} else {
-		apiId = api.ApiId
+		jobId = job.JobId
 		// 如果发布过，则更新
-		err = l.svcCtx.ApiModel.Update(l.ctx, &model.Api{
-			Id:          api.Id,
-			WorkspaceId: api.WorkspaceId,
-			ApiId:       api.ApiId,
-			ApiName:     req.ApiName,
-			ApiDesc:     req.ApiDesc,
+		err = l.svcCtx.JobModel.Update(l.ctx, &model.Job{
+			Id:          job.Id,
+			WorkspaceId: job.WorkspaceId,
+			JobId:       job.JobId,
+			JobName:     req.JobName,
+			JobDesc:     req.JobDesc,
 			Dsl:         string(ruleChain),
-			Status:      model.ApiStatusOn,
+			Status:      model.JobStatusOn,
 			HistoryId:   int64(historyId),
-			CreateTime:  api.CreateTime,
+			CreateTime:  job.CreateTime,
 			UpdateTime:  time.Now(),
 		})
 		if err != nil {
-			return nil, errors.New(int(logic.SystemError), "更新 API 失败")
+			return nil, errors.New(int(logic.SystemError), "更新 Job 失败")
 		}
 	}
 
 	// 3. 发送加载链服务消息
-	err = pubsub.PublishApiLoadSyncEvent(l.ctx, &pubsub.ApiLoadSyncMsg{
-		ApiId:     apiId,
+	err = pubsub.PublishJobLoadSyncEvent(l.ctx, &pubsub.JobLoadSyncMsg{
+		JobId:     jobId,
 		RuleChain: string(ruleChain),
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")
 	}
 	// 删除redis缓存
-	err = cache.Redis.Del(l.ctx, fmt.Sprintf(cache.EnvRedisKey, apiId))
+	err = cache.Redis.Del(l.ctx, fmt.Sprintf(cache.EnvRedisKey, jobId))
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "删除API环境变量缓存失败")
+		return nil, errors.New(int(logic.SystemOrmError), "删除Job环境变量缓存失败")
 	}
 
-	resp = &types.ApiPublishResponse{ApiId: apiId}
+	resp = &types.JobPublishResponse{JobId: jobId}
 	return resp, nil
 }

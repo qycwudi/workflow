@@ -89,18 +89,7 @@ func InitRoleServer(trace bool, apiPort int, limitSize int) {
 		logx.Errorf("Role Server Init Start err: %v\n", err)
 	}
 	logx.Info("init role server success")
-
-	logx.Info("init role server load api")
-	apis, err := RoleChain.svc.ApiModel.FindByOn(context.Background())
-	if err != nil {
-		logx.Errorf("find api server error: %s\n", err.Error())
-		return
-	}
-	for _, api := range apis {
-		logx.Infof("load api id:%s,name:%s", api.ApiId, api.ApiName)
-		RoleChain.LoadApiServiceChain(api.ApiId, []byte(api.Dsl))
-	}
-	logx.Infof("init role server load api complete : %d", len(apis))
+	fmt.Println("init role server success")
 }
 
 func Route() endpoint2.Router {

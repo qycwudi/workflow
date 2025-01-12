@@ -1,6 +1,7 @@
 package asynq
 
 import (
+	"fmt"
 	"log"
 	"strings"
 	"time"
@@ -57,6 +58,7 @@ func NewAsynqJob(ctx *svc.ServiceContext) {
 			logx.Errorf("Asynq job run failed: %s", err.Error())
 		}
 	}()
+	fmt.Println("asynq init success")
 }
 
 type singleJobProvider struct {

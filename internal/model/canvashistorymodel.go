@@ -8,6 +8,12 @@ import (
 
 var _ CanvasHistoryModel = (*customCanvasHistoryModel)(nil)
 
+const (
+	CanvasHistoryModeDraft = 0
+	CanvasHistoryModeApi   = 1
+	CanvasHistoryModeJob   = 2
+)
+
 type (
 	// CanvasHistoryModel is an interface to be customized, add more methods here,
 	// and implement the added methods in customCanvasHistoryModel.
@@ -41,14 +47,14 @@ func (m *customCanvasHistoryModel) FindAll(ctx context.Context, cond *CanvasHist
 
 func (m *customCanvasHistoryModel) FindAllApiByWorkspaceId(ctx context.Context, workspaceId string, current int, pageSize int) ([]*CanvasHistory, int64, error) {
 	var total int64
-	err := m.conn.QueryRowCtx(ctx, &total, "SELECT count(*) FROM "+m.table+" WHERE workspace_id = ? and is_api = 1", workspaceId)
+	err := m.conn.QueryRowCtx(ctx, &total, "SELECT count(*) FROM "+m.table+" WHERE workspace_id = ? and mode = 1", workspaceId)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	var resp []*CanvasHistory
 	offset := (current - 1) * pageSize
-	query := "SELECT " + canvasHistoryRows + " FROM " + m.table + " WHERE workspace_id = ? and is_api = 1 ORDER BY id DESC LIMIT ?,?"
+	query := "SELECT " + canvasHistoryRows + " FROM " + m.table + " WHERE workspace_id = ? and mode = 1 ORDER BY id DESC LIMIT ?,?"
 	err = m.conn.QueryRowsCtx(ctx, &resp, query, workspaceId, offset, pageSize)
 	if err != nil {
 		return nil, 0, err

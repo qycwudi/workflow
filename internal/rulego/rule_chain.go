@@ -2,6 +2,7 @@ package rulego
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
@@ -53,36 +54,16 @@ func (r *roleChain) GetParentNode(id string, nodeId string) []string {
 }
 
 // 加载链服务
-func (r *roleChain) LoadChain(id string, json []byte) error {
-	chain, b := rulego.Get(id)
-	if b {
-		// 重新加载
-		err := chain.ReloadSelf(json)
-		if err != nil {
-			logx.Errorf("reload self role chain %s fail,err:%v\n", id, err)
-			return err
-		}
-		logx.Infof("reload self role chain %s success,json: %s \n", id, string(json))
-		return nil
-	}
-
-	r.opts = append(r.opts, types.WithAspects(&TraceAop{}, &RunAop{}))
-	_, err := rulego.New(
-		id,
-		json,
-		r.opts...,
-	)
-	if err != nil {
-		logx.Errorf("load role chain fail,err:%v\n", err)
-		return err
-	}
-
-	logx.Infof("load %s role chain success,json:%s \n", id, json)
-	return nil
+func (r *roleChain) LoadJobServiceChain(id string, json []byte) error {
+	return r.LoadChain(id, json)
 }
 
 // 加载链服务
 func (r *roleChain) LoadApiServiceChain(id string, json []byte) error {
+	return r.LoadChain(id, json)
+}
+
+func (r *roleChain) LoadChain(id string, json []byte) error {
 	chain, b := rulego.Get(id)
 	if b {
 		// 重新加载
@@ -112,14 +93,6 @@ func (r *roleChain) LoadApiServiceChain(id string, json []byte) error {
 	logx.Infof("load %s role chain success,json:%s \n", id, json)
 	return nil
 }
-
-// func (r *roleChain) getChain(id string) types.RuleEngine {
-// 	chain, b := rulego.Get(id)
-// 	if !b {
-// 		logx.Errorf("get role chain fail,id:%s\n", id)
-// 	}
-// 	return chain
-// }
 
 func (r *roleChain) Run(id string, metadata map[string]string, data string) types.RuleMsg {
 	logx.Infof("id:%s metadata:%+v data:%s", id, metadata, data)
@@ -199,4 +172,50 @@ func init() {
 	go asyncTraceWriter()
 	go asyncSpaceRecordWriter()
 	go asyncApiRecordWriter()
+}
+
+func LoadJobChain() {
+	logx.Info("init role server load job")
+	jobs, err := RoleChain.svc.JobModel.FindByOn(context.Background())
+	if err != nil {
+		logx.Errorf("find job server error: %s\n", err.Error())
+		return
+	}
+	successCount := 0
+	failCount := 0
+	for _, job := range jobs {
+		logx.Infof("load job id:%s,name:%s", job.JobId, job.JobName)
+		err := RoleChain.LoadJobServiceChain(job.JobId, []byte(job.Dsl))
+		if err != nil {
+			logx.Errorf("load job %s error: %s\n", job.JobId, err.Error())
+			failCount++
+		} else {
+			successCount++
+		}
+	}
+	logx.Infof("init role server load job complete : total=%d, success=%d, fail=%d", len(jobs), successCount, failCount)
+	fmt.Println("init role server load job complete")
+}
+
+func LoadApiChain() {
+	logx.Info("init role server load api")
+	apis, err := RoleChain.svc.ApiModel.FindByOn(context.Background())
+	if err != nil {
+		logx.Errorf("find api server error: %s\n", err.Error())
+		return
+	}
+	successCount := 0
+	failCount := 0
+	for _, api := range apis {
+		logx.Infof("load api id:%s,name:%s", api.ApiId, api.ApiName)
+		err := RoleChain.LoadApiServiceChain(api.ApiId, []byte(api.Dsl))
+		if err != nil {
+			logx.Errorf("load api %s error: %s\n", api.ApiId, err.Error())
+			failCount++
+		} else {
+			successCount++
+		}
+	}
+	logx.Infof("init role server load api complete : total=%d, success=%d, fail=%d", len(apis), successCount, failCount)
+	fmt.Println("init role server load api complete")
 }

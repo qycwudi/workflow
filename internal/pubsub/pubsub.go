@@ -2,6 +2,7 @@ package pubsub
 
 import (
 	"context"
+	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
@@ -39,6 +40,15 @@ func NewPubSub(ctx *svc.ServiceContext) {
 		}
 	}()
 
+	// 开启协程处理Job加载同步事件
+	go func() {
+		if err := SubscribeJobLoadSyncEvent(subCtx, JobLoadSyncHandler); err != nil {
+			// 记录错误但不影响主程序
+			return
+		}
+	}()
+
+	fmt.Println("pubsub init success")
 	// 等待退出信号
 	go func() {
 		<-sigChan

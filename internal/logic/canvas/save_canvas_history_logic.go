@@ -41,6 +41,7 @@ func (l *SaveCanvasHistoryLogic) SaveCanvasHistory(req *types.SaveCanvasHistoryR
 		Draft:       canvasDraft.Draft,
 		Name:        req.Name,
 		CreateTime:  time.Now(),
+		Mode:        model.CanvasHistoryModeDraft,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "保存画布历史版本失败")

@@ -851,3 +851,96 @@ type ListKvResponse struct {
 	Total int64 `json:"total"`
 	List  []Kv  `json:"list"`
 }
+
+type JobPublishRequest struct {
+	WorkspaceId string `json:"workspaceId" desc:"空间ID"`
+	JobName     string `json:"jobName" desc:"名称"`
+	JobDesc     string `json:"jobDesc" desc:"描述"`
+	JobCron     string `json:"jobCron" desc:"cron表达式"`
+}
+
+type JobPublishResponse struct {
+	JobId string `json:"jobId"`
+}
+
+type JobPublishListRequest struct {
+	Current     int    `json:"current"`
+	PageSize    int    `json:"pageSize"`
+	WorkspaceId string `json:"workspaceId,optional"`
+	JobName     string `json:"jobName,optional"`
+}
+
+type JobPublishListResponse struct {
+	Current  int              `json:"current"`
+	PageSize int              `json:"pageSize"`
+	Total    int64            `json:"total"`
+	List     []JobPublishList `json:"list"`
+}
+
+type JobPublishList struct {
+	WorkspaceId string `json:"workspaceId"`
+	JobId       string `json:"jobId"`
+	JobName     string `json:"jobName"`
+	JobDesc     string `json:"jobDesc"`
+	JobCron     string `json:"jobCron"`
+	Status      string `json:"status" desc:"状态 ON OFF"`
+	CreateTime  string `json:"createTime"`
+	UpdateTime  string `json:"updateTime"`
+}
+
+type JobOnOffRequest struct {
+	JobId  string `json:"jobId"`
+	Status string `json:"status" desc:"状态 ON OFF"`
+}
+
+type JobOnOffResponse struct {
+	JobId  string `json:"jobId"`
+	Status string `json:"status" desc:"状态 ON OFF"`
+}
+
+type JobRecordsRequest struct {
+	Current   int    `json:"current"`
+	PageSize  int    `json:"pageSize"`
+	JobId     string `json:"jobId,optional" desc:"jobId"`
+	StartTime int64  `json:"startTime,optional" desc:"开始时间"`
+	EndTime   int64  `json:"endTime,optional" desc:"结束时间"`
+	Status    string `json:"status,optional" desc:"状态"`
+}
+
+type JobRecordsResponse struct {
+	Current  int          `json:"current"`
+	PageSize int          `json:"pageSize"`
+	Total    int64        `json:"total"`
+	List     []JobRecords `json:"list"`
+}
+
+type JobRecords struct {
+	JobId    string `json:"jobId"`
+	JobName  string `json:"jobName"`
+	ExecTime string `json:"execTime"`
+	Status   string `json:"status"`
+	TraceId  string `json:"traceId"`
+	Param    string `json:"param"`
+	Result   string `json:"result"`
+	ErrorMsg string `json:"errorMsg"`
+}
+
+type JobHistoryRequest struct {
+	WorkspaceId string `json:"workspaceId"`
+	Current     int    `json:"current"`
+	PageSize    int    `json:"pageSize"`
+}
+
+type JobHistoryResponse struct {
+	Current  int          `json:"current"`
+	PageSize int          `json:"pageSize"`
+	Total    int64        `json:"total"`
+	List     []JobHistory `json:"list"`
+}
+
+type JobHistory struct {
+	Id          int64  `json:"id"`
+	WorkspaceId string `json:"workspaceId"`
+	JobName     string `json:"jobName"`
+	CreateTime  string `json:"createTime"`
+}

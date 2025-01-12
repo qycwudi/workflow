@@ -7,6 +7,7 @@ import (
 	api "workflow/internal/handler/api"
 	canvas "workflow/internal/handler/canvas"
 	datasource "workflow/internal/handler/datasource"
+	job "workflow/internal/handler/job"
 	kv "workflow/internal/handler/kv"
 	model "workflow/internal/handler/model"
 	permission "workflow/internal/handler/permission"
@@ -438,6 +439,41 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/kv/list",
 					Handler: kv.ListKvHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/job/publish",
+					Handler: job.JobPublishHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/job/list",
+					Handler: job.JobListHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/job/onoff",
+					Handler: job.JobOnOffHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/job/records",
+					Handler: job.JobRecordsHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/job/history",
+					Handler: job.JobHistoryHandler(serverCtx),
 				},
 			}...,
 		),

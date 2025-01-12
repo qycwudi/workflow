@@ -10,5 +10,6 @@ CREATE TABLE `api_record`
     `api_name`  varchar(255) NOT NULL,
     `error_msg` longtext NOT NULL,
     `secrety_key` varchar(255) NOT NULL,
-    PRIMARY KEY (`id`)
+    PRIMARY KEY (`id`),
+    KEY `uni_api_id` (`api_id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='api调用记录';
