@@ -12,7 +12,7 @@ type ProbDatasourceJob struct {
 }
 
 const (
-	ProbDatasourceJobName = "ProbDatasourceJob"
+	ProbDatasourceJobName = "DataSourceClientProbe"
 )
 
 func (p *ProbDatasourceJob) Run() {

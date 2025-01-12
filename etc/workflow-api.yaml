@@ -31,7 +31,7 @@ DevServer:
 Job:
   - Name: DataSourceClientProbe
     Enable: true
-    Cron: '0 0/10 * * * *'
+    Cron: '0 0/1 * * * *'
     Topic: 'datasource_client_probe'
   - Name: DataSourceClientSync
     Enable: true

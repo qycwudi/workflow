@@ -12,7 +12,7 @@ type SyncDatasourceJob struct {
 }
 
 const (
-	SyncDatasourceJobName = "SyncDatasourceJob"
+	SyncDatasourceJobName = "DataSourceClientSync"
 )
 
 func (p *SyncDatasourceJob) Run() {

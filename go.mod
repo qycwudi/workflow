@@ -17,7 +17,6 @@ require (
 	github.com/libi/dcron v0.6.0
 	github.com/pkg/sftp v1.13.7
 	github.com/redis/go-redis/v9 v9.7.0
-	github.com/robfig/cron/v3 v3.0.1
 	github.com/rs/xid v1.6.0
 	github.com/rulego/rulego v0.27.0
 	github.com/samber/lo v1.47.0
@@ -72,6 +71,7 @@ require (
 	github.com/prometheus/common v0.55.0 // indirect
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.4.0 // indirect
+	github.com/robfig/cron/v3 v3.0.1 // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect
 	github.com/spf13/cast v1.7.1 // indirect
 	github.com/stretchr/testify v1.10.0 // indirect
