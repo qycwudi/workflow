@@ -10,6 +10,7 @@ import (
 	"workflow/internal/cache"
 	"workflow/internal/datasource"
 	"workflow/internal/enum"
+	"workflow/internal/event"
 	"workflow/internal/model"
 )
 
@@ -30,6 +31,11 @@ func NewDatasourceClientSync(datasourceModel model.DatasourceModel) *DatasourceC
 
 func NewDatasourceClientSyncConstructor() *DatasourceClientSync {
 	return &DatasourceClientSync{}
+}
+
+func init() {
+	// 注册为默认的数据源事件发布器
+	event.DefaultDatasourcePublisher = NewDatasourceClientSyncConstructor()
 }
 
 func (d *DatasourceClientSync) Publish(ctx context.Context) error {

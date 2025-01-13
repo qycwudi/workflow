@@ -20,5 +20,5 @@ func (p *ProbDatasourceJob) Run() {
 	if err != nil {
 		logx.Errorf("Failed to enqueue prob datasource job, error: %v", err)
 	}
-	logx.Infof("Enqueued prob datasource job, info: %+v", info)
+	logx.Infof("enqueued prob datasource job, info: %+v", info)
 }

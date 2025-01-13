@@ -1,215 +1,65 @@
-### 安装Httpx Requests插件
-### 上传
-POST http://127.0.0.1:8899/auto/upload
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: multipart/form-data; boundary=WebAppBoundary
-
---WebAppBoundary
-Content-Disposition: form-data; name="file"; filename="数产数据录入模版.xlsx""
-
-< "/Users/qiangyuecheng/Downloads/数产数据录入模版.xlsx"
---WebAppBoundary--
-
-### API
-POST http://127.0.0.1:8888/workflow/mock
+### Job发布
+POST http://127.0.0.1:8888/workflow/job/publish
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
+
 
 {
-  "name": "xue",
-  "age": 10
+  "workspaceId": "cu27mu53sjts533dum8g",
+  "jobName": "测试Job",
+  "jobDesc": "这是一个测试Job",
+  "jobCron": "* * * * *",
+  "jobParam": "{\"key\":\"value\"}"
 }
 
-### API发布
-POST http://127.0.0.1:8899/workflow/api/publish
+### Job列表
+POST http://127.0.0.1:8888/workflow/job/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-
-{
-  "id": "cs8vfql3sjtkvhkubulg",
-  "apiName": "测试API",
-  "apiDesc": "这是一个测试API"
-}
-
-### API发布列表
-POST http://127.0.0.1:8899/workflow/api/list
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "current": 1,
-  "pageSize": 10
-}
-
-### API上下线
-POST http://127.0.0.1:8899/workflow/api/onoff
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "apiId": "asdasdasd",
-  "status": "ON"
-}
-
-### API调用记录
-POST http://127.0.0.1:8888/workflow/api/records
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYyMTUwNjIsImlhdCI6MTczNjEyODY2MiwidXNlcklkIjoxfQ.ZeCBni0FALYoA4Dqf7JRrRjJ9MRsDOKl1-LS02OAT28
-
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
 
 {
   "current": 1,
   "pageSize": 10,
-  "apiId": "ctr9h8d3sjtuumdejvng",
-  "startTime": "2024-01-01 00:00:00",
-  "endTime": "2026-01-01 00:00:00",
-  "request": "张静"
+  "workspaceId": "test-workspace-id",
+  "jobName": "测试Job"
 }
 
-### API调用-单结构
-POST http://127.0.0.1:8889/api/role/v1/ctr9h8d3sjtuumdejvng
+### Job上下线
+POST http://127.0.0.1:8888/workflow/job/onoff
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer 0241411184b34ffe8f0e38d78bb03771
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
 
 {
-    "name": "张三",
-    "age": 10
-}
-
-# 测试
-POST http://14.103.24:30000/api/ctpoucuhbuqs73fdg3v0
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-Authorization: Bearer e00b62bfb33045efb9675e7fc7e0853b
-
-{
-    "name": "张三",
-    "age": 10
-}
-
-### API调用-单结构
-POST http://127.0.0.1:8889/api/role/v1/ctu0kht3sjtua2i4o8a0
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-Authorization: Bearer 5a088ea4032745b09ea0438a20ee647f
-
-{
-  "intA": 30,
-  "intB": 10
-}
-
-### API调用-数组
-POST http://127.0.0.1:9999/api/role/v1/ctkpp553sjth1oquefng
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-Authorization: Bearer 5b1a3b5021d44e46b4b5f099e19304b2
-
-{
-  "list": [
-    {
-      "name": "张",
-      "age": 10
-    },
-    {
-      "name": "李", 
-      "age": 10
-    }
-  ]
-}
-
-### API调用-数组
-POST http://10.99.43.99:9999/api/role/v1/ctghrkt3sjtjo4lonulg
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-Authorization: Bearer 94425855c36c4e55ba6600b4c1a78b19
-
-{
-  "list": [
-    {
-      "name": "张",
-      "age": 10
-    },
-    {
-      "name": "李", 
-      "age": 10
-    }
-  ]
-}
-
-### 创建API密钥
-POST http://127.0.0.1:8899/workflow/api/secretykey/create
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "apiId": "ctfsv853sjtsad9b5uvg",
-  "name": "测试密钥",
-  "expirationTime": 1752410828282
-}
-
-### API密钥列表
-POST http://127.0.0.1:8899/workflow/api/secretykey/list
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "apiId": "asdasdasd",
-  "current": 2,
-  "pageSize": 4
-}
-
-### API密钥列表
-POST http://10.99.43.99:8899/workflow/api/secretykey/list
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "apiId": "asdasdasd",
-  "current": 2,
-  "pageSize": 4
-}
-
-
-### 修改API密钥状态
-POST http://127.0.0.1:8899/workflow/api/secretykey/update/status
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-
-{
-  "secretKey": "cf34266901974f67bae4f0f3510271c8",
+  "jobId": "test-job-id",
   "status": "ON"
-} 
+}
 
-### 修改API密钥到期时间
-POST http://127.0.0.1:8899/workflow/api/secretykey/update/expirationtime
+### Job执行记录
+POST http://127.0.0.1:8888/workflow/job/records
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
 
 {
-  "secretKey": "aacb67e882034f03bb5cd8da2afb1487",
-  "expirationTime": 1752410828282
-} 
+  "current": 1,
+  "pageSize": 10,
+  "jobId": "test-job-id",
+  "startTime": 1735782093,
+  "endTime": 1735868493,
+  "status": "SUCCESS"
+}
 
-### 删除API密钥
-POST http://127.0.0.1:8899/workflow/api/secretykey/delete
+### Job历史版本
+POST http://127.0.0.1:8888/workflow/job/history
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
 
 {
-  "secretKey": "aacb67e882034f03bb5cd8da2afb1487"
-} 
-
-### API历史版本
-POST http://127.0.0.1:8888/workflow/api/history
-User-Agent: Apifox/1.0.0 (https://apifox.com)
-Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU5OTc2NDYsImlhdCI6MTczNTkxMTI0NiwidXNlcklkIjoxfQ.k07LjPdpJsM0egAa5jTCpPqJKg6w3htFyUO0ojhJB54
-
-{
-  "workspaceId": "ctr5lfd3sjtqhn40t93g",
+  "workspaceId": "test-workspace-id",
   "current": 1,
   "pageSize": 10
 }

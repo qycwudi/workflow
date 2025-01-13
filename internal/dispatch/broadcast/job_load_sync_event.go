@@ -8,6 +8,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/cache"
+	"workflow/internal/dispatch/job"
 	"workflow/internal/rulego"
 )
 
@@ -17,8 +18,10 @@ const (
 )
 
 type JobLoadSyncMsg struct {
-	JobId     string `json:"job_id"`
-	RuleChain string `json:"rule_chain"`
+	JobId       string `json:"jobId"`
+	RuleChain   string `json:"ruleChain"`
+	JobCron     string `json:"jobCron"`
+	WorkspaceId string `json:"workspaceId"`
 }
 
 type JobLoadSync struct{}
@@ -69,6 +72,13 @@ func (j *JobLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 	err = rulego.RoleChain.LoadJobServiceChain(syncMsg.JobId, []byte(syncMsg.RuleChain))
 	if err != nil {
 		logx.Errorf("JobLoadSyncHandler load chain failed: %s", err.Error())
+		return
+	}
+	// 注册任务
+	jobInstance := &job.ChainJob{JobId: syncMsg.JobId, CanvasId: syncMsg.WorkspaceId}
+	err = job.DispatcherManager.AddJob(syncMsg.JobId, syncMsg.JobCron, jobInstance)
+	if err != nil {
+		logx.Errorf("JobLoadSyncHandler add job failed: %s", err.Error())
 		return
 	}
 	logx.Infof("JobLoadSyncHandler load chain success: %s", syncMsg.JobId)

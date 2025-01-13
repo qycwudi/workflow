@@ -45,6 +45,7 @@ type (
 		JobId    string    `db:"job_id"`
 		JobName  string    `db:"job_name"`
 		ErrorMsg string    `db:"error_msg"`
+		Duration int64     `db:"duration"`
 	}
 )
 
@@ -83,14 +84,14 @@ func (m *defaultJobRecordModel) FindOne(ctx context.Context, id int64) (*JobReco
 }
 
 func (m *defaultJobRecordModel) Insert(ctx context.Context, data *JobRecord) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?)", m.table, jobRecordRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.Status, data.TraceId, data.Param, data.Result, data.ExecTime, data.JobId, data.JobName, data.ErrorMsg)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, jobRecordRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.Status, data.TraceId, data.Param, data.Result, data.ExecTime, data.JobId, data.JobName, data.ErrorMsg, data.Duration)
 	return ret, err
 }
 
 func (m *defaultJobRecordModel) Update(ctx context.Context, data *JobRecord) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, jobRecordRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.Status, data.TraceId, data.Param, data.Result, data.ExecTime, data.JobId, data.JobName, data.ErrorMsg, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, data.Status, data.TraceId, data.Param, data.Result, data.ExecTime, data.JobId, data.JobName, data.ErrorMsg, data.Duration, data.Id)
 	return err
 }
 

@@ -3,10 +3,12 @@ package job
 import (
 	"context"
 
+	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
+
+	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
 )
 
 type JobHistoryLogic struct {
@@ -24,7 +26,27 @@ func NewJobHistoryLogic(ctx context.Context, svcCtx *svc.ServiceContext) *JobHis
 }
 
 func (l *JobHistoryLogic) JobHistory(req *types.JobHistoryRequest) (resp *types.JobHistoryResponse, err error) {
-	// todo: add your logic here and delete this line
+	canvasHistory, total, err := l.svcCtx.CanvasHistoryModel.FindAllJobByWorkspaceId(l.ctx, req.WorkspaceId, req.Current, req.PageSize)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemOrmError), "查询历史版本失败")
+	}
 
-	return
+	lists := make([]types.JobHistory, len(canvasHistory))
+	for i, history := range canvasHistory {
+		lists[i] = types.JobHistory{
+			Id:          history.Id,
+			WorkspaceId: history.WorkspaceId,
+			JobName:     history.Name,
+			CreateTime:  history.CreateTime.Format("2006-01-02 15:04:05"),
+		}
+	}
+
+	resp = &types.JobHistoryResponse{
+		Current:  req.Current,
+		PageSize: req.PageSize,
+		Total:    total,
+		List:     lists,
+	}
+
+	return resp, nil
 }

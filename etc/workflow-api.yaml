@@ -21,7 +21,7 @@ MySqlUrn: root:root@tcp(14.103.249.105:30006)/workflow_dev?charset=utf8mb4&parse
 Redis:
   Host: 14.103.249.105:30007
   Password: '123456'
-  DB: 5
+  DB: 6
 
 DevServer:
     Enabled: true

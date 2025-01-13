@@ -53,17 +53,26 @@ func (r *roleChain) GetParentNode(id string, nodeId string) []string {
 	return parentNodes
 }
 
-// 加载链服务
+// 加载JOB服务链
 func (r *roleChain) LoadJobServiceChain(id string, json []byte) error {
-	return r.LoadChain(id, json)
+	// 默认开启链路追踪
+	return r.LoadChain(id, json, true)
 }
 
-// 加载链服务
+// 加载API服务链
 func (r *roleChain) LoadApiServiceChain(id string, json []byte) error {
-	return r.LoadChain(id, json)
+	// 读取环境变量配置
+	trace := r.svc.Config.RuleServerTrace
+	return r.LoadChain(id, json, trace)
 }
 
-func (r *roleChain) LoadChain(id string, json []byte) error {
+// 加载画布服务链
+func (r *roleChain) LoadCanvasServiceChain(id string, json []byte) error {
+	// 默认开启链路追踪
+	return r.LoadChain(id, json, true)
+}
+
+func (r *roleChain) LoadChain(id string, json []byte, trace bool) error {
 	chain, b := rulego.Get(id)
 	if b {
 		// 重新加载
@@ -75,7 +84,7 @@ func (r *roleChain) LoadChain(id string, json []byte) error {
 		logx.Infof("reload self role chain %s success,json: %s \n", id, string(json))
 		return nil
 	}
-	if r.svc.Config.RuleServerTrace {
+	if trace {
 		r.opts = append(r.opts, types.WithAspects(&TraceAop{}, &RunAop{}))
 	} else {
 		r.opts = append(r.opts, types.WithAspects(&RunAop{}))

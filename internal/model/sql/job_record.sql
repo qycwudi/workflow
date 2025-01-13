@@ -8,6 +8,7 @@ CREATE TABLE `job_record` (
   `job_id` varchar(255) NOT NULL,
   `job_name` varchar(255) NOT NULL,
   `error_msg` longtext NOT NULL,
+  `duration` int NOT NULL,
   PRIMARY KEY (`id`),
   KEY `uni_job_id` (`job_id`)
-) ENGINE=InnoDB COMMENT='job调用记录';
+) ENGINE = InnoDB COMMENT = 'job调用记录';

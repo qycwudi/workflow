@@ -111,7 +111,7 @@ func (l *WorkSpaceCopyLogic) WorkSpaceCopy(req *types.WorkSpaceCopyRequest) (res
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
 
-	err = rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	err = rulego.RoleChain.LoadCanvasServiceChain(canvasId, ruleChain)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "加载画布失败,错误原因:"+err.Error())
 	}

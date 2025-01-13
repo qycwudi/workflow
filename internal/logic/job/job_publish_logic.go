@@ -2,7 +2,7 @@ package job
 
 import (
 	"context"
-	errors2 "errors"
+	"encoding/json"
 	"fmt"
 	"time"
 
@@ -39,10 +39,12 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
 	}
-	// 检查画布名称重复
+	// 检查JOB名称重复
 	_, err = l.svcCtx.JobModel.FindByName(l.ctx, req.JobName)
-	if !errors2.Is(err, sqlc.ErrNotFound) {
-		return nil, errors.New(int(logic.SystemStoreError), "Job 名称重复")
+	if err != nil {
+		if err != model.ErrNotFound {
+			return nil, errors.New(int(logic.SystemStoreError), "查询Job失败")
+		}
 	}
 	// 自动保存一个历史版本
 	history, err := l.svcCtx.CanvasHistoryModel.Insert(l.ctx, &model.CanvasHistory{
@@ -70,6 +72,15 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 		return nil, errors.New(int(logic.SystemStoreError), "查询Job失败")
 	}
 	var jobId string
+	jobParam := make(map[string]interface{})
+	err = json.Unmarshal([]byte(req.JobParam), &jobParam)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "解析 Job 参数失败")
+	}
+	jobParamJson, err := json.Marshal(jobParam)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "序列化 Job 参数失败")
+	}
 	if job == nil {
 		jobId = xid.New().String()
 		_, err = l.svcCtx.JobModel.Insert(l.ctx, &model.Job{
@@ -77,6 +88,8 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 			JobId:       jobId,
 			JobName:     req.JobName,
 			JobDesc:     req.JobDesc,
+			JobCron:     req.JobCron,
+			Params:      string(jobParamJson),
 			Dsl:         string(ruleChain),
 			Status:      model.JobStatusOn,
 			HistoryId:   int64(historyId),
@@ -95,6 +108,8 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 			JobId:       job.JobId,
 			JobName:     req.JobName,
 			JobDesc:     req.JobDesc,
+			JobCron:     req.JobCron,
+			Params:      string(jobParamJson),
 			Dsl:         string(ruleChain),
 			Status:      model.JobStatusOn,
 			HistoryId:   int64(historyId),
@@ -108,8 +123,10 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 
 	// 3. 发送加载链服务消息
 	err = broadcast.NewJobLoadSync().Publish(l.ctx, &broadcast.JobLoadSyncMsg{
-		JobId:     jobId,
-		RuleChain: string(ruleChain),
+		JobId:       jobId,
+		RuleChain:   string(ruleChain),
+		JobCron:     req.JobCron,
+		WorkspaceId: req.WorkspaceId,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")

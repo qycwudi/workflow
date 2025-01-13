@@ -1,12 +1,10 @@
-package dispatch
+package job
 
 import (
 	"context"
-	"fmt"
 	"os"
 	"os/signal"
 	"strings"
-	"sync"
 	"syscall"
 	"time"
 
@@ -15,18 +13,8 @@ import (
 	"github.com/libi/dcron"
 	"github.com/zeromicro/go-zero/core/logx"
 
-	"workflow/internal/dispatch/job"
 	"workflow/internal/svc"
 )
-
-type DcronManager struct {
-	dcron  *dcron.Dcron
-	ctx    context.Context
-	cancel context.CancelFunc
-	mu     sync.Mutex
-}
-
-var DispatcherManager *DcronManager
 
 func InitDcron(ctx *svc.ServiceContext) {
 	// 创建一个包装了logx的Logger实现
@@ -48,9 +36,9 @@ func InitDcron(ctx *svc.ServiceContext) {
 	)
 
 	DispatcherManager = &DcronManager{
-		dcron:  d,
-		ctx:    dctx,
-		cancel: cancel,
+		Dcron:  d,
+		Ctx:    dctx,
+		Cancel: cancel,
 	}
 
 	// 异步启动dcron
@@ -70,23 +58,26 @@ func InitDcron(ctx *svc.ServiceContext) {
 				cancel()
 			}
 		}()
-
-		// 初始化系统任务
+		// Initialize system tasks
+		// System tasks include:
+		// 1. ProbDatasourceJob - Data source probe task
+		// 2. SyncDatasourceJob - Data source sync task
+		var systemJobCount int
 		for _, jobConfig := range ctx.Config.Job {
 			if jobConfig.Enable {
 				var jobInstance dcron.Job
 				switch jobConfig.Name {
-				case job.ProbDatasourceJobName:
-					jobInstance = &job.ProbDatasourceJob{}
-				case job.SyncDatasourceJobName:
-					jobInstance = &job.SyncDatasourceJob{}
-				case job.ChainJobName:
-					jobInstance = &job.ChainJob{}
+				case ProbDatasourceJobName:
+					jobInstance = &ProbDatasourceJob{}
+					systemJobCount++
+				case SyncDatasourceJobName:
+					jobInstance = &SyncDatasourceJob{}
+					systemJobCount++
 				default:
 					logx.Errorf("Unknown job name: %s", jobConfig.Name)
 					continue
 				}
-				// 如果是6位表达式,去掉秒位转成5位
+				// If it's a 6-field expression, remove seconds field to make it 5-field
 				cronExpr := jobConfig.Cron
 				if len(strings.Fields(cronExpr)) == 6 {
 					cronExpr = strings.Join(strings.Fields(cronExpr)[1:], " ")
@@ -97,24 +88,22 @@ func InitDcron(ctx *svc.ServiceContext) {
 			}
 		}
 
-		fmt.Println("dcron init success")
+		// Initialize enabled tasks
+		// 3. ChainJob - User-defined tasks loaded from database
+		jobs, err := ctx.JobModel.FindByOn(context.Background())
+		if err != nil {
+			logx.Errorf("find job server error: %s\n", err.Error())
+			return
+		}
+		var chainJobCount int
+		for _, cjob := range jobs {
+			jobInstance := &ChainJob{JobId: cjob.JobId, CanvasId: cjob.WorkspaceId}
+			_ = d.AddJob(cjob.JobName, cjob.JobCron, jobInstance)
+			chainJobCount++
+		}
+		logx.Infof("Dcron initialization completed. Loaded %d system jobs and %d chain jobs. Total jobs: %d",
+			systemJobCount, chainJobCount, systemJobCount+chainJobCount)
 	}()
-}
-
-func (m *DcronManager) AddJob(name string, spec string, job dcron.Job) error {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return m.dcron.AddJob(name, spec, job)
-}
-
-func (m *DcronManager) RemoveJob(name string) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	m.dcron.Remove(name)
-}
-
-func (m *DcronManager) Stop() {
-	m.cancel()
 }
 
 // logx的包装器,实现PrintfLogger接口

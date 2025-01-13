@@ -7,14 +7,17 @@ import (
 	"os"
 	"strconv"
 
+	asynq2 "github.com/hibiken/asynq"
+	"github.com/hibiken/asynqmon"
 	"github.com/zeromicro/go-zero/core/conf"
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
 
 	"workflow/internal/asynq"
+	"workflow/internal/bootstrap"
 	"workflow/internal/cache"
 	"workflow/internal/config"
 	"workflow/internal/datasource"
-	"workflow/internal/dispatch"
 	"workflow/internal/handler"
 	"workflow/internal/rulego"
 	"workflow/internal/svc"
@@ -103,32 +106,30 @@ func main() {
 	asynq.InitAsynqServer(ctx)
 	// 初始化 asynq 客户端
 	asynq.InitAsynqClient(ctx)
-	// 初始化订阅
-	dispatch.InitPubSub(ctx)
-	// 初始化 dcron
-	dispatch.InitDcron(ctx)
+	// 初始化订阅,初始化 dcron
+	bootstrap.Initialize(ctx)
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 
-	// go func() {
-	// 	defer func() {
-	// 		if r := recover(); r != nil {
-	// 			fmt.Println("Recovered in main:", r)
-	// 		}
-	// 	}()
-	// 	h := asynqmon.New(asynqmon.Options{
-	// 		RootPath: "/asynq",
-	// 		RedisConnOpt: asynq2.RedisClientOpt{
-	// 			Addr:     ctx.Config.Redis.Host,
-	// 			DB:       ctx.Config.Redis.DB,
-	// 			Username: "",
-	// 			Password: ctx.Config.Redis.Password,
-	// 		},
-	// 	})
+	go func() {
+		defer func() {
+			if r := recover(); r != nil {
+				fmt.Println("Recovered in main:", r)
+			}
+		}()
+		h := asynqmon.New(asynqmon.Options{
+			RootPath: "/asynq",
+			RedisConnOpt: asynq2.RedisClientOpt{
+				Addr:     ctx.Config.Redis.Host,
+				DB:       ctx.Config.Redis.DB,
+				Username: "",
+				Password: ctx.Config.Redis.Password,
+			},
+		})
 
-	// 	http.Handle(h.RootPath()+"/", h)
-	// 	println("Starting asynq monitor at 0.0.0.0:7201...")
-	// 	logx.Error(ctx, http.ListenAndServe(":7201", nil).Error())
-	// }()
+		http.Handle(h.RootPath()+"/", h)
+		println("Starting asynq monitor at 0.0.0.0:7201...")
+		logx.Error(ctx, http.ListenAndServe(":7201", nil).Error())
+	}()
 	server.Start()
 
 }

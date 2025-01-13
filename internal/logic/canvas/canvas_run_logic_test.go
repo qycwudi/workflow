@@ -21,7 +21,7 @@ func TestCanvasRunLogic_CanvasRun(t *testing.T) {
 	t.Logf("canvasId:%s", canvasId)
 	t.Logf("ruleChain:%s", ruleChain)
 	// 运行文件
-	rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	rulego.RoleChain.LoadCanvasServiceChain(canvasId, ruleChain)
 	matadata := make(map[string]string)
 	matadata["name"] = "雪兔"
 	matadata["age"] = "18"
@@ -45,7 +45,7 @@ func TestCanvasRunLogic_RunAll(t *testing.T) {
 	t.Logf("canvasId:%s", canvasId)
 	t.Logf("ruleChain:%s", ruleChain)
 	// 运行文件
-	rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	rulego.RoleChain.LoadCanvasServiceChain(canvasId, ruleChain)
 	matadata := make(map[string]string)
 	matadata["name"] = "雪兔"
 	matadata["age"] = "18"

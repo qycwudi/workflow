@@ -857,6 +857,7 @@ type JobPublishRequest struct {
 	JobName     string `json:"jobName" desc:"名称"`
 	JobDesc     string `json:"jobDesc" desc:"描述"`
 	JobCron     string `json:"jobCron" desc:"cron表达式"`
+	JobParam    string `json:"jobParam" desc:"Job参数"`
 }
 
 type JobPublishResponse struct {
@@ -883,6 +884,7 @@ type JobPublishList struct {
 	JobName     string `json:"jobName"`
 	JobDesc     string `json:"jobDesc"`
 	JobCron     string `json:"jobCron"`
+	JobParam    string `json:"jobParam"`
 	Status      string `json:"status" desc:"状态 ON OFF"`
 	CreateTime  string `json:"createTime"`
 	UpdateTime  string `json:"updateTime"`

@@ -22,6 +22,7 @@ type (
 		FindAll(ctx context.Context, cond *CanvasHistory) ([]*CanvasHistory, error)
 		FindPage(ctx context.Context, workspaceId string, name string, current int, pageSize int) ([]*CanvasHistory, int64, error)
 		FindAllApiByWorkspaceId(ctx context.Context, workspaceId string, current int, pageSize int) ([]*CanvasHistory, int64, error)
+		FindAllJobByWorkspaceId(ctx context.Context, workspaceId string, current int, pageSize int) ([]*CanvasHistory, int64, error)
 	}
 
 	customCanvasHistoryModel struct {
@@ -47,15 +48,15 @@ func (m *customCanvasHistoryModel) FindAll(ctx context.Context, cond *CanvasHist
 
 func (m *customCanvasHistoryModel) FindAllApiByWorkspaceId(ctx context.Context, workspaceId string, current int, pageSize int) ([]*CanvasHistory, int64, error) {
 	var total int64
-	err := m.conn.QueryRowCtx(ctx, &total, "SELECT count(*) FROM "+m.table+" WHERE workspace_id = ? and mode = 1", workspaceId)
+	err := m.conn.QueryRowCtx(ctx, &total, "SELECT count(*) FROM "+m.table+" WHERE workspace_id = ? and mode = ?", workspaceId, CanvasHistoryModeApi)
 	if err != nil {
 		return nil, 0, err
 	}
 
 	var resp []*CanvasHistory
 	offset := (current - 1) * pageSize
-	query := "SELECT " + canvasHistoryRows + " FROM " + m.table + " WHERE workspace_id = ? and mode = 1 ORDER BY id DESC LIMIT ?,?"
-	err = m.conn.QueryRowsCtx(ctx, &resp, query, workspaceId, offset, pageSize)
+	query := "SELECT " + canvasHistoryRows + " FROM " + m.table + " WHERE workspace_id = ? and mode = ? ORDER BY id DESC LIMIT ?,?"
+	err = m.conn.QueryRowsCtx(ctx, &resp, query, workspaceId, CanvasHistoryModeApi, offset, pageSize)
 	if err != nil {
 		return nil, 0, err
 	}
@@ -77,5 +78,23 @@ func (m *customCanvasHistoryModel) FindPage(ctx context.Context, workspaceId str
 	if err != nil {
 		return nil, 0, err
 	}
+	return resp, total, nil
+}
+
+func (m *customCanvasHistoryModel) FindAllJobByWorkspaceId(ctx context.Context, workspaceId string, current int, pageSize int) ([]*CanvasHistory, int64, error) {
+	var total int64
+	err := m.conn.QueryRowCtx(ctx, &total, "SELECT count(*) FROM "+m.table+" WHERE workspace_id = ? and mode = ?", workspaceId, CanvasHistoryModeJob)
+	if err != nil {
+		return nil, 0, err
+	}
+
+	var resp []*CanvasHistory
+	offset := (current - 1) * pageSize
+	query := "SELECT " + canvasHistoryRows + " FROM " + m.table + " WHERE workspace_id = ? and mode = ? ORDER BY id DESC LIMIT ?,?"
+	err = m.conn.QueryRowsCtx(ctx, &resp, query, workspaceId, CanvasHistoryModeJob, offset, pageSize)
+	if err != nil {
+		return nil, 0, err
+	}
+
 	return resp, total, nil
 }

@@ -42,7 +42,7 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 	}
 
 	// 运行文件
-	err = rulego.RoleChain.LoadChain(canvasId, ruleChain)
+	err = rulego.RoleChain.LoadCanvasServiceChain(canvasId, ruleChain)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "加载画布失败,错误原因:"+err.Error())
 	}

@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -28,7 +29,9 @@ type ChainJobPayload struct {
 }
 
 func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Task) error {
-	logx.Infof("%s start at: %s", TOPIC_CHAIN_JOB, time.Now().Format("2006-01-02 15:04:05"))
+	traceId := uuid.New().String()
+	startTime := time.Now()
+	logx.Infof("%s start at: %s, traceId: %s", TOPIC_CHAIN_JOB, startTime.Format("2006-01-02 15:04:05"), traceId)
 
 	var payload ChainJobPayload
 	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
@@ -37,7 +40,7 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 	}
 
 	// 执行任务链
-	logx.Infof("%s execute chain job, jobId: %s, canvasId: %s", TOPIC_CHAIN_JOB, payload.JobId, payload.CanvasId)
+	logx.Infof("%s execute chain job, jobId: %s, canvasId: %s, traceId: %s", TOPIC_CHAIN_JOB, payload.JobId, payload.CanvasId, traceId)
 
 	// 读取 metadata
 	workspace, err := processor.workspaceModel.GetWorkspaceById(context.Background(), payload.CanvasId)
@@ -51,6 +54,8 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 		logx.Errorf("%s parse metadata failed: %v", TOPIC_CHAIN_JOB, err)
 		return err
 	}
+	metadata["traceId"] = traceId
+	metadata["startTime"] = time.Now().Format("2006-01-02 15:04:05")
 
 	// 读取参数
 	job, err := processor.jobModel.FindOneByJobId(context.Background(), payload.JobId)
@@ -61,15 +66,24 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 
 	// 运行
 	result := rulego.RoleChain.Run(payload.JobId, metadata, job.Params)
-	logx.Infof("chain run result:%+v", result)
-
-	var respData interface{}
-	if err := json.Unmarshal([]byte(result.Data), &respData); err != nil {
-		logx.Errorf("parsing result failure,err:%v", err)
-	}
+	logx.Infof("chain run result:%+v, traceId: %s", result, traceId)
 	// 保存记录
+	jobRecord := model.JobRecord{
+		JobId:    payload.JobId,
+		JobName:  TOPIC_CHAIN_JOB,
+		Status:   "success",
+		TraceId:  traceId,
+		Param:    job.Params,
+		Result:   string(result.Data),
+		ExecTime: time.Now(),
+		Duration: int64(time.Since(startTime).Milliseconds()),
+	}
+	_, err = processor.jobRecordModel.Insert(context.Background(), &jobRecord)
+	if err != nil {
+		logx.Errorf("save job record failed: %v", err)
+	}
 
-	logx.Infof("%s end at: %s", TOPIC_CHAIN_JOB, time.Now().Format("2006-01-02 15:04:05"))
+	logx.Infof("%s end at: %s, traceId: %s", TOPIC_CHAIN_JOB, time.Now().Format("2006-01-02 15:04:05"), traceId)
 	return nil
 }
 

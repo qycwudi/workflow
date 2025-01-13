@@ -5,7 +5,7 @@ import (
 
 	"github.com/zeromicro/go-zero/core/logx"
 
-	"workflow/internal/dispatch/broadcast"
+	"workflow/internal/event"
 )
 
 type SyncDatasourceJob struct {
@@ -16,7 +16,7 @@ const (
 )
 
 func (p *SyncDatasourceJob) Run() {
-	err := broadcast.NewDatasourceClientSyncConstructor().Publish(context.Background())
+	err := event.PublishDatasourceSync(context.Background())
 	if err != nil {
 		logx.Errorf("Failed to publish datasource client sync event, error: %v", err)
 	}
