@@ -103,6 +103,7 @@ INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,
 INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (137,'Job上下线','job_on_off',3,'job_management','/workflow/job/onoff','POST',9986,'2025-01-09 02:43:05','2025-01-13 03:04:46');
 INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (138,'Job执行记录','job_records',3,'job_management','/workflow/job/records','POST',9985,'2025-01-09 02:43:05','2025-01-13 03:04:46');
 INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (139,'Job历史版本','job_history',3,'job_management','/workflow/job/history','POST',9984,'2025-01-09 02:43:05','2025-01-13 03:04:46');
+INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (141,'Job编辑','job_edit',3,'job_management','/workflow/job/edit','POST',9983,'2025-01-09 02:43:05','2025-01-13 03:04:46');
 INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (140,'JOB管理','job_management',1,'root',null,null,9987,'2025-01-09 02:43:05','2025-01-09 02:43:05');
 
 

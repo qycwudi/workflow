@@ -2,6 +2,8 @@ package model
 
 import (
 	"context"
+	"fmt"
+	"strings"
 
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
@@ -20,7 +22,7 @@ type (
 	CanvasHistoryModel interface {
 		canvasHistoryModel
 		FindAll(ctx context.Context, cond *CanvasHistory) ([]*CanvasHistory, error)
-		FindPage(ctx context.Context, workspaceId string, name string, current int, pageSize int) ([]*CanvasHistory, int64, error)
+		FindPage(ctx context.Context, workspaceId string, name string, mode int64, current int, pageSize int) ([]*CanvasHistory, int64, error)
 		FindAllApiByWorkspaceId(ctx context.Context, workspaceId string, current int, pageSize int) ([]*CanvasHistory, int64, error)
 		FindAllJobByWorkspaceId(ctx context.Context, workspaceId string, current int, pageSize int) ([]*CanvasHistory, int64, error)
 	}
@@ -63,21 +65,47 @@ func (m *customCanvasHistoryModel) FindAllApiByWorkspaceId(ctx context.Context, 
 
 	return resp, total, nil
 }
+func (m *customCanvasHistoryModel) FindPage(ctx context.Context, workspaceId string, name string, mode int64, current int, pageSize int) ([]*CanvasHistory, int64, error) {
+	// 构建查询条件
+	whereBuilder := strings.Builder{}
+	whereBuilder.WriteString("WHERE 1=1")
+	args := make([]interface{}, 0)
 
-func (m *customCanvasHistoryModel) FindPage(ctx context.Context, workspaceId string, name string, current int, pageSize int) ([]*CanvasHistory, int64, error) {
+	if workspaceId != "" {
+		whereBuilder.WriteString(" AND workspace_id = ?")
+		args = append(args, workspaceId)
+	}
+
+	if name != "" {
+		whereBuilder.WriteString(" AND name like ?")
+		args = append(args, "%"+name+"%")
+	}
+
+	if mode > 0 {
+		whereBuilder.WriteString(" AND mode = ?")
+		args = append(args, mode)
+	}
+
+	// 查询总数
+	countQuery := fmt.Sprintf("SELECT count(*) FROM %s %s", m.table, whereBuilder.String())
 	var total int64
-	err := m.conn.QueryRowCtx(ctx, &total, "SELECT count(*) FROM "+m.table+" WHERE workspace_id = ? and name like ?", workspaceId, "%"+name+"%")
+	err := m.conn.QueryRowCtx(ctx, &total, countQuery, args...)
 	if err != nil {
 		return nil, 0, err
 	}
+
+	// 分页查询数据
+	offset := (current - 1) * pageSize
+	query := fmt.Sprintf("SELECT %s FROM %s %s ORDER BY id DESC LIMIT ?,?",
+		canvasHistoryRows, m.table, whereBuilder.String())
+	args = append(args, offset, pageSize)
 
 	var resp []*CanvasHistory
-	offset := (current - 1) * pageSize
-	query := "SELECT " + canvasHistoryRows + " FROM " + m.table + " WHERE workspace_id = ? and name like ? ORDER BY id DESC LIMIT ?,?"
-	err = m.conn.QueryRowsCtx(ctx, &resp, query, workspaceId, "%"+name+"%", offset, pageSize)
+	err = m.conn.QueryRowsCtx(ctx, &resp, query, args...)
 	if err != nil {
 		return nil, 0, err
 	}
+
 	return resp, total, nil
 }
 

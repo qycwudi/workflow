@@ -24,7 +24,7 @@ type CanvasRunSingleResponse {
 }
 
 type CanvasRunSingleDetailRequest {
-	Id     string `json:"id"` // 空间ID
+	Id     string `json:"id"`     // 空间ID
 	NodeId string `json:"nodeId"` // 节点ID
 }
 
@@ -44,10 +44,10 @@ type GetCanvasRunHistoryReq {
 }
 
 type RunHistoryRecord {
-	Id             string `json:"id"` // 运行记录ID
-	StartTime      string `json:"startTime"` // 开始时间，ISO格式
-	Duration       int64  `json:"duration"` // 总耗时(ms)
-	Status         string `json:"status"` // 运行状态
+	Id             string `json:"id"`             // 运行记录ID
+	StartTime      string `json:"startTime"`      // 开始时间，ISO格式
+	Duration       int64  `json:"duration"`       // 总耗时(ms)
+	Status         string `json:"status"`         // 运行状态
 	ComponentCount int64  `json:"componentCount"` // 组件数量
 }
 
@@ -63,30 +63,30 @@ type (
 	}
 	// 响应
 	GetCanvasRunDetailResp {
-		Id         string            `json:"id"` // 运行记录ID
-		StartTime  string            `json:"startTime"` // 开始时间
-		Duration   int64             `json:"duration"` // 总耗时(ms)
-		Status     string            `json:"status"` // 运行状态 success/failed
-		Error      string            `json:"error"` // 错误信息
+		Id         string            `json:"id"`         // 运行记录ID
+		StartTime  string            `json:"startTime"`  // 开始时间
+		Duration   int64             `json:"duration"`   // 总耗时(ms)
+		Status     string            `json:"status"`     // 运行状态 success/failed
+		Error      string            `json:"error"`      // 错误信息
 		Components []ComponentDetail `json:"components"` // 组件列表
 	}
 	// 组件详情
 	ComponentDetail {
-		Id        string                 `json:"id"` // 组件ID
-		Name      string                 `json:"name"` // 组件名称
-		Logic     string                 `json:"logic"` // 组件类型
+		Id        string                 `json:"id"`        // 组件ID
+		Name      string                 `json:"name"`      // 组件名称
+		Logic     string                 `json:"logic"`     // 组件类型
 		StartTime int64                  `json:"startTime"` // 开始时间戳
-		Duration  int64                  `json:"duration"` // 耗时(ms)
-		Status    string                 `json:"status"` // 组件运行状态 success/failed
-		Error     string                 `json:"error"` // 组件错误信息
-		Input     map[string]interface{} `json:"input"` // 输入参数
-		Output    map[string]interface{} `json:"output"` // 输出结果
+		Duration  int64                  `json:"duration"`  // 耗时(ms)
+		Status    string                 `json:"status"`    // 组件运行状态 success/failed
+		Error     string                 `json:"error"`     // 组件错误信息
+		Input     map[string]interface{} `json:"input"`     // 输入参数
+		Output    map[string]interface{} `json:"output"`    // 输出结果
 	}
 )
 
 type CanvasDraftRequest {
-	Id     string                   `json:"id"`
-	Graph  map[string]interface{}   `json:"graph"`
+	Id    string                 `json:"id"`
+	Graph map[string]interface{} `json:"graph"`
 }
 
 type CanvasDraftResponse {
@@ -111,7 +111,7 @@ type CanvasDetailResponse {
 
 type SaveCanvasHistoryReq {
 	WorkspaceId string `json:"workspaceId"`
-	Name string `json:"name"`
+	Name        string `json:"name"`
 }
 
 type SaveCanvasHistoryResp {
@@ -119,21 +119,23 @@ type SaveCanvasHistoryResp {
 }
 
 type GetCanvasHistoryListReq {
-	Name string `json:"name,optional"`
+	Name        string `json:"name,optional"`
+	Mode        int64  `json:"mode,optional" common:"0-草稿 1-api 2-job"`
 	WorkspaceId string `json:"workspaceId"`
-	Current int `json:"current"`
-	PageSize int `json:"pageSize"`
+	Current     int    `json:"current"`
+	PageSize    int    `json:"pageSize"`
 }
 
 type GetCanvasHistoryListResp {
 	Records []CanvasHistoryRecord `json:"records"`
-	Total   int64               `json:"total"` // 总记录数
+	Total   int64                 `json:"total"` // 总记录数
 }
 
 type CanvasHistoryRecord {
-	Id int64 `json:"id"`
+	Id         int64  `json:"id"`
 	CreateTime string `json:"createTime"`
-	Name string `json:"name"`
+	Mode       int64  `json:"mode" common:"0-草稿 1-api 2-job"`
+	Name       string `json:"name"`
 }
 
 type GetCanvasHistoryDetailReq {
@@ -141,7 +143,7 @@ type GetCanvasHistoryDetailReq {
 }
 
 type GetCanvasHistoryDetailResp {
-	Id    int64                 `json:"id"`
+	Id    int64                  `json:"id"`
 	Name  string                 `json:"name"`
 	Graph map[string]interface{} `json:"graph"`
 }
@@ -151,7 +153,7 @@ type RestoreCanvasHistoryReq {
 }
 
 type RestoreCanvasHistoryResp {
-	Id int64 `json:"id"`
+	Id          int64  `json:"id"`
 	WorkspaceId string `json:"workspaceId"`
 }
 
@@ -161,7 +163,7 @@ type RestoreCanvasHistoryResp {
 	// 定义路由前缀为 "/v1"
 	prefix: /workflow
 	jwt: Auth // 开启 jwt 认证
-    middleware: PermissionMiddleware // 开启权限认证
+	middleware: PermissionMiddleware // 开启权限认证
 )
 service workflow-api {
 	@doc "画布更新"
@@ -204,4 +206,3 @@ service workflow-api {
 	@handler restoreCanvasHistory
 	post /canvas/history/restore (RestoreCanvasHistoryReq) returns (RestoreCanvasHistoryResp)
 }
-

@@ -121,12 +121,13 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 		}
 	}
 
-	// 3. 发送加载链服务消息
+	// 发送加载链服务消息
 	err = broadcast.NewJobLoadSync().Publish(l.ctx, &broadcast.JobLoadSyncMsg{
 		JobId:       jobId,
 		RuleChain:   string(ruleChain),
 		JobCron:     req.JobCron,
 		WorkspaceId: req.WorkspaceId,
+		Type:        broadcast.JobLoadSyncTypeAdd,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")

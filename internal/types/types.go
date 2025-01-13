@@ -259,6 +259,7 @@ type SaveCanvasHistoryResp struct {
 
 type GetCanvasHistoryListReq struct {
 	Name        string `json:"name,optional"`
+	Mode        int64  `json:"mode,optional" common:"0-草稿 1-api 2-job"`
 	WorkspaceId string `json:"workspaceId"`
 	Current     int    `json:"current"`
 	PageSize    int    `json:"pageSize"`
@@ -272,6 +273,7 @@ type GetCanvasHistoryListResp struct {
 type CanvasHistoryRecord struct {
 	Id         int64  `json:"id"`
 	CreateTime string `json:"createTime"`
+	Mode       int64  `json:"mode" common:"0-草稿 1-api 2-job"`
 	Name       string `json:"name"`
 }
 
@@ -925,6 +927,7 @@ type JobRecords struct {
 	Param    string `json:"param"`
 	Result   string `json:"result"`
 	ErrorMsg string `json:"errorMsg"`
+	Duration int64  `json:"duration" desc:"执行时长(毫秒)"`
 }
 
 type JobHistoryRequest struct {
@@ -945,4 +948,16 @@ type JobHistory struct {
 	WorkspaceId string `json:"workspaceId"`
 	JobName     string `json:"jobName"`
 	CreateTime  string `json:"createTime"`
+}
+
+type JobEditRequest struct {
+	JobId    string `json:"jobId"`
+	JobCron  string `json:"jobCron"`
+	JobParam string `json:"jobParam"`
+	JobName  string `json:"jobName" desc:"名称"`
+	JobDesc  string `json:"jobDesc" desc:"描述"`
+}
+
+type JobEditResponse struct {
+	JobId string `json:"jobId"`
 }

@@ -98,7 +98,9 @@ func InitDcron(ctx *svc.ServiceContext) {
 		var chainJobCount int
 		for _, cjob := range jobs {
 			jobInstance := &ChainJob{JobId: cjob.JobId, CanvasId: cjob.WorkspaceId}
-			_ = d.AddJob(cjob.JobName, cjob.JobCron, jobInstance)
+			if err := d.AddJob(cjob.JobId, cjob.JobCron, jobInstance); err != nil {
+				logx.Errorf("Failed to add %s job: %v", cjob.JobId, err)
+			}
 			chainJobCount++
 		}
 		logx.Infof("Dcron initialization completed. Loaded %d system jobs and %d chain jobs. Total jobs: %d",

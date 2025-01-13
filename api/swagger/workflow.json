@@ -817,6 +817,166 @@
         ]
       }
     },
+    "/workflow/job/history": {
+      "post": {
+        "summary": "Job历史版本",
+        "operationId": "JobHistoryHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/JobHistoryResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/JobHistoryRequest"
+            }
+          }
+        ],
+        "tags": [
+          "job"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/job/list": {
+      "post": {
+        "summary": "Job列表",
+        "operationId": "JobListHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/JobPublishListResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/JobPublishListRequest"
+            }
+          }
+        ],
+        "tags": [
+          "job"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/job/onoff": {
+      "post": {
+        "summary": "Job上下线",
+        "operationId": "JobOnOffHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/JobOnOffResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/JobOnOffRequest"
+            }
+          }
+        ],
+        "tags": [
+          "job"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/job/publish": {
+      "post": {
+        "summary": "Job发布",
+        "operationId": "JobPublishHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/JobPublishResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/JobPublishRequest"
+            }
+          }
+        ],
+        "tags": [
+          "job"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/job/records": {
+      "post": {
+        "summary": "Job执行记录",
+        "operationId": "JobRecordsHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/JobRecordsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/JobRecordsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "job"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/workflow/kv/create": {
       "post": {
         "summary": "创建键值对",
@@ -1297,15 +1457,15 @@
         ]
       }
     },
-    "/workflow/role/bindpermission": {
+    "/workflow/role/batchbindpermission": {
       "post": {
-        "summary": "绑定权限",
-        "operationId": "BindPermissionHandler",
+        "summary": "批量绑定权限",
+        "operationId": "BatchBindPermissionHandler",
         "responses": {
           "200": {
             "description": "A successful response.",
             "schema": {
-              "$ref": "#/definitions/BindPermissionResponse"
+              "$ref": "#/definitions/BatchBindPermissionResponse"
             }
           }
         },
@@ -1315,7 +1475,7 @@
             "in": "body",
             "required": true,
             "schema": {
-              "$ref": "#/definitions/BindPermissionRequest"
+              "$ref": "#/definitions/BatchBindPermissionRequest"
             }
           }
         ],
@@ -1476,38 +1636,6 @@
             "required": true,
             "schema": {
               "$ref": "#/definitions/ListRoleRequest"
-            }
-          }
-        ],
-        "tags": [
-          "role"
-        ],
-        "security": [
-          {
-            "apiKey": []
-          }
-        ]
-      }
-    },
-    "/workflow/role/unbindpermission": {
-      "post": {
-        "summary": "解绑权限",
-        "operationId": "UnbindPermissionHandler",
-        "responses": {
-          "200": {
-            "description": "A successful response.",
-            "schema": {
-              "$ref": "#/definitions/UnbindPermissionResponse"
-            }
-          }
-        },
-        "parameters": [
-          {
-            "name": "body",
-            "in": "body",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/UnbindPermissionRequest"
             }
           }
         ],
@@ -2719,27 +2847,55 @@
         "状态 ON OFF"
       ]
     },
-    "BindPermissionRequest": {
+    "BatchBindPermissionRequest": {
       "type": "object",
       "properties": {
         "roleId": {
           "type": "integer",
           "format": "int64"
         },
-        "permissionId": {
-          "type": "integer",
-          "format": "int64"
+        "permissionIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
         }
       },
-      "title": "BindPermissionRequest",
+      "title": "BatchBindPermissionRequest",
       "required": [
         "roleId",
-        "permissionId"
+        "permissionIds"
       ]
     },
-    "BindPermissionResponse": {
+    "BatchBindPermissionResponse": {
       "type": "object",
-      "title": "BindPermissionResponse"
+      "title": "BatchBindPermissionResponse"
+    },
+    "BatchUnbindPermissionRequest": {
+      "type": "object",
+      "properties": {
+        "roleId": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "permissionIds": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "title": "BatchUnbindPermissionRequest",
+      "required": [
+        "roleId",
+        "permissionIds"
+      ]
+    },
+    "BatchUnbindPermissionResponse": {
+      "type": "object",
+      "title": "BatchUnbindPermissionResponse"
     },
     "CanvasDetailRequest": {
       "type": "object",
@@ -3747,7 +3903,8 @@
         "rolePermissions": {
           "type": "array",
           "items": {
-            "$ref": "#/definitions/RolePermissions"
+            "type": "integer",
+            "format": "int64"
           }
         }
       },
@@ -3779,6 +3936,373 @@
       "title": "GetRoleResponse",
       "required": [
         "role"
+      ]
+    },
+    "JobHistory": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "workspaceId": {
+          "type": "string"
+        },
+        "jobName": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string"
+        }
+      },
+      "title": "JobHistory",
+      "required": [
+        "id",
+        "workspaceId",
+        "jobName",
+        "createTime"
+      ]
+    },
+    "JobHistoryRequest": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "type": "string"
+        },
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        }
+      },
+      "title": "JobHistoryRequest",
+      "required": [
+        "workspaceId",
+        "current",
+        "pageSize"
+      ]
+    },
+    "JobHistoryResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/JobHistory"
+          }
+        }
+      },
+      "title": "JobHistoryResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "list"
+      ]
+    },
+    "JobOnOffRequest": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "JobOnOffRequest",
+      "required": [
+        "jobId",
+        "status",
+        "状态 ON OFF"
+      ]
+    },
+    "JobOnOffResponse": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "JobOnOffResponse",
+      "required": [
+        "jobId",
+        "status",
+        "状态 ON OFF"
+      ]
+    },
+    "JobPublishList": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "type": "string"
+        },
+        "jobId": {
+          "type": "string"
+        },
+        "jobName": {
+          "type": "string"
+        },
+        "jobDesc": {
+          "type": "string"
+        },
+        "jobCron": {
+          "type": "string"
+        },
+        "jobParam": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "createTime": {
+          "type": "string"
+        },
+        "updateTime": {
+          "type": "string"
+        }
+      },
+      "title": "JobPublishList",
+      "required": [
+        "workspaceId",
+        "jobId",
+        "jobName",
+        "jobDesc",
+        "jobCron",
+        "jobParam",
+        "status",
+        "状态 ON OFF",
+        "createTime",
+        "updateTime"
+      ]
+    },
+    "JobPublishListRequest": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "workspaceId": {
+          "type": "string"
+        },
+        "jobName": {
+          "type": "string"
+        }
+      },
+      "title": "JobPublishListRequest",
+      "required": [
+        "current",
+        "pageSize"
+      ]
+    },
+    "JobPublishListResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/JobPublishList"
+          }
+        }
+      },
+      "title": "JobPublishListResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "list"
+      ]
+    },
+    "JobPublishRequest": {
+      "type": "object",
+      "properties": {
+        "workspaceId": {
+          "type": "string"
+        },
+        "jobName": {
+          "type": "string"
+        },
+        "jobDesc": {
+          "type": "string"
+        },
+        "jobCron": {
+          "type": "string"
+        },
+        "jobParam": {
+          "type": "string"
+        }
+      },
+      "title": "JobPublishRequest",
+      "required": [
+        "workspaceId",
+        "空间ID",
+        "jobName",
+        "名称",
+        "jobDesc",
+        "描述",
+        "jobCron",
+        "cron表达式",
+        "jobParam",
+        "Job参数"
+      ]
+    },
+    "JobPublishResponse": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string"
+        }
+      },
+      "title": "JobPublishResponse",
+      "required": [
+        "jobId"
+      ]
+    },
+    "JobRecords": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string"
+        },
+        "jobName": {
+          "type": "string"
+        },
+        "execTime": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "traceId": {
+          "type": "string"
+        },
+        "param": {
+          "type": "string"
+        },
+        "result": {
+          "type": "string"
+        },
+        "errorMsg": {
+          "type": "string"
+        },
+        "duration": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "JobRecords",
+      "required": [
+        "jobId",
+        "jobName",
+        "execTime",
+        "status",
+        "traceId",
+        "param",
+        "result",
+        "errorMsg",
+        "duration",
+        "执行时长(毫秒)"
+      ]
+    },
+    "JobRecordsRequest": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "jobId": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "endTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "status": {
+          "type": "string"
+        }
+      },
+      "title": "JobRecordsRequest",
+      "required": [
+        "current",
+        "pageSize",
+        "jobId",
+        "开始时间",
+        "结束时间",
+        "状态"
+      ]
+    },
+    "JobRecordsResponse": {
+      "type": "object",
+      "properties": {
+        "current": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageSize": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/JobRecords"
+          }
+        }
+      },
+      "title": "JobRecordsResponse",
+      "required": [
+        "current",
+        "pageSize",
+        "total",
+        "list"
       ]
     },
     "Kv": {
@@ -4066,6 +4590,10 @@
     "Permission": {
       "type": "object",
       "properties": {
+        "id": {
+          "type": "integer",
+          "format": "int64"
+        },
         "title": {
           "type": "string"
         },
@@ -4104,6 +4632,7 @@
       },
       "title": "Permission",
       "required": [
+        "id",
         "title",
         "key",
         "type",
@@ -4177,65 +4706,6 @@
         "status",
         "createdAt",
         "updatedAt"
-      ]
-    },
-    "RolePermissions": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "title": {
-          "type": "string"
-        },
-        "key": {
-          "type": "string"
-        },
-        "type": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "parentKey": {
-          "type": "string"
-        },
-        "path": {
-          "type": "string"
-        },
-        "method": {
-          "type": "string"
-        },
-        "sort": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "hasPermission": {
-          "type": "boolean",
-          "format": "boolean"
-        },
-        "createdAt": {
-          "type": "string"
-        },
-        "updatedAt": {
-          "type": "string"
-        },
-        "children": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/RolePermissions"
-          }
-        }
-      },
-      "title": "RolePermissions",
-      "required": [
-        "id",
-        "title",
-        "key",
-        "type",
-        "hasPermission",
-        "createdAt",
-        "updatedAt",
-        "children"
       ]
     },
     "RunHistoryRecord": {
@@ -4402,28 +4872,6 @@
       "required": [
         "id"
       ]
-    },
-    "UnbindPermissionRequest": {
-      "type": "object",
-      "properties": {
-        "roleId": {
-          "type": "integer",
-          "format": "int64"
-        },
-        "permissionId": {
-          "type": "integer",
-          "format": "int64"
-        }
-      },
-      "title": "UnbindPermissionRequest",
-      "required": [
-        "roleId",
-        "permissionId"
-      ]
-    },
-    "UnbindPermissionResponse": {
-      "type": "object",
-      "title": "UnbindPermissionResponse"
     },
     "UpdateKvRequest": {
       "type": "object",

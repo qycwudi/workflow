@@ -7,7 +7,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
-	"workflow/internal/dispatch/job"
+	"workflow/internal/dispatch/broadcast"
 	"workflow/internal/logic"
 	"workflow/internal/model"
 	"workflow/internal/svc"
@@ -37,20 +37,28 @@ func (l *JobOnOffLogic) JobOnOff(req *types.JobOnOffRequest) (resp *types.JobOnO
 	// 更新job状态
 	switch req.Status {
 	case model.JobStatusOn:
-		jobDetail.Status = model.JobStatusOn
-		jobDetail.UpdateTime = time.Now()
-		// 启动job
-		jobInstance := &job.ChainJob{JobId: jobDetail.JobId, CanvasId: jobDetail.WorkspaceId}
-		err = job.DispatcherManager.AddJob(jobDetail.JobId, jobDetail.JobCron, jobInstance)
+		err = broadcast.NewJobLoadSync().Publish(l.ctx, &broadcast.JobLoadSyncMsg{
+			JobId:       req.JobId,
+			RuleChain:   string(jobDetail.Dsl),
+			JobCron:     jobDetail.JobCron,
+			WorkspaceId: jobDetail.WorkspaceId,
+			Type:        broadcast.JobLoadSyncTypeAdd,
+		})
 		if err != nil {
-			return nil, errors.New(int(logic.SystemError), "启动job失败")
+			return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")
 		}
 	case model.JobStatusOff:
-		jobDetail.Status = model.JobStatusOff
-		jobDetail.UpdateTime = time.Now()
-		// 取消job
-		job.DispatcherManager.RemoveJob(jobDetail.JobId)
+		err = broadcast.NewJobLoadSync().Publish(l.ctx, &broadcast.JobLoadSyncMsg{
+			JobId: req.JobId,
+			Type:  broadcast.JobLoadSyncTypeRemove,
+		})
+		if err != nil {
+			return nil, errors.New(int(logic.SystemError), "发送取消链服务消息失败")
+		}
 	}
+	// 更新job状态
+	jobDetail.Status = req.Status
+	jobDetail.UpdateTime = time.Now()
 	err = l.svcCtx.JobModel.Update(l.ctx, jobDetail)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "更新job状态失败")

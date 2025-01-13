@@ -475,6 +475,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/job/history",
 					Handler: job.JobHistoryHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/job/edit",
+					Handler: job.JobEditHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

@@ -33,7 +33,6 @@ func (l *JobListLogic) JobList(req *types.JobPublishListRequest) (resp *types.Jo
 	}
 	jobListResp := make([]types.JobPublishList, len(jobList))
 	for i, job := range jobList {
-
 		jobListResp[i] = types.JobPublishList{
 			JobId:      job.JobId,
 			JobName:    job.JobName,

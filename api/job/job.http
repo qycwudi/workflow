@@ -6,12 +6,27 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5O
 
 
 {
-  "workspaceId": "cu27mu53sjts533dum8g",
-  "jobName": "测试Job",
-  "jobDesc": "这是一个测试Job",
+  "workspaceId": "cu27mu53sjts533dum8g", 
+  "jobName": "测试Job-4",
+  "jobDesc": "这是一个测试Job-4",
   "jobCron": "* * * * *",
-  "jobParam": "{\"key\":\"value\"}"
+  "jobParam": "{\"key\":\"NNNNN\"}"
 }
+
+### Job编辑
+POST http://127.0.0.1:8888/workflow/job/edit
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
+
+{
+  "jobId": "cu2agtt3sjth66p7uotg",
+  "jobName": "测试Job-5",
+  "jobDesc": "这是一个测试Job-5",
+  "jobCron": "*/2 * * * *",
+  "jobParam": "{\"key\":\"OOOOOOO\"}"
+}
+
 
 ### Job列表
 POST http://127.0.0.1:8888/workflow/job/list
@@ -34,7 +49,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5O
 
 {
   "jobId": "cu2agtt3sjth66p7uotg",
-  "status": "off"
+  "status": "on"
 }
 
 ### Job执行记录

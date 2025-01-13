@@ -22,7 +22,14 @@ type JobLoadSyncMsg struct {
 	RuleChain   string `json:"ruleChain"`
 	JobCron     string `json:"jobCron"`
 	WorkspaceId string `json:"workspaceId"`
+	Type        int64  `json:"type" common:"0-add 1-edit 2-remove"`
 }
+
+const (
+	JobLoadSyncTypeAdd    = 0
+	JobLoadSyncTypeEdit   = 1
+	JobLoadSyncTypeRemove = 2
+)
 
 type JobLoadSync struct{}
 
@@ -58,7 +65,6 @@ func (j *JobLoadSync) Subscribe(ctx context.Context, handler func(ctx context.Co
 		}
 	}
 }
-
 func (j *JobLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 	// 读取 msg 消息
 	var syncMsg JobLoadSyncMsg
@@ -68,18 +74,46 @@ func (j *JobLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 		return
 	}
 
-	// 加载链服务
-	err = rulego.RoleChain.LoadJobServiceChain(syncMsg.JobId, []byte(syncMsg.RuleChain))
-	if err != nil {
-		logx.Errorf("JobLoadSyncHandler load chain failed: %s", err.Error())
-		return
+	// 根据类型处理
+	switch syncMsg.Type {
+	case JobLoadSyncTypeAdd:
+		// 加载链服务
+		err = rulego.RoleChain.LoadJobServiceChain(syncMsg.JobId, []byte(syncMsg.RuleChain))
+		if err != nil {
+			logx.Errorf("JobLoadSyncHandler load chain failed: %s", err.Error())
+			return
+		}
+		// 注册任务
+		jobInstance := &job.ChainJob{JobId: syncMsg.JobId, CanvasId: syncMsg.WorkspaceId}
+		err = job.DispatcherManager.AddJob(syncMsg.JobId, syncMsg.JobCron, jobInstance)
+		if err != nil {
+			logx.Errorf("JobLoadSyncHandler add job failed: %s", err.Error())
+			return
+		}
+		logx.Infof("JobLoadSyncHandler add job success: %s", syncMsg.JobId)
+
+	case JobLoadSyncTypeEdit:
+		// 加载链服务
+		err = rulego.RoleChain.LoadJobServiceChain(syncMsg.JobId, []byte(syncMsg.RuleChain))
+		if err != nil {
+			logx.Errorf("JobLoadSyncHandler load chain failed: %s", err.Error())
+			return
+		}
+		// 编辑任务
+		jobInstance := &job.ChainJob{JobId: syncMsg.JobId, CanvasId: syncMsg.WorkspaceId}
+		err = job.DispatcherManager.EditJob(syncMsg.JobId, syncMsg.JobCron, jobInstance)
+		if err != nil {
+			logx.Errorf("JobLoadSyncHandler edit job failed: %s", err.Error())
+			return
+		}
+		logx.Infof("JobLoadSyncHandler edit job success: %s", syncMsg.JobId)
+
+	case JobLoadSyncTypeRemove:
+		// 移除任务
+		job.DispatcherManager.RemoveJob(syncMsg.JobId)
+		logx.Infof("JobLoadSyncHandler remove job success: %s", syncMsg.JobId)
+
+	default:
+		logx.Errorf("JobLoadSyncHandler unknown type: %d", syncMsg.Type)
 	}
-	// 注册任务
-	jobInstance := &job.ChainJob{JobId: syncMsg.JobId, CanvasId: syncMsg.WorkspaceId}
-	err = job.DispatcherManager.AddJob(syncMsg.JobId, syncMsg.JobCron, jobInstance)
-	if err != nil {
-		logx.Errorf("JobLoadSyncHandler add job failed: %s", err.Error())
-		return
-	}
-	logx.Infof("JobLoadSyncHandler load chain success: %s", syncMsg.JobId)
 }

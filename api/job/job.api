@@ -96,6 +96,18 @@ type JobHistory {
     CreateTime string `json:"createTime"`
 }
 
+type JobEditRequest {
+    JobId string `json:"jobId"`
+    JobCron string `json:"jobCron"`
+    JobParam string `json:"jobParam"`
+    JobName string `json:"jobName" desc:"名称"`
+    JobDesc string `json:"jobDesc" desc:"描述"` 
+}
+
+type JobEditResponse {
+    JobId string `json:"jobId"`
+}
+
 @server (
     group: job
     prefix: /workflow
@@ -122,4 +134,8 @@ service workflow-api {
     @doc "Job历史版本"
     @handler JobHistoryHandler
     post /job/history (JobHistoryRequest) returns (JobHistoryResponse)
+
+    @doc "Job修改"
+    @handler JobEditHandler
+    post /job/edit (JobEditRequest) returns (JobEditResponse)
 }

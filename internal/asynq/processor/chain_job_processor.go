@@ -64,13 +64,18 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 		return err
 	}
 
+	if job.Status == model.JobStatusOff {
+		logx.Infof("%s job is off, jobId: %s, traceId: %s", TOPIC_CHAIN_JOB, payload.JobId, traceId)
+		return nil
+	}
+
 	// 运行
 	result := rulego.RoleChain.Run(payload.JobId, metadata, job.Params)
 	logx.Infof("chain run result:%+v, traceId: %s", result, traceId)
 	// 保存记录
 	jobRecord := model.JobRecord{
 		JobId:    payload.JobId,
-		JobName:  TOPIC_CHAIN_JOB,
+		JobName:  job.JobName,
 		Status:   "success",
 		TraceId:  traceId,
 		Param:    job.Params,
