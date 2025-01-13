@@ -42,12 +42,12 @@ func (m *customJobRecordModel) FindPage(ctx context.Context, current int, pageSi
 	}
 	if startTime > 0 {
 		startDate := time.Unix(startTime, 0)
-		conditions += " AND create_time >= ?"
+		conditions += " AND exec_time >= ?"
 		args = append(args, startDate)
 	}
 	if endTime > 0 {
 		endDate := time.Unix(endTime, 0)
-		conditions += " AND create_time <= ?"
+		conditions += " AND exec_time <= ?"
 		args = append(args, endDate)
 	}
 	if status != "" {
@@ -65,7 +65,7 @@ func (m *customJobRecordModel) FindPage(ctx context.Context, current int, pageSi
 
 	// 分页查询数据
 	if total > 0 {
-		query = "select " + jobRecordRows + " from " + m.table + " WHERE " + conditions + " ORDER BY create_time DESC LIMIT ?,?"
+		query = "select " + jobRecordRows + " from " + m.table + " WHERE " + conditions + " ORDER BY exec_time DESC LIMIT ?,?"
 		args = append(args, (current-1)*pageSize, pageSize)
 		err = m.conn.QueryRowsCtx(ctx, &resp, query, args...)
 		if err != nil {

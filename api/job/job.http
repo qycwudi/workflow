@@ -22,8 +22,8 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5O
 {
   "current": 1,
   "pageSize": 10,
-  "workspaceId": "test-workspace-id",
-  "jobName": "测试Job"
+  "workspaceId": "",
+  "jobName": ""
 }
 
 ### Job上下线
@@ -33,8 +33,8 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
 
 {
-  "jobId": "test-job-id",
-  "status": "ON"
+  "jobId": "cu2agtt3sjth66p7uotg",
+  "status": "off"
 }
 
 ### Job执行记录
@@ -46,10 +46,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5O
 {
   "current": 1,
   "pageSize": 10,
-  "jobId": "test-job-id",
-  "startTime": 1735782093,
-  "endTime": 1735868493,
-  "status": "SUCCESS"
+  "jobId": "cu2agtt3sjth66p7uotg"
 }
 
 ### Job历史版本
@@ -59,7 +56,7 @@ Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
 
 {
-  "workspaceId": "test-workspace-id",
+  "workspaceId": "cu27mu53sjts533dum8g",
   "current": 1,
   "pageSize": 10
 }

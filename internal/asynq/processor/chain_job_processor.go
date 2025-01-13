@@ -83,6 +83,7 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 		logx.Errorf("save job record failed: %v", err)
 	}
 
+	_, _ = t.ResultWriter().Write([]byte(result.Data))
 	logx.Infof("%s end at: %s, traceId: %s", TOPIC_CHAIN_JOB, time.Now().Format("2006-01-02 15:04:05"), traceId)
 	return nil
 }

@@ -34,16 +34,22 @@ func (l *JobOnOffLogic) JobOnOff(req *types.JobOnOffRequest) (resp *types.JobOnO
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "查询job失败")
 	}
-	// 取消job
-	job.DispatcherManager.RemoveJob(jobDetail.JobId)
 	// 更新job状态
 	switch req.Status {
 	case model.JobStatusOn:
 		jobDetail.Status = model.JobStatusOn
 		jobDetail.UpdateTime = time.Now()
+		// 启动job
+		jobInstance := &job.ChainJob{JobId: jobDetail.JobId, CanvasId: jobDetail.WorkspaceId}
+		err = job.DispatcherManager.AddJob(jobDetail.JobId, jobDetail.JobCron, jobInstance)
+		if err != nil {
+			return nil, errors.New(int(logic.SystemError), "启动job失败")
+		}
 	case model.JobStatusOff:
 		jobDetail.Status = model.JobStatusOff
 		jobDetail.UpdateTime = time.Now()
+		// 取消job
+		job.DispatcherManager.RemoveJob(jobDetail.JobId)
 	}
 	err = l.svcCtx.JobModel.Update(l.ctx, jobDetail)
 	if err != nil {
