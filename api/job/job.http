@@ -13,19 +13,49 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5O
   "jobParam": "{\"key\":\"NNNNN\"}"
 }
 
+### Job发布
+POST http://10.99.7.49:8888/workflow/job/publish
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4NDE0NzIsImlhdCI6MTczNjc1NTA3MiwidXNlcklkIjoxfQ.8W1EJ2Q8bErmODjDL2ARocy0obn3S-egutvjjWtEvRA
+
+
+{
+  "workspaceId": "cu2fhalfdise33k9tpo0",
+  "jobName": "雪兔测试 JOB",
+  "jobDesc": "雪兔测试 JOB雪兔测试 JOB雪兔测试 JOB",
+  "jobCron": "* * * * *",
+  "jobParam": "{\"key\":\"NNNNN\"}"
+}
+
 ### Job编辑
-POST http://127.0.0.1:8888/workflow/job/edit
+POST http://10.99.7.49:8888/workflow/job/edit
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
 
 {
-  "jobId": "cu2agtt3sjth66p7uotg",
+  "jobId": "cu2figtfdise33k9tpog",
   "jobName": "测试Job-5",
   "jobDesc": "这是一个测试Job-5",
   "jobCron": "*/2 * * * *",
   "jobParam": "{\"key\":\"OOOOOOO\"}"
 }
+
+### Job编辑
+POST http://127.0.0.1:8888/workflow/job/edit
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4NDE0NzIsImlhdCI6MTczNjc1NTA3MiwidXNlcklkIjoxfQ.8W1EJ2Q8bErmODjDL2ARocy0obn3S-egutvjjWtEvRA
+
+{
+  "jobId": "cu2fhalfdise33k9tpo0",
+  "jobName": "测试Job-5",
+  "jobDesc": "这是一个测试Job-5",
+  "jobCron": "*/2 * * * *",
+  "jobParam": "{\"key\":\"OOOOOOO\"}"
+}
+
 
 
 ### Job列表

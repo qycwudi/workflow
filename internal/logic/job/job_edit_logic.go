@@ -29,6 +29,10 @@ func NewJobEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *JobEditLo
 }
 
 func (l *JobEditLogic) JobEdit(req *types.JobEditRequest) (resp *types.JobEditResponse, err error) {
+	// 校验 cron 表达式
+	if err := ValidateCronExpression(req.JobCron); err != nil {
+		return nil, errors.New(int(logic.SystemError), "cron 表达式不正确:"+err.Error())
+	}
 	// 查询当前任务
 	jobDetail, err := l.svcCtx.JobModel.FindByJobId(l.ctx, req.JobId)
 	if err != nil {
