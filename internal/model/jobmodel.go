@@ -12,8 +12,8 @@ import (
 var _ JobModel = (*customJobModel)(nil)
 
 const (
-	JobStatusOn  = "on"
-	JobStatusOff = "off"
+	JobStatusOn  = "ON"
+	JobStatusOff = "OFF"
 )
 
 type (
