@@ -34,14 +34,15 @@ func (l *JobListLogic) JobList(req *types.JobPublishListRequest) (resp *types.Jo
 	jobListResp := make([]types.JobPublishList, len(jobList))
 	for i, job := range jobList {
 		jobListResp[i] = types.JobPublishList{
-			JobId:      job.JobId,
-			JobName:    job.JobName,
-			JobDesc:    job.JobDesc,
-			JobCron:    job.JobCron,
-			JobParam:   job.Params,
-			Status:     job.Status,
-			CreateTime: job.CreateTime.Format("2006-01-02 15:04:05"),
-			UpdateTime: job.UpdateTime.Format("2006-01-02 15:04:05"),
+			JobId:       job.JobId,
+			WorkspaceId: job.WorkspaceId,
+			JobName:     job.JobName,
+			JobDesc:     job.JobDesc,
+			JobCron:     job.JobCron,
+			JobParam:    job.Params,
+			Status:      job.Status,
+			CreateTime:  job.CreateTime.Format("2006-01-02 15:04:05"),
+			UpdateTime:  job.UpdateTime.Format("2006-01-02 15:04:05"),
 		}
 	}
 	return &types.JobPublishListResponse{
