@@ -26,7 +26,7 @@ func NewJobHistoryLogic(ctx context.Context, svcCtx *svc.ServiceContext) *JobHis
 }
 
 func (l *JobHistoryLogic) JobHistory(req *types.JobHistoryRequest) (resp *types.JobHistoryResponse, err error) {
-	canvasHistory, total, err := l.svcCtx.CanvasHistoryModel.FindAllJobByWorkspaceId(l.ctx, req.WorkspaceId, req.Current, req.PageSize)
+	canvasHistory, total, err := l.svcCtx.CanvasHistoryModel.FindAllJobByWorkspaceId(l.ctx, req.WorkSpaceId, req.Current, req.PageSize)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询历史版本失败")
 	}
@@ -35,7 +35,7 @@ func (l *JobHistoryLogic) JobHistory(req *types.JobHistoryRequest) (resp *types.
 	for i, history := range canvasHistory {
 		lists[i] = types.JobHistory{
 			Id:          history.Id,
-			WorkspaceId: history.WorkspaceId,
+			WorkSpaceId: history.WorkspaceId,
 			JobName:     history.Name,
 			CreateTime:  history.CreateTime.Format("2006-01-02 15:04:05"),
 		}

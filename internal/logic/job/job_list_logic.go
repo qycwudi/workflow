@@ -27,7 +27,7 @@ func NewJobListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *JobListLo
 
 func (l *JobListLogic) JobList(req *types.JobPublishListRequest) (resp *types.JobPublishListResponse, err error) {
 	// 查询job列表
-	total, jobList, err := l.svcCtx.JobModel.FindPage(l.ctx, req.JobName, req.WorkspaceId, req.Current, req.PageSize)
+	total, jobList, err := l.svcCtx.JobModel.FindPage(l.ctx, req.JobName, req.WorkSpaceId, req.Current, req.PageSize)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "查询job列表失败")
 	}
@@ -35,7 +35,7 @@ func (l *JobListLogic) JobList(req *types.JobPublishListRequest) (resp *types.Jo
 	for i, job := range jobList {
 		jobListResp[i] = types.JobPublishList{
 			JobId:       job.JobId,
-			WorkspaceId: job.WorkspaceId,
+			WorkSpaceId: job.WorkspaceId,
 			JobName:     job.JobName,
 			JobDesc:     job.JobDesc,
 			JobCron:     job.JobCron,

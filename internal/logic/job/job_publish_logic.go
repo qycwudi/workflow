@@ -41,7 +41,7 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 	if err := ValidateCronExpression(req.JobCron); err != nil {
 		return nil, errors.New(int(logic.SystemError), "cron 表达式不正确:"+err.Error())
 	}
-	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.WorkspaceId)
+	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.WorkSpaceId)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
 	}
@@ -54,7 +54,7 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 	}
 	// 自动保存一个历史版本
 	history, err := l.svcCtx.CanvasHistoryModel.Insert(l.ctx, &model.CanvasHistory{
-		WorkspaceId: req.WorkspaceId,
+		WorkspaceId: req.WorkSpaceId,
 		Draft:       canvas.Draft,
 		Name:        req.JobName,
 		CreateTime:  time.Now(),
@@ -73,7 +73,7 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}
 	// 查询有没有发布过job
-	job, err := l.svcCtx.JobModel.FindByWorkspaceId(l.ctx, req.WorkspaceId)
+	job, err := l.svcCtx.JobModel.FindByWorkspaceId(l.ctx, req.WorkSpaceId)
 	if err != nil && err != sqlc.ErrNotFound {
 		return nil, errors.New(int(logic.SystemStoreError), "查询Job失败")
 	}
@@ -90,7 +90,7 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 	if job == nil {
 		jobId = xid.New().String()
 		_, err = l.svcCtx.JobModel.Insert(l.ctx, &model.Job{
-			WorkspaceId: req.WorkspaceId,
+			WorkspaceId: req.WorkSpaceId,
 			JobId:       jobId,
 			JobName:     req.JobName,
 			JobDesc:     req.JobDesc,
@@ -132,7 +132,7 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 		JobId:       jobId,
 		RuleChain:   string(ruleChain),
 		JobCron:     req.JobCron,
-		WorkspaceId: req.WorkspaceId,
+		WorkspaceId: req.WorkSpaceId,
 		Type:        broadcast.JobLoadSyncTypeAdd,
 	})
 	if err != nil {

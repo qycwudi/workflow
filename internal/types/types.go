@@ -855,7 +855,7 @@ type ListKvResponse struct {
 }
 
 type JobPublishRequest struct {
-	WorkspaceId string `json:"workspaceId" desc:"空间ID"`
+	WorkSpaceId string `json:"workSpaceId" desc:"空间ID"`
 	JobName     string `json:"jobName" desc:"名称"`
 	JobDesc     string `json:"jobDesc" desc:"描述"`
 	JobCron     string `json:"jobCron" desc:"cron表达式"`
@@ -869,7 +869,7 @@ type JobPublishResponse struct {
 type JobPublishListRequest struct {
 	Current     int    `json:"current"`
 	PageSize    int    `json:"pageSize"`
-	WorkspaceId string `json:"workspaceId,optional"`
+	WorkSpaceId string `json:"workSpaceId,optional"`
 	JobName     string `json:"jobName,optional"`
 }
 
@@ -881,7 +881,7 @@ type JobPublishListResponse struct {
 }
 
 type JobPublishList struct {
-	WorkspaceId string `json:"workspaceId"`
+	WorkSpaceId string `json:"workSpaceId"`
 	JobId       string `json:"jobId"`
 	JobName     string `json:"jobName"`
 	JobDesc     string `json:"jobDesc"`
@@ -931,7 +931,7 @@ type JobRecords struct {
 }
 
 type JobHistoryRequest struct {
-	WorkspaceId string `json:"workspaceId"`
+	WorkSpaceId string `json:"workSpaceId"`
 	Current     int    `json:"current"`
 	PageSize    int    `json:"pageSize"`
 }
@@ -945,7 +945,7 @@ type JobHistoryResponse struct {
 
 type JobHistory struct {
 	Id          int64  `json:"id"`
-	WorkspaceId string `json:"workspaceId"`
+	WorkSpaceId string `json:"workSpaceId"`
 	JobName     string `json:"jobName"`
 	CreateTime  string `json:"createTime"`
 }
