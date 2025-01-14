@@ -449,6 +449,16 @@ type ApiHistory struct {
 	CreateTime  string `json:"createTime"`
 }
 
+type ApiEditRequest struct {
+	ApiId   string `json:"apiId"`
+	ApiName string `json:"apiName"`
+	ApiDesc string `json:"apiDesc"`
+}
+
+type ApiEditResponse struct {
+	ApiId string `json:"apiId"`
+}
+
 type ModuleListRequest struct {
 }
 

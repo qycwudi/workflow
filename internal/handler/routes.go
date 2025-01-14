@@ -171,6 +171,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				},
 				{
 					Method:  http.MethodPost,
+					Path:    "/api/edit",
+					Handler: api.ApiEditHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
 					Path:    "/api/records",
 					Handler: api.ApiRecordsHandler(serverCtx),
 				},

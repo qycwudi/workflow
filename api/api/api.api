@@ -157,6 +157,16 @@ type ApiHistory {
 	CreateTime  string `json:"createTime"`
 }
 
+type ApiEditRequest {
+	ApiId string `json:"apiId"`
+	ApiName string `json:"apiName"`
+	ApiDesc string `json:"apiDesc"`
+}
+
+type ApiEditResponse {
+	ApiId string `json:"apiId"`
+}
+
 @server (
 	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
 	group: api
@@ -177,6 +187,10 @@ service workflow-api {
 	@doc "APIOnOff"
 	@handler ApiOnOffHandler
 	post /api/onoff (ApiOnOffRequest) returns (ApiOnOffResponse)
+
+	@doc "API编辑"
+	@handler ApiEditHandler
+	post /api/edit (ApiEditRequest) returns (ApiEditResponse)
 
 	@doc "API调用记录"
 	@handler ApiRecordsHandler
