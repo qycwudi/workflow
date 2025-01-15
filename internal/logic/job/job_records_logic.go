@@ -9,6 +9,7 @@ import (
 	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type JobRecordsLogic struct {
@@ -37,7 +38,7 @@ func (l *JobRecordsLogic) JobRecords(req *types.JobRecordsRequest) (resp *types.
 		lists[i] = types.JobRecords{
 			JobId:    record.JobId,
 			JobName:  record.JobName,
-			ExecTime: record.ExecTime.Format("2024-01-01 10:10:10"),
+			ExecTime: utils.FormatDate(record.ExecTime),
 			Status:   record.Status,
 			TraceId:  record.TraceId,
 			Param:    record.Param,

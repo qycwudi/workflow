@@ -80,7 +80,7 @@ func TestValidateCronExpression(t *testing.T) {
 		},
 		{
 			name:        "Valid expression with question mark",
-			expression:  "* * * * ?",
+			expression:  "* * 1 * ?",
 			shouldError: false,
 		},
 		{

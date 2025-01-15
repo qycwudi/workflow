@@ -86,13 +86,9 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5O
 POST http://127.0.0.1:8888/workflow/job/records
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY4MjE5OTAsImlhdCI6MTczNjczNTU5MCwidXNlcklkIjoxfQ.gmXQKiLa-SOWxWOR5x3XXCGg2BG5IOWbkQnrgRJjMlw
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzY5Mzc3NDgsImlhdCI6MTczNjg1MTM0OCwidXNlcklkIjoxfQ.OWwXn8aMDRnmnJFDvQfNFk15Ss3U10NcnuEM_YU4s2w
 
-{
-  "current": 1,
-  "pageSize": 10,
-  "jobId": "cu2agtt3sjth66p7uotg"
-}
+{"current":1,"pageSize":10,"jobId":"cu2agtt3sjth66p7uotg","status":"success","workSpaceId":"cu2fhalfdise33k9tpo0"}
 
 ### Job历史版本
 POST http://127.0.0.1:8888/workflow/job/history
