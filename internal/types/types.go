@@ -509,6 +509,18 @@ type ApiExportCurlResponse struct {
 	Curl string `json:"curl"`
 }
 
+type ApiCallStatisticsRequest struct {
+	ApiId     string `json:"apiId"`
+	StartTime int64  `json:"startTime"`
+	EndTime   int64  `json:"endTime"`
+}
+
+type ApiCallStatisticsResponse struct {
+	Total int64    `json:"total"`
+	XAxis []string `json:"xAxis"`
+	YAxis []int64  `json:"yAxis"`
+}
+
 type ModuleListRequest struct {
 }
 

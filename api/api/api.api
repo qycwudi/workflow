@@ -200,6 +200,18 @@ type ApiExportCurlResponse {
 	Curl string `json:"curl"`
 }
 
+type ApiCallStatisticsRequest {
+	ApiId string `json:"apiId"`
+	StartTime int64 `json:"startTime"`
+	EndTime int64 `json:"endTime"`
+}
+
+type ApiCallStatisticsResponse {
+	Total int64 `json:"total"`
+	XAxis []string `json:"xAxis"`
+	YAxis []int64 `json:"yAxis"`
+}
+
 @server (
 	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
 	group: api
@@ -265,4 +277,7 @@ service workflow-api {
 	@handler ApiExportCurlHandler
 	post /api/export/curl (ApiExportCurlRequest) returns (ApiExportCurlResponse)
 
+	@doc "api调用统计"
+	@handler ApiCallStatisticsHandler
+	post /api/call/statistics (ApiCallStatisticsRequest) returns (ApiCallStatisticsResponse)
 }

@@ -11,5 +11,6 @@ CREATE TABLE `api_record`
     `error_msg` longtext NOT NULL,
     `secrety_key` varchar(255) NOT NULL,
     PRIMARY KEY (`id`),
-    KEY `uni_api_id` (`api_id`)
+    KEY `uni_api_id` (`api_id`),
+    KEY `idx_api_call_time` (`api_id`,`call_time`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8 COMMENT='api调用记录';

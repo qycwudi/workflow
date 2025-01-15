@@ -234,6 +234,11 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/api/export/curl",
 					Handler: api.ApiExportCurlHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/call/statistics",
+					Handler: api.ApiCallStatisticsHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

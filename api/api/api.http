@@ -233,3 +233,16 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU5OTc2N
   "current": 1,
   "pageSize": 10
 }
+
+### API调用统计
+POST http://127.0.0.1:8888/workflow/api/call/statistics
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzcwMjQ5NzEsImlhdCI6MTczNjkzODU3MSwidXNlcklkIjoxfQ.2vIi1FF-PBa89C9HTMRpGWAkNrOW2hsWcp0xVqtfckU
+
+
+{
+  "apiId": "cu2e2md3sjtnsaesnd10",
+  "startTime": 1704067200000,
+  "endTime": 1767139200000
+}

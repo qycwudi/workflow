@@ -19,10 +19,19 @@ type (
 		UpdateStatusByTraceId(ctx context.Context, id string, status string, errMsg string) error
 		FindByApiId(ctx context.Context, apiId string, startTime int64, endTime int64, request string, response string, current int, pageSize int) (int64, []*ApiRecord, error)
 		FindByApiName(ctx context.Context, apiName string, current int, pageSize int) (int64, []*ApiRecord, error)
+		GetApiCallStatistics(ctx context.Context, apiId string, startTime int64, endTime int64) (*ApiCallStatistics, error)
 	}
 
 	customApiRecordModel struct {
 		*defaultApiRecordModel
+	}
+	ApiCallStatistics struct {
+		XAxis []string `json:"xAxis"`
+		YAxis []int64  `json:"yAxis"`
+	}
+	ApiCallStatPoint struct {
+		TimeMinute string `json:"timeMinute"`
+		CallCount  int64  `json:"callCount"`
 	}
 )
 
@@ -112,6 +121,38 @@ func (c customApiRecordModel) UpdateStatusByTraceId(ctx context.Context, id stri
 	query := fmt.Sprintf("update %s set status = ?, error_msg = ? where `trace_id` = ?", c.table)
 	_, err := c.conn.ExecCtx(ctx, query, status, errMsg, id)
 	return err
+}
+
+func (c customApiRecordModel) GetApiCallStatistics(ctx context.Context, apiId string, startTime int64, endTime int64) (*ApiCallStatistics, error) {
+	query := fmt.Sprintf(`SELECT 
+		DATE_FORMAT(call_time, '%%Y-%%m-%%d %%H:%%i:00') as time_minute,
+		COUNT(*) as call_count 
+		FROM %s 
+		WHERE api_id = ? 
+		AND call_time BETWEEN ? AND ?
+		GROUP BY DATE_FORMAT(call_time, '%%Y-%%m-%%d %%H:%%i:00')
+		ORDER BY time_minute`, c.table)
+
+	var stats []*ApiCallStatPoint
+	err := c.conn.QueryRowsCtx(ctx, &stats, query, apiId, time.UnixMilli(startTime), time.UnixMilli(endTime))
+	if err != nil {
+		return nil, err
+	}
+	// 构建xAxis
+	xAxis := make([]string, 0)
+	for _, stat := range stats {
+		xAxis = append(xAxis, stat.TimeMinute)
+	}
+	// 构建yAxis
+	yAxis := make([]int64, 0)
+	for _, stat := range stats {
+		yAxis = append(yAxis, stat.CallCount)
+	}
+
+	return &ApiCallStatistics{
+		XAxis: xAxis,
+		YAxis: yAxis,
+	}, nil
 }
 
 // NewApiRecordModel returns a model for the database table.

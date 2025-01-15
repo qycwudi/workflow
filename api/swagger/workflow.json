@@ -17,6 +17,134 @@
     "application/json"
   ],
   "paths": {
+    "/workflow/api/call": {
+      "post": {
+        "summary": "API调用",
+        "operationId": "ApiCallHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiCallResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiCallRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/call/template": {
+      "post": {
+        "summary": "API调用模板",
+        "operationId": "ApiCallTemplateHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiCallTemplateResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiCallTemplateRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/edit": {
+      "post": {
+        "summary": "API编辑",
+        "operationId": "ApiEditHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiEditResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiEditRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/api/export/curl": {
+      "post": {
+        "summary": "API导出 curl",
+        "operationId": "ApiExportCurlHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiExportCurlResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiExportCurlRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/workflow/api/history": {
       "post": {
         "summary": "API历史版本",
@@ -809,6 +937,38 @@
         ],
         "tags": [
           "datasource"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/job/edit": {
+      "post": {
+        "summary": "Job修改",
+        "operationId": "JobEditHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/JobEditResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/JobEditRequest"
+            }
+          }
+        ],
+        "tags": [
+          "job"
         ],
         "security": [
           {
@@ -2188,6 +2348,70 @@
         ]
       }
     },
+    "/workflow/workspace/export": {
+      "post": {
+        "summary": "画布导出",
+        "operationId": "WorkSpaceExportHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceExportResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceExportRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
+    "/workflow/workspace/import": {
+      "post": {
+        "summary": "画布导入",
+        "operationId": "WorkSpaceImportHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceImportResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/WorkSpaceImportRequest"
+            }
+          }
+        ],
+        "tags": [
+          "workspace"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/workflow/workspace/list": {
       "post": {
         "summary": "列表workspace",
@@ -2286,6 +2510,146 @@
     }
   },
   "definitions": {
+    "ApiCallRequest": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        }
+      },
+      "title": "ApiCallRequest",
+      "required": [
+        "apiId",
+        "url",
+        "header",
+        "body"
+      ]
+    },
+    "ApiCallResponse": {
+      "type": "object",
+      "properties": {
+        "response": {
+          "type": "string"
+        }
+      },
+      "title": "ApiCallResponse",
+      "required": [
+        "response"
+      ]
+    },
+    "ApiCallTemplateRequest": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        }
+      },
+      "title": "ApiCallTemplateRequest",
+      "required": [
+        "apiId"
+      ]
+    },
+    "ApiCallTemplateResponse": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        }
+      },
+      "title": "ApiCallTemplateResponse",
+      "required": [
+        "apiId",
+        "url",
+        "header",
+        "body"
+      ]
+    },
+    "ApiEditRequest": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "apiName": {
+          "type": "string"
+        },
+        "apiDesc": {
+          "type": "string"
+        }
+      },
+      "title": "ApiEditRequest",
+      "required": [
+        "apiId",
+        "apiName",
+        "apiDesc"
+      ]
+    },
+    "ApiEditResponse": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        }
+      },
+      "title": "ApiEditResponse",
+      "required": [
+        "apiId"
+      ]
+    },
+    "ApiExportCurlRequest": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "url": {
+          "type": "string"
+        },
+        "header": {
+          "type": "string"
+        },
+        "body": {
+          "type": "string"
+        }
+      },
+      "title": "ApiExportCurlRequest",
+      "required": [
+        "apiId",
+        "url",
+        "header",
+        "body"
+      ]
+    },
+    "ApiExportCurlResponse": {
+      "type": "object",
+      "properties": {
+        "curl": {
+          "type": "string"
+        }
+      },
+      "title": "ApiExportCurlResponse",
+      "required": [
+        "curl"
+      ]
+    },
     "ApiHistory": {
       "type": "object",
       "properties": {
@@ -2452,7 +2816,7 @@
       "required": [
         "current",
         "pageSize",
-        "空间ID 非必填"
+        "API_ID 非必填"
       ]
     },
     "ApiPublishListResponse": {
@@ -2972,6 +3336,10 @@
         "createTime": {
           "type": "string"
         },
+        "mode": {
+          "type": "integer",
+          "format": "int64"
+        },
         "name": {
           "type": "string"
         }
@@ -2980,6 +3348,8 @@
       "required": [
         "id",
         "createTime",
+        "mode",
+        "0-草稿 1-api 2-job",
         "name"
       ]
     },
@@ -3644,6 +4014,10 @@
         "name": {
           "type": "string"
         },
+        "mode": {
+          "type": "integer",
+          "format": "int64"
+        },
         "workspaceId": {
           "type": "string"
         },
@@ -3658,6 +4032,7 @@
       },
       "title": "GetCanvasHistoryListReq",
       "required": [
+        "0-草稿 1-api 2-job",
         "workspaceId",
         "current",
         "pageSize"
@@ -3938,6 +4313,48 @@
         "role"
       ]
     },
+    "JobEditRequest": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string"
+        },
+        "jobCron": {
+          "type": "string"
+        },
+        "jobParam": {
+          "type": "string"
+        },
+        "jobName": {
+          "type": "string"
+        },
+        "jobDesc": {
+          "type": "string"
+        }
+      },
+      "title": "JobEditRequest",
+      "required": [
+        "jobId",
+        "jobCron",
+        "jobParam",
+        "jobName",
+        "名称",
+        "jobDesc",
+        "描述"
+      ]
+    },
+    "JobEditResponse": {
+      "type": "object",
+      "properties": {
+        "jobId": {
+          "type": "string"
+        }
+      },
+      "title": "JobEditResponse",
+      "required": [
+        "jobId"
+      ]
+    },
     "JobHistory": {
       "type": "object",
       "properties": {
@@ -3945,7 +4362,7 @@
           "type": "integer",
           "format": "int64"
         },
-        "workspaceId": {
+        "workSpaceId": {
           "type": "string"
         },
         "jobName": {
@@ -3958,7 +4375,7 @@
       "title": "JobHistory",
       "required": [
         "id",
-        "workspaceId",
+        "workSpaceId",
         "jobName",
         "createTime"
       ]
@@ -3966,7 +4383,7 @@
     "JobHistoryRequest": {
       "type": "object",
       "properties": {
-        "workspaceId": {
+        "workSpaceId": {
           "type": "string"
         },
         "current": {
@@ -3980,7 +4397,7 @@
       },
       "title": "JobHistoryRequest",
       "required": [
-        "workspaceId",
+        "workSpaceId",
         "current",
         "pageSize"
       ]
@@ -4052,7 +4469,7 @@
     "JobPublishList": {
       "type": "object",
       "properties": {
-        "workspaceId": {
+        "workSpaceId": {
           "type": "string"
         },
         "jobId": {
@@ -4082,7 +4499,7 @@
       },
       "title": "JobPublishList",
       "required": [
-        "workspaceId",
+        "workSpaceId",
         "jobId",
         "jobName",
         "jobDesc",
@@ -4105,7 +4522,7 @@
           "type": "integer",
           "format": "int32"
         },
-        "workspaceId": {
+        "workSpaceId": {
           "type": "string"
         },
         "jobName": {
@@ -4151,7 +4568,7 @@
     "JobPublishRequest": {
       "type": "object",
       "properties": {
-        "workspaceId": {
+        "workSpaceId": {
           "type": "string"
         },
         "jobName": {
@@ -4169,7 +4586,7 @@
       },
       "title": "JobPublishRequest",
       "required": [
-        "workspaceId",
+        "workSpaceId",
         "空间ID",
         "jobName",
         "名称",
@@ -5449,6 +5866,90 @@
       "required": [
         "envList"
       ]
+    },
+    "WorkSpaceExportRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceExportRequest",
+      "required": [
+        "id"
+      ]
+    },
+    "WorkSpaceExportResponse": {
+      "type": "object",
+      "properties": {
+        "export": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceExportResponse",
+      "required": [
+        "export"
+      ]
+    },
+    "WorkSpaceImportRequest": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        },
+        "export": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceImportRequest",
+      "required": [
+        "export"
+      ]
+    },
+    "WorkSpaceImportResponse": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "workSpaceName": {
+          "type": "string"
+        },
+        "workSpaceDesc": {
+          "type": "string"
+        },
+        "workSpaceType": {
+          "type": "string"
+        },
+        "workSpaceTag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "workSpaceIcon": {
+          "type": "string"
+        }
+      },
+      "title": "WorkSpaceImportResponse"
     },
     "WorkSpaceListRequest": {
       "type": "object",

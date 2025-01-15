@@ -110,7 +110,7 @@ INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,
 INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (144,'API导出 CURL','api_export_curl',3,'api_management','/workflow/api/export/curl','POST',9999,'2025-01-15 19:00:03','2025-01-15 19:00:03');
 INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (145,'导出 workspace','workspace_export',3,'workspace_management','/workflow/workspace/export','POST',9999,'2025-01-16 00:01:07','2025-01-16 00:01:07');
 INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (146,'导入 workspace','workspace_Import',3,'workspace_management','/workflow/workspace/import','POST',9999,'2025-01-16 00:01:54','2025-01-16 00:01:54');
-
+INSERT INTO permissions (`id`,`title`,`key`,`type`,`parent_key`,`path`,`method`,`sort`,`created_at`,`updated_at`) VALUES (147,'API 统计','api_stat',3,'api_management','/workflow/api/call/statistics','POST',9999,'2025-01-16 00:52:12','2025-01-16 00:52:12');
 
 // 写入角色权限
 INSERT INTO `role_permissions` (role_id,`permission_id`) SELECT 33,id FROM `permissions`;
