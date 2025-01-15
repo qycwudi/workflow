@@ -144,6 +144,23 @@ type WorkSpaceEnvEditResponse {
 	
 }
 
+type WorkSpaceExportRequest {
+	Id string `json:"id"`
+}
+
+type WorkSpaceExportResponse {
+	Export string `json:"export"`
+}
+
+type WorkSpaceImportRequest {
+	WorkSpaceBase
+	Export string `json:"export"`
+}
+
+type WorkSpaceImportResponse {
+	WorkSpaceBase
+}
+
 @server (
 	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
 	group: workspace
@@ -200,5 +217,13 @@ service workflow-api {
 	@doc "画布环境变量修改"
 	@handler WorkSpaceEnvEditHandler
 	post /workspace/env/edit (WorkSpaceEnvEditRequest) returns (WorkSpaceEnvEditResponse)
+
+	@doc "画布导出"
+	@handler WorkSpaceExportHandler
+	post /workspace/export (WorkSpaceExportRequest) returns (WorkSpaceExportResponse)
+
+	@doc "画布导入"
+	@handler WorkSpaceImportHandler
+	post /workspace/import (WorkSpaceImportRequest) returns (WorkSpaceImportResponse)
 }
 

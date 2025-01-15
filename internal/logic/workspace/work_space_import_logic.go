@@ -3,8 +3,7 @@ package workspace
 import (
 	"context"
 	"database/sql"
-	errors2 "errors"
-	"fmt"
+	"encoding/base64"
 	"strconv"
 	"time"
 
@@ -19,23 +18,28 @@ import (
 	"workflow/internal/utils"
 )
 
-type WorkSpaceNewLogic struct {
+type WorkSpaceImportLogic struct {
 	logx.Logger
 	ctx    context.Context
 	svcCtx *svc.ServiceContext
 }
 
-func NewWorkSpaceNewLogic(ctx context.Context, svcCtx *svc.ServiceContext) *WorkSpaceNewLogic {
-	return &WorkSpaceNewLogic{
+func NewWorkSpaceImportLogic(ctx context.Context, svcCtx *svc.ServiceContext) *WorkSpaceImportLogic {
+	return &WorkSpaceImportLogic{
 		Logger: logx.WithContext(ctx),
 		ctx:    ctx,
 		svcCtx: svcCtx,
 	}
 }
 
-func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *types.WorkSpaceNewResponse, err error) {
+func (l *WorkSpaceImportLogic) WorkSpaceImport(req *types.WorkSpaceImportRequest) (resp *types.WorkSpaceImportResponse, err error) {
+	// 解码 base64
+	draft, err := base64.StdEncoding.DecodeString(req.Export)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "解码失败")
+	}
 	// 创建workspace
-	spaceModel := workSpaceNewRequest2WorkSpaceModel(req)
+	spaceModel := workSpaceImportRequest2WorkSpaceModel(req)
 	_, err = l.svcCtx.WorkSpaceModel.Insert(l.ctx, spaceModel)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemStoreError), "创建空间错误")
@@ -46,24 +50,23 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 	if err != nil {
 		return nil, errors.New(int(logic.SystemStoreError), "创建标签错误")
 	}
-
+	newCanvasDraft := copyCanvasDraft(string(draft), spaceModel.WorkspaceId)
 	// 初始化画布 创建 start node
 	userId, _ := utils.GetUserId(l.ctx)
 	userIdStr := strconv.FormatInt(userId, 10)
 	_, err = l.svcCtx.CanvasModel.Insert(l.ctx, &model.Canvas{
 		WorkspaceId: spaceModel.WorkspaceId,
-		// strconv.Itoa(int(time.Now().UnixMilli()))
-		Draft:    fmt.Sprintf(`{"id": "%s"}`, spaceModel.WorkspaceId),
-		CreateAt: time.Now(),
-		UpdateAt: time.Now(),
-		CreateBy: userIdStr,
-		UpdateBy: userIdStr,
+		Draft:       newCanvasDraft,
+		CreateAt:    time.Now(),
+		UpdateAt:    time.Now(),
+		CreateBy:    userIdStr,
+		UpdateBy:    userIdStr,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemStoreError), "创建start节点错误")
 	}
 
-	resp = &types.WorkSpaceNewResponse{
+	resp = &types.WorkSpaceImportResponse{
 		WorkSpaceBase: types.WorkSpaceBase{
 			Id:            spaceModel.WorkspaceId,
 			WorkSpaceName: spaceModel.WorkspaceName,
@@ -72,12 +75,11 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 			WorkSpaceTag:  req.WorkSpaceTag,
 			WorkSpaceIcon: spaceModel.WorkspaceIcon.String,
 		},
-		WorkSpaceConfig: spaceModel.CanvasConfig.String,
 	}
 	return resp, nil
 }
 
-func workSpaceNewRequest2WorkSpaceModel(req *types.WorkSpaceNewRequest) *model.Workspace {
+func workSpaceImportRequest2WorkSpaceModel(req *types.WorkSpaceImportRequest) *model.Workspace {
 	id := xid.New()
 	return &model.Workspace{
 		WorkspaceId:   id.String(),
@@ -99,39 +101,4 @@ func workSpaceNewRequest2WorkSpaceModel(req *types.WorkSpaceNewRequest) *model.W
 		AdditionalInfo: "{}",
 		Configuration:  "{}",
 	}
-}
-
-// createTag 创建tag映射
-func createTag(ctx context.Context, svcCtx *svc.ServiceContext, workSpaceTag []string, workspaceId string) error {
-	// 创建tag映射
-	for _, tag := range workSpaceTag {
-		var tagId int64 = 0
-		tagModel, err := svcCtx.WorkSpaceTagModel.FindOneByName(ctx, tag)
-		if errors2.Is(err, model.ErrNotFound) {
-			// 创建
-			result, err := svcCtx.WorkSpaceTagModel.Insert(ctx, &model.WorkspaceTag{
-				TagName:    tag,
-				IsDelete:   0,
-				CreateTime: time.Now(),
-				UpdateTime: time.Now(),
-			})
-			if err != nil {
-				return errors.New(int(logic.SystemStoreError), "创建标签错误")
-			}
-			tagId, _ = result.LastInsertId()
-		} else if err != nil {
-			return errors.New(int(logic.SystemStoreError), "查询标签错误")
-		} else {
-			tagId = tagModel.Id
-		}
-		// 设置映射
-		_, err = svcCtx.WorkspaceTagMappingModel.Insert(ctx, &model.WorkspaceTagMapping{
-			TagId:       tagId,
-			WorkspaceId: workspaceId,
-		})
-		if err != nil {
-			return errors.New(int(logic.SystemStoreError), "映射空间标签错误")
-		}
-	}
-	return nil
 }

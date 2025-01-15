@@ -142,6 +142,23 @@ type WorkSpaceEnvEditRequest struct {
 type WorkSpaceEnvEditResponse struct {
 }
 
+type WorkSpaceExportRequest struct {
+	Id string `json:"id"`
+}
+
+type WorkSpaceExportResponse struct {
+	Export string `json:"export"`
+}
+
+type WorkSpaceImportRequest struct {
+	WorkSpaceBase
+	Export string `json:"export"`
+}
+
+type WorkSpaceImportResponse struct {
+	WorkSpaceBase
+}
+
 type CanvasRunRequest struct {
 	Id string `json:"id" desc:"空间ID"`
 }

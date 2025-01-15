@@ -84,6 +84,16 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/workspace/env/edit",
 					Handler: workspace.WorkSpaceEnvEditHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/export",
+					Handler: workspace.WorkSpaceExportHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/workspace/import",
+					Handler: workspace.WorkSpaceImportHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
