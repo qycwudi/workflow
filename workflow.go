@@ -73,6 +73,10 @@ func main() {
 		c.RuleServerLimitSize, _ = strconv.Atoi(ruleServerLimitSize)
 	}
 
+	if apiUrl := os.Getenv("API_URL"); apiUrl != "" {
+		c.ApiUrl = apiUrl
+	}
+
 	// # 需要通过的域名，这里可以写多个域名 或者可以写 * 全部通过
 	domains := []string{"*", "http://workflow", "http://127.0.0.1", "http://localhost"}
 	server := rest.MustNewServer(

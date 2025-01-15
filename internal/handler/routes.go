@@ -209,6 +209,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Path:    "/api/history",
 					Handler: api.ApiHistoryHandler(serverCtx),
 				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/call",
+					Handler: api.ApiCallHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/call/template",
+					Handler: api.ApiCallTemplateHandler(serverCtx),
+				},
+				{
+					Method:  http.MethodPost,
+					Path:    "/api/export/curl",
+					Handler: api.ApiExportCurlHandler(serverCtx),
+				},
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),

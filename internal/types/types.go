@@ -309,7 +309,7 @@ type ApiPublishResponse struct {
 type ApiPublishListRequest struct {
 	Current  int    `json:"current"`
 	PageSize int    `json:"pageSize"`
-	Id       string `json:"id,optional" desc:"空间ID 非必填"`
+	Id       string `json:"id,optional" desc:"API_ID 非必填"`
 	Name     string `json:"name,optional"`
 }
 
@@ -457,6 +457,39 @@ type ApiEditRequest struct {
 
 type ApiEditResponse struct {
 	ApiId string `json:"apiId"`
+}
+
+type ApiCallRequest struct {
+	ApiId  string `json:"apiId"`
+	Url    string `json:"url"`
+	Header string `json:"header"`
+	Body   string `json:"body"`
+}
+
+type ApiCallResponse struct {
+	Response string `json:"response"`
+}
+
+type ApiCallTemplateRequest struct {
+	ApiId string `json:"apiId"`
+}
+
+type ApiCallTemplateResponse struct {
+	ApiId  string `json:"apiId"`
+	Url    string `json:"url"`
+	Header string `json:"header"`
+	Body   string `json:"body"`
+}
+
+type ApiExportCurlRequest struct {
+	ApiId  string `json:"apiId"`
+	Url    string `json:"url"`
+	Header string `json:"header"`
+	Body   string `json:"body"`
+}
+
+type ApiExportCurlResponse struct {
+	Curl string `json:"curl"`
 }
 
 type ModuleListRequest struct {

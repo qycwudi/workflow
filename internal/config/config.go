@@ -16,6 +16,7 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
+	ApiUrl string `json:"ApiUrl" default:"http://127.0.0.1:8889/api/role/v1"`
 }
 
 type RedisConfig struct {

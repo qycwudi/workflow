@@ -5,6 +5,7 @@ ApiPort: 8889
 Timeout: 50000
 RuleServerLimitSize: 1
 RuleServerTrace: false
+ApiUrl: http://localhost:8889/api/role/v1
 Auth:
   AccessSecret: "2ea00ca19k4f47b48c8ed8aec131684d"
   AccessExpire: 86400 # 1天

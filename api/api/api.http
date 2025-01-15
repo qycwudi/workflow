@@ -10,8 +10,8 @@ Content-Disposition: form-data; name="file"; filename="数产数据录入模版.
 < "/Users/qiangyuecheng/Downloads/数产数据录入模版.xlsx"
 --WebAppBoundary--
 
-### API
-POST http://127.0.0.1:8888/workflow/mock
+### API调用
+POST http://127.0.0.1:8888/workflow/api/call
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
@@ -19,6 +19,26 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0O
 {
   "name": "xue",
   "age": 10
+}
+
+### API调用模板
+POST http://127.0.0.1:8888/workflow/api/call/template
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
+
+{
+  "apiId": "cs8vfql3sjtkvhkubulg"
+}
+
+### API导出curl
+POST http://127.0.0.1:8888/workflow/api/export/curl
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0OTMsImlhdCI6MTczNTc4MjA5MywidXNlcklkIjoxfQ.H4woJd4Xk4CPHziWJ6AEOIJ3-NTp84ZuLuT9xPvtavU
+
+{
+  "apiId": "cs8vfql3sjtkvhkubulg"
 }
 
 ### API发布

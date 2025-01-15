@@ -13,7 +13,7 @@ type ApiPublishResponse {
 type ApiPublishListRequest {
 	Current  int    `json:"current"`
 	PageSize int    `json:"pageSize"`
-	Id       string `json:"id,optional" desc:"空间ID 非必填"`
+	Id       string `json:"id,optional" desc:"API_ID 非必填"`
 	Name     string `json:"name,optional"`
 }
 
@@ -167,6 +167,39 @@ type ApiEditResponse {
 	ApiId string `json:"apiId"`
 }
 
+type ApiCallRequest {
+	ApiId string `json:"apiId"`
+	Url string `json:"url"`
+	Header string `json:"header"`
+	Body string `json:"body"`
+}
+
+type ApiCallResponse {
+	Response string `json:"response"`
+}
+
+type ApiCallTemplateRequest {
+	ApiId string `json:"apiId"`
+}
+
+type ApiCallTemplateResponse {
+	ApiId string `json:"apiId"`
+	Url string `json:"url"`
+	Header string `json:"header"`
+	Body string `json:"body"`
+}
+
+type ApiExportCurlRequest {
+	ApiId string `json:"apiId"`
+	Url string `json:"url"`
+	Header string `json:"header"`
+	Body string `json:"body"`
+}
+
+type ApiExportCurlResponse {
+	Curl string `json:"curl"`
+}
+
 @server (
 	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
 	group: api
@@ -219,5 +252,17 @@ service workflow-api {
 	@doc "API历史版本"
 	@handler ApiHistoryHandler
 	post /api/history (ApiHistoryRequest) returns (ApiHistoryResponse)
+
+	@doc "API调用"
+	@handler ApiCallHandler
+	post /api/call (ApiCallRequest) returns (ApiCallResponse)
+
+	@doc "API调用模板"
+	@handler ApiCallTemplateHandler
+	post /api/call/template (ApiCallTemplateRequest) returns (ApiCallTemplateResponse)
+
+	@doc "API导出 curl"
+	@handler ApiExportCurlHandler
+	post /api/export/curl (ApiExportCurlRequest) returns (ApiExportCurlResponse)
 
 }
