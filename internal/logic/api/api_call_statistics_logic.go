@@ -38,9 +38,14 @@ func (l *ApiCallStatisticsLogic) ApiCallStatistics(req *types.ApiCallStatisticsR
 	if err != nil {
 		return nil, err
 	}
+	// 计算总数
+	var total int64 = 0
+	for _, v := range apiCallStatistics.YAxis {
+		total += v
+	}
 	return &types.ApiCallStatisticsResponse{
 		XAxis: apiCallStatistics.XAxis,
 		YAxis: apiCallStatistics.YAxis,
-		Total: int64(len(apiCallStatistics.XAxis)),
+		Total: total,
 	}, nil
 }
