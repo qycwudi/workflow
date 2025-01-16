@@ -49,6 +49,38 @@
         ]
       }
     },
+    "/workflow/api/call/statistics": {
+      "post": {
+        "summary": "api调用统计",
+        "operationId": "ApiCallStatisticsHandler",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/ApiCallStatisticsResponse"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/ApiCallStatisticsRequest"
+            }
+          }
+        ],
+        "tags": [
+          "api"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/workflow/api/call/template": {
       "post": {
         "summary": "API调用模板",
@@ -2544,6 +2576,56 @@
       "title": "ApiCallResponse",
       "required": [
         "response"
+      ]
+    },
+    "ApiCallStatisticsRequest": {
+      "type": "object",
+      "properties": {
+        "apiId": {
+          "type": "string"
+        },
+        "startTime": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "endTime": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "ApiCallStatisticsRequest",
+      "required": [
+        "apiId",
+        "startTime",
+        "endTime"
+      ]
+    },
+    "ApiCallStatisticsResponse": {
+      "type": "object",
+      "properties": {
+        "total": {
+          "type": "integer",
+          "format": "int64"
+        },
+        "xAxis": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "yAxis": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "int64"
+          }
+        }
+      },
+      "title": "ApiCallStatisticsResponse",
+      "required": [
+        "total",
+        "xAxis",
+        "yAxis"
       ]
     },
     "ApiCallTemplateRequest": {
