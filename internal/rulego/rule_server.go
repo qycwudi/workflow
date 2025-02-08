@@ -56,20 +56,31 @@ func InitRoleServer(trace bool, apiPort int, limitSize int) {
 		chainId := exchange.In.GetParam("chainId")
 		token := exchange.In.Headers().Get("Authorization")
 		if token == "" {
-			exchange.Out.SetStatusCode(http.StatusUnauthorized)
-			exchange.Out.SetBody([]byte("token is required"))
-			return false
+			// 如果 token 为空,则判断api 是否发布了 secretKey
+			api, err := RoleChain.svc.ApiModel.FindOneByApiId(context.Background(), chainId)
+			if err != nil {
+				logx.Errorf("api not found: %s", err.Error())
+				exchange.Out.SetStatusCode(http.StatusUnauthorized)
+				exchange.Out.SetBody([]byte("api not found"))
+				return false
+			}
+			if api.Status != model.ApiStatusOn {
+				logx.Errorf("api status is off")
+				exchange.Out.SetStatusCode(http.StatusUnauthorized)
+				exchange.Out.SetBody([]byte("api status is off"))
+				return false
+			}
+		} else {
+			token = strings.TrimPrefix(token, "Bearer ")
+			checkStartTime := time.Now()
+			if err := checkApiAndToken(chainId, token); err != nil {
+				exchange.Out.SetStatusCode(http.StatusUnauthorized)
+				exchange.Out.SetBody([]byte(err.Error()))
+				return false
+			}
+			checkDuration := time.Since(checkStartTime)
+			logx.Infof("检查API和Token耗时: %v毫秒", checkDuration.Milliseconds())
 		}
-		token = strings.TrimPrefix(token, "Bearer ")
-
-		checkStartTime := time.Now()
-		if err := checkApiAndToken(chainId, token); err != nil {
-			exchange.Out.SetStatusCode(http.StatusUnauthorized)
-			exchange.Out.SetBody([]byte(err.Error()))
-			return false
-		}
-		checkDuration := time.Since(checkStartTime)
-		logx.Infof("检查API和Token耗时: %v毫秒", checkDuration.Milliseconds())
 		// 设置metadata
 		env := getApiEnvCache(chainId)
 		for k, v := range env {
