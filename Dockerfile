@@ -2,8 +2,9 @@ FROM m.daocloud.io/docker.io/library/golang:1.23-alpine AS builder
 # docker build --platform linux/amd64 -t workflow:b2 .
 # docker login --username=qiangyuecheng registry.cn-hangzhou.aliyuncs.com
 # Qycssg00
-# docker tag dc042e770f24 registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:b3
-# docker push registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:b3
+# docker tag 605517d6a654 registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:f6
+# docker push registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:f7
+
 # goctl kube deploy --name workflow-back --namespace workflow --port 8888 --o workflow-back-deploy.yaml
 
 LABEL stage=gobuilder
@@ -23,6 +24,7 @@ COPY . .
 COPY ./etc /app/etc
 RUN go build -ldflags="-s -w" -o /app/workflow workflow.go
 # RUN GOARCH=arm64 GOOS=linux go build -ldflags="-s -w" -o /app/workflow workflow.go
+
 
 
 FROM alpine

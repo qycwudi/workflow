@@ -280,4 +280,5 @@ service workflow-api {
 	@doc "api调用统计"
 	@handler ApiCallStatisticsHandler
 	post /api/call/statistics (ApiCallStatisticsRequest) returns (ApiCallStatisticsResponse)
+
 }

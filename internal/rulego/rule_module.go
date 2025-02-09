@@ -78,10 +78,11 @@ func endCfg() map[string]interface{} {
 func httpCfg(data gjson.Result, specialRelation map[string]string) map[string]interface{} {
 	config := map[string]interface{}{}
 	configuration := HttpCallNodeConfiguration{
-		RestEndpointUrlPattern:   data.Get("url").String(),
-		RequestMethod:            data.Get("method").String(),
-		WithoutRequestBody:       false,
-		Headers:                  httpParseHeaders(data.Get("header").Array()),
+		RestEndpointUrlPattern: data.Get("url").String(),
+		RequestMethod:          data.Get("method").String(),
+		WithoutRequestBody:     false,
+		Headers:                httpParseHeaders(data.Get("header").Array()),
+		// 可能会调用大模型接口,响应时间不定，所以不设置超时
 		ReadTimeoutMs:            0,
 		MaxParallelRequestsCount: 200,
 		EnableProxy:              false,
