@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	api "workflow/internal/handler/api"
+	basics "workflow/internal/handler/basics"
 	canvas "workflow/internal/handler/canvas"
 	datasource "workflow/internal/handler/datasource"
 	job "workflow/internal/handler/job"
@@ -514,6 +515,21 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/job/edit",
 					Handler: job.JobEditHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					Method:  http.MethodPost,
+					Path:    "/basics/dropdown",
+					Handler: basics.GetDropDownListHandler(serverCtx),
 				},
 			}...,
 		),

@@ -42,6 +42,7 @@ type (
 		ApiId       string    `db:"api_id"`
 		ApiName     string    `db:"api_name"`
 		ApiDesc     string    `db:"api_desc"`
+		Tag         string    `db:"tag"`
 		Dsl         string    `db:"dsl"`
 		HistoryId   int64     `db:"history_id"`
 		Status      string    `db:"status"`
@@ -99,14 +100,14 @@ func (m *defaultApiModel) FindOneByApiId(ctx context.Context, apiId string) (*Ap
 }
 
 func (m *defaultApiModel) Insert(ctx context.Context, data *Api) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, apiRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.ApiId, data.ApiName, data.ApiDesc, data.Dsl, data.HistoryId, data.Status, data.CreateTime, data.UpdateTime)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, apiRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.ApiId, data.ApiName, data.ApiDesc, data.Tag, data.Dsl, data.HistoryId, data.Status, data.CreateTime, data.UpdateTime)
 	return ret, err
 }
 
 func (m *defaultApiModel) Update(ctx context.Context, newData *Api) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, apiRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.ApiId, newData.ApiName, newData.ApiDesc, newData.Dsl, newData.HistoryId, newData.Status, newData.CreateTime, newData.UpdateTime, newData.Id)
+	_, err := m.conn.ExecCtx(ctx, query, newData.WorkspaceId, newData.ApiId, newData.ApiName, newData.ApiDesc, newData.Tag, newData.Dsl, newData.HistoryId, newData.Status, newData.CreateTime, newData.UpdateTime, newData.Id)
 	return err
 }
 

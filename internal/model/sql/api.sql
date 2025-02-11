@@ -4,6 +4,7 @@ CREATE TABLE `api` (
   `api_id` varchar(255) NOT NULL,
   `api_name` varchar(255) NOT NULL,
   `api_desc` text NOT NULL,
+  `tag` json NOT NULL,
   `dsl` json NOT NULL,
   `history_id` int(11) NOT NULL,
   `status` varchar(255) NOT NULL,

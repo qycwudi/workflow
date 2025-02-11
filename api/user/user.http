@@ -1,11 +1,11 @@
 ### 登录
-POST http://10.100.66.5:8888/workflow/user/login
+POST http://127.0.0.1:8888/workflow/user/login
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
   "username": "admin",
-  "password": "admin"
+  "password": "21232f297a57a5a743894a0e4a801fc3"
 }
 
 ### 退出登录

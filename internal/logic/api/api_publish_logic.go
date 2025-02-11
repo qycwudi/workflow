@@ -2,6 +2,7 @@ package api
 
 import (
 	"context"
+	"encoding/json"
 	errors2 "errors"
 	"fmt"
 	"time"
@@ -70,6 +71,10 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		return nil, errors.New(int(logic.SystemStoreError), "查询API失败")
 	}
 	var apiId string
+	tagJson, err := json.Marshal(req.Tag)
+	if err != nil {
+		return nil, errors.New(int(logic.SystemError), "标签转换失败")
+	}
 	if api == nil {
 		apiId = xid.New().String()
 		_, err = l.svcCtx.ApiModel.Insert(l.ctx, &model.Api{
@@ -77,6 +82,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 			ApiId:       apiId,
 			ApiName:     req.ApiName,
 			ApiDesc:     req.ApiDesc,
+			Tag:         string(tagJson),
 			Dsl:         string(ruleChain),
 			Status:      model.ApiStatusOn,
 			HistoryId:   int64(historyId),
@@ -95,6 +101,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 			ApiId:       api.ApiId,
 			ApiName:     req.ApiName,
 			ApiDesc:     req.ApiDesc,
+			Tag:         string(tagJson),
 			Dsl:         string(ruleChain),
 			Status:      model.ApiStatusOn,
 			HistoryId:   int64(historyId),

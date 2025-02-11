@@ -314,9 +314,10 @@ type RestoreCanvasHistoryResp struct {
 }
 
 type ApiPublishRequest struct {
-	Id      string `json:"id" desc:"空间ID"`
-	ApiName string `json:"apiName" desc:"名称"`
-	ApiDesc string `json:"apiDesc" desc:"描述"`
+	Id      string   `json:"id" desc:"空间ID"`
+	ApiName string   `json:"apiName" desc:"名称"`
+	ApiDesc string   `json:"apiDesc" desc:"描述"`
+	Tag     []string `json:"tag" desc:"标签"`
 }
 
 type ApiPublishResponse struct {
@@ -328,6 +329,7 @@ type ApiPublishListRequest struct {
 	PageSize int    `json:"pageSize"`
 	Id       string `json:"id,optional" desc:"API_ID 非必填"`
 	Name     string `json:"name,optional"`
+	Tag      string `json:"tag,optional" desc:"标签"`
 }
 
 type ApiPublishListResponse struct {
@@ -338,12 +340,13 @@ type ApiPublishListResponse struct {
 }
 
 type ApiPublishList struct {
-	WorkSpaceId string `json:"workSpaceId"`
-	ApiId       string `json:"apiId"`
-	ApiName     string `json:"apiName"`
-	ApiDesc     string `json:"apiDesc"`
-	PublishTime string `json:"publishTime"`
-	Status      string `json:"status" desc:"上下线状态ON OFF"`
+	WorkSpaceId string   `json:"workSpaceId"`
+	ApiId       string   `json:"apiId"`
+	ApiName     string   `json:"apiName"`
+	ApiDesc     string   `json:"apiDesc"`
+	Tag         []string `json:"tag"`
+	PublishTime string   `json:"publishTime"`
+	Status      string   `json:"status" desc:"上下线状态ON OFF"`
 }
 
 type ApiOnOffRequest struct {
@@ -1032,4 +1035,18 @@ type JobEditRequest struct {
 
 type JobEditResponse struct {
 	JobId string `json:"jobId"`
+}
+
+type GetDropDownListReq struct {
+	Type  string `json:"type"`
+	Value string `json:"value"`
+}
+
+type GetDropDownListResp struct {
+	List []GetDropDownListRespItem `json:"list"`
+}
+
+type GetDropDownListRespItem struct {
+	Label string `json:"label"`
+	Value string `json:"value"`
 }

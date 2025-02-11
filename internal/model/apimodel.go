@@ -19,7 +19,7 @@ type (
 		FindByName(ctx context.Context, name string) (*Api, error)
 		FindByOn(ctx context.Context) ([]*Api, error)
 		UpdateStatusByApiId(ctx context.Context, apiId string, status string) error
-		Page(ctx context.Context, current, size int, apiId, name string) (*PageResponse[Api], error)
+		Page(ctx context.Context, current, size int, apiId, name string, tag string) (*PageResponse[Api], error)
 		FindByWorkspaceId(ctx context.Context, workspaceId string) (*Api, error)
 	}
 
@@ -34,7 +34,7 @@ func (c customApiModel) UpdateStatusByApiId(ctx context.Context, apiId string, s
 	return err
 }
 
-func (c customApiModel) Page(ctx context.Context, current, size int, id, name string) (*PageResponse[Api], error) {
+func (c customApiModel) Page(ctx context.Context, current, size int, id, name, tag string) (*PageResponse[Api], error) {
 	conditions := make([]string, 0)
 	if id != "" {
 		conditions = append(conditions, fmt.Sprintf("api_id = '%s'", id))
@@ -42,6 +42,9 @@ func (c customApiModel) Page(ctx context.Context, current, size int, id, name st
 
 	if name != "" {
 		conditions = append(conditions, fmt.Sprintf("api_name LIKE '%s'", "%"+name+"%"))
+	}
+	if tag != "" {
+		conditions = append(conditions, fmt.Sprintf("tag LIKE '%s'", "%"+tag+"%"))
 	}
 
 	resp, err := Paginate[Api](ctx, PageRequest{

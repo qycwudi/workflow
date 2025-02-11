@@ -42,24 +42,43 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0O
 }
 
 ### API发布
-POST http://127.0.0.1:8899/workflow/api/publish
+POST http://127.0.0.1:8888/workflow/api/publish
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzkzNjkyMjAsImlhdCI6MTczOTI4MjgyMCwidXNlcklkIjoxfQ.PA0RZMQD5iOLUeRgqj3_laoXkqXCwrzAyfYxX6w7_LY
 
 {
-  "id": "cs8vfql3sjtkvhkubulg",
+  "id": "cu3toq53sjtmf2d29gp0",
+  "tag": ["test", "test2"],
   "apiName": "测试API",
   "apiDesc": "这是一个测试API"
 }
 
-### API发布列表
-POST http://127.0.0.1:8899/workflow/api/list
+### API发布
+POST http://127.0.0.1:8888/workflow/api/publish
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzkzNjkyMjAsImlhdCI6MTczOTI4MjgyMCwidXNlcklkIjoxfQ.PA0RZMQD5iOLUeRgqj3_laoXkqXCwrzAyfYxX6w7_LY
+
+{
+  "id": "cu3toq53sjtmf2d29gp0",
+  "tag": ["tes4", "test5"],
+  "apiName": "测试API_1",
+  "apiDesc": "这是一个测试API_1"
+}
+
+
+### API发布列表
+POST http://127.0.0.1:8888/workflow/api/list
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzkzNjkyMjAsImlhdCI6MTczOTI4MjgyMCwidXNlcklkIjoxfQ.PA0RZMQD5iOLUeRgqj3_laoXkqXCwrzAyfYxX6w7_LY
+
 
 {
   "current": 1,
-  "pageSize": 10
+  "pageSize": 10,
+  "tag": "test2"
 }
 
 ### API上下线

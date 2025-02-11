@@ -1,0 +1,29 @@
+syntax = "v1"
+
+type GetDropDownListReq{
+    Type string `json:"type"`
+    Value string `json:"value"`
+}
+
+type GetDropDownListResp{
+    List []GetDropDownListRespItem `json:"list"`
+}
+
+type GetDropDownListRespItem{
+    Label string `json:"label"`
+    Value string `json:"value"`
+}
+
+@server (
+    group: basics
+    prefix: /workflow
+    jwt: Auth
+    middleware: PermissionMiddleware
+)
+
+service workflow-api {
+    @doc "根据参数获取下拉框"
+    @handler GetDropDownList
+    post /basics/dropdown (GetDropDownListReq) returns (GetDropDownListResp)
+   
+}

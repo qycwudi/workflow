@@ -4,6 +4,7 @@ type ApiPublishRequest {
 	Id      string `json:"id" desc:"空间ID"`
 	ApiName string `json:"apiName" desc:"名称"`
 	ApiDesc string `json:"apiDesc" desc:"描述"`
+	Tag     []string `json:"tag" desc:"标签"`
 }
 
 type ApiPublishResponse {
@@ -15,6 +16,7 @@ type ApiPublishListRequest {
 	PageSize int    `json:"pageSize"`
 	Id       string `json:"id,optional" desc:"API_ID 非必填"`
 	Name     string `json:"name,optional"`
+	Tag      string `json:"tag,optional" desc:"标签"`
 }
 
 type ApiPublishListResponse {
@@ -29,6 +31,7 @@ type ApiPublishList {
 	ApiId       string `json:"apiId"`
 	ApiName     string `json:"apiName"`
 	ApiDesc     string `json:"apiDesc"`
+	Tag         []string `json:"tag"`
 	PublishTime string `json:"publishTime"`
 	Status      string `json:"status" desc:"上下线状态ON OFF"`
 }
