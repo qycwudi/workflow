@@ -470,9 +470,10 @@ type ApiHistory struct {
 }
 
 type ApiEditRequest struct {
-	ApiId   string `json:"apiId"`
-	ApiName string `json:"apiName"`
-	ApiDesc string `json:"apiDesc"`
+	ApiId   string   `json:"apiId"`
+	ApiName string   `json:"apiName"`
+	ApiDesc string   `json:"apiDesc"`
+	Tag     []string `json:"tag"`
 }
 
 type ApiEditResponse struct {

@@ -164,6 +164,7 @@ type ApiEditRequest {
 	ApiId string `json:"apiId"`
 	ApiName string `json:"apiName"`
 	ApiDesc string `json:"apiDesc"`
+	Tag []string `json:"tag"`
 }
 
 type ApiEditResponse {
