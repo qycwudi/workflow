@@ -2,9 +2,12 @@ package basics
 
 import (
 	"context"
+	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
+	"github.com/zeromicro/x/errors"
 
+	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -24,7 +27,30 @@ func NewGetDropDownListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *G
 }
 
 func (l *GetDropDownListLogic) GetDropDownList(req *types.GetDropDownListReq) (resp *types.GetDropDownListResp, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	// 枚举 datasource、model
+	resp = &types.GetDropDownListResp{}
+	switch req.Kind {
+	case "datasource":
+		{
+			datasourceList, err := l.svcCtx.DatasourceModel.FindAllList(l.ctx)
+			if err != nil {
+				return nil, err
+			}
+			for _, v := range datasourceList {
+				resp.List = append(resp.List, types.GetDropDownListRespItem{
+					Label: v.Name,
+					Value: strconv.FormatInt(v.Id, 10),
+				})
+			}
+		}
+	case "model":
+		{
+			//todo  获取model列表
+		}
+	default:
+		{
+			return nil, errors.New(int(logic.SystemError), "不支持的类型")
+		}
+	}
+	return resp, nil
 }

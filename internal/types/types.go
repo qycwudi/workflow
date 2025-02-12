@@ -1038,8 +1038,7 @@ type JobEditResponse struct {
 }
 
 type GetDropDownListReq struct {
-	Type  string `json:"type"`
-	Value string `json:"value"`
+	Kind string `json:"kind"`
 }
 
 type GetDropDownListResp struct {

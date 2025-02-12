@@ -1,8 +1,7 @@
 syntax = "v1"
 
 type GetDropDownListReq{
-    Type string `json:"type"`
-    Value string `json:"value"`
+    Kind string `json:"kind"`
 }
 
 type GetDropDownListResp{
