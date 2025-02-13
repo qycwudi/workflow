@@ -10,7 +10,7 @@ type GetDropDownListResp{
 
 type GetDropDownListRespItem{
     Label string `json:"label"`
-    Value string `json:"value"`
+    Value int64 `json:"value"`
 }
 
 @server (
