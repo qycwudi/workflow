@@ -1048,5 +1048,5 @@ type GetDropDownListResp struct {
 
 type GetDropDownListRespItem struct {
 	Label string `json:"label"`
-	Value string `json:"value"`
+	Value int64  `json:"value"`
 }

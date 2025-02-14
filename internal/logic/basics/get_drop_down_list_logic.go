@@ -2,7 +2,6 @@ package basics
 
 import (
 	"context"
-	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
@@ -39,7 +38,7 @@ func (l *GetDropDownListLogic) GetDropDownList(req *types.GetDropDownListReq) (r
 			for _, v := range datasourceList {
 				resp.List = append(resp.List, types.GetDropDownListRespItem{
 					Label: v.Name,
-					Value: strconv.FormatInt(v.Id, 10),
+					Value: v.Id,
 				})
 			}
 		}
