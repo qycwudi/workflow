@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/rulego/rulego"
@@ -105,6 +106,11 @@ func (n *DataSourceDatabaseNode) processSQLAndParams(msgData map[string]interfac
 	for _, match := range matches {
 		placeholder := match[0]
 		val := str.ExecuteTemplate(placeholder, msgData)
+		// 判断下 val是不是数字
+		if v, err := strconv.Atoi(val); err == nil {
+			args = append(args, v)
+			continue
+		}
 		// 检查是否是表名参数
 		if isTableNameParam(sql, placeholder) {
 			sql = replaceTableName(sql, placeholder, val)
