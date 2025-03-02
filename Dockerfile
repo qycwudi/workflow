@@ -1,5 +1,5 @@
 FROM docker.m.daocloud.io/golang:1.24.0-alpine AS builder
-# docker build --platform linux/amd64 -t workflow:b2 .
+# docker build --platform linux/amd64 -t workflow:b4 .
 # docker login --username=qiangyuecheng registry.cn-hangzhou.aliyuncs.com
 # Qycssg00
 # docker tag 605517d6a654 registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:f6
