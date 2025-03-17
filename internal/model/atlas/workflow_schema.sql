@@ -40,3 +40,5 @@ CREATE TABLE `workspace` (`id` int NOT NULL AUTO_INCREMENT COMMENT "自增主建
 CREATE TABLE `workspace_tag` (`id` int NOT NULL AUTO_INCREMENT COMMENT "自增主建", `tag_name` varchar(255) NOT NULL COMMENT "标签名称", `is_delete` int NOT NULL COMMENT "逻辑删除", `create_time` datetime NOT NULL COMMENT "创建时间", `update_time` datetime NOT NULL COMMENT "修改时间", PRIMARY KEY (`id`), INDEX `idx_tag_name` (`tag_name`)) CHARSET utf8 COLLATE utf8_general_ci COMMENT "标签表" AUTO_INCREMENT 40;
 -- Create "workspace_tag_mapping" table
 CREATE TABLE `workspace_tag_mapping` (`id` int NOT NULL AUTO_INCREMENT COMMENT "主建", `tag_id` int NOT NULL COMMENT "标签ID", `workspace_id` varchar(255) NOT NULL COMMENT "画布空间ID", PRIMARY KEY (`id`), INDEX `idx_tag_id` (`tag_id`), INDEX `idx_worlspace_id` (`workspace_id`)) CHARSET utf8 COLLATE utf8_general_ci COMMENT "画布标签映射表" AUTO_INCREMENT 108;
+
+ALTER TABLE `api` ADD COLUMN `tag` JSON NOT NULL
