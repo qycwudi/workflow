@@ -2,6 +2,7 @@ package svc
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/redis/go-redis/v9"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
@@ -39,12 +40,21 @@ type ServiceContext struct {
 
 func NewServiceContext(c config.Config) *ServiceContext {
 	conn := sqlx.NewMysql(c.MySqlUrn)
-
-	redisClient := redis.NewUniversalClient(&redis.UniversalOptions{
-		Addrs:    []string{c.Redis.Host},
-		Password: c.Redis.Password,
-		DB:       c.Redis.DB,
-	})
+	// 逗号分割
+	hosts := strings.Split(c.Redis.Host, ",")
+	var redisClient redis.UniversalClient
+	if len(hosts) > 1 {
+		redisClient = redis.NewClusterClient(&redis.ClusterOptions{
+			Addrs:    hosts,
+			Password: c.Redis.Password,
+		})
+	} else {
+		redisClient = redis.NewUniversalClient(&redis.UniversalOptions{
+			Addrs:    []string{c.Redis.Host},
+			Password: c.Redis.Password,
+			DB:       c.Redis.DB,
+		})
+	}
 
 	permissionsModel := model.NewPermissionsModel(conn)
 
