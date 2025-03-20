@@ -91,5 +91,6 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 		MetaData: result.Metadata,
 		Data:     respData,
 	}
+
 	return
 }
