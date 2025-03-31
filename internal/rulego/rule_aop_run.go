@@ -1,6 +1,7 @@
 package rulego
 
 import (
+	"math/rand"
 	"strconv"
 	"time"
 
@@ -46,7 +47,8 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		start, _ := strconv.Atoi(startTime)
 		duration := time.Since(time.UnixMilli(int64(start))).Milliseconds()
 		spaceRecordQueue <- &model.SpaceRecord{
-			SerialNumber: msg.Id,
+			// todo 这里SerialNumber后面追加一个随机数，已经出现过一样的情况，导致数据写入失败
+			SerialNumber: msg.Id + strconv.Itoa(rand.Intn(9999)+10000),
 			Status:       status,
 			Duration:     duration,
 			WorkspaceId:  ctx.RuleChain().GetNodeId().Id,
