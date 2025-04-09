@@ -17,6 +17,40 @@ import (
 func InitRoleChain(svc *svc.ServiceContext) {
 	config := rulego.NewConfig()
 	config.Logger = &utils.RoleCustomLog{}
+	config.RegisterUdf("md5", func(a string) string {
+		return utils.Md5(a)
+	})
+	config.RegisterUdf("base64Encode", func(a string) string {
+		return utils.Base64Encode(a)
+	})
+	config.RegisterUdf("base64Decode", func(a string) string {
+		return utils.Base64Decode(a)
+	})
+	config.RegisterUdf("genAesKey", func(length int) string {
+		return utils.GenAesKey(length)
+	})
+	config.RegisterUdf("aesEncrypt", func(message, key string) string {
+		return utils.AesEncrypt(message, key)
+	})
+	config.RegisterUdf("aesDecrypt", func(message, key string) string {
+		return utils.AesDecrypt(message, key)
+	})
+	config.RegisterUdf("genRsaKey", func() map[string]string {
+		return utils.GenRsaKey()
+	})
+	config.RegisterUdf("rsaEncrypt", func(message, key string) string {
+		return utils.RsaEncrypt(message, key)
+	})
+	config.RegisterUdf("rsaDecrypt", func(message, key string) string {
+		return utils.RsaDecrypt(message, key)
+	})
+	config.RegisterUdf("pemToBase64", func(message string) string {
+		return utils.PemToBase64(message)
+	})
+	config.RegisterUdf("base64ToPem", func(message string) string {
+		return utils.Base64ToPem(message)
+	})
+
 	opts := []types.RuleEngineOption{
 		rulego.WithConfig(config),
 	}
@@ -121,9 +155,9 @@ func (r *roleChain) Run(id string, metadata map[string]string, data string) type
 	return result
 }
 
-var traceQueue = make(chan *model.Trace, 10000)             // 带缓冲的通道
-var spaceRecordQueue = make(chan *model.SpaceRecord, 10000) // 带缓冲的通道
-var apiRecordQueue = make(chan *model.ApiRecord, 10000)     // 带缓冲的通道
+var traceQueue = make(chan *model.Trace, 100000)             // 带缓冲的通道
+var spaceRecordQueue = make(chan *model.SpaceRecord, 100000) // 带缓冲的通道
+var apiRecordQueue = make(chan *model.ApiRecord, 100000)     // 带缓冲的通道
 
 func asyncTraceWriter() {
 	for entry := range traceQueue {
