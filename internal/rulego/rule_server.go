@@ -29,6 +29,39 @@ type RoleServer struct {
 // InitRoleServer 注册接口 注册规则链
 func InitRoleServer(trace bool, apiPort int, limitSize int) {
 	config := types.Config{Logger: &utils.RoleCustomLog{}}
+	config.RegisterUdf("md5", func(a string) string {
+		return utils.Md5(a)
+	})
+	config.RegisterUdf("base64Encode", func(a string) string {
+		return utils.Base64Encode(a)
+	})
+	config.RegisterUdf("base64Decode", func(a string) string {
+		return utils.Base64Decode(a)
+	})
+	config.RegisterUdf("genAesKey", func(length int) string {
+		return utils.GenAesKey(length)
+	})
+	config.RegisterUdf("aesEncrypt", func(message, key string) string {
+		return utils.AesEncrypt(message, key)
+	})
+	config.RegisterUdf("aesDecrypt", func(message, key string) string {
+		return utils.AesDecrypt(message, key)
+	})
+	config.RegisterUdf("genRsaKey", func() map[string]string {
+		return utils.GenRsaKey()
+	})
+	config.RegisterUdf("rsaEncrypt", func(message, key string) string {
+		return utils.RsaEncrypt(message, key)
+	})
+	config.RegisterUdf("rsaDecrypt", func(message, key string) string {
+		return utils.RsaDecrypt(message, key)
+	})
+	config.RegisterUdf("pemToBase64", func(message string) string {
+		return utils.PemToBase64(message)
+	})
+	config.RegisterUdf("base64ToPem", func(message string) string {
+		return utils.Base64ToPem(message)
+	})
 	restEndpoint, err := endpoint.Registry.New(rest.Type, config, rest.Config{Server: fmt.Sprintf(":%d", apiPort)})
 	if err != nil {
 		log.Fatal(err)
