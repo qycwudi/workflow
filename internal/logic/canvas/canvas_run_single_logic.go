@@ -77,7 +77,7 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 
 	chain.OnMsgAndWait(msg, type2.WithTellNext(req.NodeId), type2.WithOnEnd(func(ctx type2.RuleContext, msg type2.RuleMsg, err error, relationType string) {
 		result = msg
-		ctx.DoOnEnd(msg, err, relationType)
+		// ctx.DoOnEnd(msg, err, relationType)
 	}))
 
 	var respData interface{}
