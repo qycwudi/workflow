@@ -3,9 +3,10 @@ package model
 import (
 	"context"
 	"fmt"
+	"strings"
+
 	"github.com/zeromicro/go-zero/core/logc"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
-	"strings"
 )
 
 var _ WorkspaceTagMappingModel = (*customWorkspaceTagMappingModel)(nil)
@@ -80,7 +81,7 @@ func (c customWorkspaceTagMappingModel) FindPageByTagId(ctx context.Context, cur
 	}
 	totalQuery := fmt.Sprintf("select count(*) from `workspace` as a join `workspace_tag_mapping` as b on a.workspace_id = b.workspace_id where b.tag_id in (%s)", inClause)
 	var total int64
-	_ = c.conn.QueryRowsCtx(ctx, &total, totalQuery, params...)
+	_ = c.conn.QueryRowCtx(ctx, &total, totalQuery, params...)
 
 	query := fmt.Sprintf("select a.workspace_id from `workspace` as a join `workspace_tag_mapping` as b on a.workspace_id = b.workspace_id where b.tag_id in (%s) order by b.id desc LIMIT ?, ?", inClause)
 	var resp []string
