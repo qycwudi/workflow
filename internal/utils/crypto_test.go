@@ -179,6 +179,8 @@ FwIDAQAB
 -----END PUBLIC KEY-----`
 	encrypt := RsaEncrypt("admin", pub)
 	fmt.Println(encrypt)
+	fmt.Println("--------------------------------")
+	fmt.Println(PemToBase64(pub))
 }
 
 func TestRsaDecrypt(t *testing.T) {
