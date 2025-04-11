@@ -4,7 +4,6 @@ FROM 10.12.0.78:5000/cosmos/ci:golang-1.23 AS builder
 # Qycssg00
 # docker tag 605517d6a654 registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:f6
 # docker push registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:f7
-
 # goctl kube deploy --name workflow-back --namespace workflow --port 8888 --o workflow-back-deploy.yaml
 
 LABEL stage=gobuilder
