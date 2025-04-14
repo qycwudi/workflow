@@ -51,6 +51,16 @@ func InitRoleChain(svc *svc.ServiceContext) {
 		return utils.Base64ToPem(message)
 	})
 
+	config.RegisterUdf("desEncrypt", func(message, key, vector string) string {
+		return utils.DESEncrypt(message, key, vector)
+	})
+	config.RegisterUdf("desDecrypt", func(message, key, vector string) string {
+		return utils.DESDecrypt(message, key, vector)
+	})
+	config.RegisterUdf("desGenerateKey", func() string {
+		return utils.DESGenerate3DesPrivateKey()
+	})
+
 	opts := []types.RuleEngineOption{
 		rulego.WithConfig(config),
 	}
