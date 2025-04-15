@@ -19,6 +19,7 @@ import (
 	"github.com/rulego/rulego/components/base"
 	"github.com/rulego/rulego/utils/maps"
 	"github.com/rulego/rulego/utils/str"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 func init() {
@@ -194,7 +195,7 @@ func (x *HttpCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*ht
 			return nil, err
 		}
 	}
-
+	logx.Infof("request body: %s", string(reqBody))
 	return http.NewRequest(x.Config.RequestMethod, endpointUrl, bytes.NewReader(reqBody))
 }
 
@@ -296,6 +297,10 @@ func (x *HttpCallNode) setRequestHeaders(req *http.Request, evn map[string]inter
 
 // sendRequest 发送HTTP请求
 func (x *HttpCallNode) sendRequest(req *http.Request) (*http.Response, error) {
+	// 打印请求的所有信息，用于排查问题
+	logx.Infof("method: %s", req.Method)
+	logx.Infof("url: %s", req.URL.String())
+	logx.Infof("headers: %+v", req.Header)
 	return x.httpClient.Do(req)
 }
 
