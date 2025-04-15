@@ -60,6 +60,9 @@ func InitRoleChain(svc *svc.ServiceContext) {
 	config.RegisterUdf("desGenerateKey", func() string {
 		return utils.DESGenerate3DesPrivateKey()
 	})
+	config.RegisterUdf("desSign", func(message, key string) string {
+		return utils.DESSign(message, key)
+	})
 
 	opts := []types.RuleEngineOption{
 		rulego.WithConfig(config),
