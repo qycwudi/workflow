@@ -52,16 +52,14 @@ func InitRoleChain(svc *svc.ServiceContext) {
 	})
 
 	config.RegisterUdf("desEncrypt", func(message, key, vector string) string {
-		return utils.DESEncrypt(message, key, vector)
+		return utils.Encrypt3DES(message, key, vector)
 	})
 	config.RegisterUdf("desDecrypt", func(message, key, vector string) string {
-		return utils.DESDecrypt(message, key, vector)
+		return utils.Decrypt3DES(message, key, vector)
 	})
-	config.RegisterUdf("desGenerateKey", func() string {
-		return utils.DESGenerate3DesPrivateKey()
-	})
+
 	config.RegisterUdf("desSign", func(message, key string) string {
-		return utils.DESSign(message, key)
+		return utils.SignRSA_MD5(message, key)
 	})
 
 	opts := []types.RuleEngineOption{
