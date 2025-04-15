@@ -40,9 +40,10 @@ const (
 	acceptKey       = "Accept"
 	eventStreamMime = "text/event-stream"
 
-	jsonContentType              = "application/json"
-	wwwFormUrlencodedContentType = "application/x-www-form-urlencoded"
-	formContentType              = "multipart/form-data"
+	jsonContentType                  = "application/json"
+	wwwFormUrlencodedContentType     = "application/x-www-form-urlencoded"
+	wwwFormUrlencodedContentTypeUtf8 = "application/x-www-form-urlencoded; charset=utf-8"
+	formContentType                  = "multipart/form-data"
 )
 
 // HttpCallNodeConfiguration rest配置
@@ -182,7 +183,7 @@ func (x *HttpCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*ht
 	var reqBody []byte
 	var err error
 	contentType := x.Config.Headers[contentTypeKey]
-	if contentType == wwwFormUrlencodedContentType {
+	if contentType == wwwFormUrlencodedContentType || contentType == wwwFormUrlencodedContentTypeUtf8 {
 		reqBody, err = x.prepareFormUrlEncodedRequestBody(msg)
 		if err != nil {
 			return nil, err
