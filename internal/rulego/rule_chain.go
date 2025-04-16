@@ -63,6 +63,13 @@ func InitRoleChain(svc *svc.ServiceContext) {
 		return utils.SignRSA_MD5(message, key)
 	})
 
+	config.RegisterUdf("fyyAesEncrypt", func(message, key string) string {
+		return utils.FyyAesEncrypt(message, key)
+	})
+	config.RegisterUdf("fyyAesDecrypt", func(message, key string) string {
+		return utils.FyyAesDecrypt(message, key)
+	})
+
 	opts := []types.RuleEngineOption{
 		rulego.WithConfig(config),
 	}
