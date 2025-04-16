@@ -20,6 +20,7 @@ type (
 		FindByApiId(ctx context.Context, apiId string, startTime int64, endTime int64, request string, response string, current int, pageSize int) (int64, []*ApiRecord, error)
 		FindByApiName(ctx context.Context, apiName string, current int, pageSize int) (int64, []*ApiRecord, error)
 		GetApiCallStatistics(ctx context.Context, apiId string, startTime int64, endTime int64) (*ApiCallStatistics, error)
+		BatchInsert(ctx context.Context, records []*ApiRecord) error
 	}
 
 	customApiRecordModel struct {
@@ -153,6 +154,19 @@ func (c customApiRecordModel) GetApiCallStatistics(ctx context.Context, apiId st
 		XAxis: xAxis,
 		YAxis: yAxis,
 	}, nil
+}
+
+func (c customApiRecordModel) BatchInsert(ctx context.Context, records []*ApiRecord) error {
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?)", c.table, apiRecordRowsExpectAutoSet)
+	blk, err := sqlx.NewBulkInserter(c.conn, query)
+	if err != nil {
+		return err
+	}
+	defer blk.Flush()
+	for _, record := range records {
+		blk.Insert(record.Status, record.TraceId, record.Param, record.Extend, record.CallTime, record.ApiId, record.ApiName, record.ErrorMsg, record.SecretyKey)
+	}
+	return nil
 }
 
 // NewApiRecordModel returns a model for the database table.

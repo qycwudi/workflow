@@ -3,6 +3,7 @@ package rulego
 import (
 	"context"
 	"fmt"
+	"time"
 
 	"github.com/rulego/rulego"
 	"github.com/rulego/rulego/api/types"
@@ -170,6 +171,11 @@ var traceQueue = make(chan *model.Trace, 100000)             // 带缓冲的通�
 var spaceRecordQueue = make(chan *model.SpaceRecord, 100000) // 带缓冲的通道
 var apiRecordQueue = make(chan *model.ApiRecord, 100000)     // 带缓冲的通道
 
+const (
+	batchSize     = 1000            // 批量插入的大小
+	flushInterval = 3 * time.Second // 强制刷新间隔
+)
+
 func asyncTraceWriter() {
 	for entry := range traceQueue {
 		writeTraceLogEntry(entry)
@@ -183,8 +189,34 @@ func asyncSpaceRecordWriter() {
 }
 
 func asyncApiRecordWriter() {
-	for entry := range apiRecordQueue {
-		writeApiRecordLogEntry(entry)
+	var records []*model.ApiRecord
+	ticker := time.NewTicker(flushInterval)
+	defer ticker.Stop()
+
+	// 批量写入函数
+	flushRecords := func() {
+		if len(records) > 0 {
+			err := RoleChain.svc.ApiRecordModel.BatchInsert(context.Background(), records)
+			if err != nil {
+				logx.Errorf("roleChain batch create api records error: %s", err.Error())
+			}
+			// 清空已处理的记录
+			records = records[:0]
+		}
+	}
+
+	for {
+		select {
+		case entry := <-apiRecordQueue:
+			records = append(records, entry)
+			// 当达到批量大小时，执行批量插入
+			if len(records) >= batchSize {
+				flushRecords()
+			}
+		case <-ticker.C:
+			// 定时刷新，确保数据及时写入
+			flushRecords()
+		}
 	}
 }
 
@@ -211,13 +243,6 @@ func writeSpaceRecordLogEntry(spaceRecord *model.SpaceRecord) {
 	_, err := RoleChain.svc.SpaceRecordModel.Insert(context.Background(), spaceRecord)
 	if err != nil {
 		logx.Errorf("roleChain create space record info error: %s", err.Error())
-	}
-}
-
-func writeApiRecordLogEntry(apiRecord *model.ApiRecord) {
-	_, err := RoleChain.svc.ApiRecordModel.Insert(context.Background(), apiRecord)
-	if err != nil {
-		logx.Errorf("roleChain create api record info error: %s", err.Error())
 	}
 }
 
