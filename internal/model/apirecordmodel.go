@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
@@ -164,7 +165,11 @@ func (c customApiRecordModel) BatchInsert(ctx context.Context, records []*ApiRec
 	}
 	defer blk.Flush()
 	for _, record := range records {
-		blk.Insert(record.Status, record.TraceId, record.Param, record.Extend, record.CallTime, record.ApiId, record.ApiName, record.ErrorMsg, record.SecretyKey)
+		callTime := record.CallTime.Format("2006-01-02 15:04:05")
+		err := blk.Insert(record.Status, record.TraceId, record.Param, record.Extend, callTime, record.ApiId, record.ApiName, record.ErrorMsg, record.SecretyKey)
+		if err != nil {
+			logx.Errorf("BatchInsert error: %s", err.Error())
+		}
 	}
 	return nil
 }
