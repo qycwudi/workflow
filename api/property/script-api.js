@@ -21,7 +21,7 @@ function randomAge() {
   return Math.floor(Math.random() * 50) + 18;
 }
 export default function () {
-  const url = 'http://192.168.0.12:8889/api/role/v1/cvvih8frng8rbrjee3gg';
+  const url = 'http://10.99.169.49:8889/api/role/v1/cvl313pnhrgp7l45jlk0';
   const payload = JSON.stringify({
     "username":"xuetu",
     "name": randomName(),
@@ -31,7 +31,7 @@ export default function () {
   const params = {
     headers: {
       'Content-Type': 'application/json',
-      'Authorization': 'Bearer ecab0d05783949c8a3169df8ab085a9c'
+      'Authoriation': 'Bearer ecab0d05783949c8a3169df8ab085a9c'
     },
   };
 
