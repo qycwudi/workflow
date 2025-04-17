@@ -1,6 +1,7 @@
 package rulego
 
 import (
+	"fmt"
 	"math/rand"
 	"strconv"
 	"time"
@@ -37,15 +38,15 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 		logx.Info(err.Error())
 		errMsg = err.Error()
 	}
+	startTime := msg.Metadata.Values()["startTime"]
+	if startTime == "" {
+		logx.Errorf("start time is empty")
+		startTime = time.Now().Format(time.DateTime)
+	}
+	start, _ := strconv.Atoi(startTime)
+	duration := time.Since(time.UnixMilli(int64(start))).Milliseconds()
 	if msg.Type == enums.CanvasMsg {
 		// 获取开始时间
-		startTime := msg.Metadata.Values()["startTime"]
-		if startTime == "" {
-			logx.Errorf("start time is empty")
-			startTime = time.Now().Format(time.DateTime)
-		}
-		start, _ := strconv.Atoi(startTime)
-		duration := time.Since(time.UnixMilli(int64(start))).Milliseconds()
 		spaceRecordQueue <- &model.SpaceRecord{
 			// todo 这里SerialNumber后面追加一个随机数，已经出现过一样的情况，导致数据写入失败
 			SerialNumber: msg.Id + strconv.Itoa(rand.Intn(9999)+10000),
@@ -66,7 +67,7 @@ func (aspect *RunAop) End(ctx types.RuleContext, msg types.RuleMsg, err error, r
 			ApiId:      msg.Metadata["api_id"],
 			ApiName:    msg.Metadata["api_name"],
 			SecretyKey: msg.Metadata["secret_key"],
-			ErrorMsg:   errMsg,
+			ErrorMsg:   fmt.Sprintf("duration:%d,err:%s", duration, errMsg),
 		}
 	}
 	return msg
