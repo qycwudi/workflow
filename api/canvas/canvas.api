@@ -1,14 +1,16 @@
 syntax = "v1"
 
 type CanvasRunRequest {
-	Id string `json:"id" desc:"空间ID"`
+	Id     string                 `json:"id" desc:"空间ID"`
+	Params map[string]interface{} `json:"params"`
 }
 
 type CanvasRunResponse {
-	Ts       int64             `json:"ts"`
-	Id       string            `json:"id"`
-	MetaData map[string]string `json:"metadata"`
-	Data     interface{}       `json:"data"`
+	Id       string `json:"id"`
+	Duration int64  `json:"duration"`
+	Data     interface{} `json:"data"`
+	Status   string      `json:"status"`
+	Error    string      `json:"error"`
 }
 
 type CanvasRunSingleRequest {
