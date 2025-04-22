@@ -69,16 +69,16 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 
 	ruleChain := ""
 	// _, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
-	}
+	// if err != nil {
+	// 	return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
+	// }
 	// 查询有没有发布过job
 	job, err := l.svcCtx.JobModel.FindByWorkspaceId(l.ctx, req.WorkSpaceId)
 	if err != nil && err != sqlc.ErrNotFound {
 		return nil, errors.New(int(logic.SystemStoreError), "查询Job失败")
 	}
 	var jobId string
-	jobParam := make(map[string]interface{})
+	jobParam := make(map[string]any)
 	err = json.Unmarshal([]byte(req.JobParam), &jobParam)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析 Job 参数失败")
