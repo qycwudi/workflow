@@ -147,60 +147,25 @@ func TestGenRsaKey(t *testing.T) {
 	fmt.Println(keys["privateKey"])
 	fmt.Println("------------公钥--------------------")
 	fmt.Println(keys["publicKey"])
+
+	pri := PemToBase64(keys["privateKey"])
+	fmt.Println("------------私钥base64--------------------")
+	fmt.Println(pri)
+
+	pub := PemToBase64(keys["publicKey"])
+	fmt.Println("------------公钥base64--------------------")
+	fmt.Println(pub)
 }
-
-/*
-
-------------私钥--------------------
------BEGIN RSA PRIVATE KEY-----
-MIIEpAIBAAKCAQEApnWyufKUqpxJ1BnrGBHY/qw2iZmwH7mQwknLKuy0GzwJE38b
-15YyOnUQsixqnMjS+ijYoewnIjoJzkRG+IKILhwYfr/KICp+yUUOUdznj+UWcduE
-4ArMJClmQO7QxH7i6aEUnZZaWR0Y6fNF8tNAAK6BMMXBweijr3DK8NbU4BicCSE6
-cA0QFaa/AShZwbh0jHOfH7o21YKxp0OKi2m3/cT1eW49dxD4NICQWgHcyF5p5Q+I
-ZGlWkAjDRX0tGWZn3I/DRrHLmOt5BkV/si/WUH14ohjkqxNaCspdagYh5N2W8y7e
-QZ7OIVkHRkA1huShj1si2QW3ecf17AaGT26DFwIDAQABAoIBAFx8lrIkKx/kOE0F
-nY7BE9zkWGT5pFbsJpccoyqVW7iqEazoedK92+iI9J7aeN3l4vslSMAm0tN8hcg6
-PWiENh/QcneyHh7jHZC8sqkfYPWdZmwaeOh2d1g8PFkll48lpPQEEM1CJa7PsPED
-vsCdSTlXu+Yaan5PwOqQc+F+q8ZaYFk7lmCEgOWVTgwA6M7DOp7rcEzTnuJY9cie
-PfHOZRrPOT+/V01hiKsbUWYvb2MWbfF/wxJwRAsG4u7Z6sQUDYipcQ85CYxt6m+t
-YOap2Az+MSnGeM8Pf+KA2EKoR9Q7JejcD056DVAJcMuQNDguWxz6nje0vWRlL79l
-Haym5gkCgYEAw9AY88DomONfnLdYNNi12F5wQKKg4Uz46T+S0SK6KOrHs7J57VvW
-4Kpy+jqHTDxpeCp2IOECBPT5nyMyfLsyBlFAVjw0b+i6STg1uw/8xyl8+Dma0v36
-DfUwiCrCmRSTzlHWf3cKNtjheGNlFy8qIfWFBznIpnMZX3lgxDBhW4UCgYEA2Z/l
-N8zIn7SNAVWcSCYuk2sy5LgkK4pozx9BXzcBlXai/EgD65DVYylQaEfl5QOTBE3K
-et3iGGPJRAakW6pC6J9RsRO6HfGJdkuOeVSAKgm36Tm4rYfV0bu7hH+xssD0d9fd
-2W8RynFtnkaaov9mnbIp43JHcVl0WnlVnFApgOsCgYEApeYYTeSB7I6vghJgXB3D
-K3cPueNPVLMnLE8db6zxdhs8aQXsgWpPCne/BDw0RyXj4dhvzvl0AYkgOHDUpJLh
-FjMexDEr6CiQM9q4wy0PaBnBdHkxsFNX2R2EKcm4p4OkmqgBiGrtr3xewuXLTzI5
-ix39wBp34nYf6CDpGC85PRUCgYEArA40hSdMvqdai+GJi6lUTY0FUbscLahiMM7/
-Oi4c/HQta9Pr9YQukRWK0sd1RNjMlSyDlxxxsuLBrxypOSelepDrX1q/XQknqvUV
-kWtzYMkKNEREdD3emNEZ8ima7j6LiWyLo2qi4DFJf0dG3vOZx7eiUoZ5YW5eBWHE
-g68FAT0CgYAgA4wOsUTVcNUm2eG903h8ogjhmPRXwnEg6qwmFXdhD3vWUzFx214m
-Tr50O1kW46VxSXjTP/yVxolcSrlFzB15sZk5dHUaNiTj+KU4lNAV5IMc02JP2EbM
-RY0jOBEaIAvHslZDNtyIccVKFLDjKtutc9BB0V/YvZvysoY9UxVJAA==
------END RSA PRIVATE KEY-----
-
-------------公钥--------------------
------BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApnWyufKUqpxJ1BnrGBHY
-/qw2iZmwH7mQwknLKuy0GzwJE38b15YyOnUQsixqnMjS+ijYoewnIjoJzkRG+IKI
-LhwYfr/KICp+yUUOUdznj+UWcduE4ArMJClmQO7QxH7i6aEUnZZaWR0Y6fNF8tNA
-AK6BMMXBweijr3DK8NbU4BicCSE6cA0QFaa/AShZwbh0jHOfH7o21YKxp0OKi2m3
-/cT1eW49dxD4NICQWgHcyF5p5Q+IZGlWkAjDRX0tGWZn3I/DRrHLmOt5BkV/si/W
-UH14ohjkqxNaCspdagYh5N2W8y7eQZ7OIVkHRkA1huShj1si2QW3ecf17AaGT26D
-FwIDAQAB
------END PUBLIC KEY-----
-*/
 
 func TestRsaEncrypt(t *testing.T) {
 	pub := `-----BEGIN PUBLIC KEY-----
-MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEApnWyufKUqpxJ1BnrGBHY
-/qw2iZmwH7mQwknLKuy0GzwJE38b15YyOnUQsixqnMjS+ijYoewnIjoJzkRG+IKI
-LhwYfr/KICp+yUUOUdznj+UWcduE4ArMJClmQO7QxH7i6aEUnZZaWR0Y6fNF8tNA
-AK6BMMXBweijr3DK8NbU4BicCSE6cA0QFaa/AShZwbh0jHOfH7o21YKxp0OKi2m3
-/cT1eW49dxD4NICQWgHcyF5p5Q+IZGlWkAjDRX0tGWZn3I/DRrHLmOt5BkV/si/W
-UH14ohjkqxNaCspdagYh5N2W8y7eQZ7OIVkHRkA1huShj1si2QW3ecf17AaGT26D
-FwIDAQAB
+MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA1oXeHBdz4ceYgvnI+z8/
+oRmERLZKzFtfuw1h4hsy55UfCLbh++UAeD2j/Baan8H/IaRFxKMeGtm4u9ew45DS
+4UN8xKLls9YOmJWUb0mP9pIF75Pri2+ppOG2RTiXOoOjflJ6xudXkKUYaW/y8Twv
+5UkY+khJdNtO4/KCmQTp3mXB8ePDfB4iRRhMqA58+TmDkjCOE2Rv9pWhF0b7tjxX
+8xYfsbQtrNRQVnGHbNbsF4DV9rsiroggBMjhDNDl1vb+A0Gp6lIoRl4FSwJKb6f3
+98inx32+JYflzcubWPvfqGEDXd1N3VigiIRKFIAApOKvB5+0zz5kCz/98eemnrd4
+iQIDAQAB
 -----END PUBLIC KEY-----`
 	encrypt := RsaEncrypt("admin", pub)
 	fmt.Println(encrypt)
@@ -239,6 +204,24 @@ RY0jOBEaIAvHslZDNtyIccVKFLDjKtutc9BB0V/YvZvysoY9UxVJAA==
 -----END RSA PRIVATE KEY-----`
 	decrypt := RsaDecrypt(encrypt, pri)
 	fmt.Println(decrypt)
+}
+
+func TestRsaEncryptJwt(t *testing.T) {
+	k := "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCBOHFd9bnsc9YIgDmkLaw1jNnpevg9ER4jIfB38BuTZXET+dbkHItXqJztk3hHBg+bpEdH87Jp03uXuUQ2uby+Qyjs8RzXKrZjqEgDN+KWmoqVRliiSXScyNXQN8i5FecvZo+BxcfdbBSXQQea3Ge6ToNVrbC1NVwqwH44+oc1qwIDAQAB"
+	// k := "LS0tLS1CRUdJTiBQVUJMSUMgS0VZLS0tLS0KTUlJQklqQU5CZ2txaGtpRzl3MEJBUUVGQUFPQ0FROEFNSUlCQ2dLQ0FRRUFyUTBDcUZ3Ly9TblJFNTg4c1dNawpvN3dDQkZjeWRLc0NSN1o2YkU2b20zaXZXUzJIL29tb3IvZ3hZb2kzNEw5anZVYlhQMHZ2Y042aW9VM0U1OWpZCmhZT1VDTlBKNmVNMFFqam5PV0pyWStTbldRL0xEWTl3dElFRi9SRWZ6SUpDOGUybmZXL2FIOE0zSlhEQVl4eEwKQjloY2dEckJXUnlDWWZsRlRGM25WSkgwd09Yd3BiM3d4S1ozc1ppQ2hDS1VBMDVQQkVBcXJTcjVabkJDRlBZdQpIZ0xObCtMcHVPaUhkTS9SM2xKV1UyTkNGT3FybEs3YzEzZmE5dzdCWU5HZnVkcWUrYjV0YXlpbVQrSUY5S3RBCmVMdlcvVDRuOW1CT2dXcUNoQkwzWTk0MHlhMzBSQ0pqemd2bndiTkk0R2VaQWtDeW1rd3hKZnpwWUJBL1hteWQKMndJREFRQUIKLS0tLS1FTkQgUFVCTElDIEtFWS0tLS0tCg=="
+	pem := Base64ToPem(k)
+	// fmt.Println(pem)
+	encrypt := RsaEncrypt("admin", pem)
+	fmt.Println(encrypt)
+}
+
+func RsaDecryptJwt(t *testing.T) {
+	k := "MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAIE4cV31uexz1giAOaQtrDWM2el6+D0RHiMh8HfwG5NlcRP51uQci1eonO2TeEcGD5ukR0fzsmnTe5e5RDa5vL5DKOzxHNcqtmOoSAM34paaipVGWKJJdJzI1dA3yLkV5y9mj4HFx91sFJdBB5rcZ7pOg1WtsLU1XCrAfjj6hzWrAgMBAAECgYAM+I/0qQ5VLFl/N/PRRZ5kL7POCoBxjM7UIvuC5pC2Dng305vdAPqBvZSnCmcH5hVZ/7cCA3XUxpxA4iF1Rtaps6Swy5yTY8Y42fhYN+sdcG8ZW5vUayBzZb7cy+yglNgnFok7Dtz1/lhy+6/YMudZufR4NjG6GwQIDYzPD4rbNQJBAJzVrdPvmbkc4F7LzNEpY/9q6ce704H+RA4/puMmSDVr1TubaSRoXgzB9fq3wCGB7RhlA1tquyDXZperl+9zhK0CQQDS7PE756QgOYtfsqWR9s4bYoiKiFZq956/hMPUfddrB0DExUw1RHUbPmulHV36wTKDiBDNXN3RlIEqK7NMzpa3AkEAm3G+RF0qg6r3R32/l1/q2PFinLCxRhp54ZV9F46N60Thp561a3x2GzbzUnhlWdCo6pDT7vuuVTKpYJKWmKJqUQJAUYnla8oNiaOVPIZ8OSQW40FBFYTFG47kIJd7eM65Exf3stmurzzqpICJ7oeeyAwdsflMvYbz/UwSbrH8G2oVmwJACN0exs9b4C1nvzbUjjHGAUtQCYtmO2noyLzAJtywIClkSfVn7JBAy7djWPwjgWTkojQlT8HU1EDzOa3/Afu/xg=="
+	pem := Base64ToPem(k)
+	fmt.Println(pem)
+
+	// decrypt := RsaDecrypt(encrypt, pem)
+	// fmt.Println(decrypt)
 }
 
 // Cipher3DES 加密函数

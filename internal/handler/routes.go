@@ -26,219 +26,94 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.PermissionMiddleware},
 			[]rest.Route{
 				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/new",
-					Handler: workspace.WorkSpaceNewHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/remove",
-					Handler: workspace.WorkSpaceRemoveHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/edit",
-					Handler: workspace.WorkSpaceEditHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/list",
-					Handler: workspace.WorkSpaceListHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/edit/tag",
-					Handler: workspace.WorkSpaceEditTagHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/tag/list",
-					Handler: workspace.TagListHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/tag/edit",
-					Handler: workspace.TagEditHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/tag/remove",
-					Handler: workspace.TagRemoveHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/mock",
-					Handler: workspace.MockHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/copy",
-					Handler: workspace.WorkSpaceCopyHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/env/list",
-					Handler: workspace.WorkSpaceEnvListHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/env/edit",
-					Handler: workspace.WorkSpaceEnvEditHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/export",
-					Handler: workspace.WorkSpaceExportHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/workspace/import",
-					Handler: workspace.WorkSpaceImportHandler(serverCtx),
-				},
-			}...,
-		),
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/workflow"),
-	)
-
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.PermissionMiddleware},
-			[]rest.Route{
-				{
-					Method:  http.MethodPost,
-					Path:    "/canvas/draft",
-					Handler: canvas.CanvasDraftHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/canvas/detail",
-					Handler: canvas.CanvasDetailHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/canvas/run",
-					Handler: canvas.CanvasRunHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/canvas/run/single",
-					Handler: canvas.CanvasRunSingleHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/canvas/run/single/detail",
-					Handler: canvas.CanvasRunSingleDetailHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/canvas/run/history/:workSpaceId",
-					Handler: canvas.GetCanvasRunHistoryHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodGet,
-					Path:    "/canvas/run/detail/:recordId",
-					Handler: canvas.GetCanvasRunDetailHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/canvas/history/save",
-					Handler: canvas.SaveCanvasHistoryHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/canvas/history/list",
-					Handler: canvas.GetCanvasHistoryListHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/canvas/history/restore",
-					Handler: canvas.RestoreCanvasHistoryHandler(serverCtx),
-				},
-			}...,
-		),
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/workflow"),
-	)
-
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.PermissionMiddleware},
-			[]rest.Route{
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/publish",
-					Handler: api.ApiPublishHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/list",
-					Handler: api.ApiListHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/onoff",
-					Handler: api.ApiOnOffHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/edit",
-					Handler: api.ApiEditHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/records",
-					Handler: api.ApiRecordsHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/secretkey/list",
-					Handler: api.ApiSecretKeyListHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/secretkey/create",
-					Handler: api.ApisecretKeyCreateHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/secretkey/update/status",
-					Handler: api.ApisecretKeyUpdateStatusHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/secretkey/update/expirationtime",
-					Handler: api.ApisecretKeyUpdateExpirationTimeHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/secretkey/delete",
-					Handler: api.ApisecretKeyDeleteHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/api/history",
-					Handler: api.ApiHistoryHandler(serverCtx),
-				},
-				{
+					// API调用
 					Method:  http.MethodPost,
 					Path:    "/api/call",
 					Handler: api.ApiCallHandler(serverCtx),
 				},
 				{
+					// api调用统计
+					Method:  http.MethodPost,
+					Path:    "/api/call/statistics",
+					Handler: api.ApiCallStatisticsHandler(serverCtx),
+				},
+				{
+					// API调用模板
 					Method:  http.MethodPost,
 					Path:    "/api/call/template",
 					Handler: api.ApiCallTemplateHandler(serverCtx),
 				},
 				{
+					// API编辑
+					Method:  http.MethodPost,
+					Path:    "/api/edit",
+					Handler: api.ApiEditHandler(serverCtx),
+				},
+				{
+					// API导出 curl
 					Method:  http.MethodPost,
 					Path:    "/api/export/curl",
 					Handler: api.ApiExportCurlHandler(serverCtx),
 				},
 				{
+					// API历史版本
 					Method:  http.MethodPost,
-					Path:    "/api/call/statistics",
-					Handler: api.ApiCallStatisticsHandler(serverCtx),
+					Path:    "/api/history",
+					Handler: api.ApiHistoryHandler(serverCtx),
+				},
+				{
+					// API发布列表
+					Method:  http.MethodPost,
+					Path:    "/api/list",
+					Handler: api.ApiListHandler(serverCtx),
+				},
+				{
+					// APIOnOff
+					Method:  http.MethodPost,
+					Path:    "/api/onoff",
+					Handler: api.ApiOnOffHandler(serverCtx),
+				},
+				{
+					// API发布
+					Method:  http.MethodPost,
+					Path:    "/api/publish",
+					Handler: api.ApiPublishHandler(serverCtx),
+				},
+				{
+					// API调用记录
+					Method:  http.MethodPost,
+					Path:    "/api/records",
+					Handler: api.ApiRecordsHandler(serverCtx),
+				},
+				{
+					// 创建API密钥
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/create",
+					Handler: api.ApisecretKeyCreateHandler(serverCtx),
+				},
+				{
+					// 删除API密钥
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/delete",
+					Handler: api.ApisecretKeyDeleteHandler(serverCtx),
+				},
+				{
+					// secretKeyList
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/list",
+					Handler: api.ApiSecretKeyListHandler(serverCtx),
+				},
+				{
+					// 修改API密钥到期时间
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/update/expirationtime",
+					Handler: api.ApisecretKeyUpdateExpirationTimeHandler(serverCtx),
+				},
+				{
+					// 修改API密钥状态
+					Method:  http.MethodPost,
+					Path:    "/api/secretkey/update/status",
+					Handler: api.ApisecretKeyUpdateStatusHandler(serverCtx),
 				},
 			}...,
 		),
@@ -251,19 +126,10 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.PermissionMiddleware},
 			[]rest.Route{
 				{
+					// 根据参数获取下拉框
 					Method:  http.MethodPost,
-					Path:    "/module/list",
-					Handler: model.ModuleListHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/module/new",
-					Handler: model.ModuleNewHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/module/edit",
-					Handler: model.ModuleEditHandler(serverCtx),
+					Path:    "/basics/dropdown",
+					Handler: basics.GetDropDownListHandler(serverCtx),
 				},
 			}...,
 		),
@@ -276,26 +142,101 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.PermissionMiddleware},
 			[]rest.Route{
 				{
+					// 画布详情
 					Method:  http.MethodPost,
-					Path:    "/datasource/list",
-					Handler: datasource.DatasourceListHandler(serverCtx),
+					Path:    "/canvas/detail",
+					Handler: canvas.CanvasDetailHandler(serverCtx),
 				},
 				{
+					// 画布更新
+					Method:  http.MethodPost,
+					Path:    "/canvas/draft",
+					Handler: canvas.CanvasDraftHandler(serverCtx),
+				},
+				{
+					// 获取历史版本列表
+					Method:  http.MethodPost,
+					Path:    "/canvas/history/list",
+					Handler: canvas.GetCanvasHistoryListHandler(serverCtx),
+				},
+				{
+					// 恢复历史版本
+					Method:  http.MethodPost,
+					Path:    "/canvas/history/restore",
+					Handler: canvas.RestoreCanvasHistoryHandler(serverCtx),
+				},
+				{
+					// 保存历史版本
+					Method:  http.MethodPost,
+					Path:    "/canvas/history/save",
+					Handler: canvas.SaveCanvasHistoryHandler(serverCtx),
+				},
+				{
+					// 全部运行
+					Method:  http.MethodPost,
+					Path:    "/canvas/run",
+					Handler: canvas.CanvasRunHandler(serverCtx),
+				},
+				{
+					// 获取画布运行详情
+					Method:  http.MethodGet,
+					Path:    "/canvas/run/detail/:recordId",
+					Handler: canvas.GetCanvasRunDetailHandler(serverCtx),
+				},
+				{
+					// 获取画布运行历史
+					Method:  http.MethodGet,
+					Path:    "/canvas/run/history/:workSpaceId",
+					Handler: canvas.GetCanvasRunHistoryHandler(serverCtx),
+				},
+				{
+					// 单组件运行
+					Method:  http.MethodPost,
+					Path:    "/canvas/run/single",
+					Handler: canvas.CanvasRunSingleHandler(serverCtx),
+				},
+				{
+					// 组件运行详情
+					Method:  http.MethodPost,
+					Path:    "/canvas/run/single/detail",
+					Handler: canvas.CanvasRunSingleDetailHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					// 新增数据源
 					Method:  http.MethodPost,
 					Path:    "/datasource/add",
 					Handler: datasource.DatasourceAddHandler(serverCtx),
 				},
 				{
-					Method:  http.MethodPost,
-					Path:    "/datasource/edit",
-					Handler: datasource.DatasourceEditHandler(serverCtx),
-				},
-				{
+					// 删除数据源
 					Method:  http.MethodPost,
 					Path:    "/datasource/delete",
 					Handler: datasource.DatasourceDeleteHandler(serverCtx),
 				},
 				{
+					// 编辑数据源
+					Method:  http.MethodPost,
+					Path:    "/datasource/edit",
+					Handler: datasource.DatasourceEditHandler(serverCtx),
+				},
+				{
+					// 数据源列表
+					Method:  http.MethodPost,
+					Path:    "/datasource/list",
+					Handler: datasource.DatasourceListHandler(serverCtx),
+				},
+				{
+					// 测试数据源
 					Method:  http.MethodPost,
 					Path:    "/datasource/test",
 					Handler: datasource.DatasourceTestHandler(serverCtx),
@@ -307,8 +248,221 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	)
 
 	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					// Job修改
+					Method:  http.MethodPost,
+					Path:    "/job/edit",
+					Handler: job.JobEditHandler(serverCtx),
+				},
+				{
+					// Job历史版本
+					Method:  http.MethodPost,
+					Path:    "/job/history",
+					Handler: job.JobHistoryHandler(serverCtx),
+				},
+				{
+					// Job列表
+					Method:  http.MethodPost,
+					Path:    "/job/list",
+					Handler: job.JobListHandler(serverCtx),
+				},
+				{
+					// Job上下线
+					Method:  http.MethodPost,
+					Path:    "/job/onoff",
+					Handler: job.JobOnOffHandler(serverCtx),
+				},
+				{
+					// Job发布
+					Method:  http.MethodPost,
+					Path:    "/job/publish",
+					Handler: job.JobPublishHandler(serverCtx),
+				},
+				{
+					// Job执行记录
+					Method:  http.MethodPost,
+					Path:    "/job/records",
+					Handler: job.JobRecordsHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					// 创建键值对
+					Method:  http.MethodPost,
+					Path:    "/kv/create",
+					Handler: kv.CreateKvHandler(serverCtx),
+				},
+				{
+					// 删除键值对
+					Method:  http.MethodPost,
+					Path:    "/kv/delete",
+					Handler: kv.DeleteKvHandler(serverCtx),
+				},
+				{
+					// 获取键值对详情
+					Method:  http.MethodPost,
+					Path:    "/kv/get",
+					Handler: kv.GetKvHandler(serverCtx),
+				},
+				{
+					// 获取键值对列表
+					Method:  http.MethodPost,
+					Path:    "/kv/list",
+					Handler: kv.ListKvHandler(serverCtx),
+				},
+				{
+					// 更新键值对
+					Method:  http.MethodPost,
+					Path:    "/kv/update",
+					Handler: kv.UpdateKvHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					// 组件编辑
+					Method:  http.MethodPost,
+					Path:    "/module/edit",
+					Handler: model.ModuleEditHandler(serverCtx),
+				},
+				{
+					// 组件list
+					Method:  http.MethodPost,
+					Path:    "/module/list",
+					Handler: model.ModuleListHandler(serverCtx),
+				},
+				{
+					// 组件新建
+					Method:  http.MethodPost,
+					Path:    "/module/new",
+					Handler: model.ModuleNewHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					// 创建权限
+					Method:  http.MethodPost,
+					Path:    "/permission/create",
+					Handler: permission.CreatePermissionHandler(serverCtx),
+				},
+				{
+					// 删除权限
+					Method:  http.MethodPost,
+					Path:    "/permission/delete",
+					Handler: permission.DeletePermissionHandler(serverCtx),
+				},
+				{
+					// 获取权限详情
+					Method:  http.MethodPost,
+					Path:    "/permission/get",
+					Handler: permission.GetPermissionHandler(serverCtx),
+				},
+				{
+					// 权限列表
+					Method:  http.MethodPost,
+					Path:    "/permission/list",
+					Handler: permission.GetPermissionListHandler(serverCtx),
+				},
+				{
+					// 获取权限树
+					Method:  http.MethodPost,
+					Path:    "/permission/tree",
+					Handler: permission.GetPermissionTreeHandler(serverCtx),
+				},
+				{
+					// 更新权限
+					Method:  http.MethodPost,
+					Path:    "/permission/update",
+					Handler: permission.UpdatePermissionHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		rest.WithMiddlewares(
+			[]rest.Middleware{serverCtx.PermissionMiddleware},
+			[]rest.Route{
+				{
+					// 批量绑定权限
+					Method:  http.MethodPost,
+					Path:    "/role/batchbindpermission",
+					Handler: role.BatchBindPermissionHandler(serverCtx),
+				},
+				{
+					// 创建角色
+					Method:  http.MethodPost,
+					Path:    "/role/create",
+					Handler: role.CreateRoleHandler(serverCtx),
+				},
+				{
+					// 删除角色
+					Method:  http.MethodPost,
+					Path:    "/role/delete",
+					Handler: role.DeleteRoleHandler(serverCtx),
+				},
+				{
+					// 获取角色详情
+					Method:  http.MethodPost,
+					Path:    "/role/get",
+					Handler: role.GetRoleHandler(serverCtx),
+				},
+				{
+					// 获取角色权限
+					Method:  http.MethodPost,
+					Path:    "/role/getpermission",
+					Handler: role.GetRolePermissionHandler(serverCtx),
+				},
+				{
+					// 获取角色列表
+					Method:  http.MethodPost,
+					Path:    "/role/list",
+					Handler: role.ListRoleHandler(serverCtx),
+				},
+				{
+					// 更新角色
+					Method:  http.MethodPost,
+					Path:    "/role/update",
+					Handler: role.UpdateRoleHandler(serverCtx),
+				},
+			}...,
+		),
+		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
 		[]rest.Route{
 			{
+				// 用户登录
 				Method:  http.MethodPost,
 				Path:    "/user/login",
 				Handler: user.UserLoginHandler(serverCtx),
@@ -322,84 +476,46 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.PermissionMiddleware},
 			[]rest.Route{
 				{
-					Method:  http.MethodPost,
-					Path:    "/user/info",
-					Handler: user.UserInfoHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/user/register",
-					Handler: user.UserRegisterHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/user/logout",
-					Handler: user.UserLogoutHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/user/list",
-					Handler: user.UserListHandler(serverCtx),
-				},
-				{
+					// 绑定角色
 					Method:  http.MethodPost,
 					Path:    "/user/bindrole",
 					Handler: user.UserBindRoleHandler(serverCtx),
 				},
 				{
+					// 用户信息
 					Method:  http.MethodPost,
-					Path:    "/user/update/status",
-					Handler: user.UserUpdateStatusHandler(serverCtx),
+					Path:    "/user/info",
+					Handler: user.UserInfoHandler(serverCtx),
 				},
 				{
+					// 获取用户列表
+					Method:  http.MethodPost,
+					Path:    "/user/list",
+					Handler: user.UserListHandler(serverCtx),
+				},
+				{
+					// 用户退出登录
+					Method:  http.MethodPost,
+					Path:    "/user/logout",
+					Handler: user.UserLogoutHandler(serverCtx),
+				},
+				{
+					// 用户注册
+					Method:  http.MethodPost,
+					Path:    "/user/register",
+					Handler: user.UserRegisterHandler(serverCtx),
+				},
+				{
+					// 更新用户信息
 					Method:  http.MethodPost,
 					Path:    "/user/update/info",
 					Handler: user.UserUpdateInfoHandler(serverCtx),
 				},
-			}...,
-		),
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/workflow"),
-	)
-
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.PermissionMiddleware},
-			[]rest.Route{
 				{
+					// 修改用户状态
 					Method:  http.MethodPost,
-					Path:    "/role/create",
-					Handler: role.CreateRoleHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/role/update",
-					Handler: role.UpdateRoleHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/role/delete",
-					Handler: role.DeleteRoleHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/role/get",
-					Handler: role.GetRoleHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/role/list",
-					Handler: role.ListRoleHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/role/batchbindpermission",
-					Handler: role.BatchBindPermissionHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/role/getpermission",
-					Handler: role.GetRolePermissionHandler(serverCtx),
+					Path:    "/user/update/status",
+					Handler: user.UserUpdateStatusHandler(serverCtx),
 				},
 			}...,
 		),
@@ -412,124 +528,88 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			[]rest.Middleware{serverCtx.PermissionMiddleware},
 			[]rest.Route{
 				{
+					// Mock接口
 					Method:  http.MethodPost,
-					Path:    "/permission/create",
-					Handler: permission.CreatePermissionHandler(serverCtx),
+					Path:    "/mock",
+					Handler: workspace.MockHandler(serverCtx),
 				},
 				{
+					// 编辑标签
 					Method:  http.MethodPost,
-					Path:    "/permission/update",
-					Handler: permission.UpdatePermissionHandler(serverCtx),
+					Path:    "/tag/edit",
+					Handler: workspace.TagEditHandler(serverCtx),
 				},
 				{
+					// 列表tag
 					Method:  http.MethodPost,
-					Path:    "/permission/delete",
-					Handler: permission.DeletePermissionHandler(serverCtx),
+					Path:    "/tag/list",
+					Handler: workspace.TagListHandler(serverCtx),
 				},
 				{
+					// 删除标签
 					Method:  http.MethodPost,
-					Path:    "/permission/get",
-					Handler: permission.GetPermissionHandler(serverCtx),
+					Path:    "/tag/remove",
+					Handler: workspace.TagRemoveHandler(serverCtx),
 				},
 				{
+					// WorkspaceCopyHandler 画布复制
 					Method:  http.MethodPost,
-					Path:    "/permission/tree",
-					Handler: permission.GetPermissionTreeHandler(serverCtx),
+					Path:    "/workspace/copy",
+					Handler: workspace.WorkSpaceCopyHandler(serverCtx),
 				},
 				{
+					// 编辑workspace
 					Method:  http.MethodPost,
-					Path:    "/permission/list",
-					Handler: permission.GetPermissionListHandler(serverCtx),
-				},
-			}...,
-		),
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/workflow"),
-	)
-
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.PermissionMiddleware},
-			[]rest.Route{
-				{
-					Method:  http.MethodPost,
-					Path:    "/kv/create",
-					Handler: kv.CreateKvHandler(serverCtx),
+					Path:    "/workspace/edit",
+					Handler: workspace.WorkSpaceEditHandler(serverCtx),
 				},
 				{
+					// 编辑workspace标签
 					Method:  http.MethodPost,
-					Path:    "/kv/update",
-					Handler: kv.UpdateKvHandler(serverCtx),
+					Path:    "/workspace/edit/tag",
+					Handler: workspace.WorkSpaceEditTagHandler(serverCtx),
 				},
 				{
+					// 画布环境变量修改
 					Method:  http.MethodPost,
-					Path:    "/kv/delete",
-					Handler: kv.DeleteKvHandler(serverCtx),
+					Path:    "/workspace/env/edit",
+					Handler: workspace.WorkSpaceEnvEditHandler(serverCtx),
 				},
 				{
+					// 画布环境变量列表
 					Method:  http.MethodPost,
-					Path:    "/kv/get",
-					Handler: kv.GetKvHandler(serverCtx),
+					Path:    "/workspace/env/list",
+					Handler: workspace.WorkSpaceEnvListHandler(serverCtx),
 				},
 				{
+					// 画布导出
 					Method:  http.MethodPost,
-					Path:    "/kv/list",
-					Handler: kv.ListKvHandler(serverCtx),
-				},
-			}...,
-		),
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/workflow"),
-	)
-
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.PermissionMiddleware},
-			[]rest.Route{
-				{
-					Method:  http.MethodPost,
-					Path:    "/job/publish",
-					Handler: job.JobPublishHandler(serverCtx),
+					Path:    "/workspace/export",
+					Handler: workspace.WorkSpaceExportHandler(serverCtx),
 				},
 				{
+					// 画布导入
 					Method:  http.MethodPost,
-					Path:    "/job/list",
-					Handler: job.JobListHandler(serverCtx),
+					Path:    "/workspace/import",
+					Handler: workspace.WorkSpaceImportHandler(serverCtx),
 				},
 				{
+					// 列表workspace
 					Method:  http.MethodPost,
-					Path:    "/job/onoff",
-					Handler: job.JobOnOffHandler(serverCtx),
+					Path:    "/workspace/list",
+					Handler: workspace.WorkSpaceListHandler(serverCtx),
 				},
 				{
+					// 创建workspace
 					Method:  http.MethodPost,
-					Path:    "/job/records",
-					Handler: job.JobRecordsHandler(serverCtx),
+					Path:    "/workspace/new",
+					Handler: workspace.WorkSpaceNewHandler(serverCtx),
 				},
 				{
+					// 删除workspace
 					Method:  http.MethodPost,
-					Path:    "/job/history",
-					Handler: job.JobHistoryHandler(serverCtx),
-				},
-				{
-					Method:  http.MethodPost,
-					Path:    "/job/edit",
-					Handler: job.JobEditHandler(serverCtx),
-				},
-			}...,
-		),
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
-		rest.WithPrefix("/workflow"),
-	)
-
-	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.PermissionMiddleware},
-			[]rest.Route{
-				{
-					Method:  http.MethodPost,
-					Path:    "/basics/dropdown",
-					Handler: basics.GetDropDownListHandler(serverCtx),
+					Path:    "/workspace/remove",
+					Handler: workspace.WorkSpaceRemoveHandler(serverCtx),
 				},
 			}...,
 		),

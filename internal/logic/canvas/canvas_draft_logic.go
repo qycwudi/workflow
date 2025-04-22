@@ -7,7 +7,6 @@ import (
 
 	"github.com/rulego/rulego/utils/json"
 	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/go-zero/core/utils"
 	"github.com/zeromicro/x/errors"
 
@@ -34,14 +33,11 @@ func NewCanvasDraftLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Canva
 
 func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *types.CanvasDraftResponse, err error) {
 	draftMarshal, _ := json.Marshal(req)
-	userId, err := util.GetUserId(l.ctx)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "获取用户id失败")
-	}
+	userId, _ := util.GetUserId(l.ctx)
 	userIdStr := strconv.FormatInt(userId, 10)
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {
-		if err == sqlc.ErrNotFound {
+		if err == model.ErrNotFound {
 			// 新增
 			_, err = l.svcCtx.CanvasModel.Insert(l.ctx, &model.Canvas{
 				WorkspaceId: req.Id,
@@ -71,6 +67,5 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 		Hash:       utils.NewUuid(),
 		UpdateTime: time.Now().UnixMilli(),
 	}
-
 	return resp, nil
 }

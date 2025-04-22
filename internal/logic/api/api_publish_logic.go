@@ -16,7 +16,6 @@ import (
 	"workflow/internal/dispatch/broadcast"
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -61,10 +60,6 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		return nil, errors.New(int(logic.SystemOrmError), "获取历史版本ID失败")
 	}
 
-	_, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
-	}
 	// 查询有没有发布过api
 	api, err := l.svcCtx.ApiModel.FindByWorkspaceId(l.ctx, req.Id)
 	if err != nil && err != sqlc.ErrNotFound {
@@ -83,7 +78,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 			ApiName:     req.ApiName,
 			ApiDesc:     req.ApiDesc,
 			Tag:         string(tagJson),
-			Dsl:         string(ruleChain),
+			Dsl:         canvas.Draft,
 			Status:      model.ApiStatusOn,
 			HistoryId:   int64(historyId),
 			CreateTime:  time.Now(),
@@ -102,7 +97,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 			ApiName:     req.ApiName,
 			ApiDesc:     req.ApiDesc,
 			Tag:         string(tagJson),
-			Dsl:         string(ruleChain),
+			Dsl:         canvas.Draft,
 			Status:      model.ApiStatusOn,
 			HistoryId:   int64(historyId),
 			CreateTime:  api.CreateTime,
@@ -116,7 +111,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 	// 3. 发送加载链服务消息
 	err = broadcast.NewApiLoadSync().Publish(l.ctx, &broadcast.ApiLoadSyncMsg{
 		ApiId:     apiId,
-		RuleChain: string(ruleChain),
+		RuleChain: canvas.Draft,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "发送加载链服务消息失败")

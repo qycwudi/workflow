@@ -8,7 +8,6 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/cache"
-	"workflow/internal/rulego"
 )
 
 const (
@@ -65,11 +64,7 @@ func (a *ApiLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 		return
 	}
 
-	// 加载链服务
-	err = rulego.RoleChain.LoadApiServiceChain(syncMsg.ApiId, []byte(syncMsg.RuleChain))
-	if err != nil {
-		logx.Errorf("ApiLoadSyncHandler load chain failed: %s", err.Error())
-		return
-	}
+	// 加载api服务
+
 	logx.Infof("ApiLoadSyncHandler load chain success: %s", syncMsg.ApiId)
 }

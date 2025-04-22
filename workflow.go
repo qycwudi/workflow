@@ -19,8 +19,8 @@ import (
 	"workflow/internal/config"
 	"workflow/internal/datasource"
 	"workflow/internal/handler"
-	"workflow/internal/rulego"
 	"workflow/internal/svc"
+	"workflow/internal/workflow"
 )
 
 var configFile = flag.String("f", "etc/workflow-api.yaml", "the config file")
@@ -96,16 +96,10 @@ func main() {
 	handler.RegisterHandlers(server, ctx)
 	// 初始化 redis
 	cache.NewRedis(ctx.RedisClient)
-	// 注册规则链
-	rulego.InitRoleChain(ctx)
-	// 注册链服务
-	rulego.InitRoleServer(c.RuleServerTrace, c.ApiPort, ctx.Config.RuleServerLimitSize)
+	// 初始化 工作流引擎
+	workflow.InitEngine(ctx)
 	// 初始化数据源连接池
 	datasource.InitDataSourceManager(ctx)
-	// 加载Job链
-	rulego.LoadJobChain()
-	// 加载Api链
-	rulego.LoadApiChain()
 	// 初始化 asynq
 	asynq.InitAsynqServer(ctx)
 	// 初始化 asynq 客户端

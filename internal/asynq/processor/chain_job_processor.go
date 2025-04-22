@@ -5,12 +5,11 @@ import (
 	"encoding/json"
 	"time"
 
-	"github.com/google/uuid"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/model"
-	"workflow/internal/rulego"
+	"workflow/internal/workflow"
 )
 
 const (
@@ -29,9 +28,8 @@ type ChainJobPayload struct {
 }
 
 func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Task) error {
-	traceId := uuid.New().String()
 	startTime := time.Now()
-	logx.Infof("%s start at: %s, traceId: %s", TOPIC_CHAIN_JOB, startTime.Format("2006-01-02 15:04:05"), traceId)
+	logx.Infof("%s start at: %s", TOPIC_CHAIN_JOB, startTime.Format("2006-01-02 15:04:05"))
 
 	var payload ChainJobPayload
 	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
@@ -40,7 +38,6 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 	}
 
 	// 执行任务链
-	logx.Infof("%s execute chain job, jobId: %s, canvasId: %s, traceId: %s", TOPIC_CHAIN_JOB, payload.JobId, payload.CanvasId, traceId)
 
 	// 读取 metadata
 	workspace, err := processor.workspaceModel.GetWorkspaceById(context.Background(), payload.CanvasId)
@@ -54,9 +51,6 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 		logx.Errorf("%s parse metadata failed: %v", TOPIC_CHAIN_JOB, err)
 		return err
 	}
-	metadata["traceId"] = traceId
-	metadata["startTime"] = time.Now().Format("2006-01-02 15:04:05")
-
 	// 读取参数
 	job, err := processor.jobModel.FindOneByJobId(context.Background(), payload.JobId)
 	if err != nil {
@@ -65,21 +59,36 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 	}
 
 	if job.Status == model.JobStatusOff {
-		logx.Infof("%s job is off, jobId: %s, traceId: %s", TOPIC_CHAIN_JOB, payload.JobId, traceId)
+		logx.Infof("%s job is off, jobId: %s", TOPIC_CHAIN_JOB, payload.JobId)
 		return nil
 	}
 
+	params := make(map[string]any)
+	err = json.Unmarshal([]byte(job.Params), &params)
+	if err != nil {
+		logx.Errorf("%s parse params failed: %v", TOPIC_CHAIN_JOB, err)
+		return err
+	}
 	// 运行
-	result := rulego.RoleChain.Run(payload.JobId, metadata, job.Params)
-	logx.Infof("chain run result:%+v, traceId: %s", result, traceId)
+	serialId, result, err := workflow.Run(ctx, payload.CanvasId, params)
+	if err != nil {
+		logx.Errorf("chain run failed: %v", err)
+		return err
+	}
+	logx.Infof("chain run result:%+v, serialId: %s", result, serialId)
+	resultJson, err := json.Marshal(result)
+	if err != nil {
+		logx.Errorf("marshal result failed: %v", err)
+		return err
+	}
 	// 保存记录
 	jobRecord := model.JobRecord{
 		JobId:    payload.JobId,
 		JobName:  job.JobName,
 		Status:   "success",
-		TraceId:  traceId,
+		TraceId:  serialId,
 		Param:    job.Params,
-		Result:   string(result.Data),
+		Result:   string(resultJson),
 		ExecTime: time.Now(),
 		Duration: int64(time.Since(startTime).Milliseconds()),
 	}
@@ -88,8 +97,8 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 		logx.Errorf("save job record failed: %v", err)
 	}
 
-	_, _ = t.ResultWriter().Write([]byte(result.Data))
-	logx.Infof("%s end at: %s, traceId: %s", TOPIC_CHAIN_JOB, time.Now().Format("2006-01-02 15:04:05"), traceId)
+	_, _ = t.ResultWriter().Write([]byte(resultJson))
+	logx.Infof("%s end at: %s, serialId: %s", TOPIC_CHAIN_JOB, time.Now().Format("2006-01-02 15:04:05"), serialId)
 	return nil
 }
 

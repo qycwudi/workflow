@@ -17,7 +17,6 @@ import (
 	"workflow/internal/dispatch/broadcast"
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -68,7 +67,8 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 		return nil, errors.New(int(logic.SystemOrmError), "获取历史版本ID失败")
 	}
 
-	_, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
+	ruleChain := ""
+	// _, ruleChain, err := rulego.ParsingDsl(canvas.Draft)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
 	}

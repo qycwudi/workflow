@@ -5,10 +5,10 @@ go 1.23.6
 toolchain go1.23.7
 
 require (
-	github.com/basgys/goxml2json v1.1.0
 	github.com/dcron-contrib/commons v0.0.2
 	github.com/dcron-contrib/redisdriver v0.0.1
 	github.com/denisenkom/go-mssqldb v0.12.3
+	github.com/dop251/goja v0.0.0-20241024094426-79f3a7efcdbd
 	github.com/go-sql-driver/mysql v1.9.0
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
@@ -16,6 +16,8 @@ require (
 	github.com/hibiken/asynqmon v0.7.2
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/libi/dcron v0.6.0
+	github.com/opentracing/opentracing-go v1.2.0
+	github.com/panjf2000/ants/v2 v2.11.3
 	github.com/pkg/sftp v1.13.7
 	github.com/redis/go-redis/v9 v9.7.3
 	github.com/rs/xid v1.6.0
@@ -27,20 +29,21 @@ require (
 	github.com/uptrace/bun/dialect/mssqldialect v1.2.6
 	github.com/uptrace/bun/dialect/mysqldialect v1.2.6
 	github.com/uptrace/bun/dialect/oracledialect v1.2.6
+	github.com/valyala/fasthttp v1.60.0
 	github.com/zeromicro/go-zero v1.8.2
 	github.com/zeromicro/x v0.0.0-20240408115609-8224c482b07e
-	golang.org/x/crypto v0.33.0
+	golang.org/x/crypto v0.36.0
+	golang.org/x/sync v0.12.0
 )
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
+	github.com/andybalholm/brotli v1.1.1 // indirect
 	github.com/beorn7/perks v1.0.1 // indirect
-	github.com/bitly/go-simplejson v0.5.1 // indirect
 	github.com/cenkalti/backoff/v4 v4.3.0 // indirect
 	github.com/cespare/xxhash/v2 v2.3.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dlclark/regexp2 v1.11.4 // indirect
-	github.com/dop251/goja v0.0.0-20241024094426-79f3a7efcdbd // indirect
 	github.com/eclipse/paho.mqtt.golang v1.5.0 // indirect
 	github.com/expr-lang/expr v1.16.9 // indirect
 	github.com/fatih/color v1.18.0 // indirect
@@ -59,7 +62,7 @@ require (
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/julienschmidt/httprouter v1.3.0 // indirect
-	github.com/klauspost/compress v1.17.11 // indirect
+	github.com/klauspost/compress v1.18.0 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/lib/pq v1.10.9 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
@@ -79,6 +82,7 @@ require (
 	github.com/tidwall/match v1.1.1 // indirect
 	github.com/tidwall/pretty v1.2.1 // indirect
 	github.com/tmthrgd/go-hex v0.0.0-20190904060850-447a3041c3bc // indirect
+	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
 	go.opentelemetry.io/otel v1.28.0 // indirect
@@ -94,10 +98,9 @@ require (
 	go.opentelemetry.io/proto/otlp v1.3.1 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
-	golang.org/x/net v0.35.0 // indirect
-	golang.org/x/sync v0.11.0 // indirect
-	golang.org/x/sys v0.30.0 // indirect
-	golang.org/x/text v0.22.0 // indirect
+	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/sys v0.31.0 // indirect
+	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.10.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240711142825-46eb208f015d // indirect
 	google.golang.org/genproto/googleapis/rpc v0.0.0-20240711142825-46eb208f015d // indirect

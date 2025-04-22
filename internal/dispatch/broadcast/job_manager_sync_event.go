@@ -9,7 +9,6 @@ import (
 
 	"workflow/internal/cache"
 	"workflow/internal/dispatch/job"
-	"workflow/internal/rulego"
 )
 
 const (
@@ -78,11 +77,7 @@ func (j *JobLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 	switch syncMsg.Type {
 	case JobLoadSyncTypeAdd:
 		// 加载链服务
-		err = rulego.RoleChain.LoadJobServiceChain(syncMsg.JobId, []byte(syncMsg.RuleChain))
-		if err != nil {
-			logx.Errorf("JobLoadSyncHandler load chain failed: %s", err.Error())
-			return
-		}
+
 		// 注册任务
 		jobInstance := &job.ChainJob{JobId: syncMsg.JobId, CanvasId: syncMsg.WorkspaceId}
 		err = job.DispatcherManager.AddJob(syncMsg.JobId, syncMsg.JobCron, jobInstance)
@@ -93,12 +88,8 @@ func (j *JobLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 		logx.Infof("JobLoadSyncHandler add job success: %s", syncMsg.JobId)
 
 	case JobLoadSyncTypeEdit:
-		// 加载链服务
-		err = rulego.RoleChain.LoadJobServiceChain(syncMsg.JobId, []byte(syncMsg.RuleChain))
-		if err != nil {
-			logx.Errorf("JobLoadSyncHandler load chain failed: %s", err.Error())
-			return
-		}
+		// 加载服务
+
 		// 编辑任务
 		jobInstance := &job.ChainJob{JobId: syncMsg.JobId, CanvasId: syncMsg.WorkspaceId}
 		err = job.DispatcherManager.EditJob(syncMsg.JobId, syncMsg.JobCron, jobInstance)

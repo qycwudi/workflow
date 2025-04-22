@@ -47,7 +47,7 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 		return nil, errors.New(int(logic.SystemStoreError), "创建标签错误")
 	}
 
-	// 初始化画布 创建 start node
+	// 初始化画布
 	userId, _ := utils.GetUserId(l.ctx)
 	userIdStr := strconv.FormatInt(userId, 10)
 	_, err = l.svcCtx.CanvasModel.Insert(l.ctx, &model.Canvas{

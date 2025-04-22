@@ -14,7 +14,6 @@ import (
 
 	"workflow/internal/logic"
 	"workflow/internal/model"
-	"workflow/internal/rulego"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 )
@@ -106,15 +105,15 @@ func (l *WorkSpaceCopyLogic) WorkSpaceCopy(req *types.WorkSpaceCopyRequest) (res
 	}
 
 	// 解析加载画布
-	canvasId, ruleChain, err := rulego.ParsingDsl(newCanvasDraft)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
-	}
+	// canvasId, ruleChain, err := rulego.ParsingDsl(newCanvasDraft)
+	// if err != nil {
+	// 	return nil, errors.New(int(logic.SystemError), "解析画布草案失败")
+	// }
 
-	err = rulego.RoleChain.LoadCanvasServiceChain(canvasId, ruleChain)
-	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "加载画布失败,错误原因:"+err.Error())
-	}
+	// err = rulego.RoleChain.LoadCanvasServiceChain(canvasId, ruleChain)
+	// if err != nil {
+	// 	return nil, errors.New(int(logic.SystemError), "加载画布失败,错误原因:"+err.Error())
+	// }
 
 	return
 }
