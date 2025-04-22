@@ -1,6 +1,7 @@
 package core
 
 import (
+	"encoding/json"
 	"errors"
 	"reflect"
 	"strconv"
@@ -73,6 +74,13 @@ func validateAndConvertType(value any, expectedType []string) (any, error) {
 		if num, ok := value.(int); ok {
 			return int64(num), nil
 		}
+		if num, ok := value.(json.Number); ok {
+			_, err := strconv.ParseInt(string(num), 10, 64)
+			if err != nil {
+				return nil, errors.New("类型不匹配: 期望 integer, 实际是 " + reflect.TypeOf(value).String())
+			}
+			return num, nil
+		}
 		return nil, errors.New("类型不匹配: 期望 integer, 实际是 " + reflect.TypeOf(value).String())
 
 	case "float":
@@ -82,6 +90,13 @@ func validateAndConvertType(value any, expectedType []string) (any, error) {
 		// 处理整数转浮点数的情况
 		if num, ok := value.(int); ok {
 			return float64(num), nil
+		}
+		if num, ok := value.(json.Number); ok {
+			_, err := strconv.ParseFloat(string(num), 64)
+			if err != nil {
+				return nil, errors.New("类型不匹配: 期望 float, 实际是 " + reflect.TypeOf(value).String())
+			}
+			return num, nil
 		}
 		return nil, errors.New("类型不匹配: 期望 float, 实际是 " + reflect.TypeOf(value).String())
 

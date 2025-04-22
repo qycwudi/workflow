@@ -1,7 +1,8 @@
 ### workspace创建, 会把新输入的 tag 也创建出来
-POST http://127.0.0.1:8899/workflow/workspace/new
+POST http://127.0.0.1:8888/workflow/workspace/new
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDUzOTY2MDAsImlhdCI6MTc0NTMxMDIwMCwidXNlcklkIjoxfQ.pbmjbki4ItleAzjwrhs5dsz09FvY4Pjc2qz25mNoVZU
 
 {
   "workSpaceName": "雪兔工作流测试-base",

@@ -98,6 +98,7 @@ func main() {
 	cache.NewRedis(ctx.RedisClient)
 	// 初始化 工作流引擎
 	workflow.InitEngine(ctx)
+	// defer workflow.Close()
 	// 初始化数据源连接池
 	datasource.InitDataSourceManager(ctx)
 	// 初始化 asynq

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"reflect"
+	"strconv"
 
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -34,12 +35,27 @@ func ValidateOutput(data any, output Output) error {
 			if v != float64(int(v)) {
 				return errors.New("输出 " + output.Name + " float64必须是整数类型，不能有小数部分")
 			}
+		case json.Number:
+			_, err := strconv.ParseInt(string(v), 10, 64)
+			if err != nil {
+				return errors.New("输出 " + output.Name + " json.Number必须是整数类型")
+			}
 		default:
 			return errors.New("输出 " + output.Name + " ,类型: " + reflect.TypeOf(v).String() + " 必须是整数类型")
 		}
 	case "float":
-		if _, ok := data.(float64); !ok {
-			return errors.New("输出 " + output.Name + " 必须是浮点数类型")
+		switch v := data.(type) {
+		case float64:
+			if v != float64(int(v)) {
+				return errors.New("输出 " + output.Name + " float64必须是整数类型，不能有小数部分")
+			}
+		case json.Number:
+			_, err := strconv.ParseFloat(string(v), 64)
+			if err != nil {
+				return errors.New("输出 " + output.Name + " json.Number必须是浮点数类型")
+			}
+		default:
+			return errors.New("输出 " + output.Name + " ,类型: " + reflect.TypeOf(v).String() + " 必须是浮点数类型")
 		}
 	case "boolean":
 		if _, ok := data.(bool); !ok {

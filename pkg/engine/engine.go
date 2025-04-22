@@ -226,6 +226,8 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 		return errors.New("参数为空")
 	}
 
+	logx.Debugf("执行工作流参数: %+v\n", params)
+
 	// 获取工作流执行器
 	e.mu.RLock()
 	executor, ok := e.executorPool[workflowID]

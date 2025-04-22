@@ -32,7 +32,7 @@ func NewCanvasDraftLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Canva
 }
 
 func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *types.CanvasDraftResponse, err error) {
-	draftMarshal, _ := json.Marshal(req)
+	draftMarshal, _ := json.Marshal(req.Graph)
 	userId, _ := util.GetUserId(l.ctx)
 	userIdStr := strconv.FormatInt(userId, 10)
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
