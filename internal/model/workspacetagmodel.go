@@ -50,7 +50,7 @@ func (c customWorkspaceTagModel) FindAllByName(ctx context.Context, tagName stri
 }
 
 func (c customWorkspaceTagModel) FindOneByName(ctx context.Context, tagName string) (*WorkspaceTag, error) {
-	query := fmt.Sprintf("select %s from %s where `tag_name` = ? limit 1", workspaceTagRows, c.table)
+	query := fmt.Sprintf("select %s from %s where `tag_name` = ? and is_delete = 0 limit 1", workspaceTagRows, c.table)
 	var resp WorkspaceTag
 	err := c.conn.QueryRowCtx(ctx, &resp, query, tagName)
 	switch err {
