@@ -1,10 +1,10 @@
 syntax = "v1"
 
 type ApiPublishRequest {
-	Id      string `json:"id" desc:"空间ID"`
-	ApiName string `json:"apiName" desc:"名称"`
-	ApiDesc string `json:"apiDesc" desc:"描述"`
-	Tag     []string `json:"tag" desc:"标签"`
+	Id      string   `json:"id"`      // 空间ID
+	ApiName string   `json:"apiName"` // 名称
+	ApiDesc string   `json:"apiDesc"` // 描述
+	Tag     []string `json:"tag"`     // 标签
 }
 
 type ApiPublishResponse {
@@ -12,11 +12,11 @@ type ApiPublishResponse {
 }
 
 type ApiPublishListRequest {
-	Current  int    `json:"current"`
-	PageSize int    `json:"pageSize"`
-	Id       string `json:"id,optional" desc:"API_ID 非必填"`
-	Name     string `json:"name,optional"`
-	Tag      string `json:"tag,optional" desc:"标签"`
+	Current  int    `json:"current"`       // 当前页
+	PageSize int    `json:"pageSize"`      // 页大小
+	Id       string `json:"id,optional"`   // API_ID 非必填
+	Name     string `json:"name,optional"` // 名称
+	Tag      string `json:"tag,optional"`  // 标签
 }
 
 type ApiPublishListResponse {
@@ -27,13 +27,13 @@ type ApiPublishListResponse {
 }
 
 type ApiPublishList {
-	WorkSpaceId string `json:"workSpaceId"`
-	ApiId       string `json:"apiId"`
-	ApiName     string `json:"apiName"`
-	ApiDesc     string `json:"apiDesc"`
+	WorkSpaceId string   `json:"workSpaceId"`
+	ApiId       string   `json:"apiId"`
+	ApiName     string   `json:"apiName"`
+	ApiDesc     string   `json:"apiDesc"`
 	Tag         []string `json:"tag"`
-	PublishTime string `json:"publishTime"`
-	Status      string `json:"status" desc:"上下线状态ON OFF"`
+	PublishTime string   `json:"publishTime"`
+	Status      string   `json:"status" desc:"上下线状态ON OFF"`
 }
 
 type ApiOnOffRequest {
@@ -47,11 +47,11 @@ type ApiOnOffResponse {
 }
 
 type ApiRecordsRequest {
-	Current  int    `json:"current"`
-	PageSize int    `json:"pageSize"`
-	ApiId    string `json:"apiId,optional" desc:"apiId"`
-	StartTime int64 `json:"startTime,optional" desc:"开始时间"`
-	EndTime   int64 `json:"endTime,optional" desc:"结束时间"`
+	Current   int    `json:"current"`
+	PageSize  int    `json:"pageSize"`
+	ApiId     string `json:"apiId,optional" desc:"apiId"`
+	StartTime int64  `json:"startTime,optional" desc:"开始时间"`
+	EndTime   int64  `json:"endTime,optional" desc:"结束时间"`
 	Request   string `json:"request,optional" desc:"请求参数"`
 	Response  string `json:"response,optional" desc:"响应参数"`
 }
@@ -161,10 +161,10 @@ type ApiHistory {
 }
 
 type ApiEditRequest {
-	ApiId string `json:"apiId"`
-	ApiName string `json:"apiName"`
-	ApiDesc string `json:"apiDesc"`
-	Tag []string `json:"tag"`
+	ApiId   string   `json:"apiId"`
+	ApiName string   `json:"apiName"`
+	ApiDesc string   `json:"apiDesc"`
+	Tag     []string `json:"tag"`
 }
 
 type ApiEditResponse {
@@ -172,10 +172,10 @@ type ApiEditResponse {
 }
 
 type ApiCallRequest {
-	ApiId string `json:"apiId"`
-	Url string `json:"url"`
+	ApiId  string `json:"apiId"`
+	Url    string `json:"url"`
 	Header string `json:"header"`
-	Body string `json:"body"`
+	Body   string `json:"body"`
 }
 
 type ApiCallResponse {
@@ -187,17 +187,17 @@ type ApiCallTemplateRequest {
 }
 
 type ApiCallTemplateResponse {
-	ApiId string `json:"apiId"`
-	Url string `json:"url"`
+	ApiId  string `json:"apiId"`
+	Url    string `json:"url"`
 	Header string `json:"header"`
-	Body string `json:"body"`
+	Body   string `json:"body"`
 }
 
 type ApiExportCurlRequest {
-	ApiId string `json:"apiId"`
-	Url string `json:"url"`
+	ApiId  string `json:"apiId"`
+	Url    string `json:"url"`
 	Header string `json:"header"`
-	Body string `json:"body"`
+	Body   string `json:"body"`
 }
 
 type ApiExportCurlResponse {
@@ -205,15 +205,15 @@ type ApiExportCurlResponse {
 }
 
 type ApiCallStatisticsRequest {
-	ApiId string `json:"apiId"`
-	StartTime int64 `json:"startTime"`
-	EndTime int64 `json:"endTime"`
+	ApiId     string `json:"apiId"`
+	StartTime int64  `json:"startTime"`
+	EndTime   int64  `json:"endTime"`
 }
 
 type ApiCallStatisticsResponse {
-	Total int64 `json:"total"`
+	Total int64    `json:"total"`
 	XAxis []string `json:"xAxis"`
-	YAxis []int64 `json:"yAxis"`
+	YAxis []int64  `json:"yAxis"`
 }
 
 @server (

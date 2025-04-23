@@ -501,6 +501,38 @@
         ]
       }
     },
+    "/workflow/basics/dropdown": {
+      "post": {
+        "summary": "根据参数获取下拉框",
+        "operationId": "GetDropDownList",
+        "responses": {
+          "200": {
+            "description": "A successful response.",
+            "schema": {
+              "$ref": "#/definitions/GetDropDownListResp"
+            }
+          }
+        },
+        "parameters": [
+          {
+            "name": "body",
+            "in": "body",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/GetDropDownListReq"
+            }
+          }
+        ],
+        "tags": [
+          "basics"
+        ],
+        "security": [
+          {
+            "apiKey": []
+          }
+        ]
+      }
+    },
     "/workflow/canvas/detail": {
       "post": {
         "summary": "画布详情",
@@ -2675,13 +2707,20 @@
         },
         "apiDesc": {
           "type": "string"
+        },
+        "tag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "title": "ApiEditRequest",
       "required": [
         "apiId",
         "apiName",
-        "apiDesc"
+        "apiDesc",
+        "tag"
       ]
     },
     "ApiEditResponse": {
@@ -2858,6 +2897,12 @@
         "apiDesc": {
           "type": "string"
         },
+        "tag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "publishTime": {
           "type": "string"
         },
@@ -2871,6 +2916,7 @@
         "apiId",
         "apiName",
         "apiDesc",
+        "tag",
         "publishTime",
         "status",
         "上下线状态ON OFF"
@@ -2892,13 +2938,17 @@
         },
         "name": {
           "type": "string"
+        },
+        "tag": {
+          "type": "string"
         }
       },
       "title": "ApiPublishListRequest",
       "required": [
         "current",
         "pageSize",
-        "API_ID 非必填"
+        "API_ID 非必填",
+        "标签"
       ]
     },
     "ApiPublishListResponse": {
@@ -2942,6 +2992,12 @@
         },
         "apiDesc": {
           "type": "string"
+        },
+        "tag": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       },
       "title": "ApiPublishRequest",
@@ -2951,7 +3007,9 @@
         "apiName",
         "名称",
         "apiDesc",
-        "描述"
+        "描述",
+        "tag",
+        "标签"
       ]
     },
     "ApiPublishResponse": {
@@ -3440,37 +3498,45 @@
       "properties": {
         "id": {
           "type": "string"
+        },
+        "params": {
+          "$ref": "#/definitions/mapstringinterface"
         }
       },
       "title": "CanvasRunRequest",
       "required": [
         "id",
-        "空间ID"
+        "空间ID",
+        "params"
       ]
     },
     "CanvasRunResponse": {
       "type": "object",
       "properties": {
-        "ts": {
-          "type": "integer",
-          "format": "int64"
-        },
         "id": {
           "type": "string"
         },
-        "metadata": {
-          "type": "object"
+        "duration": {
+          "type": "integer",
+          "format": "int64"
         },
         "data": {
           "type": "object"
+        },
+        "status": {
+          "type": "string"
+        },
+        "error": {
+          "type": "string"
         }
       },
       "title": "CanvasRunResponse",
       "required": [
-        "ts",
         "id",
-        "metadata",
-        "data"
+        "duration",
+        "data",
+        "status",
+        "error"
       ]
     },
     "CanvasRunSingleDetailRequest": {
@@ -4210,6 +4276,50 @@
       "required": [
         "records",
         "total"
+      ]
+    },
+    "GetDropDownListReq": {
+      "type": "object",
+      "properties": {
+        "kind": {
+          "type": "string"
+        }
+      },
+      "title": "GetDropDownListReq",
+      "required": [
+        "kind"
+      ]
+    },
+    "GetDropDownListResp": {
+      "type": "object",
+      "properties": {
+        "list": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/GetDropDownListRespItem"
+          }
+        }
+      },
+      "title": "GetDropDownListResp",
+      "required": [
+        "list"
+      ]
+    },
+    "GetDropDownListRespItem": {
+      "type": "object",
+      "properties": {
+        "label": {
+          "type": "string"
+        },
+        "value": {
+          "type": "integer",
+          "format": "int64"
+        }
+      },
+      "title": "GetDropDownListRespItem",
+      "required": [
+        "label",
+        "value"
       ]
     },
     "GetKvRequest": {

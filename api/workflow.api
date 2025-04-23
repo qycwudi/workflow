@@ -2,7 +2,7 @@ syntax = "v1"
 
 // 接口生成: goctl api go -api workflow.api -dir ../ --home /Users/qiangyuecheng/.goctl/1.5.6 --style go_zero
 // goctl api go -api workflow.api --style go_zero -dir ../
-// 文档生成: goctl api doc -dir ../ -o ./doc
+// 文档生成: goctl api plugin -plugin goctl-swagger="swagger -filename ./api/workflow.json -host 127.0.0.1 -basepath /api -schemes https,wss" -api ./api/workflow.api -dir .
 /*
 自定义返回
 {
