@@ -15,16 +15,13 @@ import (
 
 	"workflow/pkg/components"
 	"workflow/pkg/core"
-	"workflow/pkg/observability"
 )
 
 // WorkflowEngine 工作流引擎
 type WorkflowEngine struct {
 	// 核心组件
-	pool     *ants.PoolWithFunc   // 任务执行池
-	poolSize int                  // 当前池大小
-	tracer   observability.Tracer // 追踪器
-
+	pool     *ants.PoolWithFunc // 任务执行池
+	poolSize int                // 当前池大小
 	// 配置
 	config *EngineConfig // 引擎配置
 
@@ -36,22 +33,16 @@ type WorkflowEngine struct {
 	cleanup    chan string   // 清理通道
 	shutdownCh chan struct{} // 关闭信号通道
 
-	// 监控指标
-	metricsCollector *MetricsCollector // 指标收集器
 }
 
 // NewWorkflowEngine 创建新的工作流引擎
 func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 	config := DefaultConfig()
 	engine := &WorkflowEngine{
-		tracer:       observability.NewTracer(),
 		executorPool: make(map[string]*Executor),
 		config:       config,
 		cleanup:      make(chan string, 100),
 		shutdownCh:   make(chan struct{}),
-		metricsCollector: &MetricsCollector{
-			metrics: make(map[string]*core.WorkflowMetrics),
-		},
 	}
 
 	for _, opt := range opts {
@@ -65,7 +56,7 @@ func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 			return
 		}
 		defer task.Sw.Done()
-		result, err := task.Engine.executeNode(task.Context, task.NodeID, task.Executor.definition.Nodes[task.NodeID], task.Component)
+		result, err := task.Engine.executeNode(task.Context, task.Step, task.NodeID, task.Executor.definition.Nodes[task.NodeID], task.Component)
 		if err != nil {
 			logx.Errorf("执行节点 [%s] 失败: %v\n", task.NodeID, err)
 			task.Context.SetError(task.NodeID, err)
@@ -88,9 +79,6 @@ func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 
 	// 启动清理和指标收集协程
 	engine.startCleanupRoutine()
-	if engine.config.EnableMetrics {
-		engine.startMetricsCollector()
-	}
 
 	return engine
 }
@@ -147,7 +135,6 @@ func (e *WorkflowEngine) createExecutor(def *core.WorkflowDef, plan *ExecutionPl
 		createdAt:       time.Now(),
 		defaultTTL:      e.config.DefaultContextTTL,
 		shutdownCh:      make(chan struct{}),
-		metrics:         &core.WorkflowMetrics{LastExecutionTime: time.Now()},
 	}
 }
 
@@ -156,12 +143,6 @@ func (e *WorkflowEngine) registerExecutor(workflowID string, executor *Executor)
 	e.mu.Lock()
 	defer e.mu.Unlock()
 	e.executorPool[workflowID] = executor
-
-	if e.config.EnableMetrics {
-		e.metricsCollector.mu.Lock()
-		e.metricsCollector.metrics[workflowID] = executor.metrics
-		e.metricsCollector.mu.Unlock()
-	}
 }
 
 // DeregisterWorkflow 注销工作流
@@ -245,18 +226,11 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 	// 更新访问时间
 	atomic.StoreInt64(&executor.lastAccessed, time.Now().UnixNano())
 
-	// 开始追踪
-	var span observability.Span
-	if e.config.EnableTracing {
-		span = e.tracer.StartSpan(ctx, "workflow_execution")
-		defer span.End()
-	}
-
 	// 创建带超时的上下文
 	execCtx, cancel := context.WithTimeout(ctx, e.config.ExecutionTimeout)
 
 	// 创建执行上下文
-	executionContext := core.NewExecutionContext(execCtx, serialID, executor.totalNodes, params)
+	executionContext := core.NewExecutionContext(execCtx, workflowID, serialID, executor.totalNodes, params)
 	executionContext.Context = execCtx
 	executionContext.Expiration = time.Now().Add(executor.defaultTTL)
 
@@ -269,41 +243,8 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 	// 存储执行上下文（使用sync.Map避免锁争用）
 	executor.execContexts.Store(serialID, executionContext)
 
-	// 增加活跃执行计数
-	atomic.AddInt64(&executor.activeCount, 1)
-	if e.config.EnableMetrics {
-		atomic.AddInt64(&executor.metrics.ActiveExecutions, 1)
-	}
-
-	// 使用errgroup进行错误处理
-	startTime := time.Now()
-
 	// 执行工作流
 	err := e.executeWorkflowPhases(execCtx, executor, executionContext)
-
-	// 记录执行时间
-	executionDuration := time.Since(startTime)
-
-	// 减少活跃执行计数
-	atomic.AddInt64(&executor.activeCount, -1)
-
-	// 更新指标
-	if e.config.EnableMetrics {
-		atomic.AddInt64(&executor.metrics.ActiveExecutions, -1)
-
-		if err != nil {
-			atomic.AddInt64(&executor.metrics.FailedExecutions, 1)
-		} else {
-			atomic.AddInt64(&executor.metrics.CompletedExecutions, 1)
-
-			// 更新平均执行时间
-			oldAvg := executor.metrics.AverageExecutionTime
-			completed := float64(atomic.LoadInt64(&executor.metrics.CompletedExecutions))
-			newAvg := oldAvg + (float64(executionDuration.Milliseconds())-oldAvg)/completed
-			executor.metrics.AverageExecutionTime = newAvg
-		}
-		executor.metrics.LastExecutionTime = time.Now()
-	}
 
 	// 处理执行结果
 	if err != nil {
@@ -339,7 +280,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 	g, ctx := errgroup.WithContext(ctx)
 	logx.Debugf("执行阶段:%d,节点数:%d\n", phaseIdx, len(phase.Nodes))
 	for i, node := range phase.Nodes {
-		if err := e.submitNodeTask(ctx, executor, execCtx, node, &sw, g, nodes, i); err != nil {
+		if err := e.submitNodeTask(ctx, phaseIdx, executor, execCtx, node, &sw, g, nodes, i); err != nil {
 			return err
 		}
 	}
@@ -353,7 +294,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 }
 
 // submitNodeTask 提交节点任务
-func (e *WorkflowEngine) submitNodeTask(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext, node *WorkflowNode, sw *sync.WaitGroup, g *errgroup.Group, nodes []string, index int) error {
+func (e *WorkflowEngine) submitNodeTask(ctx context.Context, phaseIdx int, executor *Executor, execCtx *core.ExecutionContext, node *WorkflowNode, sw *sync.WaitGroup, g *errgroup.Group, nodes []string, index int) error {
 	logx.Debugf("执行节点: %s\n", node.ID)
 	nodes[index] = node.ID
 
@@ -370,7 +311,7 @@ func (e *WorkflowEngine) submitNodeTask(ctx context.Context, executor *Executor,
 
 	// 提交任务
 	g.Go(func() error {
-		if err := e.handleNodeExecution(execCtx, executor, nodeCopy, sw); err != nil {
+		if err := e.handleNodeExecution(execCtx, phaseIdx, executor, nodeCopy, sw); err != nil {
 			return err
 		}
 		return nil
@@ -392,11 +333,11 @@ func (e *WorkflowEngine) checkContext(ctx context.Context, executor *Executor) e
 }
 
 // handleNodeExecution 处理节点执行
-func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, executor *Executor, node *WorkflowNode, sw *sync.WaitGroup) error {
+func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, phaseIdx int, executor *Executor, node *WorkflowNode, sw *sync.WaitGroup) error {
 	// 开始类型的组件跳过路由检查
 	if node.Type == components.Start || node.Type == components.StartItem {
 		sw.Done()
-		return e.executeStartNode(execCtx, node)
+		return e.executeStartNode(execCtx, int64(phaseIdx), node)
 	}
 
 	// 检查路由
@@ -417,7 +358,7 @@ func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, exe
 		Engine:     e,
 		Executor:   executor,
 		WorkflowID: executor.definition.ID,
-		SerialID:   execCtx.Id,
+		SerialID:   execCtx.TraceId,
 		Sw:         sw,
 	}
 
@@ -425,27 +366,47 @@ func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, exe
 }
 
 // executeStartNode 执行开始节点
-func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, node *WorkflowNode) error {
+func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseIdx int64, node *WorkflowNode) error {
 	params, bool := execCtx.GetVariable("_zero")
 	if !bool {
 		return errors.New("无数据输入")
 	}
 	output, err := core.ProcessNodeOutput(params.(map[string]any), node.Outputs)
+	var errorMsg string
 	if err != nil {
-		return err
+		output = map[string]any{}
+		errorMsg = err.Error()
+	}
+	if execCtx.IsTrace {
+		// 创建 trace
+		Trace.CreateTrace(execCtx, &TraceRecore{
+			WorkspaceId: execCtx.WorkspaceId,
+			TraceId:     execCtx.TraceId,
+			NodeId:      node.ID,
+			NodeName:    node.Name,
+			Logic:       node.NodeDefinition.Config,
+			Input:       params,
+			Output:      output,
+			Step:        phaseIdx,
+			Status:      string(core.StatusCompleted),
+			StartTime:   time.Now(),
+			ElapsedTime: 0,
+			ErrorMsg:    errorMsg,
+		})
 	}
 
 	execCtx.SetVariable(node.ID+".output", output)
 	nodeResult := &core.NodeResult{
-		Input:    "",
+		Input:    params,
 		Output:   output,
 		Route:    []string{components.Success},
 		NodeID:   node.ID,
 		Duration: 0,
-		Error:    "",
+		Error:    errorMsg,
 		Type:     node.Type,
 	}
-	return e.updateWorkflowState(execCtx, []*core.NodeResult{nodeResult})
+	e.updateWorkflowState(execCtx, nil, []*core.NodeResult{nodeResult})
+	return err
 }
 
 // checkNodeRoute 检查节点路由
@@ -484,11 +445,15 @@ func (e *WorkflowEngine) handleSkippedNode(execCtx *core.ExecutionContext, node 
 		Type:     node.Type,
 	}
 
-	return e.updateWorkflowState(execCtx, []*core.NodeResult{nodeResult})
+	return e.updateWorkflowState(execCtx, nil, []*core.NodeResult{nodeResult})
 }
 
 // prepareNodeInput 准备节点输入数据
-func (e *WorkflowEngine) prepareNodeInput(ctx *core.ExecutionContext, node *core.NodeDefinition, component components.Component) (any, error) {
+func (e *WorkflowEngine) prepareNodeInput(ctx *core.ExecutionContext, err error, node *core.NodeDefinition, component components.Component) (any, error) {
+	if err != nil {
+		return nil, err
+	}
+
 	if node.Type == "start" {
 		zero, ok := ctx.GetVariable("_zero")
 		if !ok {
@@ -535,7 +500,11 @@ func (e *WorkflowEngine) prepareNodeInput(ctx *core.ExecutionContext, node *core
 }
 
 // processNodeOutput 处理节点输出数据
-func (e *WorkflowEngine) processNodeOutput(input any, result *core.Result, node *core.NodeDefinition) (any, error) {
+func (e *WorkflowEngine) processNodeOutput(input any, err error, result *core.Result, node *core.NodeDefinition) (any, error) {
+	if err != nil {
+		return nil, err
+	}
+
 	if node.Type == components.End || node.Type == components.EndItem {
 		return input, nil
 	}
@@ -552,41 +521,60 @@ func (e *WorkflowEngine) processNodeOutput(input any, result *core.Result, node 
 }
 
 // executeNode 执行节点
-func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, nodeID string, node *core.NodeDefinition, component components.Component) (*core.Result, error) {
+func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nodeID string, node *core.NodeDefinition, component components.Component) (*core.Result, error) {
 
 	startTime := time.Now()
 
 	// 1. 验证组件
-	if err := e.validateComponent(component, node); err != nil {
-		return nil, e.handleNodeError(ctx, node, err, startTime)
-	}
+	err := e.validateComponent(component, node)
 
 	// 2. 准备输入数据
-	input, err := e.prepareNodeInput(ctx, node, component)
-	if err != nil {
-		return nil, e.handleNodeError(ctx, node, err, startTime)
+	input, err := e.prepareNodeInput(ctx, err, node, component)
+	// 创建 trace
+	trace := &TraceRecore{
+		WorkspaceId: ctx.WorkspaceId,
+		TraceId:     ctx.TraceId,
+		NodeId:      nodeID,
+		NodeName:    node.Name,
+		Input:       input,
+		Logic:       node.Config,
+		StartTime:   startTime,
+		Step:        step,
 	}
-
+	Trace.CreateTrace(ctx, trace)
 	// 3. 执行组件
-	result, err := e.executeComponent(ctx, component, input)
-	if err != nil {
-		return nil, e.handleNodeError(ctx, node, err, startTime)
-	}
+	result, err := e.executeComponent(ctx, err, component, input)
 
 	// 4. 处理输出数据
-	output, err := e.processNodeOutput(input, result, node)
+	output, err := e.processNodeOutput(input, err, result, node)
+
+	var errorMsg string
+	var status = string(core.StatusCompleted)
 	if err != nil {
-		return nil, e.handleNodeError(ctx, node, err, startTime)
+		status = string(core.StatusFailed)
+		errorMsg = err.Error()
+		output = map[string]any{}
 	}
+	// 5. 更新 trace
+	Trace.UpdateTrace(ctx, &TraceRecore{
+		NodeId:      nodeID,
+		TraceId:     ctx.TraceId,
+		Output:      output,
+		Status:      status,
+		ElapsedTime: time.Since(startTime).Milliseconds(),
+		ErrorMsg:    errorMsg,
+	})
 
 	// 5. 更新上下文
-	if err := e.updateNodeContext(ctx, nodeID, output); err != nil {
+	err = e.updateNodeContext(ctx, err, nodeID, output)
+	if err != nil {
 		return nil, e.handleNodeError(ctx, node, err, startTime)
 	}
 
 	// 6. 创建并返回结果
 	nodeResult := e.createNodeResult(node, input, output, result, startTime)
-	if err := e.updateWorkflowState(ctx, []*core.NodeResult{nodeResult}); err != nil {
+	err = e.updateWorkflowState(ctx, err, []*core.NodeResult{nodeResult})
+	if err != nil {
 		logx.Errorf("更新工作流状态失败: %v\n", err)
 	}
 
@@ -602,12 +590,18 @@ func (e *WorkflowEngine) validateComponent(component components.Component, node 
 }
 
 // executeComponent 执行组件
-func (e *WorkflowEngine) executeComponent(ctx *core.ExecutionContext, component components.Component, input any) (*core.Result, error) {
+func (e *WorkflowEngine) executeComponent(ctx *core.ExecutionContext, err error, component components.Component, input any) (*core.Result, error) {
+	if err != nil {
+		return nil, err
+	}
 	return component.Execute(ctx, input)
 }
 
 // updateNodeContext 更新节点上下文
-func (e *WorkflowEngine) updateNodeContext(ctx *core.ExecutionContext, nodeID string, output any) error {
+func (e *WorkflowEngine) updateNodeContext(ctx *core.ExecutionContext, err error, nodeID string, output any) error {
+	if err != nil {
+		return err
+	}
 	if output != nil {
 		logx.Debugf("更新节点上下文: %s, %+v\n", nodeID, output)
 		ctx.SetVariable(nodeID+".output", output)
@@ -636,12 +630,15 @@ func (e *WorkflowEngine) handleNodeError(ctx *core.ExecutionContext, node *core.
 		Error:    err.Error(),
 		Type:     node.Type,
 	}
-	e.updateWorkflowState(ctx, []*core.NodeResult{nodeResult})
+	e.updateWorkflowState(ctx, err, []*core.NodeResult{nodeResult})
 	return err
 }
 
 // updateWorkflowState 更新工作流状态
-func (e *WorkflowEngine) updateWorkflowState(ctx *core.ExecutionContext, results []*core.NodeResult) error {
+func (e *WorkflowEngine) updateWorkflowState(ctx *core.ExecutionContext, err error, results []*core.NodeResult) error {
+	if err != nil {
+		return err
+	}
 
 	for _, result := range results {
 		// fmt.Printf("更新工作流状态: %s, %+v\n", result.NodeID, result)
@@ -767,29 +764,6 @@ func (e *WorkflowEngine) startCleanupRoutine() {
 	}()
 }
 
-// 启动指标收集器
-func (e *WorkflowEngine) startMetricsCollector() {
-	go func() {
-		ticker := time.NewTicker(10 * time.Second)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ticker.C:
-				// 收集指标
-				e.collectMetrics()
-			case <-e.shutdownCh:
-				return
-			}
-		}
-	}()
-}
-
-// 收集指标
-func (e *WorkflowEngine) collectMetrics() {
-	// 这里可以实现指标收集和导出逻辑
-}
-
 // 调整池大小
 func (e *WorkflowEngine) adjustPoolSize() {
 	// 获取当前运行的任务数
@@ -845,7 +819,6 @@ func (e *WorkflowEngine) cleanupExecContexts() {
 				executor.execContexts.Delete(id)
 				core.ReleaseExecutionContext(ctx) // 释放上下文
 			}
-
 			return true
 		})
 	}
@@ -866,19 +839,6 @@ func (e *WorkflowEngine) Cleanup() {
 	e.mu.Unlock()
 }
 
-// GetMetrics 获取指定工作流的指标
-func (e *WorkflowEngine) GetMetrics(workflowID string) (*core.WorkflowMetrics, bool) {
-	if !e.config.EnableMetrics {
-		return nil, false
-	}
-
-	e.metricsCollector.mu.RLock()
-	defer e.metricsCollector.mu.RUnlock()
-
-	metrics, ok := e.metricsCollector.metrics[workflowID]
-	return metrics, ok
-}
-
 // GetPoolStats 获取池统计信息
 func (e *WorkflowEngine) GetPoolStats() map[string]any {
 	return map[string]any{
@@ -890,6 +850,50 @@ func (e *WorkflowEngine) GetPoolStats() map[string]any {
 		"maxPoolSize": e.config.MaxPoolSize,
 		"initialSize": e.config.InitialPoolSize,
 	}
+}
+
+// GetExecutionContext 获取执行上下文
+func (e *WorkflowEngine) GetExecutionContext(workflowID, serialID string) (*core.ExecutionContext, error) {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
+	executor, ok := e.executorPool[workflowID]
+	if !ok {
+		return nil, errors.New("工作流未找到: " + workflowID)
+	}
+
+	val, ok := executor.execContexts.Load(serialID)
+	if !ok {
+		return nil, errors.New("执行上下文未找到: " + workflowID + ", " + serialID)
+	}
+
+	execCtx, ok := val.(*core.ExecutionContext)
+	if !ok {
+		return nil, errors.New("执行上下文类型错误: " + workflowID + ", " + serialID)
+	}
+
+	return execCtx, nil
+}
+
+func (e *WorkflowEngine) ClearExecutionContext(workflowID, serialID string) error {
+	e.mu.RLock()
+	defer e.mu.RUnlock()
+
+	executor, ok := e.executorPool[workflowID]
+	if !ok {
+		return errors.New("工作流未找到: " + workflowID)
+	}
+
+	val, ok := executor.execContexts.Load(serialID)
+	if !ok {
+		return errors.New("执行上下文未找到: " + workflowID + ", " + serialID)
+	}
+
+	execCtx, ok := val.(*core.ExecutionContext)
+	executor.execContexts.Delete(serialID)
+	core.ReleaseExecutionContext(execCtx)
+
+	return nil
 }
 
 // ListWorkflows 列出所有工作流
@@ -966,11 +970,5 @@ func (e *WorkflowEngine) PauseWorkflow(ctx context.Context, workflowID string, s
 
 	// 调用取消函数
 	cancel()
-
-	// 更新指标
-	if e.config.EnableMetrics {
-		atomic.AddInt64(&executor.metrics.PausedExecutions, 1)
-	}
-
 	return nil
 }

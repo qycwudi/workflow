@@ -5,13 +5,11 @@ import (
 	"encoding/json"
 	"errors"
 
-	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/svc"
 	"workflow/pkg/core"
 	"workflow/pkg/engine"
-	"workflow/pkg/metrics"
 )
 
 var eg *engine.WorkflowEngine
@@ -19,8 +17,6 @@ var eg *engine.WorkflowEngine
 func InitEngine(ctx *svc.ServiceContext) {
 	// 创建工作流引擎
 	eg = engine.NewWorkflowEngine()
-
-	metrics.NewCollector()
 }
 
 func Register(ctx context.Context, dsl string) error {
@@ -43,8 +39,14 @@ func Register(ctx context.Context, dsl string) error {
 	return nil
 }
 
-func Run(ctx context.Context, workspaceId string, data map[string]any) (string, core.NodeResult, error) {
-	serialId := uuid.New().String()
+func Run(ctx context.Context, serialId, workspaceId string, data map[string]any) (string, core.NodeResult, error) {
+	defer func() {
+		clearErr := eg.ClearExecutionContext(workspaceId, serialId)
+		if clearErr != nil {
+			logx.Errorw("清除执行上下文失败", logx.Field("error", clearErr.Error()))
+		}
+		logx.Infow("清除执行上下文成功", logx.Field("workspaceId", workspaceId), logx.Field("serialId", serialId))
+	}()
 	// 执行工作流
 	if err := eg.ExecuteWorkflow(ctx, workspaceId, serialId, data); err != nil {
 		logx.Errorw("工作流执行失败", logx.Field("error", err))
@@ -53,8 +55,8 @@ func Run(ctx context.Context, workspaceId string, data map[string]any) (string, 
 
 	endResult, ok := eg.GetNodeResult(workspaceId, serialId, "end-node-1")
 	if !ok {
-		logx.Errorw("未找到 end-node-1 节点的执行结果")
-		return serialId, core.NodeResult{}, errors.New("未找到 end-node-1 节点的执行结果")
+		logx.Errorw("未找到 结束 节点的执行结果")
+		return serialId, core.NodeResult{}, errors.New("未找到 结束 节点的执行结果")
 	}
 	return serialId, *endResult, nil
 }

@@ -14,15 +14,8 @@ type EngineConfig struct {
 	ExecutionTimeout       time.Duration // 执行超时
 	CleanupInterval        time.Duration // 清理间隔
 	DefaultContextTTL      time.Duration // 上下文TTL
-	EnableMetrics          bool          // 启用指标
 	EnableTracing          bool          // 启用跟踪
 	MaxConcurrentWorkflows int           // 最大并发工作流
-}
-
-// MetricsCollector 指标收集器
-type MetricsCollector struct {
-	metrics map[string]*core.WorkflowMetrics
-	mu      sync.RWMutex
 }
 
 type Executor struct {
@@ -32,13 +25,12 @@ type Executor struct {
 	execContexts    sync.Map // 使用sync.Map替代map+mutex提高并发性能
 	totalNodes      int64
 	env             map[string]any
-	status          core.WorkflowStatus   // 工作流状态
-	metrics         *core.WorkflowMetrics // 工作流指标
-	activeCount     int64                 // 活跃执行计数
-	lastAccessed    int64                 // 最后访问时间戳
-	createdAt       time.Time             // 创建时间
-	defaultTTL      time.Duration         // 默认TTL
-	shutdownCh      chan struct{}         // 关闭通道
+	status          core.WorkflowStatus // 工作流状态
+	activeCount     int64               // 活跃执行计数
+	lastAccessed    int64               // 最后访问时间戳
+	createdAt       time.Time           // 创建时间
+	defaultTTL      time.Duration       // 默认TTL
+	shutdownCh      chan struct{}       // 关闭通道
 }
 
 // ExecutionTask 表示一个执行任务
@@ -51,6 +43,7 @@ type ExecutionTask struct {
 	WorkflowID string
 	SerialID   string
 	Sw         *sync.WaitGroup
+	Step       int64
 }
 
 // ExecutionPlan 执行计划
@@ -77,7 +70,6 @@ func DefaultConfig() *EngineConfig {
 		ExecutionTimeout:       5 * time.Minute,
 		CleanupInterval:        1 * time.Minute,
 		DefaultContextTTL:      24 * time.Hour,
-		EnableMetrics:          true,
 		EnableTracing:          true,
 		MaxConcurrentWorkflows: 1000,
 	}
@@ -118,13 +110,6 @@ func WithCleanupInterval(interval time.Duration) Option {
 func WithDefaultContextTTL(ttl time.Duration) Option {
 	return func(e *WorkflowEngine) {
 		e.config.DefaultContextTTL = ttl
-	}
-}
-
-// WithMetricsEnabled 启用指标
-func WithMetricsEnabled(enabled bool) Option {
-	return func(e *WorkflowEngine) {
-		e.config.EnableMetrics = enabled
 	}
 }
 

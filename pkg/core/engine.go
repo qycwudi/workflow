@@ -2,7 +2,6 @@ package core
 
 import (
 	"context"
-	"time"
 )
 
 type WorkflowEngine interface {
@@ -12,7 +11,6 @@ type WorkflowEngine interface {
 	ListWorkflows() []string
 	GetWorkflowStatus(workflowID string) (WorkflowStatus, bool)
 	GetPoolStats() map[string]any
-	GetMetrics(workflowID string) (*WorkflowMetrics, bool)
 
 	PauseWorkflow(ctx context.Context, workflowID string, serialID string) error
 }
@@ -25,13 +23,3 @@ const (
 	WorkflowStatusDeploying WorkflowStatus = "deploying"
 	WorkflowStatusShutdown  WorkflowStatus = "shutdown"
 )
-
-// WorkflowMetrics 工作流指标
-type WorkflowMetrics struct {
-	ActiveExecutions     int64
-	CompletedExecutions  int64
-	FailedExecutions     int64
-	PausedExecutions     int64
-	AverageExecutionTime float64
-	LastExecutionTime    time.Time
-}

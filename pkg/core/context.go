@@ -2,6 +2,7 @@ package core
 
 import (
 	"context"
+	"strings"
 	"sync"
 	"time"
 
@@ -11,14 +12,16 @@ import (
 // ExecutionContext 工作流执行上下文
 type ExecutionContext struct {
 	context.Context
-	Id        string
-	variables map[string]interface{}
-	State     *WorkflowState
-	Route     map[string]struct{}
-	mu        sync.RWMutex
-	tracer    opentracing.Tracer
-	startTime time.Time
-	metrics   map[string]float64
+	WorkspaceId string
+	TraceId     string
+	variables   map[string]interface{}
+	State       *WorkflowState
+	Route       map[string]struct{}
+	mu          sync.RWMutex
+	IsTrace     bool
+	tracer      opentracing.Tracer
+	startTime   time.Time
+	metrics     map[string]float64
 
 	TotalNodes int64
 	Expiration time.Time // 添加过期时间
@@ -60,10 +63,16 @@ var execContextPool = sync.Pool{
 }
 
 // NewExecutionContext 创建新的执行上下文
-func NewExecutionContext(ctx context.Context, serialID string, totalNodes int64, params map[string]any) *ExecutionContext {
+func NewExecutionContext(ctx context.Context, workspaceId string, serialID string, totalNodes int64, params map[string]any) *ExecutionContext {
+
 	execCtx := execContextPool.Get().(*ExecutionContext)
+	// 如果serialID以trace-开头，则认为是追踪
+	if strings.HasPrefix(serialID, "trace-") {
+		execCtx.IsTrace = true
+	}
 	execCtx.Context = ctx
-	execCtx.Id = serialID
+	execCtx.TraceId = serialID
+	execCtx.WorkspaceId = workspaceId
 	execCtx.TotalNodes = totalNodes
 	execCtx.State = NewWorkflowState()
 	execCtx.Route = make(map[string]struct{})
@@ -191,22 +200,4 @@ func (ctx *ExecutionContext) GetNodeResult(nodeID string) (*NodeResult, bool) {
 		return nil, false
 	}
 	return state, true
-}
-
-// GetAllResults 获取所有节点的执行结果
-func (ctx *ExecutionContext) GetAllResults() map[string]*NodeResult {
-	ctx.mu.RLock()
-	defer ctx.mu.RUnlock()
-
-	results := make(map[string]*NodeResult)
-	if ctx.State == nil || ctx.State.Result == nil {
-		return results
-	}
-
-	for nodeID, state := range ctx.State.Result {
-		if state != nil {
-			results[nodeID] = state
-		}
-	}
-	return results
 }

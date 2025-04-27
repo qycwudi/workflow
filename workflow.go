@@ -21,6 +21,7 @@ import (
 	"workflow/internal/handler"
 	"workflow/internal/svc"
 	"workflow/internal/workflow"
+	"workflow/pkg/engine"
 )
 
 var configFile = flag.String("f", "etc/workflow-api.yaml", "the config file")
@@ -98,6 +99,8 @@ func main() {
 	cache.NewRedis(ctx.RedisClient)
 	// 初始化 工作流引擎
 	workflow.InitEngine(ctx)
+	// 初始化 trace
+	engine.NewTrace(ctx.TraceModel)
 	// defer workflow.Close()
 	// 初始化数据源连接池
 	datasource.InitDataSourceManager(ctx)

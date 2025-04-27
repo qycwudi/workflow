@@ -70,7 +70,7 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 		return err
 	}
 	// 运行
-	serialId, result, err := workflow.Run(ctx, payload.CanvasId, params)
+	serialId, result, err := workflow.Run(ctx, t.ResultWriter().TaskID(), payload.CanvasId, params)
 	if err != nil {
 		logx.Errorf("chain run failed: %v", err)
 		return err
