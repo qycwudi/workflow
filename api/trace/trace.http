@@ -1,0 +1,18 @@
+### 查询画布运行记录
+POST http://127.0.0.1:8888/workflow/trace/canvas/query
+Content-Type: application/json
+
+{
+	"id": "d03l4kl3sjtgm7gc9su0",
+	"current": 2,
+	"pageSize": 2
+}
+
+### 查询组件运行结果
+POST http://127.0.0.1:8888/workflow/trace/components/query
+Content-Type: application/json
+
+{
+	"id": "d03l4kl3sjtgm7gc9su0",
+  	"serialId": "trace-e9811b692536d1238f324fb8cea2fcab"
+}

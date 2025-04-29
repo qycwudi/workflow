@@ -7,10 +7,7 @@ type CanvasRunRequest {
 
 type CanvasRunResponse {
 	Id       string `json:"id"`
-	Duration int64  `json:"duration"`
-	Data     interface{} `json:"data"`
-	Status   string      `json:"status"`
-	Error    string      `json:"error"`
+	SerialId string `json:"serialId"`
 }
 
 type CanvasRunSingleRequest {
@@ -33,7 +30,7 @@ type CanvasRunSingleDetailRequest {
 type CanvasRunSingleDetailResponse {
 	NodeId    string `json:"nodeId"`
 	NodeName  string `json:"nodeName"`
-	StartTime int64  `json:"startTime"`
+	StartTime string  `json:"startTime"`
 	Duration  int64  `json:"duration"`
 	Status    string `json:"status"`
 	Error     string `json:"error"`

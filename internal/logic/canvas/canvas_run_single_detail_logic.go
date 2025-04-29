@@ -10,6 +10,7 @@ import (
 	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type CanvasRunSingleDetailLogic struct {
@@ -72,7 +73,7 @@ func (l *CanvasRunSingleDetailLogic) CanvasRunSingleDetail(req *types.CanvasRunS
 	resp = &types.CanvasRunSingleDetailResponse{
 		NodeId:    trace.NodeId,
 		NodeName:  trace.NodeName,
-		StartTime: trace.StartTime.UnixMilli(),
+		StartTime: utils.FormatDate(trace.StartTime),
 		Duration:  trace.ElapsedTime,
 		Status:    trace.Status,
 		Error:     trace.ErrorMsg,

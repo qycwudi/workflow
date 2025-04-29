@@ -280,7 +280,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 	g, ctx := errgroup.WithContext(ctx)
 	logx.Debugf("执行阶段:%d,节点数:%d\n", phaseIdx, len(phase.Nodes))
 	for i, node := range phase.Nodes {
-		if err := e.submitNodeTask(ctx, phaseIdx, executor, execCtx, node, &sw, g, nodes, i); err != nil {
+		if err := e.submitNodeTask(ctx, phaseIdx*10000+i, executor, execCtx, node, &sw, g, nodes, i); err != nil {
 			return err
 		}
 	}
@@ -295,7 +295,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 
 // submitNodeTask 提交节点任务
 func (e *WorkflowEngine) submitNodeTask(ctx context.Context, phaseIdx int, executor *Executor, execCtx *core.ExecutionContext, node *WorkflowNode, sw *sync.WaitGroup, g *errgroup.Group, nodes []string, index int) error {
-	logx.Debugf("执行节点: %s\n", node.ID)
+	logx.Debugf("执行节点: %s,step:%d\n", node.ID, phaseIdx)
 	nodes[index] = node.ID
 
 	// 检查上下文状态
@@ -360,6 +360,7 @@ func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, pha
 		WorkflowID: executor.definition.ID,
 		SerialID:   execCtx.TraceId,
 		Sw:         sw,
+		Step:       int64(phaseIdx),
 	}
 
 	return e.pool.Invoke(task)

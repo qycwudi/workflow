@@ -1,0 +1,62 @@
+syntax = "v1"
+
+type QueryComponentsRequest {
+	Id       string `json:"id"`       // 空间ID
+	SerialId string `json:"serialId"` // 组件ID
+}
+
+type QueryComponentsResponse {
+	Status  string   `json:"status"`  // 状态 如果是 running 则表示组件正在运行,可以轮训查询 枚举[cancel,fail,success,running]
+	Records []Record `json:"records"` // 组件运行结果
+}
+
+type Record {
+	Input     interface{} `json:"input"`
+	Output    interface{} `json:"output"`
+	NodeId    string      `json:"nodeId"`
+	NodeName  string      `json:"nodeName"`
+	Step      int64       `json:"step"`
+	Error     string      `json:"error"`
+	Duration  int64       `json:"duration"`
+	Status    string      `json:"status"`
+	StartTime string      `json:"startTime"`
+}
+
+type QueryCanvasRecordsRequest {
+	Id       string `json:"id"`       // 空间ID
+	Current  int64  `json:"current"`  // 当前页码
+	PageSize int64  `json:"pageSize"` // 每页大小
+}
+
+type QueryCanvasRecordsResponse {
+	Total    int64          `json:"total"`    // 总条数
+	Current  int64          `json:"current"`  // 当前页码
+	PageSize int64          `json:"pageSize"` // 每页大小
+	Records  []CanvasRecord `json:"records"`  // 组件运行结果
+}
+
+type CanvasRecord {
+	Id        string      `json:"id"`        // 空间ID
+	SerialId  string      `json:"serialId"`  // 执行流水号
+	Status    string      `json:"status"`    // 状态
+	Duration  int64       `json:"duration"`  // 运行时间
+	StartTime string       `json:"startTime"` // 开始时间
+	Data      interface{} `json:"data"`      // 数据
+}
+
+@server (
+	group: trace
+	prefix: /workflow
+	// jwt: Auth
+	// middleware: PermissionMiddleware
+)
+
+service workflow-api {
+	@doc "查询组件运行结果"
+	@handler QueryComponentsHandler
+	post /trace/components/query (QueryComponentsRequest) returns (QueryComponentsResponse)
+
+	@doc "查询画布运行记录列表"
+	@handler QueryCanvasRecordsHandler
+	post /trace/canvas/query (QueryCanvasRecordsRequest) returns (QueryCanvasRecordsResponse)
+}

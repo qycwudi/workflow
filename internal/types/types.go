@@ -98,11 +98,11 @@ type ApiPublishList struct {
 }
 
 type ApiPublishListRequest struct {
-	Current  int    `json:"current"`
-	PageSize int    `json:"pageSize"`
-	Id       string `json:"id,optional" desc:"API_ID 非必填"`
-	Name     string `json:"name,optional"`
-	Tag      string `json:"tag,optional" desc:"标签"`
+	Current  int    `json:"current"`       // 当前页
+	PageSize int    `json:"pageSize"`      // 页大小
+	Id       string `json:"id,optional"`   // API_ID 非必填
+	Name     string `json:"name,optional"` // 名称
+	Tag      string `json:"tag,optional"`  // 标签
 }
 
 type ApiPublishListResponse struct {
@@ -113,10 +113,10 @@ type ApiPublishListResponse struct {
 }
 
 type ApiPublishRequest struct {
-	Id      string   `json:"id" desc:"空间ID"`
-	ApiName string   `json:"apiName" desc:"名称"`
-	ApiDesc string   `json:"apiDesc" desc:"描述"`
-	Tag     []string `json:"tag" desc:"标签"`
+	Id      string   `json:"id"`      // 空间ID
+	ApiName string   `json:"apiName"` // 名称
+	ApiDesc string   `json:"apiDesc"` // 描述
+	Tag     []string `json:"tag"`     // 标签
 }
 
 type ApiPublishResponse struct {
@@ -256,17 +256,23 @@ type CanvasHistoryRecord struct {
 	Name       string `json:"name"`
 }
 
+type CanvasRecord struct {
+	Id        string      `json:"id"`        // 空间ID
+	SerialId  string      `json:"serialId"`  // 执行流水号
+	Status    string      `json:"status"`    // 状态
+	Duration  int64       `json:"duration"`  // 运行时间
+	StartTime string      `json:"startTime"` // 开始时间
+	Data      interface{} `json:"data"`      // 数据
+}
+
 type CanvasRunRequest struct {
 	Id     string                 `json:"id" desc:"空间ID"`
 	Params map[string]interface{} `json:"params"`
 }
 
 type CanvasRunResponse struct {
-	Id       string      `json:"id"`
-	Duration int64       `json:"duration"`
-	Data     interface{} `json:"data"`
-	Status   string      `json:"status"`
-	Error    string      `json:"error"`
+	Id       string `json:"id"`
+	SerialId string `json:"serialId"`
 }
 
 type CanvasRunSingleDetailRequest struct {
@@ -277,7 +283,7 @@ type CanvasRunSingleDetailRequest struct {
 type CanvasRunSingleDetailResponse struct {
 	NodeId    string `json:"nodeId"`
 	NodeName  string `json:"nodeName"`
-	StartTime int64  `json:"startTime"`
+	StartTime string `json:"startTime"`
 	Duration  int64  `json:"duration"`
 	Status    string `json:"status"`
 	Error     string `json:"error"`
@@ -757,6 +763,41 @@ type Permission struct {
 	CreatedAt string       `json:"createdAt"`
 	UpdatedAt string       `json:"updatedAt"`
 	Children  []Permission `json:"children,optional"`
+}
+
+type QueryCanvasRecordsRequest struct {
+	Id       string `json:"id"`       // 空间ID
+	Current  int64  `json:"current"`  // 当前页码
+	PageSize int64  `json:"pageSize"` // 每页大小
+}
+
+type QueryCanvasRecordsResponse struct {
+	Total    int64          `json:"total"`    // 总条数
+	Current  int64          `json:"current"`  // 当前页码
+	PageSize int64          `json:"pageSize"` // 每页大小
+	Records  []CanvasRecord `json:"records"`  // 组件运行结果
+}
+
+type QueryComponentsRequest struct {
+	Id       string `json:"id"`       // 空间ID
+	SerialId string `json:"serialId"` // 组件ID
+}
+
+type QueryComponentsResponse struct {
+	Status  string   `json:"status"`  // 状态 如果是 running 则表示组件正在运行,可以轮训查询 枚举[cancel,fail,success,running]
+	Records []Record `json:"records"` // 组件运行结果
+}
+
+type Record struct {
+	Input     interface{} `json:"input"`
+	Output    interface{} `json:"output"`
+	NodeId    string      `json:"nodeId"`
+	NodeName  string      `json:"nodeName"`
+	Step      int64       `json:"step"`
+	Error     string      `json:"error"`
+	Duration  int64       `json:"duration"`
+	Status    string      `json:"status"`
+	StartTime string      `json:"startTime"`
 }
 
 type RestoreCanvasHistoryReq struct {

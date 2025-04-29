@@ -13,6 +13,7 @@ import (
 	model "workflow/internal/handler/model"
 	permission "workflow/internal/handler/permission"
 	role "workflow/internal/handler/role"
+	trace "workflow/internal/handler/trace"
 	user "workflow/internal/handler/user"
 	workspace "workflow/internal/handler/workspace"
 	"workflow/internal/svc"
@@ -456,6 +457,24 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 查询画布运行记录列表
+				Method:  http.MethodPost,
+				Path:    "/trace/canvas/query",
+				Handler: trace.QueryCanvasRecordsHandler(serverCtx),
+			},
+			{
+				// 查询组件运行结果
+				Method:  http.MethodPost,
+				Path:    "/trace/components/query",
+				Handler: trace.QueryComponentsHandler(serverCtx),
+			},
+		},
 		rest.WithPrefix("/workflow"),
 	)
 
