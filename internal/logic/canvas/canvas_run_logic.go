@@ -39,6 +39,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
 	}
+	// 检查画布是否正在运行
 
 	err = workflow.Register(l.ctx, canvas.Draft)
 	if err != nil {
@@ -64,7 +65,8 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	}
 
 	resp = &types.CanvasRunResponse{
-		Id: traceId,
+		Id:       req.Id,
+		SerialId: traceId,
 	}
 	go run(context.Background(), l.svcCtx, traceId, canvas.WorkspaceId, data)
 	return resp, nil

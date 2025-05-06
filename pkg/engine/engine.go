@@ -17,7 +17,7 @@ import (
 	"workflow/pkg/core"
 )
 
-// WorkflowEngine 工作流引擎
+// WorkflowEngine 工作流引擎 https://deepwiki.com/XXueTu/workflow/1-overview
 type WorkflowEngine struct {
 	// 核心组件
 	pool     *ants.PoolWithFunc // 任务执行池
@@ -58,11 +58,11 @@ func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 		defer task.Sw.Done()
 		result, err := task.Engine.executeNode(task.Context, task.Step, task.NodeID, task.Executor.definition.Nodes[task.NodeID], task.Component)
 		if err != nil {
-			logx.Errorf("执行节点 [%s] 失败: %v\n", task.NodeID, err)
+			logx.Errorf("执行节点 [nodeId:%s,step:%d,workflowId:%s,serialId:%s] 失败: %v\n", task.NodeID, task.Step, task.WorkflowID, task.SerialID, err)
 			task.Context.SetError(task.NodeID, err)
 			return
 		}
-		logx.Debugf("执行节点 [%s] 结果: %v\n", task.NodeID, result.Output)
+		logx.Debugf("执行节点 [nodeId:%s,step:%d,workflowId:%s,serialId:%s] 结果: %v\n", task.NodeID, task.Step, task.WorkflowID, task.SerialID, result.Output)
 	}
 
 	// 创建 ants 函数池
@@ -86,11 +86,6 @@ func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 // RegisterWorkflow 注册工作流
 func (e *WorkflowEngine) RegisterWorkflow(ctx context.Context, def *core.WorkflowDef) error {
 
-	// 检查并处理已存在的工作流
-	if err := e.handleExistingWorkflow(def.ID); err != nil {
-		return err
-	}
-
 	// 构建执行计划
 	plan, err := e.buildExecutionPlan(ctx, def)
 	if err != nil {
@@ -112,20 +107,11 @@ func (e *WorkflowEngine) RegisterWorkflow(ctx context.Context, def *core.Workflo
 	return nil
 }
 
-// handleExistingWorkflow 处理已存在的工作流
-func (e *WorkflowEngine) handleExistingWorkflow(workflowID string) error {
-	e.mu.Lock()
-	defer e.mu.Unlock()
-	if existing, exists := e.executorPool[workflowID]; exists {
-		atomic.StoreInt64(&existing.lastAccessed, time.Now().UnixNano())
-		existing.status = core.WorkflowStatusDeploying
-	}
-	return nil
-}
-
 // createExecutor 创建执行器
 func (e *WorkflowEngine) createExecutor(def *core.WorkflowDef, plan *ExecutionPlan, condition map[string][]string) *Executor {
-	return &Executor{
+	e.mu.Lock()
+	defer e.mu.Unlock()
+	executor := &Executor{
 		definition:      def,
 		env:             make(map[string]any),
 		executionPlan:   plan,
@@ -136,6 +122,17 @@ func (e *WorkflowEngine) createExecutor(def *core.WorkflowDef, plan *ExecutionPl
 		defaultTTL:      e.config.DefaultContextTTL,
 		shutdownCh:      make(chan struct{}),
 	}
+
+	if existing, exists := e.executorPool[def.ID]; exists {
+		atomic.StoreInt64(&existing.lastAccessed, time.Now().UnixNano())
+		existing.status = core.WorkflowStatusDeploying
+		// 复制已经存在的执行上下文,防止删除正在执行的上下文
+		existing.execContexts.Range(func(key, value any) bool {
+			executor.execContexts.Store(key, value)
+			return true
+		})
+	}
+	return executor
 }
 
 // registerExecutor 注册执行器
@@ -661,17 +658,20 @@ func (e *WorkflowEngine) GetNodeResult(workflowID, serialID, nodeID string) (*co
 	e.mu.RUnlock()
 
 	if !ok {
+		logx.Debugf("获取节点结果,工作流未找到: %s", workflowID)
 		return nil, false
 	}
 
 	// 使用sync.Map获取执行上下文
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
+		logx.Debugf("获取节点结果,执行上下文未找到: %s", serialID)
 		return nil, false
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
 	if !ok {
+		logx.Debugf("获取节点结果,执行上下文类型错误: %s", serialID)
 		return nil, false
 	}
 
@@ -878,9 +878,8 @@ func (e *WorkflowEngine) GetExecutionContext(workflowID, serialID string) (*core
 
 func (e *WorkflowEngine) ClearExecutionContext(workflowID, serialID string) error {
 	e.mu.RLock()
-	defer e.mu.RUnlock()
-
 	executor, ok := e.executorPool[workflowID]
+	e.mu.RUnlock()
 	if !ok {
 		return errors.New("工作流未找到: " + workflowID)
 	}

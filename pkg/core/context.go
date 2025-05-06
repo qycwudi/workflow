@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/opentracing/opentracing-go"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 // ExecutionContext 工作流执行上下文
@@ -86,6 +87,7 @@ func NewExecutionContext(ctx context.Context, workspaceId string, serialID strin
 
 // ReleaseExecutionContext 释放执行上下文
 func ReleaseExecutionContext(ctx *ExecutionContext) {
+	logx.Debugf("释放执行上下文: %s", ctx.TraceId)
 	ctx.mu.Lock()
 	defer ctx.mu.Unlock()
 	// 清理状态

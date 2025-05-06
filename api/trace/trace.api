@@ -2,7 +2,7 @@ syntax = "v1"
 
 type QueryComponentsRequest {
 	Id       string `json:"id"`       // 空间ID
-	SerialId string `json:"serialId"` // 组件ID
+	SerialId string `json:"serialId"` // 执行流水号
 }
 
 type QueryComponentsResponse {

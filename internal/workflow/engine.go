@@ -41,6 +41,7 @@ func Register(ctx context.Context, dsl string) error {
 
 func Run(ctx context.Context, serialId, workspaceId string, data map[string]any) (string, core.NodeResult, error) {
 	defer func() {
+		logx.Infow("清除执行上下文", logx.Field("workspaceId", workspaceId), logx.Field("serialId", serialId))
 		clearErr := eg.ClearExecutionContext(workspaceId, serialId)
 		if clearErr != nil {
 			logx.Errorw("清除执行上下文失败", logx.Field("error", clearErr.Error()))
@@ -55,12 +56,16 @@ func Run(ctx context.Context, serialId, workspaceId string, data map[string]any)
 
 	endResult, ok := eg.GetNodeResult(workspaceId, serialId, "end-node-1")
 	if !ok {
-		logx.Errorw("未找到 结束 节点的执行结果")
-		return serialId, core.NodeResult{}, errors.New("未找到 结束 节点的执行结果")
+		logx.Errorw("未找到 结束 节点的执行结果", logx.Field("workspaceId", workspaceId), logx.Field("serialId", serialId))
+		return serialId, core.NodeResult{}, errors.New("未找到 结束 节点的执行结果:" + workspaceId + "," + serialId)
 	}
 	return serialId, *endResult, nil
 }
 
 func Close() {
 	eg.Cleanup()
+}
+
+func Stop(ctx context.Context, workspaceId string, serialId string) error {
+	return nil
 }
