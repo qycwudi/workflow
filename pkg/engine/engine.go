@@ -56,7 +56,7 @@ func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 			return
 		}
 		defer task.Sw.Done()
-		result, err := task.Engine.executeNode(task.Context, task.Step, task.NodeID, task.Executor.definition.Nodes[task.NodeID], task.Component)
+		result, err := task.Engine.executeNode(task.Context, task.Step, task.NodeID, task.Executor.definition.Nodes[task.NodeID], task.Component, nil)
 		if err != nil {
 			logx.Errorf("执行节点 [nodeId:%s,step:%d,workflowId:%s,serialId:%s] 失败: %v\n", task.NodeID, task.Step, task.WorkflowID, task.SerialID, err)
 			task.Context.SetError(task.NodeID, err)
@@ -258,6 +258,44 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 	return nil
 }
 
+func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, serialID string, nodeId string, params map[string]any) (*core.NodeResult, error) {
+	startTime := time.Now()
+	executor, ok := e.executorPool[workflowID]
+	if !ok {
+		return nil, errors.New("工作流未找到: " + workflowID)
+	}
+	node := executor.definition.Nodes[nodeId]
+	nodeResult := &core.NodeResult{
+		Input:    params,
+		Route:    []string{components.Success},
+		NodeID:   nodeId,
+		Duration: time.Since(startTime).Milliseconds(),
+		Type:     node.Type,
+		NodeName: node.Name,
+	}
+	// 创建执行上下文
+	execCtx := core.NewExecutionContext(ctx, workflowID, serialID, executor.totalNodes, params)
+	execCtx.Context = ctx
+	execCtx.Expiration = time.Now().Add(executor.defaultTTL)
+
+	// 执行节点
+	component, err := components.ComponentFactory(e, node.Type, node)
+	if err != nil {
+		logx.Errorw("无法创建组件", logx.Field("error", err.Error()))
+		nodeResult.Error = err.Error()
+		return nodeResult, errors.New("无法创建组件: " + err.Error())
+	}
+	result, err := e.executeNode(execCtx, 0, nodeId, node, component, params)
+	if err != nil {
+		logx.Errorw("执行节点失败", logx.Field("error", err.Error()))
+		nodeResult.Error = err.Error()
+		return nodeResult, errors.New("执行节点失败: " + err.Error())
+	}
+	nodeResult.Output = result.Output
+	nodeResult.Duration = time.Since(startTime).Milliseconds()
+	return nodeResult, nil
+}
+
 // executeWorkflowPhases 执行工作流阶段
 func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext) error {
 	// 总执行计划
@@ -398,6 +436,7 @@ func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseI
 		Input:    params,
 		Output:   output,
 		Route:    []string{components.Success},
+		NodeName: node.Name,
 		NodeID:   node.ID,
 		Duration: 0,
 		Error:    errorMsg,
@@ -519,7 +558,7 @@ func (e *WorkflowEngine) processNodeOutput(input any, err error, result *core.Re
 }
 
 // executeNode 执行节点
-func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nodeID string, node *core.NodeDefinition, component components.Component) (*core.Result, error) {
+func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nodeID string, node *core.NodeDefinition, component components.Component, singleParam map[string]any) (*core.Result, error) {
 
 	startTime := time.Now()
 
@@ -527,7 +566,12 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 	err := e.validateComponent(component, node)
 
 	// 2. 准备输入数据
-	input, err := e.prepareNodeInput(ctx, err, node, component)
+	var input any
+	if singleParam != nil {
+		input = singleParam
+	} else {
+		input, err = e.prepareNodeInput(ctx, err, node, component)
+	}
 	// 创建 trace
 	trace := &TraceRecore{
 		WorkspaceId: ctx.WorkspaceId,

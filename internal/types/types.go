@@ -230,30 +230,30 @@ type BatchUnbindPermissionResponse struct {
 }
 
 type CanvasDetailRequest struct {
-	Id string `json:"id"`
+	Id string `json:"id"` // 空间ID
 }
 
 type CanvasDetailResponse struct {
-	Id    string                 `json:"id"`
-	Name  string                 `json:"name"`
-	Graph map[string]interface{} `json:"graph"`
+	Id    string                 `json:"id"`    // 空间ID
+	Name  string                 `json:"name"`  // 空间名称
+	Graph map[string]interface{} `json:"graph"` // 画布图
 }
 
 type CanvasDraftRequest struct {
-	Id    string                 `json:"id"`
-	Graph map[string]interface{} `json:"graph"`
+	Id    string                 `json:"id"`    // 空间ID
+	Graph map[string]interface{} `json:"graph"` // 画布图
 }
 
 type CanvasDraftResponse struct {
-	Hash       string `json:"hash"`
-	UpdateTime int64  `json:"updateTime"`
+	Hash       string `json:"hash"`       // 画布hash
+	UpdateTime int64  `json:"updateTime"` // 更新时间
 }
 
 type CanvasHistoryRecord struct {
-	Id         int64  `json:"id"`
-	CreateTime string `json:"createTime"`
-	Mode       int64  `json:"mode" common:"0-草稿 1-api 2-job"`
-	Name       string `json:"name"`
+	Id         int64  `json:"id"`                             // 历史版本ID
+	CreateTime string `json:"createTime"`                     // 创建时间
+	Mode       int64  `json:"mode" common:"0-草稿 1-api 2-job"` // 模式
+	Name       string `json:"name"`                           // 空间名称
 }
 
 type CanvasRecord struct {
@@ -266,13 +266,13 @@ type CanvasRecord struct {
 }
 
 type CanvasRunRequest struct {
-	Id     string                 `json:"id" desc:"空间ID"`
-	Params map[string]interface{} `json:"params"`
+	Id     string                 `json:"id"`     // 空间ID
+	Params map[string]interface{} `json:"params"` // 组件运行参数
 }
 
 type CanvasRunResponse struct {
-	Id       string `json:"id"`
-	SerialId string `json:"serialId"`
+	Id       string `json:"id"`       // 空间ID
+	SerialId string `json:"serialId"` // 组件运行流水号
 }
 
 type CanvasRunSingleDetailRequest struct {
@@ -281,26 +281,26 @@ type CanvasRunSingleDetailRequest struct {
 }
 
 type CanvasRunSingleDetailResponse struct {
-	NodeId    string `json:"nodeId"`
-	NodeName  string `json:"nodeName"`
-	StartTime string `json:"startTime"`
-	Duration  int64  `json:"duration"`
-	Status    string `json:"status"`
-	Error     string `json:"error"`
-	Input     string `json:"input"`
-	Output    string `json:"output"`
+	NodeId    string `json:"nodeId"`    // 节点ID
+	NodeName  string `json:"nodeName"`  // 节点名称
+	StartTime string `json:"startTime"` // 组件运行开始时间
+	Duration  int64  `json:"duration"`  // 组件运行耗时
+	Status    string `json:"status"`    // 组件运行状态
+	Error     string `json:"error"`     // 组件运行错误信息
+	Input     string `json:"input"`     // 组件运行参数
+	Output    string `json:"output"`    // 组件运行结果
 }
 
 type CanvasRunSingleRequest struct {
-	Id     string `json:"id" desc:"空间ID"`
-	NodeId string `json:"nodeId" desc:"节点ID"`
+	Id     string                 `json:"id"`     // 空间ID
+	NodeId string                 `json:"nodeId"` // 节点ID
+	Params map[string]interface{} `json:"params"` // 组件运行参数
 }
 
 type CanvasRunSingleResponse struct {
-	Ts       int64             `json:"ts"`
-	Id       string            `json:"id"`
-	MetaData map[string]string `json:"metadata"`
-	Data     interface{}       `json:"data"`
+	Id     string `json:"id"`     // 空间ID
+	NodeId string `json:"nodeId"` // 节点ID
+	Result Result `json:"result"` // 组件运行结果
 }
 
 type ComponentDetail struct {
@@ -439,8 +439,8 @@ type DeleteRoleResponse struct {
 }
 
 type EdgeCustomData struct {
-	SourcePoint int `json:"sourcePoint"`
-	TargetPoint int `json:"targetPoint"`
+	SourcePoint int `json:"sourcePoint"` // 源点坐标
+	TargetPoint int `json:"targetPoint"` // 目标点坐标
 }
 
 type EnvList struct {
@@ -449,26 +449,26 @@ type EnvList struct {
 }
 
 type GetCanvasHistoryDetailReq struct {
-	Id int64 `json:"id"`
+	Id int64 `json:"id"` // 历史版本ID
 }
 
 type GetCanvasHistoryDetailResp struct {
-	Id    int64                  `json:"id"`
-	Name  string                 `json:"name"`
-	Graph map[string]interface{} `json:"graph"`
+	Id    int64                  `json:"id"`    // 历史版本ID
+	Name  string                 `json:"name"`  // 空间名称
+	Graph map[string]interface{} `json:"graph"` // 画布图
 }
 
 type GetCanvasHistoryListReq struct {
-	Name        string `json:"name,optional"`
-	Mode        int64  `json:"mode,optional" common:"0-草稿 1-api 2-job"`
-	WorkspaceId string `json:"workspaceId"`
-	Current     int    `json:"current"`
-	PageSize    int    `json:"pageSize"`
+	Name        string `json:"name,optional"`                           // 空间名称
+	Mode        int64  `json:"mode,optional" common:"0-草稿 1-api 2-job"` // 模式
+	WorkspaceId string `json:"workspaceId"`                             // 空间ID
+	Current     int    `json:"current"`                                 // 当前页码
+	PageSize    int    `json:"pageSize"`                                // 每页大小
 }
 
 type GetCanvasHistoryListResp struct {
-	Records []CanvasHistoryRecord `json:"records"`
-	Total   int64                 `json:"total"` // 总记录数
+	Records []CanvasHistoryRecord `json:"records"` // 历史版本列表
+	Total   int64                 `json:"total"`   // 总记录数
 }
 
 type GetCanvasRunDetailReq struct {
@@ -485,12 +485,12 @@ type GetCanvasRunDetailResp struct {
 }
 
 type GetCanvasRunHistoryReq struct {
-	WorkSpaceId string `path:"workSpaceId"`
+	WorkSpaceId string `path:"workSpaceId"` // 空间ID
 }
 
 type GetCanvasRunHistoryResp struct {
-	Records []RunHistoryRecord `json:"records"`
-	Total   int64              `json:"total"` // 总记录数
+	Records []RunHistoryRecord `json:"records"` // 运行记录列表
+	Total   int64              `json:"total"`   // 总记录数
 }
 
 type GetDropDownListReq struct {
@@ -780,7 +780,7 @@ type QueryCanvasRecordsResponse struct {
 
 type QueryComponentsRequest struct {
 	Id       string `json:"id"`       // 空间ID
-	SerialId string `json:"serialId"` // 组件ID
+	SerialId string `json:"serialId"` // 执行流水号
 }
 
 type QueryComponentsResponse struct {
@@ -801,12 +801,24 @@ type Record struct {
 }
 
 type RestoreCanvasHistoryReq struct {
-	Id int64 `json:"id"`
+	Id int64 `json:"id"` // 历史版本ID
 }
 
 type RestoreCanvasHistoryResp struct {
-	Id          int64  `json:"id"`
-	WorkspaceId string `json:"workspaceId"`
+	Id          int64  `json:"id"`          // 历史版本ID
+	WorkspaceId string `json:"workspaceId"` // 空间ID
+}
+
+type Result struct {
+	Input     interface{} `json:"input"`     // 组件运行参数
+	Output    interface{} `json:"output"`    // 组件运行结果
+	NodeId    string      `json:"nodeId"`    // 节点ID
+	NodeName  string      `json:"nodeName"`  // 节点名称
+	Step      int64       `json:"step"`      // 组件运行步骤
+	Error     string      `json:"error"`     // 组件运行错误信息
+	Duration  int64       `json:"duration"`  // 组件运行耗时
+	Status    string      `json:"status"`    // 组件运行状态
+	StartTime string      `json:"startTime"` // 组件运行开始时间
 }
 
 type Role struct {
@@ -828,12 +840,12 @@ type RunHistoryRecord struct {
 }
 
 type SaveCanvasHistoryReq struct {
-	WorkspaceId string `json:"workspaceId"`
-	Name        string `json:"name"`
+	WorkspaceId string `json:"workspaceId"` // 空间ID
+	Name        string `json:"name"`        // 空间名称
 }
 
 type SaveCanvasHistoryResp struct {
-	Id int64 `json:"id"`
+	Id int64 `json:"id"` // 历史版本ID
 }
 
 type TagEditRequest struct {

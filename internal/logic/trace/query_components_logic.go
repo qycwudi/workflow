@@ -2,6 +2,7 @@ package trace
 
 import (
 	"context"
+	"sort"
 
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
@@ -65,6 +66,10 @@ func (l *QueryComponentsLogic) QueryComponents(req *types.QueryComponentsRequest
 			StartTime: utils.FormatDate(trace.StartTime),
 		}
 	}
+	// 根据 step 升序
+	sort.Slice(records, func(i, j int) bool {
+		return records[i].Step < records[j].Step
+	})
 	resp.Records = records
 	return resp, nil
 }

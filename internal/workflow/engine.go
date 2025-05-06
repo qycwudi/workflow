@@ -62,6 +62,17 @@ func Run(ctx context.Context, serialId, workspaceId string, data map[string]any)
 	return serialId, *endResult, nil
 }
 
+func RunSingle(ctx context.Context, serialId, workspaceId string, nodeId string, data map[string]any) (string, core.NodeResult, error) {
+	// 执行工作流
+	result, err := eg.ExecuteSingleWorkflow(ctx, workspaceId, serialId, nodeId, data)
+	if err != nil {
+		logx.Errorw("工作流执行失败", logx.Field("error", err))
+		return serialId, *result, err
+	}
+
+	return serialId, *result, nil
+}
+
 func Close() {
 	eg.Cleanup()
 }

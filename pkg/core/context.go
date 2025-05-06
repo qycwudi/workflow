@@ -40,6 +40,7 @@ type NodeResult struct {
 	Output   any
 	Route    []string
 	NodeID   string
+	NodeName string
 	Duration int64 // ms
 	Error    string
 	Type     string
