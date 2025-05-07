@@ -15,55 +15,67 @@ func ValidateOutput(data any, output Output) error {
 	switch output.Type[0] {
 	case "string":
 		if _, ok := data.(string); !ok {
+			logx.Errorf("[输出处理] 类型验证失败 [字段:%s] [期望:字符串] [实际:%s]", output.Name, reflect.TypeOf(data).String())
 			return errors.New("输出 " + output.Name + " 必须是字符串类型")
 		}
 	case "integer":
 		switch v := data.(type) {
 		case int:
 			if float64(v) != float64(v) {
+				logx.Errorf("[输出处理] 整数验证失败 [字段:%s] [值:%v] [错误:不能有小数部分]", output.Name, v)
 				return errors.New("输出 " + output.Name + " int必须是整数类型，不能有小数部分")
 			}
 		case int32:
 			if float64(v) != float64(v) {
+				logx.Errorf("[输出处理] 整数验证失败 [字段:%s] [值:%v] [错误:不能有小数部分]", output.Name, v)
 				return errors.New("输出 " + output.Name + " int32必须是整数类型，不能有小数部分")
 			}
 		case int64:
 			if float64(v) != float64(v) {
+				logx.Errorf("[输出处理] 整数验证失败 [字段:%s] [值:%v] [错误:不能有小数部分]", output.Name, v)
 				return errors.New("输出 " + output.Name + " int64必须是整数类型，不能有小数部分")
 			}
 		case float64:
 			if v != float64(int(v)) {
+				logx.Errorf("[输出处理] 整数验证失败 [字段:%s] [值:%v] [错误:不能有小数部分]", output.Name, v)
 				return errors.New("输出 " + output.Name + " float64必须是整数类型，不能有小数部分")
 			}
 		case json.Number:
 			_, err := strconv.ParseInt(string(v), 10, 64)
 			if err != nil {
+				logx.Errorf("[输出处理] 整数验证失败 [字段:%s] [值:%v] [错误:%v]", output.Name, v, err)
 				return errors.New("输出 " + output.Name + " json.Number必须是整数类型")
 			}
 		default:
+			logx.Errorf("[输出处理] 类型验证失败 [字段:%s] [期望:整数] [实际:%s]", output.Name, reflect.TypeOf(v).String())
 			return errors.New("输出 " + output.Name + " ,类型: " + reflect.TypeOf(v).String() + " 必须是整数类型")
 		}
 	case "float":
 		switch v := data.(type) {
 		case float64:
 			if v != float64(int(v)) {
+				logx.Errorf("[输出处理] 浮点数验证失败 [字段:%s] [值:%v] [错误:不能有小数部分]", output.Name, v)
 				return errors.New("输出 " + output.Name + " float64必须是整数类型，不能有小数部分")
 			}
 		case json.Number:
 			_, err := strconv.ParseFloat(string(v), 64)
 			if err != nil {
+				logx.Errorf("[输出处理] 浮点数验证失败 [字段:%s] [值:%v] [错误:%v]", output.Name, v, err)
 				return errors.New("输出 " + output.Name + " json.Number必须是浮点数类型")
 			}
 		default:
+			logx.Errorf("[输出处理] 类型验证失败 [字段:%s] [期望:浮点数] [实际:%s]", output.Name, reflect.TypeOf(v).String())
 			return errors.New("输出 " + output.Name + " ,类型: " + reflect.TypeOf(v).String() + " 必须是浮点数类型")
 		}
 	case "boolean":
 		if _, ok := data.(bool); !ok {
+			logx.Errorf("[输出处理] 类型验证失败 [字段:%s] [期望:布尔值] [实际:%s]", output.Name, reflect.TypeOf(data).String())
 			return errors.New("输出 " + output.Name + " 必须是布尔类型")
 		}
 	case "array":
 		arr, ok := data.([]any)
 		if !ok {
+			logx.Errorf("[输出处理] 类型验证失败 [字段:%s] [期望:数组] [实际:%s]", output.Name, reflect.TypeOf(data).String())
 			return errors.New("输出 " + output.Name + " 必须是数组类型")
 		}
 		// 如果有更复杂的数组元素验证，可以在这里添加
@@ -78,6 +90,7 @@ func ValidateOutput(data any, output Output) error {
 	case "object":
 		obj, ok := data.(map[string]any)
 		if !ok {
+			logx.Errorf("[输出处理] 类型验证失败 [字段:%s] [期望:对象] [实际:%+v]", output.Name, data)
 			return errors.New("输出 " + output.Name + " 必须是对象类型,现在: " + fmt.Sprintf("%+v", data))
 		}
 
@@ -85,10 +98,12 @@ func ValidateOutput(data any, output Output) error {
 		for _, field := range output.Schema {
 			fieldValue, exists := obj[field.Name]
 			if !exists {
+				logx.Errorf("[输出处理] 缺少必要字段 [对象:%s] [字段:%s]", output.Name, field.Name)
 				return errors.New("对象 " + output.Name + " 缺少必要字段 " + field.Name)
 			}
 
 			if err := ValidateOutput(fieldValue, field); err != nil {
+				logx.Errorf("[输出处理] 字段验证失败 [对象:%s] [字段:%s] [错误:%v]", output.Name, field.Name, err)
 				return errors.New("对象 " + output.Name + " 的字段 " + field.Name + " 验证失败: " + err.Error())
 			}
 		}
@@ -99,6 +114,7 @@ func ValidateOutput(data any, output Output) error {
 // ParseOutput 解析单个输出
 func ParseOutput(data any, output Output) (any, error) {
 	if err := ValidateOutput(data, output); err != nil {
+		logx.Errorf("[输出处理] 输出验证失败 [字段:%s] [错误:%v]", output.Name, err)
 		return nil, err
 	}
 
@@ -140,7 +156,7 @@ func ProcessNodeOutput(data map[string]any, outputs []Output) (map[string]any, e
 	defer func() {
 		if r := recover(); r != nil {
 			panicErr = errors.New("ProcessNodeOutput panic: " + fmt.Sprintf("%+v", r))
-			logx.Errorf("ProcessNodeOutput panic: %v\n", r)
+			logx.Errorf("[输出处理] 处理过程发生panic [错误:%v]", r)
 		}
 	}()
 
@@ -157,7 +173,7 @@ func ProcessNodeOutput(data map[string]any, outputs []Output) (map[string]any, e
 				r := make(map[string]any)
 				err := json.Unmarshal([]byte(output.DeftValue.(string)), &r)
 				if err != nil {
-					logx.Errorf("处理对象类输出 %s 的默认值时出错: %v\n", output.Name, err)
+					logx.Errorf("[输出处理] 处理对象类输出失败 [字段:%s] [错误:%v]", output.Name, err)
 					result[output.Name] = r // 保持原有行为，即使解析失败也返回解析后的结果
 				} else {
 					result[output.Name] = r
@@ -180,7 +196,7 @@ func ProcessNodeOutput(data map[string]any, outputs []Output) (map[string]any, e
 					result[output.Name] = output.DeftValue
 				}
 			}
-			logx.Debugf("使用默认值 %v 作为 %s 的输出\n", output.DeftValue, output.Name)
+			logx.Debugf("[输出处理] 使用默认值 [字段:%s] [值:%v]", output.Name, output.DeftValue)
 			continue
 		}
 
@@ -190,7 +206,7 @@ func ProcessNodeOutput(data map[string]any, outputs []Output) (map[string]any, e
 		}
 
 		result[output.Name] = parsedValue
-		logx.Debugf("输出 %s 已成功解析，类型: %s\n", output.Name, output.Type)
+		logx.Debugf("[输出处理] 输出解析成功 [字段:%s] [类型:%s]", output.Name, output.Type)
 	}
 	if panicErr != nil {
 		return nil, panicErr

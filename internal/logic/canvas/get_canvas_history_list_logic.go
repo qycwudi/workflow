@@ -28,7 +28,10 @@ func NewGetCanvasHistoryListLogic(ctx context.Context, svcCtx *svc.ServiceContex
 func (l *GetCanvasHistoryListLogic) GetCanvasHistoryList(req *types.GetCanvasHistoryListReq) (resp *types.GetCanvasHistoryListResp, err error) {
 	canvasHistoryList, total, err := l.svcCtx.CanvasHistoryModel.FindPage(l.ctx, req.WorkspaceId, req.Name, req.Mode, req.Current, req.PageSize)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "获取画布历史版本列表失败")
+		logx.Errorw("[画布] 获取历史版本列表失败",
+			logx.Field("工作空间ID", req.WorkspaceId),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemOrmError), "获取历史版本列表失败")
 	}
 
 	records := make([]types.CanvasHistoryRecord, 0)

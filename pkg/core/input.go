@@ -28,6 +28,7 @@ func extractDataByPath(data any, path string) (any, error) {
 				current = value
 				continue
 			}
+			logx.Errorf("[输入处理] 字段不存在 [路径:%s] [字段:%s]", path, part)
 			return nil, errors.New("路径 " + path + " 中的字段 " + part + " 不存在")
 		}
 
@@ -36,15 +37,18 @@ func extractDataByPath(data any, path string) (any, error) {
 			// 尝试将部分转换为索引
 			index, err := strconv.Atoi(part)
 			if err != nil {
+				logx.Errorf("[输入处理] 数组索引解析失败 [路径:%s] [部分:%s] [错误:%v]", path, part, err)
 				return nil, errors.New("路径 " + path + " 中的 " + part + " 不是有效的数组索引")
 			}
 			if index < 0 || index >= len(arrayData) {
+				logx.Errorf("[输入处理] 数组索引越界 [路径:%s] [索引:%d] [长度:%d]", path, index, len(arrayData))
 				return nil, errors.New("数组索引 " + strconv.Itoa(index) + " 超出范围")
 			}
 			current = arrayData[index]
 			continue
 		}
 
+		logx.Errorf("[输入处理] 不支持的数据类型 [路径:%s] [字段:%s] [类型:%s]", path, part, reflect.TypeOf(current).String())
 		return nil, errors.New("路径 " + path + " 中的 " + part + " 不支持的数据类型: " + reflect.TypeOf(current).String())
 	}
 
@@ -58,7 +62,8 @@ func validateAndConvertType(value any, expectedType []string) (any, error) {
 		if str, ok := value.(string); ok {
 			return str, nil
 		}
-		return nil, errors.New("类型不匹配: 期望 string, 实际是 " + reflect.TypeOf(value).String())
+		logx.Errorf("[输入处理] 类型不匹配 [期望:%s] [实际:%s]", expectedType[0], reflect.TypeOf(value).String())
+		return nil, errors.New("类型不匹配: 期望 " + expectedType[0] + ", 实际是 " + reflect.TypeOf(value).String())
 
 	case "integer":
 		// 统一解析成 int64
@@ -77,6 +82,7 @@ func validateAndConvertType(value any, expectedType []string) (any, error) {
 		if num, ok := value.(json.Number); ok {
 			_, err := strconv.ParseInt(string(num), 10, 64)
 			if err != nil {
+				logx.Errorf("[输入处理] 整数类型转换失败 [值:%v] [错误:%v]", value, err)
 				return nil, errors.New("类型不匹配: 期望 integer, 实际是 " + reflect.TypeOf(value).String())
 			}
 			return num, nil
@@ -113,6 +119,7 @@ func validateAndConvertType(value any, expectedType []string) (any, error) {
 			for _, item := range arr {
 				_, err := validateAndConvertType(item, []string{elementType})
 				if err != nil {
+					logx.Errorf("[输入处理] 数组元素类型不匹配 [错误:%v]", err)
 					return nil, errors.New("数组元素类型不匹配: " + err.Error())
 				}
 			}
@@ -136,11 +143,11 @@ func ParseNodeInputs(inputs []Inputs, parentOutputs *ExecutionContext) (map[stri
 	result := make(map[string]any)
 
 	for _, input := range inputs {
-		logx.Debugf("解析输入 %s 类型: %s\n,value类型: %s\n", input.Name, input.Type, input.Value.Type)
+		logx.Debugf("[输入处理] 解析输入 [字段:%s] [类型:%s] [值类型:%s]", input.Name, input.Type, input.Value.Type)
 		// 如果类型是fix，则直接写入值
 		if input.Value.Type == "fix" {
 			result[input.Name] = input.Value.Content.Value
-			logx.Debugf("固定输入 %s 已成功解析，类型: %s\n", input.Name, input.Type)
+			logx.Debugf("[输入处理] 固定输入解析成功 [字段:%s] [类型:%s]", input.Name, input.Type)
 			continue
 		}
 		// 获取父节点ID和输出字段名
@@ -166,7 +173,7 @@ func ParseNodeInputs(inputs []Inputs, parentOutputs *ExecutionContext) (map[stri
 
 		// 将解析后的值添加到结果中
 		result[input.Name] = convertedValue
-		logx.Debugf("输入 %s 已成功解析，类型: %s,值: %+v\n", input.Name, input.Type, convertedValue)
+		logx.Debugf("[输入处理] 输入解析成功 [字段:%s] [类型:%s] [值:%+v]", input.Name, input.Type, convertedValue)
 	}
 
 	return result, nil

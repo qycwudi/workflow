@@ -31,7 +31,10 @@ func (l *SaveCanvasHistoryLogic) SaveCanvasHistory(req *types.SaveCanvasHistoryR
 	// 查询当前画布草稿
 	canvasDraft, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.WorkspaceId)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "查询画布草稿失败")
+		logx.Errorw("[画布] 获取工作流定义失败",
+			logx.Field("工作空间ID", req.WorkspaceId),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemOrmError), "获取工作流定义失败")
 	}
 	if canvasDraft == nil {
 		return nil, errors.New(int(logic.ParamError), "画布草稿不存在")
@@ -44,7 +47,10 @@ func (l *SaveCanvasHistoryLogic) SaveCanvasHistory(req *types.SaveCanvasHistoryR
 		Mode:        model.CanvasHistoryModeDraft,
 	})
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "保存画布历史版本失败")
+		logx.Errorw("[画布] 保存历史版本失败",
+			logx.Field("工作空间ID", req.WorkspaceId),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemOrmError), "保存历史版本失败")
 	}
 	id, err := result.LastInsertId()
 	if err != nil {

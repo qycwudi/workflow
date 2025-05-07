@@ -49,21 +49,21 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 		// 跳过fileServer
 		if v.Type == enum.FileServerType.String() {
 			skipCount++
-			logx.Infof("datasource init skip: %d, %s", v.Id, v.Type)
+			logx.Infof("[数据源] 跳过初始化 [ID:%d] [类型:%s]", v.Id, v.Type)
 			continue
 		}
 		// 读取dsn
 		//dsn := gjson.Get(v.Config, "dsn").String()
 		err := pool.UpdateDataSource(v.Id, v.Config, v.Type, v.Hash)
-		logx.Infof("datasource init: %+v", v)
+		logx.Infof("[数据源] 初始化配置 [ID:%d] [类型:%s] [配置:%+v]", v.Id, v.Type, v)
 		if err != nil {
-			logx.Errorf("datasource init failed: %s", err.Error())
+			logx.Errorf("[数据源] 初始化失败 [ID:%d] [错误:%v]", v.Id, err)
 			continue
 		}
 		// 更新数据源状态
 		err = svcCtx.DatasourceModel.UpdateStatus(context.Background(), v.Id, model.DatasourceStatusConnected)
 		if err != nil {
-			logx.Errorf("datasource update status failed: %s", err.Error())
+			logx.Errorf("[数据源] 更新状态失败 [ID:%d] [错误:%v]", v.Id, err)
 			continue
 		}
 	}
@@ -75,7 +75,7 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 			failCount++
 		}
 	}
-	logx.Infof("datasource init success: %d, failed: %d, skip: %d", successCount, failCount, skipCount)
+	logx.Infof("[数据源] 初始化完成 [成功:%d] [失败:%d] [跳过:%d]", successCount, failCount, skipCount)
 	fmt.Println("datasource init success")
 	DataSourcePool = pool
 }
@@ -131,7 +131,7 @@ func (manager *DataSourceManager) UpdateDataSource(id int64, config, dbType, has
 	// 关闭旧连接
 	if oldDB, exists := manager.dbs[id]; exists {
 		if err := oldDB.Close(); err != nil {
-			logx.Errorf("close old datasource failed: %v", err)
+			logx.Errorf("[数据源] 关闭旧连接失败 [ID:%d] [错误:%v]", id, err)
 			return err
 		}
 		delete(manager.dbs, id)
@@ -139,7 +139,7 @@ func (manager *DataSourceManager) UpdateDataSource(id int64, config, dbType, has
 
 	// 创建新连接
 	if err := manager.addDataSource(id, config, enum.DBType(dbType)); err != nil {
-		logx.Errorf("create new datasource failed: %v", err)
+		logx.Errorf("[数据源] 创建新连接失败 [ID:%d] [错误:%v]", id, err)
 		return err
 	}
 
@@ -152,7 +152,7 @@ func (manager *DataSourceManager) UpdateDataSource(id int64, config, dbType, has
 func (manager *DataSourceManager) ClearDataSource(id int64) error {
 	if oldDB, exists := manager.dbs[id]; exists {
 		err := oldDB.Close()
-		logx.Infof("clear datasource: %d, err: %v", id, err)
+		logx.Infof("[数据源] 清理数据源 [数据源ID:%d] [错误:%v]", id, err)
 		delete(manager.dbs, id)
 		delete(manager.hash, id)
 	}

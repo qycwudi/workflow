@@ -30,17 +30,27 @@ func NewCanvasRunSingleDetailLogic(ctx context.Context, svcCtx *svc.ServiceConte
 func (l *CanvasRunSingleDetailLogic) CanvasRunSingleDetail(req *types.CanvasRunSingleDetailRequest) (resp *types.CanvasRunSingleDetailResponse, err error) {
 	trace, err := l.svcCtx.TraceModel.FindOneByNodeIdAndWorkspaceId(l.ctx, req.Id, req.NodeId)
 	if err != nil {
+		logx.Errorw("[画布] 获取节点执行结果失败",
+			logx.Field("工作空间ID", req.Id),
+			logx.Field("节点ID", req.NodeId),
+			logx.Field("错误", err))
 		return nil, errors.New(int(logic.SystemOrmError), "查询运行记录失败")
 	}
 	// 将字符串转换为map
 	var input, output map[string]interface{}
 	if err := json2.Unmarshal([]byte(trace.Input), &input); err != nil {
-		l.Errorf("解析输入参数失败 err:%+v", err)
+		logx.Errorw("[画布] 解析输入参数失败",
+			logx.Field("工作空间ID", req.Id),
+			logx.Field("节点ID", req.NodeId),
+			logx.Field("错误", err))
 		return nil, errors.New(int(logic.SystemError), "解析输入参数失败")
 	}
 	if err := json2.Unmarshal([]byte(trace.Output), &output); err != nil {
-		l.Errorf("解析输出结果失败 err:%+v", err)
-		return nil, errors.New(int(logic.SystemError), "解析输出结果失败")
+		logx.Errorw("[画布] 解析输出参数失败",
+			logx.Field("工作空间ID", req.Id),
+			logx.Field("节点ID", req.NodeId),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemError), "解析输出参数失败")
 	}
 
 	// 如果data字段是字符串,则尝试解析成map
@@ -60,13 +70,13 @@ func (l *CanvasRunSingleDetailLogic) CanvasRunSingleDetail(req *types.CanvasRunS
 	// 格式化 input 和 output 为美化的 JSON 字符串
 	inputJSON, err := json2.MarshalIndent(input, "", "  ")
 	if err != nil {
-		l.Errorf("failed to format input params err:%+v", err)
+		l.Errorf("[画布运行] 格式化输入参数失败 [错误:%+v]", err)
 		return nil, errors.New(int(logic.SystemError), "格式化输入参数失败")
 	}
 
 	outputJSON, err := json2.MarshalIndent(output, "", "  ")
 	if err != nil {
-		l.Errorf("failed to format output result err:%+v", err)
+		l.Errorf("[画布运行] 格式化输出结果失败 [错误:%+v]", err)
 		return nil, errors.New(int(logic.SystemError), "格式化输出结果失败")
 	}
 

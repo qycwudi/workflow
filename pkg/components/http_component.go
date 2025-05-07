@@ -78,6 +78,8 @@ func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	execCtx := ctx.(*core.ExecutionContext)
 	headers, err := core.ParseNodeInputs(c.config.Headers, execCtx)
 	if err != nil {
+		logx.Errorw("[HTTP组件] 解析参数失败",
+			logx.Field("错误", err))
 		return nil, err
 	}
 	headersMap := make(map[string]interface{})
@@ -92,14 +94,16 @@ func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	if len(c.config.Params) != 0 {
 		params, err = core.ParseNodeInputs(c.config.Params, execCtx)
 		if err != nil {
-			logx.Errorf("解析params失败: %v\n", err)
+			logx.Errorw("[HTTP组件] 解析参数失败",
+				logx.Field("错误", err))
 			return nil, err
 		}
 	}
 	if len(c.config.Body) != 0 {
 		params, err = core.ParseNodeInputs(c.config.Body, execCtx)
 		if err != nil {
-			logx.Errorf("解析body失败: %v\n", err)
+			logx.Errorw("[HTTP组件] 解析请求体失败",
+				logx.Field("错误", err))
 			return nil, err
 		}
 		isJSON = true
@@ -124,7 +128,8 @@ func parseMethod(execCtx *core.ExecutionContext, method string) (string, error) 
 	blockMap := make(map[string]string, len(matches))
 	// 解析{{}}
 	for _, match := range matches {
-		logx.Debugf("match: %v\n", match)
+		logx.Debugw("[HTTP组件] 匹配表达式",
+			logx.Field("表达式", match))
 		// 去除{{}}
 		blockName := strings.Trim(match, "{{}}")
 		// start-node-1.output.name 读取截取output前的内容
@@ -146,12 +151,14 @@ func parseMethod(execCtx *core.ExecutionContext, method string) (string, error) 
 		}
 		blockMap[match] = fmt.Sprintf("%s", value)
 	}
-	logx.Debugf("blockMap: %+v\n", blockMap)
+	logx.Debugw("[HTTP组件] 变量映射",
+		logx.Field("映射", blockMap))
 	// 替换表达式
 	for key, value := range blockMap {
 		method = strings.Replace(method, key, value, -1)
 	}
-	logx.Debugf("method after: %v\n", method)
+	logx.Debugw("[HTTP组件] 解析方法后",
+		logx.Field("方法", method))
 	return method, nil
 }
 
@@ -196,12 +203,19 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 		IsJSON:  isJSON,
 	})
 	if err != nil {
-		logx.Errorf("http request err:%s", err.Error())
+		logx.Errorw("[HTTP组件] 请求失败",
+			logx.Field("URL", url),
+			logx.Field("方法", c.config.Method),
+			logx.Field("错误", err))
 		return &core.Result{
 			Route:  []string{Failed},
 			Output: nil,
 		}, err
 	}
+	logx.Infow("[HTTP组件] 请求成功",
+		logx.Field("URL", url),
+		logx.Field("方法", c.config.Method),
+		logx.Field("状态码", statusCode))
 	var result map[string]interface{}
 	if err := json.Unmarshal(body, &result); err != nil {
 		return &core.Result{
@@ -310,7 +324,8 @@ func (h *HttpClient) DoRequest(opts RequestOptions) (int, []byte, error) {
 		if err == nil {
 			return resp.StatusCode(), resp.Body(), nil
 		}
-		logx.Errorf("http request err:%s,retry:%d\n", err.Error(), i+1)
+		logx.Errorf("[HTTP请求] 请求失败 [URL:%s] [方法:%s] [重试次数:%d] [错误:%v]",
+			opts.URL, opts.Method, i+1, err)
 	}
 
 	return 0, nil, errors.New("request failed after retries")

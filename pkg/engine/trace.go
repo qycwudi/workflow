@@ -40,13 +40,13 @@ type TraceRecore struct {
 func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 	input, err := json.Marshal(trace.Input)
 	if err != nil {
-		logx.Error(ctx, err)
+		logx.Errorw("[追踪] 序列化输入数据失败", logx.Field("错误", err))
 	}
 	var logic string
 	if trace.Logic != nil {
 		logics, err := json.Marshal(trace.Logic)
 		if err != nil {
-			logx.Error(ctx, err)
+			logx.Errorw("[追踪] 序列化逻辑数据失败", logx.Field("错误", err))
 		}
 		logic = string(logics)
 	} else {
@@ -56,7 +56,7 @@ func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 	if trace.Output != "" {
 		output, err = json.Marshal(trace.Output)
 		if err != nil {
-			logx.Error(ctx, err)
+			logx.Errorw("[追踪] 序列化输出数据失败", logx.Field("错误", err))
 		}
 	}
 	result, err := t.TraceModel.Insert(ctx, &model.Trace{
@@ -74,13 +74,13 @@ func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 		ErrorMsg:    trace.ErrorMsg,
 	})
 	if err != nil {
-		logx.Error(ctx, err)
+		logx.Errorw("[追踪] 插入追踪记录失败", logx.Field("错误", err))
 	}
 	rows, err := result.RowsAffected()
 	if err != nil {
-		logx.Error(ctx, err)
+		logx.Errorw("[追踪] 获取影响行数失败", logx.Field("错误", err))
 	}
-	logx.Infof("create trace result: %v", rows)
+	logx.Infow("[追踪] 创建追踪记录", logx.Field("影响行数", rows))
 }
 
 func (t *TraceModel) UpdateTrace(ctx context.Context, trace *TraceRecore) {

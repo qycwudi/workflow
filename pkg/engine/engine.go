@@ -58,11 +58,13 @@ func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 		defer task.Sw.Done()
 		result, err := task.Engine.executeNode(task.Context, task.Step, task.NodeID, task.Executor.definition.Nodes[task.NodeID], task.Component, nil)
 		if err != nil {
-			logx.Errorf("执行节点 [nodeId:%s,step:%d,workflowId:%s,serialId:%s] 失败: %v\n", task.NodeID, task.Step, task.WorkflowID, task.SerialID, err)
+			logx.Errorf("[工作流执行] 节点执行失败 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [步骤:%d] [错误:%v]",
+				task.WorkflowID, task.SerialID, task.NodeID, task.Step, err)
 			task.Context.SetError(task.NodeID, err)
 			return
 		}
-		logx.Debugf("执行节点 [nodeId:%s,step:%d,workflowId:%s,serialId:%s] 结果: %v\n", task.NodeID, task.Step, task.WorkflowID, task.SerialID, result.Output)
+		logx.Infof("[工作流执行] 节点执行成功 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [步骤:%d] [输出:%+v]",
+			task.WorkflowID, task.SerialID, task.NodeID, task.Step, result.Output)
 	}
 
 	// 创建 ants 函数池
@@ -204,7 +206,7 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 		return errors.New("参数为空")
 	}
 
-	logx.Debugf("执行工作流参数: %+v\n", params)
+	logx.Debugf("[工作流] 执行参数: %+v", params)
 
 	// 获取工作流执行器
 	e.mu.RLock()
@@ -299,7 +301,7 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 // executeWorkflowPhases 执行工作流阶段
 func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext) error {
 	// 总执行计划
-	logx.Debugf("总执行计划:%d\n", len(executor.executionPlan.Phases))
+	logx.Debugf("[工作流] 总执行计划: %d", len(executor.executionPlan.Phases))
 	for phaseIdx, phase := range executor.executionPlan.Phases {
 		if err := e.executePhase(ctx, executor, execCtx, phase, phaseIdx); err != nil {
 			return err
@@ -313,7 +315,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 	var sw sync.WaitGroup
 	nodes := make([]string, len(phase.Nodes))
 	g, ctx := errgroup.WithContext(ctx)
-	logx.Debugf("执行阶段:%d,节点数:%d\n", phaseIdx, len(phase.Nodes))
+	logx.Debugf("[工作流] 执行阶段: %d, 节点数: %d", phaseIdx, len(phase.Nodes))
 	for i, node := range phase.Nodes {
 		if err := e.submitNodeTask(ctx, phaseIdx*10000+i, executor, execCtx, node, &sw, g, nodes, i); err != nil {
 			return err
@@ -330,7 +332,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 
 // submitNodeTask 提交节点任务
 func (e *WorkflowEngine) submitNodeTask(ctx context.Context, phaseIdx int, executor *Executor, execCtx *core.ExecutionContext, node *WorkflowNode, sw *sync.WaitGroup, g *errgroup.Group, nodes []string, index int) error {
-	logx.Debugf("执行节点: %s,step:%d\n", node.ID, phaseIdx)
+	logx.Debugf("[工作流] 执行节点: %s, 步骤: %d", node.ID, phaseIdx)
 	nodes[index] = node.ID
 
 	// 检查上下文状态
@@ -617,9 +619,19 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 	nodeResult := e.createNodeResult(node, input, output, result, startTime)
 	err = e.updateWorkflowState(ctx, err, []*core.NodeResult{nodeResult})
 	if err != nil {
-		logx.Errorf("更新工作流状态失败: %v\n", err)
+		logx.Errorf("[工作流状态] 更新失败 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [错误:%v]",
+			ctx.WorkspaceId, ctx.TraceId, node.ID, err)
 	}
 
+	if err != nil {
+		logx.Errorw("[引擎] 执行节点失败",
+			logx.Field("节点ID", nodeID),
+			logx.Field("错误", err))
+		return nil, err
+	}
+	logx.Infow("[引擎] 节点执行完成",
+		logx.Field("节点ID", nodeID),
+		logx.Field("输出", output))
 	return result, nil
 }
 
@@ -645,7 +657,7 @@ func (e *WorkflowEngine) updateNodeContext(ctx *core.ExecutionContext, err error
 		return err
 	}
 	if output != nil {
-		logx.Debugf("更新节点上下文: %s, %+v\n", nodeID, output)
+		logx.Debugf("[工作流] 更新节点上下文: %s, %+v", nodeID, output)
 		ctx.SetVariable(nodeID+".output", output)
 	}
 	return nil
@@ -692,6 +704,15 @@ func (e *WorkflowEngine) updateWorkflowState(ctx *core.ExecutionContext, err err
 	total := int(ctx.TotalNodes)
 	ctx.State.Progress = float64(completed) / float64(total)
 
+	if err != nil {
+		logx.Errorw("[引擎] 执行工作流失败",
+			logx.Field("工作流ID", ctx.WorkspaceId),
+			logx.Field("错误", err))
+		return err
+	}
+	logx.Infow("[引擎] 工作流执行完成",
+		logx.Field("工作流ID", ctx.WorkspaceId),
+		logx.Field("输出", ctx.State.Result))
 	return nil
 }
 
@@ -702,20 +723,20 @@ func (e *WorkflowEngine) GetNodeResult(workflowID, serialID, nodeID string) (*co
 	e.mu.RUnlock()
 
 	if !ok {
-		logx.Debugf("获取节点结果,工作流未找到: %s", workflowID)
+		logx.Debugf("[工作流] 获取节点结果, 工作流未找到: %s", workflowID)
 		return nil, false
 	}
 
 	// 使用sync.Map获取执行上下文
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
-		logx.Debugf("获取节点结果,执行上下文未找到: %s", serialID)
+		logx.Debugf("[工作流] 获取节点结果, 执行上下文未找到: %s", serialID)
 		return nil, false
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
 	if !ok {
-		logx.Debugf("获取节点结果,执行上下文类型错误: %s", serialID)
+		logx.Debugf("[工作流] 获取节点结果, 执行上下文类型错误: %s", serialID)
 		return nil, false
 	}
 
@@ -734,7 +755,7 @@ func (e *WorkflowEngine) buildExecutionPlan(ctx context.Context, def *core.Workf
 		graph[nodeID] = []string{}
 		// 迭代组件初始化
 		if def.Type == "iteration" {
-			logx.Debugf("迭代组件初始化: %s\n", def.ID)
+			logx.Debugf("[工作流] 迭代组件初始化: %s", def.ID)
 			err := e.RegisterWorkflow(ctx, def.SubWorkflow)
 			if err != nil {
 				return nil, errors.New("迭代组件初始化失败: " + err.Error())
@@ -879,7 +900,7 @@ func (e *WorkflowEngine) Cleanup() {
 	for id, executor := range e.executorPool {
 		close(executor.shutdownCh)
 		delete(e.executorPool, id)
-		logx.Debugf("关闭执行器: %s\n", executor.definition.ID)
+		logx.Debugf("[工作流] 关闭执行器: %s", executor.definition.ID)
 	}
 	e.mu.Unlock()
 }

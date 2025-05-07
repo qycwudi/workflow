@@ -48,10 +48,16 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 				UpdateBy:    userIdStr,
 			})
 			if err != nil {
+				logx.Errorw("[画布] 新增画布草案失败",
+					logx.Field("工作空间ID", req.Id),
+					logx.Field("错误", err))
 				return nil, errors.New(int(logic.SystemOrmError), "新增画布草案失败")
 			}
 			return nil, nil
 		} else {
+			logx.Errorw("[画布] 查询画布草案失败",
+				logx.Field("工作空间ID", req.Id),
+				logx.Field("错误", err))
 			return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
 		}
 	}
@@ -61,6 +67,9 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 	canvas.UpdateBy = userIdStr
 	err = l.svcCtx.CanvasModel.Update(l.ctx, canvas)
 	if err != nil {
+		logx.Errorw("[画布] 更新画布草案失败",
+			logx.Field("工作空间ID", req.Id),
+			logx.Field("错误", err))
 		return nil, errors.New(int(logic.SystemOrmError), "更新画布草案失败")
 	}
 	resp = &types.CanvasDraftResponse{

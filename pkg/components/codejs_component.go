@@ -37,10 +37,10 @@ func NewCodejsComponent(config json.RawMessage) (*CodejsComponent, error) {
 	if err := json.Unmarshal(config, &codejsConfig); err != nil {
 		return nil, errors.New("解析代码执行组件配置失败: " + err.Error())
 	}
-	logx.Debugf("codejsConfig.Code: %s\n", codejsConfig.Code)
+	logx.Debugf("[代码执行] 配置内容: %s", codejsConfig.Code)
 	engine, err := NewGojaJsEngine(codejsConfig.Code, nil)
 	if err != nil {
-		logx.Errorf("创建代码执行组件失败: %v\n", err)
+		logx.Errorf("[代码执行] 创建引擎失败 [错误:%v]", err)
 		return nil, errors.New("创建代码执行组件失败: " + err.Error())
 	}
 	c.engine = engine
@@ -95,6 +95,7 @@ func NewGojaJsEngine(jsScript string, fromVars map[string]interface{}) (*GojaJsE
 
 	program, err := goja.Compile("", jsScript, true)
 	if err != nil {
+		logx.Errorf("[代码执行] 编译JS脚本失败 [错误:%v]", err)
 		return nil, err
 	}
 	jsEngine := &GojaJsEngine{
@@ -102,6 +103,7 @@ func NewGojaJsEngine(jsScript string, fromVars map[string]interface{}) (*GojaJsE
 		jsScript: program,
 	}
 	if err = jsEngine.PreCompileJs(config); err != nil {
+		logx.Errorf("[代码执行] 预编译JS脚本失败 [错误:%v]", err)
 		return nil, err
 	}
 	jsEngine.vmPool = sync.Pool{
@@ -118,6 +120,7 @@ func (g *GojaJsEngine) PreCompileJs(config Config) error {
 	for k, v := range config.Udf {
 		if jsFuncStr, ok := v.(string); ok {
 			if p, err := goja.Compile(k, jsFuncStr, true); err != nil {
+				logx.Errorf("[代码执行] 编译UDF脚本失败 [函数:%s] [错误:%v]", k, err)
 				return err
 			} else {
 				jsUdfProgramCache[k] = p
@@ -126,6 +129,7 @@ func (g *GojaJsEngine) PreCompileJs(config Config) error {
 			if script.Type == Js || script.Type == "" {
 				if c, ok := script.Content.(string); ok {
 					if p, err := goja.Compile(k, c, true); err != nil {
+						logx.Errorf("[代码执行] 编译脚本内容失败 [函数:%s] [错误:%v]", k, err)
 						return err
 					} else {
 						jsUdfProgramCache[k] = p
@@ -179,12 +183,12 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]interface{}) *go
 			vars[k] = vm.ToValue(v)
 		}
 		if err != nil {
-			logx.Errorf("parse js script=" + k + " error,err:" + err.Error())
+			logx.Errorf("[代码执行] 解析JS脚本失败 [脚本:%s] [错误:%v]", k, err)
 		}
 	}
 	for k, v := range vars {
 		if err := vm.Set(k, v); err != nil {
-			logx.Errorf("set variable error,err:" + err.Error())
+			logx.Errorf("[代码执行] 设置变量失败 [变量:%s] [错误:%v]", k, err)
 		}
 	}
 
@@ -195,7 +199,7 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]interface{}) *go
 	closeStateChan(state)
 
 	if err != nil {
-		logx.Errorf("js vm error,err:" + err.Error())
+		logx.Errorf("[代码执行] JS虚拟机执行失败 [错误:%v]", err)
 	}
 	return vm
 }
@@ -204,6 +208,7 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]interface{}) *go
 func (g *GojaJsEngine) Execute(functionName string, argumentList ...interface{}) (out interface{}, err error) {
 	defer func() {
 		if caught := recover(); caught != nil {
+			logx.Errorf("[代码执行] 执行过程发生panic [函数名:%s] [错误:%v]", functionName, caught)
 			err = errors.New(fmt.Sprintf("%s", caught))
 		}
 	}()
@@ -216,6 +221,7 @@ func (g *GojaJsEngine) Execute(functionName string, argumentList ...interface{})
 
 	f, ok := goja.AssertFunction(vm.Get(functionName))
 	if !ok {
+		logx.Errorf("[代码执行] 函数不存在 [函数名:%s]", functionName)
 		return nil, errors.New(functionName + " is not a function")
 	}
 	var params []goja.Value
@@ -228,6 +234,7 @@ func (g *GojaJsEngine) Execute(functionName string, argumentList ...interface{})
 	// Put back to the pool
 	g.vmPool.Put(vm)
 	if err != nil {
+		logx.Errorf("[代码执行] 执行函数失败 [函数名:%s] [参数:%+v] [错误:%v]", functionName, argumentList, err)
 		return nil, err
 	}
 	return res.Export(), err

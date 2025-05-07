@@ -31,12 +31,18 @@ func NewRestoreCanvasHistoryLogic(ctx context.Context, svcCtx *svc.ServiceContex
 func (l *RestoreCanvasHistoryLogic) RestoreCanvasHistory(req *types.RestoreCanvasHistoryReq) (resp *types.RestoreCanvasHistoryResp, err error) {
 	canvasHistory, err := l.svcCtx.CanvasHistoryModel.FindOne(l.ctx, req.Id)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "查询画布历史版本失败")
+		logx.Errorw("[画布] 获取历史版本失败",
+			logx.Field("历史版本ID", req.Id),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemOrmError), "获取历史版本失败")
 	}
 	// 查询当前画布草稿
 	canvasDraft, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, canvasHistory.WorkspaceId)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "查询画布草稿失败")
+		logx.Errorw("[画布] 获取工作流定义失败",
+			logx.Field("工作空间ID", canvasHistory.WorkspaceId),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemOrmError), "获取工作流定义失败")
 	}
 	// 更新画布
 	canvasDraft.Draft = canvasHistory.Draft
@@ -49,7 +55,10 @@ func (l *RestoreCanvasHistoryLogic) RestoreCanvasHistory(req *types.RestoreCanva
 	canvasDraft.UpdateBy = userIdStr
 	err = l.svcCtx.CanvasModel.Update(l.ctx, canvasDraft)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "恢复画布历史版本失败")
+		logx.Errorw("[画布] 更新工作流定义失败",
+			logx.Field("工作空间ID", canvasHistory.WorkspaceId),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemOrmError), "更新工作流定义失败")
 	}
 	resp = &types.RestoreCanvasHistoryResp{
 		Id:          canvasHistory.Id,

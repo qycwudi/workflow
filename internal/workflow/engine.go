@@ -23,17 +23,17 @@ func Register(ctx context.Context, dsl string) error {
 	var workflowDefinition core.WorkflowDef
 	err := json.Unmarshal([]byte(dsl), &workflowDefinition)
 	if err != nil {
-		logx.Errorw("解析工作流文件失败", logx.Field("error", err))
+		logx.Errorw("[工作流] 解析工作流文件失败", logx.Field("错误", err))
 		return err
 	}
 
-	logx.Debugw("工作流DSL", logx.Field("dsl", dsl))
+	logx.Debugw("[工作流] 工作流DSL", logx.Field("dsl", dsl))
 	definitionBytes, _ := json.MarshalIndent(workflowDefinition, "", "  ")
-	logx.Infow("工作流定义", logx.Field("definition", string(definitionBytes)))
+	logx.Infow("[工作流] 工作流定义", logx.Field("definition", string(definitionBytes)))
 
 	err = eg.RegisterWorkflow(ctx, &workflowDefinition)
 	if err != nil {
-		logx.Errorw("注册工作流失败", logx.Field("error", err))
+		logx.Errorw("[工作流] 注册工作流失败", logx.Field("错误", err))
 		return err
 	}
 	return nil
@@ -41,23 +41,23 @@ func Register(ctx context.Context, dsl string) error {
 
 func Run(ctx context.Context, serialId, workspaceId string, data map[string]any) (string, core.NodeResult, error) {
 	defer func() {
-		logx.Infow("清除执行上下文", logx.Field("workspaceId", workspaceId), logx.Field("serialId", serialId))
+		logx.Infow("[工作流] 清除执行上下文", logx.Field("工作空间ID", workspaceId), logx.Field("序列ID", serialId))
 		clearErr := eg.ClearExecutionContext(workspaceId, serialId)
 		if clearErr != nil {
-			logx.Errorw("清除执行上下文失败", logx.Field("error", clearErr.Error()))
+			logx.Errorw("[工作流] 清除执行上下文失败", logx.Field("错误", clearErr.Error()))
 		}
-		logx.Infow("清除执行上下文成功", logx.Field("workspaceId", workspaceId), logx.Field("serialId", serialId))
+		logx.Infow("[工作流] 清除执行上下文成功", logx.Field("工作空间ID", workspaceId), logx.Field("序列ID", serialId))
 	}()
 	// 执行工作流
 	if err := eg.ExecuteWorkflow(ctx, workspaceId, serialId, data); err != nil {
-		logx.Errorw("工作流执行失败", logx.Field("error", err))
+		logx.Errorw("[工作流] 工作流执行失败", logx.Field("错误", err))
 		return serialId, core.NodeResult{}, err
 	}
 
 	endResult, ok := eg.GetNodeResult(workspaceId, serialId, "end-node-1")
 	if !ok {
-		logx.Errorw("未找到 结束 节点的执行结果", logx.Field("workspaceId", workspaceId), logx.Field("serialId", serialId))
-		return serialId, core.NodeResult{}, errors.New("未找到 结束 节点的执行结果:" + workspaceId + "," + serialId)
+		logx.Errorw("[工作流] 未找到结束节点的执行结果", logx.Field("工作空间ID", workspaceId), logx.Field("序列ID", serialId))
+		return serialId, core.NodeResult{}, errors.New("未找到结束节点的执行结果:" + workspaceId + "," + serialId)
 	}
 	return serialId, *endResult, nil
 }

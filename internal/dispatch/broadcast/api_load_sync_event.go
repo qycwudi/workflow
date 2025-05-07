@@ -8,6 +8,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/cache"
+	"workflow/internal/workflow"
 )
 
 const (
@@ -50,6 +51,7 @@ func (a *ApiLoadSync) Subscribe(ctx context.Context, handler func(ctx context.Co
 				logx.Infof("%s channel closed", ApiLoadSyncEvent)
 				return nil
 			}
+			// Handler
 			handler(ctx, msg)
 		}
 	}
@@ -64,7 +66,12 @@ func (a *ApiLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 		return
 	}
 
-	// 加载api服务
+	// 注册任务流
+	err = workflow.Register(ctx, syncMsg.RuleChain)
+	if err != nil {
+		logx.Errorf("ApiLoadSyncHandler register workflow failed: %s", err.Error())
+		return
+	}
 
 	logx.Infof("ApiLoadSyncHandler load chain success: %s", syncMsg.ApiId)
 }

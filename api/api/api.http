@@ -45,12 +45,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0O
 POST http://127.0.0.1:8888/workflow/api/publish
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzkzNjkyMjAsImlhdCI6MTczOTI4MjgyMCwidXNlcklkIjoxfQ.PA0RZMQD5iOLUeRgqj3_laoXkqXCwrzAyfYxX6w7_LY
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
 
 {
-  "id": "cu3toq53sjtmf2d29gp0",
+  "id": "d03l4kl3sjtgm7gc9su1",
   "tag": ["test", "test2"],
-  "apiName": "测试API",
+  "apiName": "测试API-1",
   "apiDesc": "这是一个测试API"
 }
 
@@ -58,10 +58,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzkzNjkyM
 POST http://127.0.0.1:8888/workflow/api/publish
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzkzNjkyMjAsImlhdCI6MTczOTI4MjgyMCwidXNlcklkIjoxfQ.PA0RZMQD5iOLUeRgqj3_laoXkqXCwrzAyfYxX6w7_LY
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
 
 {
-  "id": "cu3toq53sjtmf2d29gp0",
+  "id": "d03l4kl3sjtgm7gc9su1",
   "tag": ["tes4", "test5"],
   "apiName": "测试API_1",
   "apiDesc": "这是一个测试API_1"
@@ -72,13 +72,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzkzNjkyM
 POST http://127.0.0.1:8888/workflow/api/list
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzkzNjkyMjAsImlhdCI6MTczOTI4MjgyMCwidXNlcklkIjoxfQ.PA0RZMQD5iOLUeRgqj3_laoXkqXCwrzAyfYxX6w7_LY
-
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
 
 {
   "current": 1,
   "pageSize": 10,
-  "tag": "test2"
+  "tag": "tes4"
 }
 
 ### API上下线
@@ -96,7 +95,6 @@ POST http://127.0.0.1:8888/workflow/api/records
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYyMTUwNjIsImlhdCI6MTczNjEyODY2MiwidXNlcklkIjoxfQ.ZeCBni0FALYoA4Dqf7JRrRjJ9MRsDOKl1-LS02OAT28
-
 
 {
   "current": 1,

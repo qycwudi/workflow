@@ -37,13 +37,18 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	startTime := time.Now()
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
+		logx.Errorw("[画布] 获取工作流定义失败",
+			logx.Field("工作空间ID", req.Id),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemOrmError), "获取工作流定义失败")
 	}
-	// 检查画布是否正在运行
-
+	// 注册任务流
 	err = workflow.Register(l.ctx, canvas.Draft)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "注册任务流失败")
+		logx.Errorw("[画布] 注册工作流失败",
+			logx.Field("工作空间ID", req.Id),
+			logx.Field("错误", err))
+		return nil, errors.New(int(logic.SystemError), "注册工作流失败")
 	}
 
 	// 读取 参数
@@ -76,12 +81,21 @@ func run(ctx context.Context, svcCtx *svc.ServiceContext, traceId, workspaceId s
 	// 运行文件
 	_, result, err := workflow.Run(ctx, traceId, workspaceId, data)
 	if err != nil {
-		logx.Errorw("Failed to run the task flow", logx.Field("error", err))
+		logx.Errorw("[画布] 执行工作流失败",
+			logx.Field("工作空间ID", workspaceId),
+			logx.Field("序列ID", traceId),
+			logx.Field("错误", err))
+		return
 	}
 	logx.Infow("Run the task flow successfully", logx.Field("result", result))
 	record, err := svcCtx.SpaceRecordModel.FindOneBySerialNumber(ctx, traceId)
 	if err != nil {
-		logx.Errorw("Failed to find the running record", logx.Field("error", err))
+		logx.Errorw("[画布] 获取节点执行结果失败",
+			logx.Field("工作空间ID", workspaceId),
+			logx.Field("序列ID", traceId),
+			logx.Field("节点ID", "end-node-1"),
+			logx.Field("错误", err))
+		return
 	}
 
 	other, _ := json.Marshal(result.Output)

@@ -30,6 +30,9 @@ func (m *DcronManager) AddJob(id string, cron string, job dcron.Job) error {
 	}
 	err := m.Dcron.AddJob(id, cron, job)
 	if err != nil {
+		logx.Errorw("[任务管理器] 创建任务失败",
+			logx.Field("任务ID", id),
+			logx.Field("错误", err))
 		return err
 	}
 
@@ -38,7 +41,10 @@ func (m *DcronManager) AddJob(id string, cron string, job dcron.Job) error {
 	for _, job := range jobs {
 		jobNames = append(jobNames, job.Name)
 	}
-	logx.Infof("add job %s success, jobs:count: %d, %+v", id, len(jobs), jobNames)
+	logx.Infow("[任务管理器] 任务创建成功",
+		logx.Field("任务ID", id),
+		logx.Field("当前任务数", len(jobs)),
+		logx.Field("任务列表", jobNames))
 	return nil
 }
 
@@ -52,7 +58,10 @@ func (m *DcronManager) RemoveJob(id string) {
 	for _, job := range jobs {
 		jobNames = append(jobNames, job.Name)
 	}
-	logx.Infof("remove job %s success, jobs:count: %d, %+v", id, len(jobs), jobNames)
+	logx.Infow("[任务管理器] 移除任务成功",
+		logx.Field("任务ID", id),
+		logx.Field("当前任务数", len(jobs)),
+		logx.Field("任务列表", jobNames))
 }
 
 // 编辑任务
@@ -62,6 +71,10 @@ func (m *DcronManager) EditJob(id string, cron string, job dcron.Job) error {
 	m.Dcron.Remove(id)
 	err := m.Dcron.AddJob(id, cron, job)
 	if err != nil {
+		logx.Errorw("[任务管理器] 更新任务状态失败",
+			logx.Field("任务ID", id),
+			logx.Field("状态", "编辑"),
+			logx.Field("错误", err))
 		return err
 	}
 	jobs := m.Dcron.GetJobs(false)
@@ -70,7 +83,9 @@ func (m *DcronManager) EditJob(id string, cron string, job dcron.Job) error {
 	for _, job := range jobs {
 		jobNames = append(jobNames, job.Name)
 	}
-	logx.Infof("edit job %s success, jobs:count: %d, %+v", id, len(jobs), jobNames)
+	logx.Infow("[任务管理器] 任务状态更新成功",
+		logx.Field("任务ID", id),
+		logx.Field("状态", "编辑"))
 	return nil
 }
 
@@ -78,5 +93,7 @@ func (m *DcronManager) EditJob(id string, cron string, job dcron.Job) error {
 func (m *DcronManager) Stop() {
 	m.Cancel()
 	jobs := m.Dcron.GetJobs(false)
-	logx.Infof("stop job, jobs:count: %d, %+v", len(jobs), jobs)
+	logx.Infow("[任务管理器] 停止所有任务",
+		logx.Field("当前任务数", len(jobs)),
+		logx.Field("任务列表", jobs))
 }
