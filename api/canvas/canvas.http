@@ -72,13 +72,47 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlh
 }
 
 ### 画布-执行-单组件
-POST http://127.0.0.1:8899/workflow/canvas/run/single
+POST http://127.0.0.1:8888/workflow/canvas/run/single
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
 
 {
-  "id": "ctdp4353sjtrlkhmrvb0",
-  "nodeId": "jsTransform-530910c6-950d-4bda-b68d-90b0b4f4ddb0"
+  "id": "d03l4kl3sjtgm7gc9su1",
+  "nodeId": "http-node-1",
+  "params":{
+  "url": "http://10.99.169.49:8889/api/role/v1/cvpnt0hnhrgu82dh8iqg",
+  "body": {
+    "age": 18,
+    "info": {
+      "city": "hangzhou",
+      "like": {
+        "food": [
+          "apple",
+          "banana"
+        ],
+        "sport": [
+          "basketball",
+          "football"
+        ]
+      },
+      "email": [
+        "zhangsan@example.com",
+        "lisi@example.com"
+      ],
+      "phone": 17635800128,
+      "height": 170.5,
+      "weight": 65.5,
+      "country": "china"
+    },
+    "name": "d03l4kl3sjtgm7gc9su1"
+  },
+  "isJSON": true,
+  "headers": {
+    "Auth": "Bearer 1234567890",
+    "Content-Type": "application/json"
+  }
+}
 }
 
 ### 画布-草稿-js

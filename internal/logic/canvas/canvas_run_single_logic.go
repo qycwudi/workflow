@@ -57,11 +57,11 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 		Status:       enum.RecordStatusRunning,
 	}
 	// 记录
-	_, err = l.svcCtx.SpaceRecordModel.Insert(l.ctx, &spaceRecord)
+	record, err := l.svcCtx.SpaceRecordModel.Insert(l.ctx, &spaceRecord)
 	if err != nil {
 		logx.Errorw("Failed to save the running record", logx.Field("error", err))
 	}
-
+	spaceRecord.Id, _ = record.LastInsertId()
 	// 查询工作流执行输入
 	_, result, err := workflow.RunSingle(l.ctx, traceId, canvas.WorkspaceId, req.NodeId, data)
 	if err != nil {
