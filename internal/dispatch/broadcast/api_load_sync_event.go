@@ -30,6 +30,7 @@ func NewApiLoadSync() *ApiLoadSync {
 func (a *ApiLoadSync) Publish(ctx context.Context, payload interface{}) error {
 	payloadBytes, err := json.Marshal(payload)
 	if err != nil {
+		logx.Errorf("[ApiLoadSync] marshal payload failed: %v", err)
 		return err
 	}
 	return cache.Redis.Publish(ctx, ApiLoadSyncEvent, payloadBytes)
@@ -40,15 +41,15 @@ func (a *ApiLoadSync) Subscribe(ctx context.Context, handler func(ctx context.Co
 	defer subscriber.Close()
 
 	ch := subscriber.Channel()
-	logx.Infof("subscribe %s", ApiLoadSyncEvent)
+	logx.Infof("[ApiLoadSync] start subscribing event: %s", ApiLoadSyncEvent)
 	for {
 		select {
 		case <-ctx.Done():
-			logx.Infof("%s context done: %s", ApiLoadSyncEvent, ctx.Err())
+			logx.Infof("[ApiLoadSync] context done, event: %s, error: %v", ApiLoadSyncEvent, ctx.Err())
 			return ctx.Err()
 		case msg, ok := <-ch:
 			if !ok {
-				logx.Infof("%s channel closed", ApiLoadSyncEvent)
+				logx.Infof("[ApiLoadSync] channel closed, event: %s", ApiLoadSyncEvent)
 				return nil
 			}
 			// Handler
@@ -58,20 +59,21 @@ func (a *ApiLoadSync) Subscribe(ctx context.Context, handler func(ctx context.Co
 }
 
 func (a *ApiLoadSync) Handler(ctx context.Context, msg *redis.Message) {
+	logx.Infof("[ApiLoadSync] receive message, payload: %s", msg.Payload)
 	// 读取 msg 消息
 	var syncMsg ApiLoadSyncMsg
 	err := json.Unmarshal([]byte(msg.Payload), &syncMsg)
 	if err != nil {
-		logx.Errorf("ApiLoadSyncHandler unmarshal msg failed: %s", err.Error())
+		logx.Errorf("[ApiLoadSync] unmarshal message failed: %v, payload: %s", err, msg.Payload)
 		return
 	}
 
 	// 注册任务流
-	err = workflow.Register(ctx, syncMsg.RuleChain)
+	err = workflow.Register(ctx, syncMsg.ApiId, syncMsg.RuleChain)
 	if err != nil {
-		logx.Errorf("ApiLoadSyncHandler register workflow failed: %s", err.Error())
+		logx.Errorf("[ApiLoadSync] register workflow failed: %v, apiId: %s", err, syncMsg.ApiId)
 		return
 	}
 
-	logx.Infof("ApiLoadSyncHandler load chain success: %s", syncMsg.ApiId)
+	logx.Infof("[ApiLoadSync] load chain success, apiId: %s", syncMsg.ApiId)
 }

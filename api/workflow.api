@@ -24,3 +24,5 @@ import "kv/kv.api"
 import "job/job.api"
 import "basics/basics.api"
 import "trace/trace.api"
+// 自定义请求参数和返回, 用于openapi,"不要放开",否则自定义的代码会被覆盖
+// import "openapi/openapi.api"

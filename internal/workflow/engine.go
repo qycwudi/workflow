@@ -19,7 +19,21 @@ func InitEngine(ctx *svc.ServiceContext) {
 	eg = engine.NewWorkflowEngine()
 }
 
-func Register(ctx context.Context, dsl string) error {
+func InitOpenApiEngine(ctx *svc.ServiceContext) {
+	apis, err := ctx.ApiModel.FindByOn(context.Background())
+	if err != nil {
+		logx.Errorw("[工作流] 查询API失败", logx.Field("错误", err))
+		return
+	}
+	count := 0
+	for _, api := range apis {
+		Register(context.Background(), api.ApiId, api.Dsl)
+		count++
+	}
+	logx.Infow("[工作流] 注册API成功", logx.Field("数量", count))
+}
+
+func Register(ctx context.Context, id string, dsl string) error {
 	var workflowDefinition core.WorkflowDef
 	err := json.Unmarshal([]byte(dsl), &workflowDefinition)
 	if err != nil {
@@ -31,7 +45,7 @@ func Register(ctx context.Context, dsl string) error {
 	definitionBytes, _ := json.MarshalIndent(workflowDefinition, "", "  ")
 	logx.Infow("[工作流] 工作流定义", logx.Field("definition", string(definitionBytes)))
 
-	err = eg.RegisterWorkflow(ctx, &workflowDefinition)
+	err = eg.RegisterWorkflow(ctx, id, &workflowDefinition)
 	if err != nil {
 		logx.Errorw("[工作流] 注册工作流失败", logx.Field("错误", err))
 		return err

@@ -43,7 +43,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 		return nil, errors.New(int(logic.SystemOrmError), "获取工作流定义失败")
 	}
 	// 注册任务流
-	err = workflow.Register(l.ctx, canvas.Draft)
+	err = workflow.Register(l.ctx, canvas.WorkspaceId, canvas.Draft)
 	if err != nil {
 		logx.Errorw("[画布] 注册工作流失败",
 			logx.Field("工作空间ID", req.Id),

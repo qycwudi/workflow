@@ -1,0 +1,26 @@
+### API调用
+POST http://127.0.0.1:8888/workflow/api/v1/d0dg79l3sjtn64abimd0
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+	"name": "d03l4kl3sjtgm7gc9su1",
+	"auth": "Bearer ecab0d05783949c8a3169df8ab085a9c",
+	"age": 18,
+	"age1": 18,
+	"info": {
+		"city": "hangzhou",
+		"country": "china",
+		"height": 170.5,
+		"weight": 65.5,
+		"phone": 17635800128,
+		"email": ["zhangsan@example.com", "lisi@example.com"],
+		"like": {
+			"food": ["apple", "banana"],
+			"sport": ["basketball", "football"]
+		}
+	},
+	"address": ["beijing", "shanghai","hangzhou"],
+	"mritalStatus":false,
+	"sight":1.0
+}

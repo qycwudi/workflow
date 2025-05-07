@@ -86,7 +86,7 @@ func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 }
 
 // RegisterWorkflow 注册工作流
-func (e *WorkflowEngine) RegisterWorkflow(ctx context.Context, def *core.WorkflowDef) error {
+func (e *WorkflowEngine) RegisterWorkflow(ctx context.Context, id string, def *core.WorkflowDef) error {
 
 	// 构建执行计划
 	plan, err := e.buildExecutionPlan(ctx, def)
@@ -104,8 +104,7 @@ func (e *WorkflowEngine) RegisterWorkflow(ctx context.Context, def *core.Workflo
 	executor := e.createExecutor(def, plan, condition)
 
 	// 注册执行器
-	e.registerExecutor(def.ID, executor)
-
+	e.registerExecutor(id, executor)
 	return nil
 }
 
@@ -561,74 +560,76 @@ func (e *WorkflowEngine) processNodeOutput(input any, err error, result *core.Re
 
 // executeNode 执行节点
 func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nodeID string, node *core.NodeDefinition, component components.Component, singleParam map[string]any) (*core.Result, error) {
-
 	startTime := time.Now()
 
 	// 1. 验证组件
-	err := e.validateComponent(component, node)
+	if err := e.validateComponent(component, node); err != nil {
+		return nil, err
+	}
 
 	// 2. 准备输入数据
 	var input any
+	var err error
 	if singleParam != nil {
 		input = singleParam
 	} else {
-		input, err = e.prepareNodeInput(ctx, err, node, component)
+		if input, err = e.prepareNodeInput(ctx, nil, node, component); err != nil {
+			return nil, err
+		}
 	}
+
 	// 创建 trace
-	trace := &TraceRecore{
-		WorkspaceId: ctx.WorkspaceId,
-		TraceId:     ctx.TraceId,
-		NodeId:      nodeID,
-		NodeName:    node.Name,
-		Input:       input,
-		Logic:       node.Config,
-		StartTime:   startTime,
-		Step:        step,
+	if ctx.IsTrace {
+		trace := &TraceRecore{
+			WorkspaceId: ctx.WorkspaceId,
+			TraceId:     ctx.TraceId,
+			NodeId:      nodeID,
+			NodeName:    node.Name,
+			Input:       input,
+			Logic:       node.Config,
+			StartTime:   startTime,
+			Step:        step,
+		}
+		Trace.CreateTrace(ctx, trace)
 	}
-	Trace.CreateTrace(ctx, trace)
+
 	// 3. 执行组件
-	result, err := e.executeComponent(ctx, err, component, input)
+	result, err := e.executeComponent(ctx, nil, component, input)
+	if err != nil {
+		return nil, err
+	}
 
 	// 4. 处理输出数据
-	output, err := e.processNodeOutput(input, err, result, node)
-
-	var errorMsg string
-	var status = string(core.StatusCompleted)
+	output, err := e.processNodeOutput(input, nil, result, node)
 	if err != nil {
-		status = string(core.StatusFailed)
-		errorMsg = err.Error()
-		output = map[string]any{}
+		return nil, err
 	}
-	// 5. 更新 trace
-	Trace.UpdateTrace(ctx, &TraceRecore{
-		NodeId:      nodeID,
-		TraceId:     ctx.TraceId,
-		Output:      output,
-		Status:      status,
-		ElapsedTime: time.Since(startTime).Milliseconds(),
-		ErrorMsg:    errorMsg,
-	})
+
+	// 更新 trace
+	if ctx.IsTrace {
+		Trace.UpdateTrace(ctx, &TraceRecore{
+			NodeId:      nodeID,
+			TraceId:     ctx.TraceId,
+			Output:      output,
+			Status:      string(core.StatusCompleted),
+			ElapsedTime: time.Since(startTime).Milliseconds(),
+			ErrorMsg:    "",
+		})
+	}
 
 	// 5. 更新上下文
-	err = e.updateNodeContext(ctx, err, nodeID, output)
-	if err != nil {
+	if err := e.updateNodeContext(ctx, nil, nodeID, output); err != nil {
 		return nil, e.handleNodeError(ctx, node, err, startTime)
 	}
 
 	// 6. 创建并返回结果
 	nodeResult := e.createNodeResult(node, input, output, result, startTime)
-	err = e.updateWorkflowState(ctx, err, []*core.NodeResult{nodeResult})
-	if err != nil {
+	if err := e.updateWorkflowState(ctx, nil, []*core.NodeResult{nodeResult}); err != nil {
 		logx.Errorf("[工作流状态] 更新失败 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [错误:%v]",
 			ctx.WorkspaceId, ctx.TraceId, node.ID, err)
-	}
-
-	if err != nil {
-		logx.Errorw("[引擎] 执行节点失败",
-			logx.Field("节点ID", nodeID),
-			logx.Field("错误", err))
 		return nil, err
 	}
+
 	logx.Infow("[引擎] 节点执行完成",
 		logx.Field("节点ID", nodeID),
 		logx.Field("输出", output))
@@ -756,7 +757,7 @@ func (e *WorkflowEngine) buildExecutionPlan(ctx context.Context, def *core.Workf
 		// 迭代组件初始化
 		if def.Type == "iteration" {
 			logx.Debugf("[工作流] 迭代组件初始化: %s", def.ID)
-			err := e.RegisterWorkflow(ctx, def.SubWorkflow)
+			err := e.RegisterWorkflow(ctx, def.SubWorkflow.ID, def.SubWorkflow)
 			if err != nil {
 				return nil, errors.New("迭代组件初始化失败: " + err.Error())
 			}

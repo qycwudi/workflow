@@ -11,6 +11,7 @@ import (
 	job "workflow/internal/handler/job"
 	kv "workflow/internal/handler/kv"
 	model "workflow/internal/handler/model"
+	openapi "workflow/internal/handler/openapi"
 	permission "workflow/internal/handler/permission"
 	role "workflow/internal/handler/role"
 	trace "workflow/internal/handler/trace"
@@ -359,6 +360,24 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// API调用
+				Method:  http.MethodPost,
+				Path:    "/api/v1/:apiId",
+				Handler: openapi.OpenApiCallHandler(serverCtx),
+			},
+			{
+				// API调用-追踪
+				Method:  http.MethodPost,
+				Path:    "/api/v1/trace/:apiId",
+				Handler: openapi.OpenApiCallTraceHandler(serverCtx),
+			},
+		},
 		rest.WithPrefix("/workflow"),
 	)
 

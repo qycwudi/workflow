@@ -99,6 +99,8 @@ func main() {
 	cache.NewRedis(ctx.RedisClient)
 	// 初始化 工作流引擎
 	workflow.InitEngine(ctx)
+	// 初始化 openapi 引擎
+	workflow.InitOpenApiEngine(ctx)
 	// 初始化 trace
 	engine.NewTrace(ctx.TraceModel)
 	// defer workflow.Close()

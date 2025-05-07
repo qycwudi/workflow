@@ -751,6 +751,20 @@ type ModuleNewResponse struct {
 	ModuleId string `json:"moduleId"`
 }
 
+type OpenApiCallRequest struct {
+	ApiId string `path:"apiId"` // API ID
+}
+
+type OpenApiCallResponse struct {
+}
+
+type OpenApiCallTraceRequest struct {
+	ApiId string `path:"apiId"` // API ID
+}
+
+type OpenApiCallTraceResponse struct {
+}
+
 type Permission struct {
 	Id        int64        `json:"id"`
 	Title     string       `json:"title"`

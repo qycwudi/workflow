@@ -53,10 +53,8 @@ func ValidateOutput(data any, output Output) error {
 	case "float":
 		switch v := data.(type) {
 		case float64:
-			if v != float64(int(v)) {
-				logx.Errorf("[输出处理] 浮点数验证失败 [字段:%s] [值:%v] [错误:不能有小数部分]", output.Name, v)
-				return errors.New("输出 " + output.Name + " float64必须是整数类型，不能有小数部分")
-			}
+			// float64 类型直接通过验证，允许有小数部分
+			return nil
 		case json.Number:
 			_, err := strconv.ParseFloat(string(v), 64)
 			if err != nil {

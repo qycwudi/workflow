@@ -1,0 +1,32 @@
+syntax = "v1"
+
+type OpenApiCallRequest {
+	ApiId string `path:"apiId"` // API ID
+}
+
+type OpenApiCallResponse {
+	
+}
+
+type OpenApiCallTraceRequest {
+	ApiId string `path:"apiId"` // API ID
+}
+
+type OpenApiCallTraceResponse {
+	
+}
+
+@server (
+	group: openapi
+	prefix: /workflow
+)
+service workflow-api {
+	@doc "API调用"
+	@handler OpenApiCallHandler
+	post /api/v1/:apiId (OpenApiCallRequest) returns (OpenApiCallResponse)
+
+	@doc "API调用-追踪"
+	@handler OpenApiCallTraceHandler
+	post /api/v1/trace/:apiId (OpenApiCallTraceRequest) returns (OpenApiCallTraceResponse)
+
+}
