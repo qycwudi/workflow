@@ -80,9 +80,9 @@ func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	if err != nil {
 		return nil, err
 	}
-	headersMap := make(map[string]string)
+	headersMap := make(map[string]interface{})
 	for k, v := range headers {
-		headersMap[k] = fmt.Sprintf("%v", v)
+		headersMap[k] = v
 	}
 	input[headerKey] = headersMap
 
@@ -160,9 +160,19 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 	if !ok {
 		return nil, fmt.Errorf("input 类型不匹配")
 	}
-	headersMap, ok := inputMap[headerKey].(map[string]string)
+	headersMap, ok := inputMap[headerKey].(map[string]interface{})
 	if !ok {
 		return nil, fmt.Errorf("headersMap 类型不匹配")
+	}
+
+	// 转换 headers 为 map[string]string
+	headers := make(map[string]string)
+	for k, v := range headersMap {
+		if str, ok := v.(string); ok {
+			headers[k] = str
+		} else {
+			headers[k] = fmt.Sprintf("%v", v)
+		}
 	}
 	params, ok := inputMap[bodyKey].(map[string]any)
 	if !ok {
@@ -181,7 +191,7 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 	statusCode, body, err := client.DoRequest(RequestOptions{
 		Method:  c.config.Method,
 		URL:     url,
-		Headers: headersMap,
+		Headers: headers,
 		Body:    params,
 		IsJSON:  isJSON,
 	})
@@ -199,7 +209,7 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 			Output: nil,
 		}, err
 	}
-	jsonHeaders, _ := json.Marshal(headersMap)
+	jsonHeaders, _ := json.Marshal(headers)
 	r := map[string]any{
 		"body":       string(body),
 		"statusCode": statusCode,
