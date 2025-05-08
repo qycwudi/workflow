@@ -1,4 +1,4 @@
-FROM docker.m.daocloud.io/golang:1.24.3 AS builder
+FROM docker.m.daocloud.io/golang:1.24.3-alpine AS builder
 # docker build --platform linux/amd64 -t workflow:b4 .
 # docker login --username=qiangyuecheng registry.cn-hangzhou.aliyuncs.com
 # Qycssg00
