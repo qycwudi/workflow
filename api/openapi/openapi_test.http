@@ -38,8 +38,8 @@ Content-Type: application/json
 	"info": {
 		"city": "hangzhou",
 		"country": "china",
-		"height": 170.5,
-		"weight": 65.5,
+		"height": 198.47208138305618,
+		"weight": 47.998878461020226,
 		"phone": 17635800128,
 		"email": ["zhangsan@example.com", "lisi@example.com"],
 		"like": {

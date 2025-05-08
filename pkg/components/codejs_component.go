@@ -235,10 +235,12 @@ func (g *GojaJsEngine) Execute(functionName string, argumentList ...interface{})
 	// Put back to the pool
 	g.vmPool.Put(vm)
 	if err != nil {
-		logx.Errorf("[代码执行] 执行函数失败 [函数名:%s] [参数:%+v] [错误:%v]", functionName, argumentList, err)
-		return nil, err
+		params, _ := sonic.Marshal(argumentList)
+		logx.Errorf("[代码执行] 执行函数失败 [函数名:%s] [参数:%s] [错误:%v]", functionName, string(params), err)
+
+		return nil, errors.New("执行函数失败:" + err.Error())
 	}
-	return res.Export(), err
+	return res.Export(), nil
 }
 
 func (g *GojaJsEngine) Stop() {
