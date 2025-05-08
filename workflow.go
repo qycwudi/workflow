@@ -3,14 +3,13 @@ package main
 import (
 	"flag"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"strconv"
 
-	"github.com/arl/statsviz"
 	asynq2 "github.com/hibiken/asynq"
 	"github.com/hibiken/asynqmon"
+	"github.com/iyashjayesh/monigo"
 	"github.com/zeromicro/go-zero/core/conf"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/rest"
@@ -116,13 +115,6 @@ func main() {
 	bootstrap.Initialize(ctx)
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 
-	// http://localhost:8080/debug/statsviz
-	mux := http.NewServeMux()
-	statsviz.Register(mux)
-
-	go func() {
-		log.Println(http.ListenAndServe("localhost:8080", mux))
-	}()
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {
@@ -143,6 +135,20 @@ func main() {
 		println("Starting asynq monitor at 0.0.0.0:7201...")
 		logx.Error(ctx, http.ListenAndServe(":7201", nil).Error())
 	}()
+
+	monigoInstance := &monigo.Monigo{
+		ServiceName:             "workflow", // Mandatory field
+		DashboardPort:           8088,       // Default is 8080
+		DataPointsSyncFrequency: "5s",       // Default is 5 Minutes
+		DataRetentionPeriod:     "4d",       // Default is 7 days. Supported values: "1h", "1d", "1w", "1m"
+		TimeZone:                "Local",    // Default is Local timezone. Supported values: "Local", "UTC", "Asia/Kolkata", "America/New_York" etc. (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
+		// MaxCPUUsage:             90,         // Default is 95%
+		// MaxMemoryUsage:          90,         // Default is 95%
+		// MaxGoRoutines:           100,        // Default is 100
+	}
+	// monigo.TraceFunction(highCPUUsage) // Trace function, when the function is called, it will be traced and the metrics will be displayed on the dashboard
+	go monigoInstance.Start() // Starting monigo dashboard
+
 	server.Start()
 
 }
