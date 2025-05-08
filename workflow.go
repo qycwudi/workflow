@@ -146,9 +146,6 @@ func main() {
 		// MaxMemoryUsage:          90,         // Default is 95%
 		// MaxGoRoutines:           100,        // Default is 100
 	}
-	// monigo.TraceFunction(highCPUUsage) // Trace function, when the function is called, it will be traced and the metrics will be displayed on the dashboard
 	go monigoInstance.Start() // Starting monigo dashboard
-
 	server.Start()
-
 }

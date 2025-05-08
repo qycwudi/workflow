@@ -573,7 +573,7 @@ func (e *WorkflowEngine) executeComponent(ctx *core.ExecutionContext, err error,
 // Clear 释放资源
 func (e *WorkflowEngine) Clear(component components.Component) {
 	component.Clear()
-	logx.Debugf("[工作流] 释放组件: %s", component)
+	logx.Debugf("[工作流] 释放组件")
 }
 
 // updateNodeContext 更新节点上下文
