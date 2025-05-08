@@ -26,12 +26,12 @@ Content-Type: application/json
 }
 
 ### API调用-js-http
-POST http://127.0.0.1:8888/workflow/api/v1/d0dg79l3sjtn64abimd0
+POST http://10.99.100.49:8888/workflow/api/v1/d0e55okbo07o47nu5u4g
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-	"name": "d0dka6t3sjtiqea9qim0",
+	"name": "d0e55okbo07o47nu5u4g",
 	"auth": "Bearer ecab0d05783949c8a3169df8ab085a9c",
 	"age": 18,
 	"age1": 18,

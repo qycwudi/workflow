@@ -61,10 +61,10 @@ func NewBranchComponent(config json.RawMessage) (*BranchComponent, error) {
 	if err := sonic.Unmarshal(config, &branchConfig); err != nil {
 		return nil, errors.New("解析分支组件配置失败: " + err.Error())
 	}
-	c := branchComponentPool.Get().(*BranchComponent)
-	c.config = branchConfig
-
-	return c, nil
+	// 使用pool
+	component := branchComponentPool.Get().(*BranchComponent)
+	component.config = branchConfig
+	return component, nil
 }
 
 func (c *BranchComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
@@ -298,4 +298,8 @@ func compareValues(left, right any) (float64, float64, error) {
 	}
 
 	return leftFloat, rightFloat, nil
+}
+
+func (c *BranchComponent) Clear() {
+	branchComponentPool.Put(c)
 }

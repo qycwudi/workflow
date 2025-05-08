@@ -17,14 +17,11 @@ import (
 
 // WorkflowEngine 工作流引擎 https://deepwiki.com/XXueTu/workflow/1-overview
 type WorkflowEngine struct {
-	// 配置
 	config *EngineConfig // 引擎配置
 
-	// 工作流管理
 	executorPool map[string]*Executor // 工作流执行器池
 	mu           sync.RWMutex         // 读写锁
 
-	// 资源管理
 	cleanup    chan string   // 清理通道
 	shutdownCh chan struct{} // 关闭信号通道
 
@@ -523,6 +520,9 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 		return nil, err
 	}
 
+	// 5. 释放组件
+	e.Clear(component)
+
 	// 更新 trace
 	if ctx.IsTrace {
 		Trace.UpdateTrace(ctx, &TraceRecore{
@@ -568,6 +568,12 @@ func (e *WorkflowEngine) executeComponent(ctx *core.ExecutionContext, err error,
 		return nil, err
 	}
 	return component.Execute(ctx, input)
+}
+
+// Clear 释放资源
+func (e *WorkflowEngine) Clear(component components.Component) {
+	component.Clear()
+	logx.Debugf("[工作流] 释放组件: %s", component)
 }
 
 // updateNodeContext 更新节点上下文

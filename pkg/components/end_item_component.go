@@ -28,11 +28,14 @@ var endItemComponentPool = sync.Pool{
 }
 
 func NewEndItemComponent(config json.RawMessage) (*EndItemComponent, error) {
+	// 使用pool
+	component := endItemComponentPool.Get().(*EndItemComponent)
 	var endConfig EndItemConfig
 	if err := sonic.Unmarshal(config, &endConfig); err != nil {
 		return nil, errors.New("解析迭代结束组件配置失败: " + err.Error())
 	}
-	return &EndItemComponent{config: endConfig}, nil
+	component.config = endConfig
+	return component, nil
 }
 
 func (c *EndItemComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
@@ -49,4 +52,8 @@ func (c *EndItemComponent) Validate() []core.ValidationError {
 
 func (c *EndItemComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
+}
+
+func (c *EndItemComponent) Clear() {
+	endItemComponentPool.Put(c)
 }

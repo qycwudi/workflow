@@ -32,7 +32,10 @@ func NewEndComponent(config json.RawMessage) (*EndComponent, error) {
 	if err := sonic.Unmarshal(config, &endConfig); err != nil {
 		return nil, errors.New("解析结束组件配置失败: " + err.Error())
 	}
-	return &EndComponent{config: endConfig}, nil
+	// 使用pool
+	component := endComponentPool.Get().(*EndComponent)
+	component.config = endConfig
+	return component, nil
 }
 
 func (c *EndComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
@@ -49,4 +52,8 @@ func (c *EndComponent) Validate() []core.ValidationError {
 
 func (c *EndComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
+}
+
+func (c *EndComponent) Clear() {
+	endComponentPool.Put(c)
 }

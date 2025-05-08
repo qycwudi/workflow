@@ -36,3 +36,7 @@ func (c *StartComponent) Validate() []core.ValidationError {
 func (c *StartComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
 }
+
+func (c *StartComponent) Clear() {
+	startComponentPool.Put(c)
+}

@@ -36,6 +36,12 @@ type HTTPConfig struct {
 	Timeout int64         `json:"timeout"`
 }
 
+var httpComponentPool = sync.Pool{
+	New: func() interface{} {
+		return &HTTPComponent{}
+	},
+}
+
 func NewHTTPComponent(config json.RawMessage) (*HTTPComponent, error) {
 	c := HTTPConfig{}
 	if err := sonic.Unmarshal(config, &c); err != nil {
@@ -49,7 +55,10 @@ func NewHTTPComponent(config json.RawMessage) (*HTTPComponent, error) {
 	}
 	timeout := time.Duration(c.Timeout) * time.Second
 	c.Timeout = int64(timeout)
-	return &HTTPComponent{config: c}, nil
+	// 使用pool
+	component := httpComponentPool.Get().(*HTTPComponent)
+	component.config = c
+	return component, nil
 }
 
 func (c *HTTPComponent) Validate() []core.ValidationError {
@@ -330,4 +339,8 @@ func (h *HttpClient) DoRequest(opts RequestOptions) (int, []byte, error) {
 	}
 
 	return 0, nil, errors.New("request failed after retries")
+}
+
+func (c *HTTPComponent) Clear() {
+	httpComponentPool.Put(c)
 }

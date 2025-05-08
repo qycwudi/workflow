@@ -33,7 +33,7 @@ type CodejsConfig struct {
 }
 
 func NewCodejsComponent(config json.RawMessage) (*CodejsComponent, error) {
-	c := codejsComponentPool.Get().(*CodejsComponent)
+	component := codejsComponentPool.Get().(*CodejsComponent)
 	var codejsConfig CodejsConfig
 	if err := sonic.Unmarshal(config, &codejsConfig); err != nil {
 		return nil, errors.New("解析代码执行组件配置失败: " + err.Error())
@@ -44,8 +44,8 @@ func NewCodejsComponent(config json.RawMessage) (*CodejsComponent, error) {
 		logx.Errorf("[代码执行] 创建引擎失败 [错误:%v]", err)
 		return nil, errors.New("创建代码执行组件失败: " + err.Error())
 	}
-	c.engine = engine
-	return c, nil
+	component.engine = engine
+	return component, nil
 }
 
 func (c *CodejsComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
@@ -275,3 +275,7 @@ type Script struct {
 const (
 	Js = "Js" // Represents JavaScript scripting language.
 )
+
+func (c *CodejsComponent) Clear() {
+	codejsComponentPool.Put(c)
+}

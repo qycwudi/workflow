@@ -18,8 +18,9 @@ var startItemComponentPool = sync.Pool{
 }
 
 func NewStartItemComponent() (*StartItemComponent, error) {
-	c := startItemComponentPool.Get().(*StartItemComponent)
-	return c, nil
+	// 使用pool
+	component := startItemComponentPool.Get().(*StartItemComponent)
+	return component, nil
 }
 
 func (c *StartItemComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
@@ -35,4 +36,8 @@ func (c *StartItemComponent) Validate() []core.ValidationError {
 
 func (c *StartItemComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
+}
+
+func (c *StartItemComponent) Clear() {
+	startItemComponentPool.Put(c)
 }

@@ -42,7 +42,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0O
 }
 
 ### API发布
-POST http://127.0.0.1:8888/workflow/api/publish
+POST http://10.99.100.49:8888/workflow/api/publish
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2OTM0NTgsImlhdCI6MTc0NjYwNzA1OCwidXNlcklkIjoxfQ.StW8SxVo9rpHsk9elOaHXYYPyhfcVpqJCkKdJF39EsY
@@ -50,7 +50,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2OTM0NTgsImlh
 {
   "id": "d03l4kl3sjtgm7gc9su1",
   "tag": ["test", "test2"],
-  "apiName": "测试API-7",
+  "apiName": "测试API-8",
   "apiDesc": "这是一个测试API"
 }
 

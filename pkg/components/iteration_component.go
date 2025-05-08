@@ -31,14 +31,15 @@ var iterationComponentPool = sync.Pool{
 }
 
 func NewIterationComponent(e core.WorkflowEngine, config json.RawMessage) (*IterationComponent, error) {
-	c := iterationComponentPool.Get().(*IterationComponent)
+	// 使用pool
+	component := iterationComponentPool.Get().(*IterationComponent)
 	var iteraConfig IterationConfig
 	if err := sonic.Unmarshal(config, &iteraConfig); err != nil {
 		return nil, errors.New("解析迭代执行组件配置失败: " + err.Error())
 	}
 	iteraConfig.workflowEngine = e
-	c.config = iteraConfig
-	return c, nil
+	component.config = iteraConfig
+	return component, nil
 }
 
 const (
@@ -147,3 +148,7 @@ func (i *IterationComponent) Validate() []core.ValidationError {
 }
 
 // var _ Component = new(IterationComponent)
+
+func (i *IterationComponent) Clear() {
+	iterationComponentPool.Put(i)
+}

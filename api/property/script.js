@@ -1,4 +1,3 @@
-import { check } from 'k6';
 import http from 'k6/http';
 import { Rate, Trend } from 'k6/metrics';
 
@@ -72,17 +71,23 @@ export default function () {
   // 记录请求持续时间
   requestDuration.add(endTime - startTime);
 
-  // 检查响应
-  const checks = check(response, {
-    'status is 200': (r) => r.status === 200,
-    'response has data': (r) => r.json() !== null,
-    'response time OK': (r) => r.timings.duration < 500,
-  });
+  // 检查响应状态是否为200
+  const statusCheck = response.status === 200;
+  // 检查响应是否包含数据
+  const dataCheck = response.json() !== null;
+  // 检查响应时间是否在500毫秒以内
+  const timeCheck = response.timings.duration < 500;
+  // 组合检查结果
+  const checks = statusCheck && dataCheck && timeCheck;
 
   // 记录错误
   if (!checks) {
     errorRate.add(1);
-    console.error(`Request failed: ${response.status} ${response.body}`);
+    let errorMessages = [];
+    if (!statusCheck) errorMessages.push(`状态码错误: ${response.status}`);
+    if (!dataCheck) errorMessages.push('响应数据为空');
+    if (!timeCheck) errorMessages.push(`响应时间过长: ${response.timings.duration}毫秒`);
+    console.error(`Request failed: ${errorMessages.join(', ')}`);
   }
 
   // 添加随机延迟，模拟真实用户行为

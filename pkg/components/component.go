@@ -4,9 +4,9 @@ import (
 	"context"
 	"errors"
 
-	"workflow/pkg/core"
-
 	"github.com/bytedance/sonic"
+
+	"workflow/pkg/core"
 )
 
 const (
@@ -35,6 +35,7 @@ type Component interface {
 	Validate() []core.ValidationError
 	AnalyzeInputs(ctx context.Context) (any, error)
 	Execute(ctx context.Context, input any) (*core.Result, error)
+	Clear()
 }
 
 // ComponentFactory 组件工厂
