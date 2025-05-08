@@ -40,8 +40,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlh
 }
 }
 
-### 画布-执行-全部
-POST http://127.0.0.1:8888/workflow/canvas/run
+### 画布-执行-全部 POST http://127.0.0.1:8888/workflow/canvas/run
+POST http://10.99.100.49:8888/workflow/canvas/run
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlhdCI6MTc0NjYxNzU5OSwidXNlcklkIjoxfQ.X5PfWSKfFBBjp962bnN1ekz_pwlor7TVZF094RUMbXM
@@ -635,11 +635,11 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlh
 }
 }
 
-### 画布-草稿
-POST http://127.0.0.1:8888/workflow/canvas/draft
+### 画布-草稿 http://127.0.0.1:8888/workflow/canvas/draft
+POST http://10.99.100.49:8888/workflow/canvas/draft
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDYwMDQzNjksImlhdCI6MTc0NTkxNzk2OSwidXNlcklkIjoxfQ.UgfG-xGwAYpqt6W38J0OIC-xa0RAmqp7_Tnlhwbz5lg
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3NjAwMzIsImlhdCI6MTc0NjY3MzYzMiwidXNlcklkIjoxfQ.ijDRf3Hfl0clSfJ8Hl26oFGwMHPgHpXql14ll6Tz1sk
 
 {
   "id": "d03l4kl3sjtgm7gc9su0",

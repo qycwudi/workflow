@@ -1,0 +1,911 @@
+### 画布-详情
+POST http://127.0.0.1:8888/workflow/canvas/detail
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDUzOTY2MDAsImlhdCI6MTc0NTMxMDIwMCwidXNlcklkIjoxfQ.pbmjbki4ItleAzjwrhs5dsz09FvY4Pjc2qz25mNoVZU
+
+{
+  "id": "d03l4kl3sjtgm7gc9su0"
+}
+
+
+### 画布-执行-js
+POST http://127.0.0.1:8888/workflow/canvas/run
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
+
+{
+  "id": "d03l4kl3sjtgm7gc9su1",
+  "params":{
+	"name": "d03l4kl3sjtgm7gc9su1",
+	"auth": "Bearer ecab0d05783949c8a3169df8ab085a9c",
+	"age": 18,
+	"age1": 18,
+	"info": {
+		"city": "hangzhou",
+		"country": "china",
+		"height": 170.5,
+		"weight": 65.5,
+		"phone": 17635800128,
+		"email": ["zhangsan@example.com", "lisi@example.com"],
+		"like": {
+			"food": ["apple", "banana"],
+			"sport": ["basketball", "football"]
+		}
+	},
+	"address": ["beijing", "shanghai","hangzhou"],
+	"mritalStatus":false,
+	"sight":1.0
+}
+}
+
+### 画布-执行-全部 POST http://127.0.0.1:8888/workflow/canvas/run
+POST http://10.99.100.49:8888/workflow/canvas/run
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlhdCI6MTc0NjYxNzU5OSwidXNlcklkIjoxfQ.X5PfWSKfFBBjp962bnN1ekz_pwlor7TVZF094RUMbXM
+
+{
+  "id": "d03l4kl3sjtgm7gc9su0",
+  "params":{
+	"name": "d03l4kl3sjtgm7gc9su0",
+	"auth": "Bearer ecab0d05783949c8a3169df8ab085a9c",
+	"age": 18,
+	"age1": 18,
+	"info": {
+		"city": "hangzhou",
+		"country": "china",
+		"height": 170.5,
+		"weight": 65.5,
+		"phone": 17635800128,
+		"email": ["zhangsan@example.com", "lisi@example.com"],
+		"like": {
+			"food": ["apple", "banana"],
+			"sport": ["basketball", "football"]
+		}
+	},
+	"address": ["beijing", "shanghai","hangzhou"],
+	"mritalStatus":false,
+	"sight":1.0
+}
+}
+
+### 画布-执行-单组件
+POST http://127.0.0.1:8888/workflow/canvas/run/single
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
+
+{
+  "id": "d03l4kl3sjtgm7gc9su1",
+  "nodeId": "http-node-1",
+  "params":{
+  "url": "http://10.99.169.49:8889/api/role/v1/cvpnt0hnhrgu82dh8iqg",
+  "body": {
+    "age": 18,
+    "info": {
+      "city": "hangzhou",
+      "like": {
+        "food": [
+          "apple",
+          "banana"
+        ],
+        "sport": [
+          "basketball",
+          "football"
+        ]
+      },
+      "email": [
+        "zhangsan@example.com",
+        "lisi@example.com"
+      ],
+      "phone": 17635800128,
+      "height": 170.5,
+      "weight": 65.5,
+      "country": "china"
+    },
+    "name": "d03l4kl3sjtgm7gc9su1"
+  },
+  "isJSON": true,
+  "headers": {
+    "Auth": "Bearer 1234567890",
+    "Content-Type": "application/json"
+  }
+}
+}
+
+### 画布-草稿-js
+POST http://127.0.0.1:8888/workflow/canvas/draft
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
+
+{
+    "id": "d03l4kl3sjtgm7gc9su1",
+
+    "graph": {
+    "id": "d03l4kl3sjtgm7gc9su1",
+    "name": "Sample Workflow",
+    "description": "This is a sample workflow definition",
+    "version": "1.0.0",
+    "createTime": "2023-10-01T12:00:00Z",
+    "updateTime": "2023-10-02T14:30:00Z",
+    "nodes": {
+        "start-node-1": {
+            "id": "start-node-1",
+            "name": "Start Node",
+            "type": "start",
+            "outputs": [
+                {
+                    "name": "name",
+                    "type": ["string"],
+                    "deftValue": null,
+                    "desc": "用户名称",
+                    "schema": []
+                },
+                {
+                    "name": "age",
+                    "type": ["integer"],
+                    "deftValue": 0,
+                    "desc": "用户年龄",
+                    "schema": []
+                },
+                {
+                    "name": "info",
+                    "type": ["object"],
+                    "deftValue": {},
+                    "desc": "用户信息对象",
+                    "schema": [
+                        {
+                            "name": "city",
+                            "type": ["string"],
+                            "deftValue": "",
+                            "desc": "城市",
+                            "schema": []
+                        },
+                        {
+                            "name": "country",
+                            "type": ["string"],
+                            "deftValue": "",
+                            "desc": "国家",
+                            "schema": []
+                        },
+                        {
+                            "name": "height",
+                            "type": ["float"],
+                            "deftValue": 0.0,
+                            "desc": "身高",
+                            "schema": []
+                        },
+                        {
+                            "name": "weight",
+                            "type": ["float"],
+                            "deftValue": 0.0,
+                            "desc": "体重",
+                            "schema": []
+                        },
+                        {
+                            "name": "phone",
+                            "type": ["integer"],
+                            "deftValue": 0,
+                            "desc": "电话号码",
+                            "schema": []
+                        },
+                        {
+                            "name": "email",
+                            "type": ["array", "string"],
+                            "deftValue": [],
+                            "desc": "电子邮件列表",
+                            "schema": []
+                        },
+                        {
+                            "name": "like",
+                            "type": ["object"],
+                            "deftValue": {},
+                            "desc": "喜好信息",
+                            "schema": [
+                                {
+                                    "name": "food",
+                                    "type": ["array", "string"],
+                                    "deftValue": [],
+                                    "desc": "喜爱的食物",
+                                    "schema": []
+                                },
+                                {
+                                    "name": "sport",
+                                    "type": ["array", "string"],
+                                    "deftValue": [],
+                                    "desc": "喜爱的运动",
+                                    "schema": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "address",
+                    "type": ["array", "string"],
+                    "deftValue": [],
+                    "desc": "地址列表",
+                    "schema": []
+                },
+                {
+                    "name": "mritalStatus",
+                    "type": ["boolean"],
+                    "deftValue": false,
+                    "desc": "婚姻状态",
+                    "schema": []
+                },
+                {
+                    "name": "sight",
+                    "type": ["float"],
+                    "deftValue": 0.0,
+                    "desc": "视力",
+                    "schema": []
+                }
+            ]
+        },
+        "http-node-1": {
+            "id": "http-node-1",
+            "name": "HTTP Node",
+            "type": "http",
+            "inputs": [],
+            "config": {
+                "url": "http://10.99.169.49:8889/api/role/v1/cvpnt0hnhrgu82dh8iqg",
+                "method": "POST",
+                "timeout": 30,
+                "retries": 3,
+                "headers": [
+                    {
+                        "name": "Content-Type",
+                        "type": ["string"],
+                        "value": {
+                            "content": {
+                                "name": "Content-Type",
+                                "value": "application/json"
+                            },
+                            "type": "fix"
+                        }
+                    },
+                    {
+                        "name": "Auth",
+                        "type": ["string"],
+                        "value": {
+                            "content": {
+                                "name": "Auth",
+                                "value": "Bearer 1234567890"
+                            },
+                            "type": "fix"
+                        }
+                    }
+                ],
+                "params": [],
+                "body": [
+                    {
+                        "name": "name",
+                        "type": ["string"],
+                        "value": {
+                            "content": {
+                                "name": "name",
+                                "value": "",
+                                "blockId": "start-node-1"
+                            },
+                            "type": "ref"
+                        }   
+                    },
+                    {
+                        "name": "age",
+                        "type": ["integer"],
+                        "value": {
+                            "content": {
+                                "name": "age",
+                                "value": "",
+                                "blockId": "start-node-1"
+                            },
+                            "type": "ref"
+                        }
+                    },
+                    {
+                        "name": "info",
+                        "type": ["object"],
+                        "value": {
+                            "content": {
+                                "name": "info",
+                                "value": "",
+                                "blockId": "start-node-1"
+                            },
+                            "type": "ref"
+                        }
+                    }
+                ]
+            },
+            "outputs": [
+                {
+                    "name": "body",
+                    "type": ["string"],
+                    "desc": "响应体"
+                },
+                {
+                    "name": "statusCode",
+                    "type": ["integer"],
+                    "desc": "状态码"
+                },
+                {
+                    "name": "headers",
+                    "type": ["string"],
+                    "desc": "响应头"
+                }
+            ]
+        },
+        "http-node-2": {
+            "id": "http-node-2",
+            "name": "HTTP Node",
+            "type": "http",
+            "inputs": [],
+            "config": {
+                "url": "http://10.99.169.49:8889/api/role/v1/cvpnt0hnhrgu82dh8iqg",
+                "method": "POST",
+                "timeout": 30,
+                "retries": 3,
+                "headers": [
+                    {
+                        "name": "Content-Type",
+                        "type": ["string"],
+                        "value": {
+                            "content": {
+                                "name": "Content-Type",
+                                "value": "application/json"
+                            },
+                            "type": "fix"
+                        }
+                    },
+                    {
+                        "name": "Auth",
+                        "type": ["string"],
+                        "value": {
+                            "content": {
+                                "name": "Auth",
+                                "value": "Bearer 123"
+                            },
+                            "type": "fix"
+                        }
+                    }
+                ],
+                "params": [],
+                "body": [
+                    {
+                        "name": "name",
+                        "type": ["string"],
+                        "value": {
+                            "content": {
+                                "name": "name",
+                                "value": "",
+                                "blockId": "start-node-1"
+                            },
+                            "type": "ref"
+                        }   
+                    },
+                    {
+                        "name": "age",
+                        "type": ["integer"],
+                        "value": {
+                            "content": {
+                                "name": "age",
+                                "value": "",
+                                "blockId": "start-node-1"
+                            },
+                            "type": "ref"
+                        }
+                    },
+                    {
+                        "name": "info",
+                        "type": ["object"],
+                        "value": {
+                            "content": {
+                                "name": "info",
+                                "value": "",
+                                "blockId": "start-node-1"
+                            },
+                            "type": "ref"
+                        }
+                    }
+                ]
+            },
+            "outputs": [
+                {
+                    "name": "body",
+                    "type": ["string"],
+                    "desc": "响应体"
+                },
+                {
+                    "name": "statusCode",
+                    "type": ["integer"],
+                    "desc": "状态码"
+                },
+                {
+                    "name": "headers",
+                    "type": ["string"],
+                    "desc": "响应头"
+                }
+            ]
+        },
+        "codejs-node-1": {
+            "id": "codejs-node-1",
+            "name": "Codejs Node",
+            "type": "codejs",
+            "inputs": [
+                {
+                    "name": "name",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "name",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "info",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "http-node-2",
+                            "name": "body",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                }
+            ],
+            "config": {
+                "code": "function main(params) { const parsedParams = JSON.parse(params.info); var result = {name: parsedParams.name, age: parsedParams.age, \"md5\": gmd5(params.name), }; return result }"
+            },
+            "outputs": [
+                {
+                    "name": "name",
+                    "type": ["string"],
+                    "desc": "名字"
+                },
+                {
+                    "name": "age",
+                    "type": ["integer"],
+                    "desc": "年龄"
+                },
+                {
+                    "name": "md5",
+                    "type": ["string"],
+                    "desc": "md5"
+                }
+            ]
+        },
+        "end-node-1": {
+            "id": "end-node-1",
+            "name": "End Node",
+            "type": "end",
+            "inputs": [
+                {
+                    "name": "name",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "codejs-node-1",
+                            "name": "name",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "age",
+                    "type": ["integer"],
+                    "value": {
+                        "content": {
+                            "blockId": "codejs-node-1",
+                            "name": "age",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "md5",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "codejs-node-1",
+                            "name": "md5",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "address",
+                    "type": ["array", "string"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "address",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "mritalStatus",
+                    "type": ["boolean"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "mritalStatus",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "sight",
+                    "type": ["float"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "sight",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "body1",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "http-node-1",
+                            "name": "body",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "body2",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "http-node-2",
+                            "name": "body",
+                            "value": ""
+                        },
+                        "type": "ref"
+                    }
+                }
+            ]
+        }
+    },
+    "connections": [
+        {
+            "from": "start-node-1",
+            "to": "http-node-1",
+            "condition": "success"
+        },
+        {
+            "from": "start-node-1",
+            "to": "http-node-2",
+            "condition": "success"
+        },
+        {
+            "from": "http-node-1",
+            "to": "codejs-node-1",
+            "condition": "success"
+        },
+        {
+            "from": "http-node-2",
+            "to": "codejs-node-1",
+            "condition": "success"
+        },
+        {
+            "from": "http-node-1",
+            "to": "end-node-1",
+            "condition": "success"
+        },
+        {
+            "from": "http-node-2",
+            "to": "end-node-1",
+            "condition": "success"
+        },
+        {
+            "from": "codejs-node-1",
+            "to": "end-node-1",
+            "condition": "success"
+        }
+        
+    ],
+    "config": {
+        "timeout": 30,
+        "retryPolicy": {
+            "maxAttempts": 3,
+            "interval": 5,
+            "maxInterval": 30,
+            "multiplier": 2.0
+        }
+    }
+}
+}
+
+### 画布-草稿 http://127.0.0.1:8888/workflow/canvas/draft
+POST http://10.99.100.49:8888/workflow/canvas/draft
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3NjAwMzIsImlhdCI6MTc0NjY3MzYzMiwidXNlcklkIjoxfQ.ijDRf3Hfl0clSfJ8Hl26oFGwMHPgHpXql14ll6Tz1sk
+
+{
+  "id": "d03l4kl3sjtgm7gc9su0",
+  "graph": {
+    "id": "d03l4kl3sjtgm7gc9su0",
+    "name": "Sample Workflow",
+    "description": "This is a sample workflow definition",
+    "version": "1.0.0",
+    "createTime": "2023-10-01T12:00:00Z",
+    "updateTime": "2023-10-02T14:30:00Z",
+    "nodes": {
+        "start-node-1": {
+            "id": "start-node-1",
+            "name": "Start Node",
+            "type": "start",
+            "outputs": [
+                {
+                    "name": "name",
+                    "type": ["string"],
+                    "deftValue": null,
+                    "desc": "用户名称",
+                    "schema": []
+                },
+                {
+                    "name": "age",
+                    "type": ["integer"],
+                    "deftValue": 0,
+                    "desc": "用户年龄",
+                    "schema": []
+                },
+                {
+                    "name": "info",
+                    "type": ["object"],
+                    "deftValue": {},
+                    "desc": "用户信息对象",
+                    "schema": [
+                        {
+                            "name": "city",
+                            "type": ["string"],
+                            "deftValue": "",
+                            "desc": "城市",
+                            "schema": []
+                        },
+                        {
+                            "name": "country",
+                            "type": ["string"],
+                            "deftValue": "",
+                            "desc": "国家",
+                            "schema": []
+                        },
+                        {
+                            "name": "height",
+                            "type": ["float"],
+                            "deftValue": 0.0,
+                            "desc": "身高",
+                            "schema": []
+                        },
+                        {
+                            "name": "weight",
+                            "type": ["float"],
+                            "deftValue": 0.0,
+                            "desc": "体重",
+                            "schema": []
+                        },
+                        {
+                            "name": "phone",
+                            "type": ["integer"],
+                            "deftValue": 0,
+                            "desc": "电话号码",
+                            "schema": []
+                        },
+                        {
+                            "name": "email",
+                            "type": ["array", "string"],
+                            "deftValue": [],
+                            "desc": "电子邮件列表",
+                            "schema": []
+                        },
+                        {
+                            "name": "like",
+                            "type": ["object"],
+                            "deftValue": {},
+                            "desc": "喜好信息",
+                            "schema": [
+                                {
+                                    "name": "food",
+                                    "type": ["array", "string"],
+                                    "deftValue": [],
+                                    "desc": "喜爱的食物",
+                                    "schema": []
+                                },
+                                {
+                                    "name": "sport",
+                                    "type": ["array", "string"],
+                                    "deftValue": [],
+                                    "desc": "喜爱的运动",
+                                    "schema": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "address",
+                    "type": ["array", "string"],
+                    "deftValue": [],
+                    "desc": "地址列表",
+                    "schema": []
+                },
+                {
+                    "name": "mritalStatus",
+                    "type": ["boolean"],
+                    "deftValue": false,
+                    "desc": "婚姻状态",
+                    "schema": []
+                },
+                {
+                    "name": "sight",
+                    "type": ["float"],
+                    "deftValue": 0.0,
+                    "desc": "视力",
+                    "schema": []
+                }
+            ]
+        },
+        "end-node-1": {
+            "id": "end-node-1",
+            "name": "End Node",
+            "type": "end",
+            "inputs": [
+                {
+                    "name": "name",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "name"
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "age",
+                    "type": ["integer"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "age"
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "info",
+                    "type": ["object"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "info"
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "info.city",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "info.city"
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "address",
+                    "type": ["array", "string"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "address"
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "mritalStatus",
+                    "type": ["boolean"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "mritalStatus"
+                        },
+                        "type": "ref"
+                    }
+                },
+                {
+                    "name": "sight",
+                    "type": ["float"],
+                    "value": {
+                        "content": {
+                            "blockId": "start-node-1",
+                            "name": "sight"
+                        },
+                        "type": "ref"
+                    }
+                }
+            ]
+        }
+    },
+    "connections": [
+        {
+            "from": "start-node-1",
+            "to": "end-node-1",
+            "condition": "success"
+        }
+    ],
+    "config": {
+        "timeout": 30,
+        "retryPolicy": {
+            "maxAttempts": 3,
+            "interval": 5,
+            "maxInterval": 30,
+            "multiplier": 2.0
+        }
+    }
+}
+}
+
+### 画布-执行记录
+GET http://127.0.0.1:8899/workflow/canvas/run/history/asdasd
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+
+### 画布-执行记录详情
+GET http://127.0.0.1:8899/workflow/canvas/run/detail/22222
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+
+### API-发布
+POST http://127.0.0.1:8899/workflow/canvas/publish
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "id": "cs8vfql3sjtkvhkubulg",
+  "apiName": "雪兔测试并行1",
+  "apiDesc": "嘻嘻嘻 哈哈哈"
+}
+
+
+### 画布-执行-单组件详情
+POST http://127.0.0.1:8899/workflow/canvas/run/single/detail
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "id": "ctdp4353sjtrlkhmrvb0",
+  "nodeId": "jsTransform-af381ef9-cc1c-4419-89d7-a632482c9132"
+}
+
+### 画布-保存历史版本
+POST http://127.0.0.1:8899/workflow/canvas/history/save
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "workspaceId": "crvpmf53sjtsppvoiogg",
+  "name": "雪兔测试并行1"
+}
+    
