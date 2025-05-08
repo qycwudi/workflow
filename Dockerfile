@@ -26,7 +26,7 @@ RUN GOARCH=amd64 GOOS=linux go build -ldflags="-s -w" -o /app/workflow workflow.
 
 
 
-FROM alpine
+FROM alpine:3.18
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Shanghai
