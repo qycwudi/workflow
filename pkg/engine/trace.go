@@ -2,9 +2,9 @@ package engine
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/model"
@@ -38,13 +38,13 @@ type TraceRecore struct {
 }
 
 func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
-	input, err := json.Marshal(trace.Input)
+	input, err := sonic.Marshal(trace.Input)
 	if err != nil {
 		logx.Errorw("[追踪] 序列化输入数据失败", logx.Field("错误", err))
 	}
 	var logic string
 	if trace.Logic != nil {
-		logics, err := json.Marshal(trace.Logic)
+		logics, err := sonic.Marshal(trace.Logic)
 		if err != nil {
 			logx.Errorw("[追踪] 序列化逻辑数据失败", logx.Field("错误", err))
 		}
@@ -54,7 +54,7 @@ func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 	}
 	var output []byte
 	if trace.Output != "" {
-		output, err = json.Marshal(trace.Output)
+		output, err = sonic.Marshal(trace.Output)
 		if err != nil {
 			logx.Errorw("[追踪] 序列化输出数据失败", logx.Field("错误", err))
 		}
@@ -87,7 +87,7 @@ func (t *TraceModel) UpdateTrace(ctx context.Context, trace *TraceRecore) {
 	var output []byte
 	var err error
 	if trace.Output != "" {
-		output, err = json.Marshal(trace.Output)
+		output, err = sonic.Marshal(trace.Output)
 		if err != nil {
 			logx.Error(ctx, err)
 		}

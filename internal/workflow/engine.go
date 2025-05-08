@@ -2,9 +2,9 @@ package workflow
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/internal/svc"
@@ -35,14 +35,14 @@ func InitOpenApiEngine(ctx *svc.ServiceContext) {
 
 func Register(ctx context.Context, id string, dsl string) error {
 	var workflowDefinition core.WorkflowDef
-	err := json.Unmarshal([]byte(dsl), &workflowDefinition)
+	err := sonic.Unmarshal([]byte(dsl), &workflowDefinition)
 	if err != nil {
 		logx.Errorw("[工作流] 解析工作流文件失败", logx.Field("错误", err))
 		return err
 	}
 
 	logx.Debugw("[工作流] 工作流DSL", logx.Field("dsl", dsl))
-	definitionBytes, _ := json.MarshalIndent(workflowDefinition, "", "  ")
+	definitionBytes, _ := sonic.MarshalIndent(workflowDefinition, "", "  ")
 	logx.Infow("[工作流] 工作流定义", logx.Field("definition", string(definitionBytes)))
 
 	err = eg.RegisterWorkflow(ctx, id, &workflowDefinition)

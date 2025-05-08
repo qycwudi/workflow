@@ -2,10 +2,10 @@ package datasource
 
 import (
 	"database/sql"
-	"encoding/json"
 	"errors"
 	"fmt"
 
+	"github.com/bytedance/sonic"
 	"github.com/jlaffaye/ftp"
 	"github.com/pkg/sftp"
 	goora "github.com/sijms/go-ora/v2"
@@ -81,7 +81,7 @@ func checkDatabaseConnection(t enum.DBType, config string) error {
 // 检查文件服务器连接
 func checkFileServerConnection(config string) error {
 	var serverConfig FileServerConfig
-	if err := json.Unmarshal([]byte(config), &serverConfig); err != nil {
+	if err := sonic.Unmarshal([]byte(config), &serverConfig); err != nil {
 		return fmt.Errorf("parse file server config failed: %v", err)
 	}
 
@@ -138,7 +138,7 @@ func checkSftpConnection(config FileServerConfig) error {
 
 func GenDataSourceDSN(t enum.DBType, config string) string {
 	c := DataSourceConfig{}
-	err := json.Unmarshal([]byte(config), &c)
+	err := sonic.Unmarshal([]byte(config), &c)
 	if err != nil {
 		logx.Errorf("unmarshal datasource config failed, err:%v", err)
 		return ""

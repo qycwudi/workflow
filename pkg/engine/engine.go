@@ -9,9 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
-	"github.com/panjf2000/ants/v2"
 	"github.com/zeromicro/go-zero/core/logx"
-	"golang.org/x/sync/errgroup"
 
 	"workflow/pkg/components"
 	"workflow/pkg/core"
@@ -19,9 +17,6 @@ import (
 
 // WorkflowEngine 工作流引擎 https://deepwiki.com/XXueTu/workflow/1-overview
 type WorkflowEngine struct {
-	// 核心组件
-	pool     *ants.PoolWithFunc // 任务执行池
-	poolSize int                // 当前池大小
 	// 配置
 	config *EngineConfig // 引擎配置
 
@@ -48,36 +43,6 @@ func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 	for _, opt := range opts {
 		opt(engine)
 	}
-
-	// 创建任务处理函数
-	taskHandler := func(i any) {
-		task, ok := i.(*ExecutionTask)
-		if !ok {
-			return
-		}
-		defer task.Sw.Done()
-		result, err := task.Engine.executeNode(task.Context, task.Step, task.NodeID, task.Executor.definition.Nodes[task.NodeID], task.Component, nil)
-		if err != nil {
-			logx.Errorf("[工作流执行] 节点执行失败 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [步骤:%d] [错误:%v]",
-				task.WorkflowID, task.SerialID, task.NodeID, task.Step, err)
-			task.Context.SetError(task.NodeID, err)
-			return
-		}
-		logx.Infof("[工作流执行] 节点执行成功 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [步骤:%d] [输出:%+v]",
-			task.WorkflowID, task.SerialID, task.NodeID, task.Step, result.Output)
-	}
-
-	// 创建 ants 函数池
-	pool, err := ants.NewPoolWithFunc(engine.config.InitialPoolSize, taskHandler,
-		ants.WithPreAlloc(true),
-		ants.WithMaxBlockingTasks(engine.config.MaxConcurrentWorkflows),
-		ants.WithNonblocking(true),
-	)
-	if err != nil {
-		panic(err)
-	}
-	engine.pool = pool
-	engine.poolSize = engine.config.InitialPoolSize
 
 	// 启动清理和指标收集协程
 	engine.startCleanupRoutine()
@@ -311,68 +276,27 @@ func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Ex
 
 // executePhase 执行单个阶段
 func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext, phase ExecutionPhase, phaseIdx int) error {
-	var sw sync.WaitGroup
-	nodes := make([]string, len(phase.Nodes))
-	g, ctx := errgroup.WithContext(ctx)
+	// 添加上下文超时控制
+	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
+	defer cancel()
+
 	logx.Debugf("[工作流] 执行阶段: %d, 节点数: %d", phaseIdx, len(phase.Nodes))
+
 	for i, node := range phase.Nodes {
-		if err := e.submitNodeTask(ctx, phaseIdx*10000+i, executor, execCtx, node, &sw, g, nodes, i); err != nil {
+		err := e.handleNodeExecution(execCtx, phaseIdx*1000+i, executor, node)
+		if err != nil {
+			logx.Errorw("[工作流] 执行节点失败", logx.Field("error", err.Error()))
 			return err
 		}
 	}
 
-	if err := g.Wait(); err != nil {
-		return err
-	}
-	sw.Wait()
-
 	return nil
-}
-
-// submitNodeTask 提交节点任务
-func (e *WorkflowEngine) submitNodeTask(ctx context.Context, phaseIdx int, executor *Executor, execCtx *core.ExecutionContext, node *WorkflowNode, sw *sync.WaitGroup, g *errgroup.Group, nodes []string, index int) error {
-	logx.Debugf("[工作流] 执行节点: %s, 步骤: %d", node.ID, phaseIdx)
-	nodes[index] = node.ID
-
-	// 检查上下文状态
-	if err := e.checkContext(ctx, executor); err != nil {
-		return err
-	}
-
-	// 获取节点定义副本
-	nodeCopy := node
-
-	// 增加等待计数
-	sw.Add(1)
-
-	// 提交任务
-	g.Go(func() error {
-		if err := e.handleNodeExecution(execCtx, phaseIdx, executor, nodeCopy, sw); err != nil {
-			return err
-		}
-		return nil
-	})
-
-	return nil
-}
-
-// checkContext 检查上下文状态
-func (e *WorkflowEngine) checkContext(ctx context.Context, executor *Executor) error {
-	select {
-	case <-ctx.Done():
-		return ctx.Err()
-	case <-executor.shutdownCh:
-		return errors.New("工作流正在关闭")
-	default:
-		return nil
-	}
 }
 
 // handleNodeExecution 处理节点执行
-func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, phaseIdx int, executor *Executor, node *WorkflowNode, sw *sync.WaitGroup) error {
+func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, phaseIdx int, executor *Executor, node *WorkflowNode) error {
 	// 开始类型的组件跳过路由检查
 	if node.Type == components.Start || node.Type == components.StartItem {
-		sw.Done()
 		return e.executeStartNode(execCtx, int64(phaseIdx), node)
 	}
 
@@ -387,19 +311,13 @@ func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, pha
 		return errors.New("无法创建组件 [" + node.ID + "]: " + err.Error())
 	}
 
-	task := &ExecutionTask{
-		NodeID:     node.ID,
-		Component:  component,
-		Context:    execCtx,
-		Engine:     e,
-		Executor:   executor,
-		WorkflowID: executor.definition.ID,
-		SerialID:   execCtx.TraceId,
-		Sw:         sw,
-		Step:       int64(phaseIdx),
+	// 直接执行节点，不使用线程池
+	_, err = e.executeNode(execCtx, int64(phaseIdx), node.ID, node.NodeDefinition, component, nil)
+	if err != nil {
+		return err
 	}
 
-	return e.pool.Invoke(task)
+	return nil
 }
 
 // executeStartNode 执行开始节点
@@ -704,13 +622,6 @@ func (e *WorkflowEngine) updateWorkflowState(ctx *core.ExecutionContext, err err
 	completed := len(ctx.State.Result)
 	total := int(ctx.TotalNodes)
 	ctx.State.Progress = float64(completed) / float64(total)
-
-	if err != nil {
-		logx.Errorw("[引擎] 执行工作流失败",
-			logx.Field("工作流ID", ctx.WorkspaceId),
-			logx.Field("错误", err))
-		return err
-	}
 	logx.Infow("[引擎] 工作流执行完成",
 		logx.Field("工作流ID", ctx.WorkspaceId),
 		logx.Field("输出", ctx.State.Result))
@@ -819,7 +730,6 @@ func (e *WorkflowEngine) startCleanupRoutine() {
 			select {
 			case <-ticker.C:
 				e.cleanupExecContexts()
-				e.adjustPoolSize()
 			case workflowID := <-e.cleanup:
 				e.mu.Lock()
 				delete(e.executorPool, workflowID)
@@ -829,33 +739,6 @@ func (e *WorkflowEngine) startCleanupRoutine() {
 			}
 		}
 	}()
-}
-
-// 调整池大小
-func (e *WorkflowEngine) adjustPoolSize() {
-	// 获取当前运行的任务数
-	running := e.pool.Running()
-	cap := e.pool.Cap()
-
-	// 如果使用率超过80%，且未达到最大值，则增加容量
-	if float64(running)/float64(cap) > 0.8 && cap < e.config.MaxPoolSize {
-		newCap := int(float64(cap) * 1.5)
-		if newCap > e.config.MaxPoolSize {
-			newCap = e.config.MaxPoolSize
-		}
-		e.pool.Tune(newCap)
-		e.poolSize = newCap
-	}
-
-	// 如果使用率低于30%，且池大小超过初始值，则减少容量
-	if running > 0 && float64(running)/float64(cap) < 0.3 && cap > e.config.InitialPoolSize {
-		newCap := int(float64(cap) * 0.7)
-		if newCap < e.config.InitialPoolSize {
-			newCap = e.config.InitialPoolSize
-		}
-		e.pool.Tune(newCap)
-		e.poolSize = newCap
-	}
 }
 
 // cleanupExecContexts 清理执行上下文
@@ -894,7 +777,6 @@ func (e *WorkflowEngine) cleanupExecContexts() {
 // Cleanup 释放资源
 func (e *WorkflowEngine) Cleanup() {
 	close(e.shutdownCh)
-	e.pool.Release()
 
 	// 关闭所有执行器
 	e.mu.Lock()
@@ -904,19 +786,6 @@ func (e *WorkflowEngine) Cleanup() {
 		logx.Debugf("[工作流] 关闭执行器: %s", executor.definition.ID)
 	}
 	e.mu.Unlock()
-}
-
-// GetPoolStats 获取池统计信息
-func (e *WorkflowEngine) GetPoolStats() map[string]any {
-	return map[string]any{
-		"capacity":    e.pool.Cap(),
-		"running":     e.pool.Running(),
-		"free":        e.pool.Free(),
-		"waiting":     e.pool.Waiting(),
-		"poolSize":    e.poolSize,
-		"maxPoolSize": e.config.MaxPoolSize,
-		"initialSize": e.config.InitialPoolSize,
-	}
 }
 
 // GetExecutionContext 获取执行上下文

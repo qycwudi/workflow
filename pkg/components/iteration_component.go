@@ -6,6 +6,7 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/bytedance/sonic"
 	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -32,7 +33,7 @@ var iterationComponentPool = sync.Pool{
 func NewIterationComponent(e core.WorkflowEngine, config json.RawMessage) (*IterationComponent, error) {
 	c := iterationComponentPool.Get().(*IterationComponent)
 	var iteraConfig IterationConfig
-	if err := json.Unmarshal(config, &iteraConfig); err != nil {
+	if err := sonic.Unmarshal(config, &iteraConfig); err != nil {
 		return nil, errors.New("解析迭代执行组件配置失败: " + err.Error())
 	}
 	iteraConfig.workflowEngine = e

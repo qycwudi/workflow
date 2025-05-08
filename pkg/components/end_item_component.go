@@ -6,6 +6,7 @@ import (
 	"errors"
 	"sync"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/core"
@@ -28,7 +29,7 @@ var endItemComponentPool = sync.Pool{
 
 func NewEndItemComponent(config json.RawMessage) (*EndItemComponent, error) {
 	var endConfig EndItemConfig
-	if err := json.Unmarshal(config, &endConfig); err != nil {
+	if err := sonic.Unmarshal(config, &endConfig); err != nil {
 		return nil, errors.New("解析迭代结束组件配置失败: " + err.Error())
 	}
 	return &EndItemComponent{config: endConfig}, nil

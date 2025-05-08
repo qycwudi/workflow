@@ -2,9 +2,9 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"strings"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -36,7 +36,7 @@ func (l *ApiExportCurlLogic) ApiExportCurl(req *types.ApiExportCurlRequest) (res
 
 	// 处理请求头
 	var headers map[string]string
-	if err = json.Unmarshal([]byte(req.Header), &headers); err != nil {
+	if err = sonic.Unmarshal([]byte(req.Header), &headers); err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析请求头失败")
 	}
 

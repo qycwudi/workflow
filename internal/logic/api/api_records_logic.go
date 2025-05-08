@@ -2,8 +2,8 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -42,13 +42,13 @@ func (l *ApiRecordsLogic) ApiRecords(req *types.ApiRecordsRequest) (resp *types.
 	for i, record := range apiRecords {
 		// 处理多层嵌套的 JSON 数据
 		var paramMap interface{}
-		_ = json.Unmarshal([]byte(record.Param), &paramMap)
+		_ = sonic.Unmarshal([]byte(record.Param), &paramMap)
 		var extendMap interface{}
-		_ = json.Unmarshal([]byte(record.Extend), &extendMap)
+		_ = sonic.Unmarshal([]byte(record.Extend), &extendMap)
 
 		// 美化 JSON 输出
-		paramJson, _ := json.MarshalIndent(paramMap, "", "  ")
-		extendJson, _ := json.MarshalIndent(extendMap, "", "  ")
+		paramJson, _ := sonic.MarshalIndent(paramMap, "", "  ")
+		extendJson, _ := sonic.MarshalIndent(extendMap, "", "  ")
 
 		lists[i] = types.ApiRecords{
 			ApiId:    record.ApiId,

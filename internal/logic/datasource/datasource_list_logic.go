@@ -2,8 +2,8 @@ package datasource
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -51,12 +51,12 @@ func (l *DatasourceListLogic) DatasourceList(req *types.DatasourceListRequest) (
 	for _, item := range list {
 		// 读取 item.Config 中的的 password
 		config := make(map[string]interface{})
-		_ = json.Unmarshal([]byte(item.Config), &config)
+		_ = sonic.Unmarshal([]byte(item.Config), &config)
 		_, ok := config["password"]
 		if ok {
 			config["password"] = "******"
 		}
-		json, _ := json.Marshal(config)
+		json, _ := sonic.Marshal(config)
 		item.Config = string(json)
 		datasourceList = append(datasourceList, types.DatasourceInfo{
 			Id:     int(item.Id),

@@ -802,6 +802,13 @@ type QueryComponentsResponse struct {
 	Records []Record `json:"records"` // 组件运行结果
 }
 
+type QueryGoroutinesRequest struct {
+}
+
+type QueryGoroutinesResponse struct {
+	Count int64 `json:"count"` // 运行数量
+}
+
 type Record struct {
 	Input     interface{} `json:"input"`
 	Output    interface{} `json:"output"`

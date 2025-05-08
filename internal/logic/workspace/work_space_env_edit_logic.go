@@ -2,8 +2,8 @@ package workspace
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -36,7 +36,7 @@ func (l *WorkSpaceEnvEditLogic) WorkSpaceEnvEdit(req *types.WorkSpaceEnvEditRequ
 	for _, v := range req.Env {
 		env[v.Key] = v.Value
 	}
-	envJson, err := json.Marshal(env)
+	envJson, err := sonic.Marshal(env)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "解析环境变量失败")
 	}

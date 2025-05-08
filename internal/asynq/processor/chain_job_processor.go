@@ -2,9 +2,9 @@ package processor
 
 import (
 	"context"
-	"encoding/json"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -32,7 +32,7 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 	logx.Infof("%s start at: %s", TOPIC_CHAIN_JOB, startTime.Format("2006-01-02 15:04:05"))
 
 	var payload ChainJobPayload
-	if err := json.Unmarshal(t.Payload(), &payload); err != nil {
+	if err := sonic.Unmarshal(t.Payload(), &payload); err != nil {
 		logx.Errorf("%s parse payload failed: %v", TOPIC_CHAIN_JOB, err)
 		return err
 	}
@@ -46,7 +46,7 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 		return err
 	}
 	metadata := make(map[string]string)
-	err = json.Unmarshal([]byte(workspace.Configuration), &metadata)
+	err = sonic.Unmarshal([]byte(workspace.Configuration), &metadata)
 	if err != nil {
 		logx.Errorf("%s parse metadata failed: %v", TOPIC_CHAIN_JOB, err)
 		return err
@@ -64,7 +64,7 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 	}
 
 	params := make(map[string]any)
-	err = json.Unmarshal([]byte(job.Params), &params)
+	err = sonic.Unmarshal([]byte(job.Params), &params)
 	if err != nil {
 		logx.Errorf("%s parse params failed: %v", TOPIC_CHAIN_JOB, err)
 		return err
@@ -76,7 +76,7 @@ func (processor *ChainJobProcessor) ProcessTask(ctx context.Context, t *asynq.Ta
 		return err
 	}
 	logx.Infof("chain run result:%+v, serialId: %s", result, serialId)
-	resultJson, err := json.Marshal(result)
+	resultJson, err := sonic.Marshal(result)
 	if err != nil {
 		logx.Errorf("marshal result failed: %v", err)
 		return err

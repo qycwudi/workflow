@@ -2,11 +2,11 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	"io"
 	"net/http"
 	"strings"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -40,7 +40,7 @@ func (l *ApiCallLogic) ApiCall(req *types.ApiCallRequest) (resp *types.ApiCallRe
 	}
 	// 检查请求体是否为json
 	var jsonData interface{}
-	if err := json.Unmarshal([]byte(req.Body), &jsonData); err != nil {
+	if err := sonic.Unmarshal([]byte(req.Body), &jsonData); err != nil {
 		return nil, errors.New(int(logic.SystemError), "请求体必须是有效的JSON格式")
 	}
 	// 检查url
@@ -63,7 +63,7 @@ func (l *ApiCallLogic) ApiCall(req *types.ApiCallRequest) (resp *types.ApiCallRe
 
 	// 设置请求头
 	var headers map[string]string
-	if err = json.Unmarshal([]byte(req.Header), &headers); err != nil {
+	if err = sonic.Unmarshal([]byte(req.Header), &headers); err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析请求头失败")
 	}
 

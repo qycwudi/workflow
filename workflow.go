@@ -3,10 +3,12 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
 
+	"github.com/arl/statsviz"
 	asynq2 "github.com/hibiken/asynq"
 	"github.com/hibiken/asynqmon"
 	"github.com/zeromicro/go-zero/core/conf"
@@ -114,6 +116,13 @@ func main() {
 	bootstrap.Initialize(ctx)
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 
+	// http://localhost:8080/debug/statsviz
+	mux := http.NewServeMux()
+	statsviz.Register(mux)
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:8080", mux))
+	}()
 	go func() {
 		defer func() {
 			if r := recover(); r != nil {

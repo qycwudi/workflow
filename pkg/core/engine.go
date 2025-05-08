@@ -10,7 +10,6 @@ type WorkflowEngine interface {
 
 	ListWorkflows() []string
 	GetWorkflowStatus(workflowID string) (WorkflowStatus, bool)
-	GetPoolStats() map[string]any
 
 	PauseWorkflow(ctx context.Context, workflowID string, serialID string) error
 }

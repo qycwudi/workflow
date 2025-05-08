@@ -482,6 +482,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	server.AddRoutes(
 		[]rest.Route{
 			{
+				// 查询goroutines运行数量
+				Method:  http.MethodGet,
+				Path:    "/stat/goroutines",
+				Handler: trace.QueryGoroutinesHandler(serverCtx),
+			},
+			{
 				// 查询画布运行记录列表
 				Method:  http.MethodPost,
 				Path:    "/trace/canvas/query",

@@ -2,8 +2,8 @@ package broadcast
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/redis/go-redis/v9"
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -28,7 +28,7 @@ func NewApiLoadSync() *ApiLoadSync {
 }
 
 func (a *ApiLoadSync) Publish(ctx context.Context, payload interface{}) error {
-	payloadBytes, err := json.Marshal(payload)
+	payloadBytes, err := sonic.Marshal(payload)
 	if err != nil {
 		logx.Errorf("[ApiLoadSync] marshal payload failed: %v", err)
 		return err
@@ -62,7 +62,7 @@ func (a *ApiLoadSync) Handler(ctx context.Context, msg *redis.Message) {
 	logx.Infof("[ApiLoadSync] receive message, payload: %s", msg.Payload)
 	// 读取 msg 消息
 	var syncMsg ApiLoadSyncMsg
-	err := json.Unmarshal([]byte(msg.Payload), &syncMsg)
+	err := sonic.Unmarshal([]byte(msg.Payload), &syncMsg)
 	if err != nil {
 		logx.Errorf("[ApiLoadSync] unmarshal message failed: %v, payload: %s", err, msg.Payload)
 		return

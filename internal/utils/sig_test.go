@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -9,6 +8,8 @@ import (
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/bytedance/sonic"
 )
 
 func TestDESEncrypt(t *testing.T) {
@@ -26,7 +27,7 @@ func TestDESEncrypt(t *testing.T) {
 	}
 	fmt.Println("---- Request Parameters ----")
 	// 打印 map 内容以便调试 (类似 Java 的 JSONUtil.toJsonStr(multiValueMap))
-	mapBytes, _ := json.MarshalIndent(condition, "", "  ")
+	mapBytes, _ := sonic.MarshalIndent(condition, "", "  ")
 	fmt.Println(string(mapBytes))
 	fmt.Println("----")
 
@@ -138,7 +139,7 @@ func dataEncapsulation(name, idCard, startDate, endDate string) (map[string]inte
 	}
 
 	// 将整个 payload 结构体序列化为 JSON 字符串
-	payloadBytes, err := json.Marshal(payload)
+	payloadBytes, err := sonic.Marshal(payload)
 	if err != nil {
 		return nil, fmt.Errorf("failed to marshal JSON payload: %w", err)
 	}

@@ -1,9 +1,10 @@
 package components
 
 import (
-	"encoding/json"
 	"testing"
 	"time"
+
+	"github.com/bytedance/sonic"
 )
 
 func TestNewGojaJsEngine(t *testing.T) {
@@ -43,7 +44,7 @@ func TestNewGojaJsEngine(t *testing.T) {
 	}
 	t.Logf("执行成功，准备序列化结果...")
 
-	marshal, err := json.Marshal(result)
+	marshal, err := sonic.Marshal(result)
 	if err != nil {
 		t.Fatal("序列化结果失败:", err)
 	}

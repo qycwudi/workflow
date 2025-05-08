@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strconv"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
@@ -169,7 +170,7 @@ func ProcessNodeOutput(data map[string]any, outputs []Output) (map[string]any, e
 			// 如果输入中没有对应的数据，使用默认值或零值代替
 			if output.Type[0] == "object" {
 				r := make(map[string]any)
-				err := json.Unmarshal([]byte(output.DeftValue.(string)), &r)
+				err := sonic.Unmarshal([]byte(output.DeftValue.(string)), &r)
 				if err != nil {
 					logx.Errorf("[输出处理] 处理对象类输出失败 [字段:%s] [错误:%v]", output.Name, err)
 					result[output.Name] = r // 保持原有行为，即使解析失败也返回解析后的结果

@@ -8,6 +8,7 @@ import (
 	"slices"
 	"sync"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/core"
@@ -57,7 +58,7 @@ var branchComponentPool = sync.Pool{
 
 func NewBranchComponent(config json.RawMessage) (*BranchComponent, error) {
 	var branchConfig BranchConfig
-	if err := json.Unmarshal(config, &branchConfig); err != nil {
+	if err := sonic.Unmarshal(config, &branchConfig); err != nil {
 		return nil, errors.New("解析分支组件配置失败: " + err.Error())
 	}
 	c := branchComponentPool.Get().(*BranchComponent)

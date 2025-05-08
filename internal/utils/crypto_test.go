@@ -5,10 +5,11 @@ import (
 	"crypto/cipher"
 	"crypto/des"
 	"encoding/base64"
-	"encoding/json"
 	"fmt"
 	"log"
 	"testing"
+
+	"github.com/bytedance/sonic"
 )
 
 func TestMd5(t *testing.T) {
@@ -104,7 +105,7 @@ func TestAesEncrypt2(t *testing.T) {
 			"name":      "李欣瑞",
 		},
 	}
-	js, _ := json.Marshal(req)
+	js, _ := sonic.Marshal(req)
 	encrypt := FyyAesEncrypt(string(js), key)
 	fmt.Println(encrypt)
 	// hAzC8jMn2ehi50dlKhroeqtxTbGFJqkCukNIcLX62FVc/bcj44RAhUUJKMhT1RoExgZZO9rs1M45DmoWkr3nXQ==

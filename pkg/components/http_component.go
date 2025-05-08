@@ -12,6 +12,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/valyala/fasthttp"
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -37,7 +38,7 @@ type HTTPConfig struct {
 
 func NewHTTPComponent(config json.RawMessage) (*HTTPComponent, error) {
 	c := HTTPConfig{}
-	if err := json.Unmarshal(config, &c); err != nil {
+	if err := sonic.Unmarshal(config, &c); err != nil {
 		return nil, errors.New("解析HTTP配置失败: " + err.Error())
 	}
 	if c.Timeout == 0 {
@@ -217,13 +218,13 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 		logx.Field("方法", c.config.Method),
 		logx.Field("状态码", statusCode))
 	var result map[string]interface{}
-	if err := json.Unmarshal(body, &result); err != nil {
+	if err := sonic.Unmarshal(body, &result); err != nil {
 		return &core.Result{
 			Route:  []string{Failed},
 			Output: nil,
 		}, err
 	}
-	jsonHeaders, _ := json.Marshal(headers)
+	jsonHeaders, _ := sonic.Marshal(headers)
 	r := map[string]any{
 		"body":       string(body),
 		"statusCode": statusCode,
@@ -296,7 +297,7 @@ func (h *HttpClient) DoRequest(opts RequestOptions) (int, []byte, error) {
 		var bodyBytes []byte
 		var err error
 		if opts.IsJSON {
-			bodyBytes, err = json.Marshal(opts.Body)
+			bodyBytes, err = sonic.Marshal(opts.Body)
 			if err != nil {
 				return 0, nil, err
 			}

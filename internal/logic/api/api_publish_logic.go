@@ -2,11 +2,11 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 	errors2 "errors"
 	"fmt"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/rs/xid"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
@@ -66,7 +66,7 @@ func (l *ApiPublishLogic) ApiPublish(req *types.ApiPublishRequest) (resp *types.
 		return nil, errors.New(int(logic.SystemStoreError), "查询API失败")
 	}
 	var apiId string
-	tagJson, err := json.Marshal(req.Tag)
+	tagJson, err := sonic.Marshal(req.Tag)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "标签转换失败")
 	}

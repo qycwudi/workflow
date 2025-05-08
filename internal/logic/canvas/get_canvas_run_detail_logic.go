@@ -2,8 +2,8 @@ package canvas
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -46,11 +46,11 @@ func (l *GetCanvasRunDetailLogic) GetCanvasRunDetail(req *types.GetCanvasRunDeta
 	for _, trace := range traces {
 		// 将字符串转换为map
 		var input, output map[string]interface{}
-		if err := json.Unmarshal([]byte(trace.Input), &input); err != nil {
+		if err := sonic.Unmarshal([]byte(trace.Input), &input); err != nil {
 			l.Errorf("parse input json err:%v", err)
 			input = make(map[string]interface{})
 		}
-		if err := json.Unmarshal([]byte(trace.Output), &output); err != nil {
+		if err := sonic.Unmarshal([]byte(trace.Output), &output); err != nil {
 			l.Errorf("parse output json err:%v", err)
 			output = make(map[string]interface{})
 		}

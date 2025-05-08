@@ -1,10 +1,10 @@
 package openapi
 
 import (
-	"encoding/json"
 	"io"
 	"net/http"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/rest/httpx"
 
 	"workflow/internal/logic/openapi"
@@ -28,7 +28,7 @@ func OpenApiCallTraceHandler(svcCtx *svc.ServiceContext) http.HandlerFunc {
 			httpx.Error(w, err)
 			return
 		}
-		err = json.Unmarshal(body, &param)
+		err = sonic.Unmarshal(body, &param)
 		if err != nil {
 			httpx.Error(w, err)
 			return

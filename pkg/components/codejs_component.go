@@ -10,6 +10,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/dop251/goja"
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -34,7 +35,7 @@ type CodejsConfig struct {
 func NewCodejsComponent(config json.RawMessage) (*CodejsComponent, error) {
 	c := codejsComponentPool.Get().(*CodejsComponent)
 	var codejsConfig CodejsConfig
-	if err := json.Unmarshal(config, &codejsConfig); err != nil {
+	if err := sonic.Unmarshal(config, &codejsConfig); err != nil {
 		return nil, errors.New("解析代码执行组件配置失败: " + err.Error())
 	}
 	logx.Debugf("[代码执行] 配置内容: %s", codejsConfig.Code)

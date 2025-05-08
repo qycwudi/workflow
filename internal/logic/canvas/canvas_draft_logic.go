@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/rulego/rulego/utils/json"
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/utils"
 	"github.com/zeromicro/x/errors"
@@ -32,7 +32,7 @@ func NewCanvasDraftLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Canva
 }
 
 func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *types.CanvasDraftResponse, err error) {
-	draftMarshal, _ := json.Marshal(req.Graph)
+	draftMarshal, _ := sonic.Marshal(req.Graph)
 	userId, _ := util.GetUserId(l.ctx)
 	userIdStr := strconv.FormatInt(userId, 10)
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)

@@ -1,9 +1,9 @@
 package job
 
 import (
-	"encoding/json"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -26,7 +26,7 @@ func (c *ChainJob) Run() {
 		JobId:    c.JobId,
 		CanvasId: c.CanvasId,
 	}
-	jsonBytes, _ := json.Marshal(params)
+	jsonBytes, _ := sonic.Marshal(params)
 
 	info, err := asynq2.AsynqClient.Enqueue(asynq.NewTask(processor.TOPIC_CHAIN_JOB, jsonBytes, asynq.MaxRetry(4), asynq.Timeout(6*time.Hour)), asynq.Retention(24*time.Hour))
 	if err != nil {

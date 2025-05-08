@@ -2,10 +2,11 @@ package components
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 
 	"workflow/pkg/core"
+
+	"github.com/bytedance/sonic"
 )
 
 const (
@@ -38,7 +39,7 @@ type Component interface {
 
 // ComponentFactory 组件工厂
 func ComponentFactory(e core.WorkflowEngine, nodeType string, nodeConfig *core.NodeDefinition) (Component, error) {
-	jsonConfig, err := json.Marshal(nodeConfig.Config)
+	jsonConfig, err := sonic.Marshal(nodeConfig.Config)
 	if err != nil {
 		return nil, errors.New("component configuration serialization failed: " + err.Error())
 	}

@@ -2,8 +2,8 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -34,7 +34,7 @@ func (l *ApiListLogic) ApiList(req *types.ApiPublishListRequest) (resp *types.Ap
 	lists := make([]types.ApiPublishList, len(pagin.List))
 	for i, api := range pagin.List {
 		var tag []string
-		err := json.Unmarshal([]byte(api.Tag), &tag)
+		err := sonic.Unmarshal([]byte(api.Tag), &tag)
 		if err != nil {
 			return nil, errors.New(int(logic.SystemError), "标签转换失败")
 		}

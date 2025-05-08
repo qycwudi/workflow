@@ -2,8 +2,8 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -47,7 +47,7 @@ func (l *ApiEditLogic) ApiEdit(req *types.ApiEditRequest) (resp *types.ApiEditRe
 	// 更新api
 	api.ApiName = req.ApiName
 	api.ApiDesc = req.ApiDesc
-	tagJson, err := json.Marshal(req.Tag)
+	tagJson, err := sonic.Marshal(req.Tag)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "tag转换失败")
 	}

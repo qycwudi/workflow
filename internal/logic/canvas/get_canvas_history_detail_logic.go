@@ -3,7 +3,7 @@ package canvas
 import (
 	"context"
 
-	"github.com/rulego/rulego/utils/json"
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -34,7 +34,7 @@ func (l *GetCanvasHistoryDetailLogic) GetCanvasHistoryDetail(req *types.GetCanva
 
 	// 转map
 	graph := make(map[string]interface{})
-	err = json.Unmarshal([]byte(canvasHistory.Draft), &graph)
+	err = sonic.Unmarshal([]byte(canvasHistory.Draft), &graph)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布历史版本失败")
 	}

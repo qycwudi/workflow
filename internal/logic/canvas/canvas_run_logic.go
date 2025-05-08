@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/rulego/rulego/utils/json"
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/trace"
 	"github.com/zeromicro/x/errors"
@@ -98,12 +98,12 @@ func run(ctx context.Context, svcCtx *svc.ServiceContext, traceId, workspaceId s
 		return
 	}
 
-	other, _ := json.Marshal(result.Output)
+	other, _ := sonic.Marshal(result.Output)
 	record.Other = string(other)
 	status := enum.RecordStatusSuccess
 	if result.Error != "" {
 		status = enum.RecordStatusFail
-		other, _ = json.Marshal(map[string]string{
+		other, _ = sonic.Marshal(map[string]string{
 			"error": result.Error,
 		})
 	}

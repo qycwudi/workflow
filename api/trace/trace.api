@@ -44,6 +44,13 @@ type CanvasRecord {
 	Data      interface{} `json:"data"`      // 数据
 }
 
+type QueryGoroutinesRequest {
+}
+
+type QueryGoroutinesResponse {
+	Count int64 `json:"count"` // 运行数量
+}
+
 @server (
 	group: trace
 	prefix: /workflow
@@ -59,4 +66,8 @@ service workflow-api {
 	@doc "查询画布运行记录列表"
 	@handler QueryCanvasRecordsHandler
 	post /trace/canvas/query (QueryCanvasRecordsRequest) returns (QueryCanvasRecordsResponse)
+
+	@doc "查询goroutines运行数量"
+	@handler QueryGoroutinesHandler
+	get /stat/goroutines (QueryGoroutinesRequest) returns (QueryGoroutinesResponse)
 }

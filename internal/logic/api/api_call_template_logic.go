@@ -2,8 +2,8 @@ package api
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
@@ -55,7 +55,7 @@ func (l *ApiCallTemplateLogic) ApiCallTemplate(req *types.ApiCallTemplateRequest
 	} else {
 		header["Authorization"] = "Bearer " + secret[0].SecretKey
 	}
-	headerJson, err := json.Marshal(header)
+	headerJson, err := sonic.Marshal(header)
 	if err != nil {
 		return nil, err
 	}
@@ -76,7 +76,7 @@ func (l *ApiCallTemplateLogic) readData(result gjson.Result) (string, error) {
 		if node.Get("data.type").String() == "start" {
 			param := node.Get("data.custom.param").String()
 			var data interface{}
-			if err := json.Unmarshal([]byte(param), &data); err == nil {
+			if err := sonic.Unmarshal([]byte(param), &data); err == nil {
 				return param, nil
 			}
 			return "", errors.New(int(logic.SystemError), "输入不是 JSON 格式")

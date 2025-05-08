@@ -3,7 +3,7 @@ package canvas
 import (
 	"context"
 
-	"github.com/rulego/rulego/utils/json"
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -39,7 +39,7 @@ func (l *CanvasDetailLogic) CanvasDetail(req *types.CanvasDetailRequest) (resp *
 		return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
 	}
 	draft := map[string]interface{}{}
-	err = json.Unmarshal([]byte(canvas.Draft), &draft)
+	err = sonic.Unmarshal([]byte(canvas.Draft), &draft)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "😡序列化画布草案失败")
 	}

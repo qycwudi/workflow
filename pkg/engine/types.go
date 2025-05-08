@@ -42,7 +42,6 @@ type ExecutionTask struct {
 	Executor   *Executor
 	WorkflowID string
 	SerialID   string
-	Sw         *sync.WaitGroup
 	Step       int64
 }
 
@@ -65,8 +64,8 @@ type WorkflowNode struct {
 // DefaultConfig 返回默认配置
 func DefaultConfig() *EngineConfig {
 	return &EngineConfig{
-		InitialPoolSize:        10,
-		MaxPoolSize:            100,
+		InitialPoolSize:        100,
+		MaxPoolSize:            10000,
 		ExecutionTimeout:       5 * time.Minute,
 		CleanupInterval:        1 * time.Minute,
 		DefaultContextTTL:      24 * time.Hour,

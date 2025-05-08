@@ -2,8 +2,8 @@ package workspace
 
 import (
 	"context"
-	"encoding/json"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/x/errors"
 
@@ -32,7 +32,7 @@ func (l *WorkSpaceEnvListLogic) WorkSpaceEnvList(req *types.WorkSpaceEnvListRequ
 		return nil, errors.New(int(logic.SystemOrmError), "查询环境变量失败")
 	}
 	env := make(map[string]string)
-	err = json.Unmarshal([]byte(workspace.Configuration), &env)
+	err = sonic.Unmarshal([]byte(workspace.Configuration), &env)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "解析环境变量失败")
 	}

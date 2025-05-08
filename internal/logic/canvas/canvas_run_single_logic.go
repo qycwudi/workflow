@@ -4,7 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/rulego/rulego/utils/json"
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/trace"
 	"github.com/zeromicro/x/errors"
@@ -79,7 +79,7 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 	} else {
 		spaceRecord.Status = enum.RecordStatusSuccess
 	}
-	other, _ := json.Marshal(result.Output)
+	other, _ := sonic.Marshal(result.Output)
 	spaceRecord.Other = string(other)
 	spaceRecord.Duration = time.Since(spaceRecord.RunTime).Milliseconds()
 	err = l.svcCtx.SpaceRecordModel.Update(l.ctx, &spaceRecord)

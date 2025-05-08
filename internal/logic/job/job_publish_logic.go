@@ -2,12 +2,12 @@ package job
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"strconv"
 	"strings"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/rs/xid"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
@@ -79,11 +79,11 @@ func (l *JobPublishLogic) JobPublish(req *types.JobPublishRequest) (resp *types.
 	}
 	var jobId string
 	jobParam := make(map[string]any)
-	err = json.Unmarshal([]byte(req.JobParam), &jobParam)
+	err = sonic.Unmarshal([]byte(req.JobParam), &jobParam)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "解析 Job 参数失败")
 	}
-	jobParamJson, err := json.Marshal(jobParam)
+	jobParamJson, err := sonic.Marshal(jobParam)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemError), "序列化 Job 参数失败")
 	}
