@@ -1,4 +1,4 @@
-FROM 10.12.0.78:5000/cosmos/ci:golang-1.24 AS builder
+FROM golang:1.24.3 AS builder
 # docker build --platform linux/amd64 -t workflow:b4 .
 # docker login --username=qiangyuecheng registry.cn-hangzhou.aliyuncs.com
 # Qycssg00
@@ -25,7 +25,7 @@ COPY ./etc /app/etc
 RUN GOARCH=amd64 GOOS=linux go build -ldflags="-s -w" -o /app/workflow workflow.go
 
 
-FROM alpine
+FROM alpine:3.21
 
 COPY --from=builder /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/ca-certificates.crt
 COPY --from=builder /usr/share/zoneinfo/Asia/Shanghai /usr/share/zoneinfo/Asia/Shanghai
