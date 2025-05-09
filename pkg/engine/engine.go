@@ -9,6 +9,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/components"
@@ -549,6 +550,7 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 	}
 
 	logx.Infow("[引擎] 节点执行完成",
+		logx.Field("traceId", ctx.TraceId),
 		logx.Field("节点ID", nodeID),
 		logx.Field("输出", output))
 	return result, nil
@@ -628,9 +630,11 @@ func (e *WorkflowEngine) updateWorkflowState(ctx *core.ExecutionContext, err err
 	completed := len(ctx.State.Result)
 	total := int(ctx.TotalNodes)
 	ctx.State.Progress = float64(completed) / float64(total)
-	logx.Infow("[引擎] 工作流执行完成",
+	resjson, _ := sonic.Marshal(ctx.State.Result)
+	logx.Infow("[引擎] 阶段执行结果",
+		logx.Field("traceId", ctx.TraceId),
 		logx.Field("工作流ID", ctx.WorkspaceId),
-		logx.Field("输出", ctx.State.Result))
+		logx.Field("输出", string(resjson)))
 	return nil
 }
 
