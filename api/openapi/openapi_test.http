@@ -31,23 +31,36 @@ User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
 {
-	"name": "d0e55okbo07o47nu5u4g",
-	"auth": "Bearer ecab0d05783949c8a3169df8ab085a9c",
-	"age": 18,
-	"age1": 18,
-	"info": {
-		"city": "hangzhou",
-		"country": "china",
-		"height": 198.47208138305618,
-		"weight": 47.998878461020226,
-		"phone": 17635800128,
-		"email": ["zhangsan@example.com", "lisi@example.com"],
-		"like": {
-			"food": ["apple", "banana"],
-			"sport": ["basketball", "football"]
-		}
-	},
-	"address": ["beijing", "shanghai","hangzhou"],
-	"mritalStatus":false,
-	"sight":1.0
-}
+      "sight": 1.5043734482416542,
+      "name": "test_3pso1",
+      "auth": "Bearer ecab0d05783949c8a3169df8ab085a9c",
+      "age": 54,
+      "age1": 26,
+      "info": {
+        "like": {
+          "food": [
+            "grape",
+            "apple"
+          ],
+          "sport": [
+            "basketball",
+            "football"
+          ]
+        },
+        "city": "guangzhou",
+        "country": "usa",
+        "height": 178.49836871716647,
+        "weight": 68.68772453113598,
+        "phone": 17683012359,
+        "email": [
+          "userkep7j@example.com",
+          "user9eg0l7@example.com"
+        ]
+      },
+      "address": [
+        "shenzhen",
+        "beijing",
+        "hangzhou"
+      ],
+      "mritalStatus": false
+    }

@@ -64,7 +64,7 @@ func Run(ctx context.Context, serialId, workspaceId string, data map[string]any)
 	}()
 	// 执行工作流
 	if err := eg.ExecuteWorkflow(ctx, workspaceId, serialId, data); err != nil {
-		logx.Errorw("[工作流] 工作流执行失败", logx.Field("错误", err))
+		logx.Errorw("[工作流] 工作流执行失败", logx.Field("traceId", serialId), logx.Field("错误", err))
 		return serialId, core.NodeResult{}, err
 	}
 

@@ -283,7 +283,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 	for i, node := range phase.Nodes {
 		err := e.handleNodeExecution(execCtx, phaseIdx*1000+i, executor, node)
 		if err != nil {
-			logx.Errorw("[工作流] 执行节点失败", logx.Field("error", err.Error()))
+			logx.Errorw("[工作流] 执行节点失败", logx.Field("节点ID", node.ID), logx.Field("节点名称", node.Name), logx.Field("节点类型", node.Type), logx.Field("traceId", execCtx.TraceId), logx.Field("error", err.Error()))
 			return err
 		}
 	}
