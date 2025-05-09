@@ -233,6 +233,8 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 			Output: nil,
 		}, err
 	}
+	logx.Debugw("[HTTP组件] 请求结果",
+		logx.Field("结果", string(body)))
 	jsonHeaders, _ := sonic.Marshal(headers)
 	r := map[string]any{
 		"body":       string(body),
