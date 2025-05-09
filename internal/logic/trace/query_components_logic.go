@@ -9,6 +9,7 @@ import (
 
 	"workflow/internal/enum"
 	"workflow/internal/logic"
+	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
 	"workflow/internal/utils"
@@ -46,6 +47,9 @@ func (l *QueryComponentsLogic) QueryComponents(req *types.QueryComponentsRequest
 
 	// 查询组件运行结果
 	traces, err := l.svcCtx.TraceModel.FindByTraceId(l.ctx, req.SerialId)
+	if err == model.ErrNotFound {
+		return resp, errors.New(int(logic.SystemOrmError), "没有找到组件运行结果")
+	}
 	if err != nil {
 		l.Errorf("query components trace err:%+v", err)
 		return resp, errors.New(int(logic.SystemOrmError), "查询组件运行结果失败")

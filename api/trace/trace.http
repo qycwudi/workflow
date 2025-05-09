@@ -17,5 +17,14 @@ Content-Type: application/json
   	"serialId": "trace-f605375862a6ea83ce1e05ec95a3679c"
 }
 
+### 查询组件运行结果
+POST http://10.99.100.49:8888/workflow/trace/components/query
+Content-Type: application/json
+
+{
+	"id": "d03l4kl3sjtgm7gc9su0",
+  	"serialId": "trace-f605375862a6ea83ce1e05ec95a3679c"
+}
+
 ### 查询goroutines运行数量
 GET http://127.0.0.1:8888/workflow/stat/goroutines
