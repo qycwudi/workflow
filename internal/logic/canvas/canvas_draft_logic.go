@@ -53,6 +53,11 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 					logx.Field("错误", err))
 				return nil, errors.New(int(logic.SystemOrmError), "新增画布草案失败")
 			}
+			resp = &types.CanvasDraftResponse{
+				Hash:       utils.NewUuid(),
+				UpdateTime: time.Now().UnixMilli(),
+			}
+			return resp, nil
 		} else {
 			logx.Errorw("[画布] 查询画布草案失败",
 				logx.Field("工作空间ID", req.Id),

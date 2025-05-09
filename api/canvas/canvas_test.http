@@ -44,7 +44,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlh
 POST http://10.99.100.49:8888/workflow/canvas/run
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlhdCI6MTc0NjYxNzU5OSwidXNlcklkIjoxfQ.X5PfWSKfFBBjp962bnN1ekz_pwlor7TVZF094RUMbXM
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4NjMyNjAsImlhdCI6MTc0Njc3Njg2MCwidXNlcklkIjoxfQ.XjWnaffA3RBWtFvw3Qt5HdW0V_L0Ov123YpVj4tjHJ0
 
 {
   "id": "d03l4kl3sjtgm7gc9su0",
@@ -119,13 +119,13 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlh
 POST http://10.99.100.49:8888/workflow/canvas/draft
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlhdCI6MTc0NjYxNzU5OSwidXNlcklkIjoxfQ.X5PfWSKfFBBjp962bnN1ekz_pwlor7TVZF094RUMbXM
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4NjMyNjAsImlhdCI6MTc0Njc3Njg2MCwidXNlcklkIjoxfQ.XjWnaffA3RBWtFvw3Qt5HdW0V_L0Ov123YpVj4tjHJ0
 
 {
-    "id": "d03l4kl3sjtgm7gc9su1",
+    "id": "d03l4kl3sjtgm7gc9su4",
 
     "graph": {
-    "id": "d03l4kl3sjtgm7gc9su1",
+    "id": "d03l4kl3sjtgm7gc9su2",
     "name": "Sample Workflow",
     "description": "This is a sample workflow definition",
     "version": "1.0.0",
@@ -338,98 +338,6 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlh
                 }
             ]
         },
-        "http-node-2": {
-            "id": "http-node-2",
-            "name": "HTTP Node",
-            "type": "http",
-            "inputs": [],
-            "config": {
-                "url": "http://10.99.169.49:8889/api/role/v1/cvpnt0hnhrgu82dh8iqg",
-                "method": "POST",
-                "timeout": 30,
-                "retries": 3,
-                "headers": [
-                    {
-                        "name": "Content-Type",
-                        "type": ["string"],
-                        "value": {
-                            "content": {
-                                "name": "Content-Type",
-                                "value": "application/json"
-                            },
-                            "type": "fix"
-                        }
-                    },
-                    {
-                        "name": "Auth",
-                        "type": ["string"],
-                        "value": {
-                            "content": {
-                                "name": "Auth",
-                                "value": "Bearer 123"
-                            },
-                            "type": "fix"
-                        }
-                    }
-                ],
-                "params": [],
-                "body": [
-                    {
-                        "name": "name",
-                        "type": ["string"],
-                        "value": {
-                            "content": {
-                                "name": "name",
-                                "value": "",
-                                "blockId": "start-node-1"
-                            },
-                            "type": "ref"
-                        }   
-                    },
-                    {
-                        "name": "age",
-                        "type": ["integer"],
-                        "value": {
-                            "content": {
-                                "name": "age",
-                                "value": "",
-                                "blockId": "start-node-1"
-                            },
-                            "type": "ref"
-                        }
-                    },
-                    {
-                        "name": "info",
-                        "type": ["object"],
-                        "value": {
-                            "content": {
-                                "name": "info",
-                                "value": "",
-                                "blockId": "start-node-1"
-                            },
-                            "type": "ref"
-                        }
-                    }
-                ]
-            },
-            "outputs": [
-                {
-                    "name": "body",
-                    "type": ["string"],
-                    "desc": "响应体"
-                },
-                {
-                    "name": "statusCode",
-                    "type": ["integer"],
-                    "desc": "状态码"
-                },
-                {
-                    "name": "headers",
-                    "type": ["string"],
-                    "desc": "响应头"
-                }
-            ]
-        },
         "codejs-node-1": {
             "id": "codejs-node-1",
             "name": "Codejs Node",
@@ -452,7 +360,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlh
                     "type": ["string"],
                     "value": {
                         "content": {
-                            "blockId": "http-node-2",
+                            "blockId": "http-node-1",
                             "name": "body",
                             "value": ""
                         },
@@ -575,7 +483,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlh
                     "type": ["string"],
                     "value": {
                         "content": {
-                            "blockId": "http-node-2",
+                            "blockId": "http-node-1",
                             "name": "body",
                             "value": ""
                         },
@@ -592,28 +500,8 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3MDM5OTksImlh
             "condition": "success"
         },
         {
-            "from": "start-node-1",
-            "to": "http-node-2",
-            "condition": "success"
-        },
-        {
             "from": "http-node-1",
             "to": "codejs-node-1",
-            "condition": "success"
-        },
-        {
-            "from": "http-node-2",
-            "to": "codejs-node-1",
-            "condition": "success"
-        },
-        {
-            "from": "http-node-1",
-            "to": "end-node-1",
-            "condition": "success"
-        },
-        {
-            "from": "http-node-2",
-            "to": "end-node-1",
             "condition": "success"
         },
         {

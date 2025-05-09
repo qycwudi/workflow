@@ -548,11 +548,17 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 			ctx.WorkspaceId, ctx.TraceId, node.ID, err)
 		return nil, err
 	}
+	outputJson, err := sonic.Marshal(output)
+	if err != nil {
+		logx.Errorf("[工作流状态] 输出结果序列化失败 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [错误:%v]",
+			ctx.WorkspaceId, ctx.TraceId, node.ID, err)
+		return nil, err
+	}
 
 	logx.Infow("[引擎] 节点执行完成",
 		logx.Field("traceId", ctx.TraceId),
 		logx.Field("节点ID", nodeID),
-		logx.Field("输出", output))
+		logx.Field("输出", string(outputJson)))
 	return result, nil
 }
 
