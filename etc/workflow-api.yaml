@@ -1,7 +1,6 @@
 Name: workflow
 Host: 0.0.0.0
 Port: 8888
-MaxConns: 100000
 ApiPort: 8889
 Timeout: 50000
 RuleServerLimitSize: 1

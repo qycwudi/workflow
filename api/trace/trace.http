@@ -3,7 +3,7 @@ POST http://127.0.0.1:8888/workflow/trace/canvas/query
 Content-Type: application/json
 
 {
-	"id": "d03l4kl3sjtgm7gc9su1",
+	"id": "d03l4kl3sjtgm7gc9su0",
 	"current": 1,
 	"pageSize": 10
 }
@@ -14,7 +14,7 @@ Content-Type: application/json
 
 {
 	"id": "d03l4kl3sjtgm7gc9su0",
-  	"serialId": "trace-f605375862a6ea83ce1e05ec95a3679c"
+  	"serialId": "trace-85a3d0549afd1fc4233bd7eba451fd51"
 }
 
 ### 查询组件运行结果

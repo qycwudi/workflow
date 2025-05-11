@@ -2,6 +2,7 @@ package canvas
 
 import (
 	"context"
+	"fmt"
 	"time"
 
 	"github.com/bytedance/sonic"
@@ -78,15 +79,18 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 }
 
 func run(ctx context.Context, svcCtx *svc.ServiceContext, traceId, workspaceId string, data map[string]any) {
+	var executeErr error
 	// 运行文件
 	_, result, err := workflow.Run(ctx, traceId, workspaceId, data)
 	if err != nil {
+		executeErr = fmt.Errorf("[画布] 执行工作流失败 [工作空间ID:%s] [序列ID:%s] [错误:%v]", workspaceId, traceId, err)
 		logx.Errorw("[画布] 执行工作流失败",
 			logx.Field("工作空间ID", workspaceId),
 			logx.Field("序列ID", traceId),
 			logx.Field("错误", err))
+	} else {
+		logx.Infow("Run the task flow successfully", logx.Field("result", result))
 	}
-	logx.Infow("Run the task flow successfully", logx.Field("result", result))
 	record, _ := svcCtx.SpaceRecordModel.FindOneBySerialNumber(ctx, traceId)
 	other, _ := sonic.Marshal(result.Output)
 	record.Other = string(other)
@@ -96,6 +100,14 @@ func run(ctx context.Context, svcCtx *svc.ServiceContext, traceId, workspaceId s
 		other, _ = sonic.Marshal(map[string]string{
 			"error": result.Error,
 		})
+		record.Other = string(other)
+	}
+	if executeErr != nil {
+		record.Status = enum.RecordStatusFail
+		other, _ = sonic.Marshal(map[string]string{
+			"error": executeErr.Error(),
+		})
+		record.Other = string(other)
 	}
 	record.Status = status
 

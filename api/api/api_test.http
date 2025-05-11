@@ -48,9 +48,9 @@ Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4NjMyNjAsImlhdCI6MTc0Njc3Njg2MCwidXNlcklkIjoxfQ.XjWnaffA3RBWtFvw3Qt5HdW0V_L0Ov123YpVj4tjHJ0
 
 {
-  "id": "d03l4kl3sjtgm7gc9su4",
+  "id": "d03l4kl3sjtgm7gc9s44",
   "tag": ["test", "test2"],
-  "apiName": "测试API-9",
+  "apiName": "测试API-44",
   "apiDesc": "这是一个测试API"
 }
 

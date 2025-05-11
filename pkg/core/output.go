@@ -151,15 +151,18 @@ func ParseOutput(data any, output Output) (any, error) {
 // ProcessNodeOutput 处理节点的所有输出
 func ProcessNodeOutput(data map[string]any, outputs []Output) (map[string]any, error) {
 	var panicErr error
+	result := make(map[string]any)
+
 	// 处理 panics
 	defer func() {
 		if r := recover(); r != nil {
 			panicErr = errors.New("ProcessNodeOutput panic: " + fmt.Sprintf("%+v", r))
 			logx.Errorf("[输出处理] 处理过程发生panic [错误:%v]", r)
+			// 清空结果，确保不会返回不完整的数据
+			result = nil
 		}
 	}()
 
-	result := make(map[string]any)
 	if len(data) == 0 {
 		return nil, nil
 	}
@@ -207,6 +210,8 @@ func ProcessNodeOutput(data map[string]any, outputs []Output) (map[string]any, e
 		result[output.Name] = parsedValue
 		logx.Debugf("[输出处理] 输出解析成功 [字段:%s] [类型:%s]", output.Name, output.Type)
 	}
+
+	// 检查是否发生了 panic
 	if panicErr != nil {
 		return nil, panicErr
 	}
