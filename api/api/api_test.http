@@ -45,12 +45,12 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4Njg0O
 POST http://10.99.100.49:8888/workflow/api/publish
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY4NjMyNjAsImlhdCI6MTc0Njc3Njg2MCwidXNlcklkIjoxfQ.XjWnaffA3RBWtFvw3Qt5HdW0V_L0Ov123YpVj4tjHJ0
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMjg1NjYsImlhdCI6MTc0NzA0MjE2NiwidXNlcklkIjoxfQ.8tN0U2q5aW-EzNuCRI5OalCPJFy-cLGUZghAzbLjWQs
 
 {
-  "id": "d03l4kl3sjtgm7gc9s44",
+  "id": "d03l4kl3sjtgm7gc9s10",
   "tag": ["test", "test2"],
-  "apiName": "测试API-44",
+  "apiName": "测试API-10",
   "apiDesc": "这是一个测试API"
 }
 
@@ -61,9 +61,9 @@ Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
 
 {
-  "id": "d03l4kl3sjtgm7gc9su4",
+  "id": "d03l4kl3sjtgm7gc9s10",
   "tag": ["tes4", "test5"],
-  "apiName": "测试API_2",
+  "apiName": "测试API_10",
   "apiDesc": "这是一个测试API_1"
 }
 

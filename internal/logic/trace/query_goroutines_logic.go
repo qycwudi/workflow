@@ -2,6 +2,7 @@ package trace
 
 import (
 	"context"
+	"os"
 
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -26,7 +27,12 @@ func NewQueryGoroutinesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Q
 
 func (l *QueryGoroutinesLogic) QueryGoroutines(req *types.QueryGoroutinesRequest) (resp *types.QueryGoroutinesResponse, err error) {
 	pool := engine.GetGlobalPool()
+	host, err := os.Hostname()
+	if err != nil {
+		host = "unknown"
+	}
 	resp = &types.QueryGoroutinesResponse{
+		Host:     host,
 		Cap:      pool.Cap(),
 		Running:  pool.Running(),
 		Free:     pool.Free(),

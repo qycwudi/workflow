@@ -806,11 +806,12 @@ type QueryGoroutinesRequest struct {
 }
 
 type QueryGoroutinesResponse struct {
-	Cap      int  `json:"cap"`      // 协程池容量
-	Running  int  `json:"running"`  // 运行中的协程数量
-	Free     int  `json:"free"`     // 空闲的协程数量
-	Waiting  int  `json:"waiting"`  // 等待的协程数量
-	IsClosed bool `json:"isClosed"` // 协程池是否关闭
+	Host     string `json:"host"`     // 主机名
+	Cap      int    `json:"cap"`      // 协程池容量
+	Running  int    `json:"running"`  // 运行中的协程数量
+	Free     int    `json:"free"`     // 空闲的协程数量
+	Waiting  int    `json:"waiting"`  // 等待的协程数量
+	IsClosed bool   `json:"isClosed"` // 协程池是否关闭
 }
 
 type Record struct {
