@@ -41,7 +41,7 @@ type CanvasRecord {
 	SerialId  string      `json:"serialId"`  // 执行流水号
 	Status    string      `json:"status"`    // 状态
 	Duration  int64       `json:"duration"`  // 运行时间
-	StartTime string       `json:"startTime"` // 开始时间
+	StartTime string      `json:"startTime"` // 开始时间
 	Data      interface{} `json:"data"`      // 数据
 }
 
@@ -49,11 +49,12 @@ type QueryGoroutinesRequest {
 }
 
 type QueryGoroutinesResponse {
-	Cap int `json:"cap"` // 协程池容量
-	Running int `json:"running"` // 运行中的协程数量
-	Free int `json:"free"` // 空闲的协程数量
-	Waiting int `json:"waiting"` // 等待的协程数量
-	IsClosed bool `json:"isClosed"` // 协程池是否关闭
+	Host     string `json:"host"`     // 主机名
+	Cap      int    `json:"cap"`      // 协程池容量
+	Running  int    `json:"running"`  // 运行中的协程数量
+	Free     int    `json:"free"`     // 空闲的协程数量
+	Waiting  int    `json:"waiting"`  // 等待的协程数量
+	IsClosed bool   `json:"isClosed"` // 协程池是否关闭
 }
 
 @server (
