@@ -501,6 +501,7 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 			TraceId:     ctx.TraceId,
 			NodeId:      nodeID,
 			NodeName:    node.Name,
+			NodeType:    node.Type,
 			Input:       input,
 			Logic:       node.Config,
 			StartTime:   startTime,

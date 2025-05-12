@@ -13,7 +13,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDUzOTY2MDAsImlh
 POST http://127.0.0.1:8888/workflow/canvas/run
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMDc5NTQsImlhdCI6MTc0NzAyMTU1NCwidXNlcklkIjoxfQ.6nu0bwsVR1cfzd7WHLxnDPUmLwuhybclnYcS85c2KU4
 
 {
   "id": "d03l4kl3sjtgm7gc9su1",

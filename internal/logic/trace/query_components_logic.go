@@ -62,6 +62,7 @@ func (l *QueryComponentsLogic) QueryComponents(req *types.QueryComponentsRequest
 			Input:     trace.Input,
 			Output:    trace.Output,
 			NodeId:    trace.NodeId,
+			NodeType:  trace.NodeType,
 			NodeName:  trace.NodeName,
 			Step:      trace.Step,
 			Error:     trace.ErrorMsg,

@@ -13,8 +13,8 @@ POST http://127.0.0.1:8888/workflow/trace/components/query
 Content-Type: application/json
 
 {
-	"id": "d03l4kl3sjtgm7gc9su0",
-  	"serialId": "trace-85a3d0549afd1fc4233bd7eba451fd51"
+	"id": "d03l4kl3sjtgm7gc9su1",
+  	"serialId": "trace-a8b93ada3cbb0ca9038d39a8301aa004"
 }
 
 ### 查询组件运行结果

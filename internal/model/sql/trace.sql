@@ -8,6 +8,7 @@ CREATE TABLE `trace` (
     `step` int(11) NOT NULL COMMENT '分步',
     `node_id` varchar(255) NOT NULL COMMENT '节点 ID',
     `node_name` varchar(255) NOT NULL COMMENT '节点名称',
+    `node_type` varchar(255) NOT NULL COMMENT '节点类型',
     `status` varchar(255) NOT NULL COMMENT '运行状态',
     `elapsed_time` int(11) NOT NULL COMMENT '运行耗时',
     `start_time` datetime NOT NULL COMMENT '执行时间',

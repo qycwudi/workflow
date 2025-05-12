@@ -14,6 +14,7 @@ type Record {
 	Input     interface{} `json:"input"`
 	Output    interface{} `json:"output"`
 	NodeId    string      `json:"nodeId"`
+	NodeType  string      `json:"nodeType"`
 	NodeName  string      `json:"nodeName"`
 	Step      int64       `json:"step"`
 	Error     string      `json:"error"`

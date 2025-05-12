@@ -31,6 +31,7 @@ type TraceRecore struct {
 	Step        int64     `db:"step"`         // 分步
 	NodeId      string    `db:"node_id"`      // 节点 ID
 	NodeName    string    `db:"node_name"`    // 节点名称
+	NodeType    string    `db:"node_type"`    // 节点类型
 	Status      string    `db:"status"`       // 运行状态
 	ElapsedTime int64     `db:"elapsed_time"` // 运行耗时
 	StartTime   time.Time `db:"start_time"`   // 执行时间
@@ -68,6 +69,7 @@ func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 		Step:        trace.Step,
 		NodeId:      trace.NodeId,
 		NodeName:    trace.NodeName,
+		NodeType:    trace.NodeType,
 		Status:      trace.Status,
 		StartTime:   trace.StartTime,
 		ElapsedTime: trace.ElapsedTime,

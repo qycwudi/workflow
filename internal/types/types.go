@@ -813,11 +813,12 @@ type Record struct {
 	Input     interface{} `json:"input"`
 	Output    interface{} `json:"output"`
 	NodeId    string      `json:"nodeId"`
+	NodeType  string      `json:"nodeType"`
 	NodeName  string      `json:"nodeName"`
 	Step      int64       `json:"step"`
 	Error     string      `json:"error"`
 	Duration  int64       `json:"duration"`
-	Status    string      `json:"status"`
+	Status    string      `json:"status"` // 枚举[pending,running,paused,completed,failed,canceled]
 	StartTime string      `json:"startTime"`
 }
 
