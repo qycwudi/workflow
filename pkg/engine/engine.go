@@ -337,6 +337,7 @@ func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseI
 			TraceId:     execCtx.TraceId,
 			NodeId:      node.ID,
 			NodeName:    node.Name,
+			NodeType:    node.Type,
 			Logic:       node.NodeDefinition.Config,
 			Input:       params,
 			Output:      output,
