@@ -3,10 +3,11 @@ package trace
 import (
 	"context"
 
+	"github.com/zeromicro/go-zero/core/logx"
+
 	"workflow/internal/svc"
 	"workflow/internal/types"
-
-	"github.com/zeromicro/go-zero/core/logx"
+	"workflow/pkg/engine"
 )
 
 type QueryGoroutinesLogic struct {
@@ -24,7 +25,13 @@ func NewQueryGoroutinesLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Q
 }
 
 func (l *QueryGoroutinesLogic) QueryGoroutines(req *types.QueryGoroutinesRequest) (resp *types.QueryGoroutinesResponse, err error) {
-	// todo: add your logic here and delete this line
-
-	return
+	pool := engine.GetGlobalPool()
+	resp = &types.QueryGoroutinesResponse{
+		Cap:      pool.Cap(),
+		Running:  pool.Running(),
+		Free:     pool.Free(),
+		Waiting:  pool.Waiting(),
+		IsClosed: pool.IsClosed(),
+	}
+	return resp, nil
 }
