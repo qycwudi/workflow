@@ -669,7 +669,6 @@ func (e *WorkflowEngine) updateWorkflowState(ctx *core.ExecutionContext, err err
 	}
 
 	for _, result := range results {
-		// fmt.Printf("更新工作流状态: %s, %+v\n", result.NodeID, result)
 		ctx.SetNodeResult(result.NodeID, result)
 	}
 
@@ -677,7 +676,15 @@ func (e *WorkflowEngine) updateWorkflowState(ctx *core.ExecutionContext, err err
 	completed := len(ctx.State.Result)
 	total := int(ctx.TotalNodes)
 	ctx.State.Progress = float64(completed) / float64(total)
-	resjson, _ := sonic.Marshal(ctx.State.Result)
+
+	// 使用安全的方法进行序列化
+	resjson, err := ctx.MarshalResult()
+	if err != nil {
+		logx.Errorf("[工作流状态] 序列化失败 [工作流ID:%s] [序列ID:%s] [错误:%v]",
+			ctx.WorkspaceId, ctx.TraceId, err)
+		return err
+	}
+
 	logx.Infow("[引擎] 阶段执行结果",
 		logx.Field("traceId", ctx.TraceId),
 		logx.Field("工作流ID", ctx.WorkspaceId),

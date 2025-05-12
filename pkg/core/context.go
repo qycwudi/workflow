@@ -6,6 +6,7 @@ import (
 	"sync"
 	"time"
 
+	"github.com/bytedance/sonic"
 	"github.com/opentracing/opentracing-go"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -203,4 +204,11 @@ func (ctx *ExecutionContext) GetNodeResult(nodeID string) (*NodeResult, bool) {
 		return nil, false
 	}
 	return state, true
+}
+
+// MarshalResult 安全地序列化State.Result
+func (ctx *ExecutionContext) MarshalResult() ([]byte, error) {
+	ctx.mu.RLock()
+	defer ctx.mu.RUnlock()
+	return sonic.Marshal(ctx.State.Result)
 }
