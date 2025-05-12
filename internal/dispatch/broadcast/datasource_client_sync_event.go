@@ -78,7 +78,7 @@ func (d *DatasourceClientSync) Handler(ctx context.Context, msg *redis.Message) 
 	skipCount := 0
 	for _, ds := range datasourceList {
 		// 跳过fileServer
-		if ds.Type == enum.FileServerType.String() {
+		if ds.Type == enum.FileServerType.String() || ds.Type == enum.ModelType.String() {
 			skipCount++
 			logx.Infof("%s skip: %d, %s", DatasourceClientSyncEvent, ds.Id, ds.Type)
 			continue

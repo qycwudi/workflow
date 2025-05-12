@@ -24,12 +24,25 @@ Content-Type: application/json
 ### 数据源-新增
 POST http://10.99.43.99:8899/workflow/datasource/add
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMDYxMDgsImlhdCI6MTc0NzAxOTcwOCwidXNlcklkIjoxfQ._mVtkHrxWG0KOMJMqFnZS0LUEB00lt2sbRTdFLliVGM
 
 {
   "switch": 1,
-  "name": "test-1",
-  "type": "mysql",
+  "name": "豆包模型",
+  "type": "model",
   "config": "{\"host\": \"10.99.43.9\", \"port\": 3306, \"user\": \"root\", \"database\": \"workflow\", \"password\": \"Root@123\"}"
+}
+
+### 数据源-新增
+POST http://127.0.0.1:8888/workflow/datasource/add
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMDYxMDgsImlhdCI6MTc0NzAxOTcwOCwidXNlcklkIjoxfQ._mVtkHrxWG0KOMJMqFnZS0LUEB00lt2sbRTdFLliVGM
+
+{
+  "switch": 1,
+  "name": "豆包模型-1",
+  "type": "model",
+  "config": "{\"model\":\"doubao-1-5-pro-32k-250115\",\"baseUrl\":\"https://ark.cn-beijing.volces.com/api/v3\",\"apiKey\":\"9567f3a1-7e2e-4fa7-a8db-5a7ee0926d79\",\"tag\":[\"125K\",\"function\",\"doubao\"],\"describe\":\"豆包大模型\"}"
 }
 
 ### 数据源-编辑

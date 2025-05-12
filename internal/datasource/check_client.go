@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
+	"time"
 
 	"github.com/bytedance/sonic"
 	"github.com/jlaffaye/ftp"
@@ -44,6 +45,8 @@ func CheckDataSourceClient(t enum.DBType, config string) error {
 		return checkDatabaseConnection(t, config)
 	case enum.FileServerType:
 		return checkFileServerConnection(config)
+	case enum.ModelType:
+		return checkModelConnection(config)
 	default:
 		return errors.New("unknown data source type")
 	}
@@ -136,6 +139,10 @@ func checkSftpConnection(config FileServerConfig) error {
 	return nil
 }
 
+func checkModelConnection(config string) error {
+	return nil
+}
+
 func GenDataSourceDSN(t enum.DBType, config string) string {
 	c := DataSourceConfig{}
 	err := sonic.Unmarshal([]byte(config), &c)
@@ -153,6 +160,8 @@ func GenDataSourceDSN(t enum.DBType, config string) string {
 		dsn = goora.BuildUrl(c.Host, c.Port, c.Database, c.User, c.Password, nil)
 	case enum.SqlServerType:
 		dsn = fmt.Sprintf("server=%s;port=%d;user id=%s;password=%s;database=%s", c.Host, c.Port, c.User, c.Password, c.Database)
+	default:
+		return time.Now().Format("20060102150405")
 	}
 
 	return dsn
