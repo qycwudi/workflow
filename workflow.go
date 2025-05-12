@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"fmt"
+	"log"
 	"net/http"
 	"os"
 	"strconv"
@@ -113,6 +114,11 @@ func main() {
 	asynq.InitAsynqClient(ctx)
 	// 初始化订阅,初始化 dcron
 	bootstrap.Initialize(ctx)
+	// 初始化 ants 池
+	if err := engine.InitGlobalPool(); err != nil {
+		log.Fatalf("Could not initialize ants pool: %v", err)
+	}
+	defer engine.ReleaseGlobalPool() // 确保应用退出时释放池资源
 	fmt.Printf("Starting server at %s:%d...\n", c.Host, c.Port)
 
 	go func() {

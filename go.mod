@@ -17,6 +17,7 @@ require (
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/libi/dcron v0.6.0
 	github.com/opentracing/opentracing-go v1.2.0
+	github.com/panjf2000/ants/v2 v2.11.3
 	github.com/pkg/sftp v1.13.7
 	github.com/redis/go-redis/v9 v9.7.3
 	github.com/rs/xid v1.6.0
@@ -100,6 +101,7 @@ require (
 	golang.org/x/arch v0.17.0 // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
+	golang.org/x/sync v0.12.0 // indirect
 	golang.org/x/sys v0.33.0 // indirect
 	golang.org/x/text v0.23.0 // indirect
 	golang.org/x/time v0.10.0 // indirect

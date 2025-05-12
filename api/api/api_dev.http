@@ -58,12 +58,12 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3NjAwMzIsImlh
 POST http://127.0.0.1:8888/workflow/api/publish
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMjY5ODEsImlhdCI6MTc0NzA0MDU4MSwidXNlcklkIjoxfQ.Nfp3S76fnKHRKF5ublsCScMyisTYmALJKJribI-wgEk
 
 {
-  "id": "d03l4kl3sjtgm7gc9su1",
+  "id": "d03l4kl3sjtgm7gc9s10",
   "tag": ["tes4", "test5"],
-  "apiName": "测试API_1",
+  "apiName": "测试API_10",
   "apiDesc": "这是一个测试API_1"
 }
 

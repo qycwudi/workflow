@@ -47,7 +47,7 @@ func InitDataSourceManager(svcCtx *svc.ServiceContext) {
 	skipCount := 0
 	for _, v := range datasource {
 		// 跳过fileServer
-		if v.Type == enum.FileServerType.String() {
+		if v.Type == enum.FileServerType.String() || v.Type == enum.ModelType.String() {
 			skipCount++
 			logx.Infof("[数据源] 跳过初始化 [ID:%d] [类型:%s]", v.Id, v.Type)
 			continue

@@ -264,9 +264,10 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext) error {
 	// 总执行计划
 	logx.Debugf("[工作流] 总执行计划: %d", len(executor.executionPlan.Phases))
+
 	for phaseIdx, phase := range executor.executionPlan.Phases {
 		if err := e.executePhase(ctx, executor, execCtx, phase, phaseIdx); err != nil {
-			return err
+			logx.Errorw("[工作流] 执行阶段失败", logx.Field("阶段索引", phaseIdx), logx.Field("错误", err.Error()))
 		}
 	}
 	return nil
@@ -279,15 +280,53 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 	defer cancel()
 
 	logx.Debugf("[工作流] 执行阶段: %d, 节点数: %d", phaseIdx, len(phase.Nodes))
+	// 获取单例协程池
+	var execWg sync.WaitGroup
+	pool := GetGlobalPool()
+
+	// 创建错误收集器
+	var errMu sync.Mutex
+	var errors []error
 
 	for i, node := range phase.Nodes {
-		err := e.handleNodeExecution(execCtx, phaseIdx*1000+i, executor, node)
+		execWg.Add(1)
+		err := pool.Submit(func() {
+			defer execWg.Done()
+			err := e.handleNodeExecution(execCtx, phaseIdx*1000+i, executor, node)
+			if err != nil {
+				logx.Errorw("[工作流] 执行节点失败",
+					logx.Field("节点ID", node.ID),
+					logx.Field("节点名称", node.Name),
+					logx.Field("节点类型", node.Type),
+					logx.Field("traceId", execCtx.TraceId),
+					logx.Field("error", err.Error()))
+
+				// 收集错误
+				errMu.Lock()
+				errors = append(errors, fmt.Errorf("节点[%s]执行失败: %w", node.ID, err))
+				errMu.Unlock()
+			}
+		})
 		if err != nil {
-			logx.Errorw("[工作流] 执行节点失败", logx.Field("节点ID", node.ID), logx.Field("节点名称", node.Name), logx.Field("节点类型", node.Type), logx.Field("traceId", execCtx.TraceId), logx.Field("error", err.Error()))
-			return err
+			logx.Errorw("[工作流] 提交节点失败",
+				logx.Field("节点ID", node.ID),
+				logx.Field("节点名称", node.Name),
+				logx.Field("节点类型", node.Type),
+				logx.Field("traceId", execCtx.TraceId),
+				logx.Field("error", err.Error()))
+
+			// 收集提交错误
+			errMu.Lock()
+			errors = append(errors, fmt.Errorf("节点[%s]提交失败: %w", node.ID, err))
+			errMu.Unlock()
 		}
 	}
+	execWg.Wait()
 
+	// 如果有错误，返回组合错误
+	if len(errors) > 0 {
+		return fmt.Errorf("阶段[%d]执行失败: %v", phaseIdx, errors)
+	}
 	return nil
 }
 
