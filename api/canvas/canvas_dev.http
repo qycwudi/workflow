@@ -785,7 +785,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMDcxNTEsImlh
                 }
             ],
             "config":{
-                "modelId":48,
+                "modelId": 51,
                 "tools":[],
                 "params":[
                     {
@@ -801,7 +801,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMDcxNTEsImlh
                         }
                     }
                 ],
-                "systemPrompt":"你是一个json工具助手，请根据用户的问题给出目标json,要求只输出 json格式的内容，不要输出任何其他内容。请确保json格式正确，且符合用户的需求。",
+                "systemPrompt":"你是一个json工具助手，请根据用户的问题给出目标json,要求只需要输出json字符串,不要输出任何其他内容,不要格式化,不要换行符",
                 "userPrompt":"请帮我mock一个用户name是{{name}}的个人信息json,2个字段左右，各种基本数据类型都有"
             }
         },

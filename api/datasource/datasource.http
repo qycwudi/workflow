@@ -36,6 +36,18 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMDYxMDgsImlh
 ### 数据源-新增
 POST http://127.0.0.1:8888/workflow/datasource/add
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMjA4NTQsImlhdCI6MTc0NzEzNDQ1NCwidXNlcklkIjoxfQ.ppcdvIX_l3bK1VDBVz_MWIpv1QHslZBDMCuXpzH86iE
+
+{
+  "switch": 1,
+  "name": "ollama-llama3.2-1",
+  "type": "model",
+  "config": "{\"model\":\"llama3.2:latest\",\"baseUrl\":\"http://10.10.0.167:11434/api/generate\",\"apiKey\":\"\",\"tag\":[\"125K\",\"function\",\"llama\"],\"describe\":\"llama 本地大模型\"}"
+}
+
+### 数据源-新增
+POST http://127.0.0.1:8888/workflow/datasource/add
+Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMDYxMDgsImlhdCI6MTc0NzAxOTcwOCwidXNlcklkIjoxfQ._mVtkHrxWG0KOMJMqFnZS0LUEB00lt2sbRTdFLliVGM
 
 {
@@ -48,12 +60,13 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMDYxMDgsImlh
 ### 数据源-编辑
 POST http://127.0.0.1:8899/workflow/datasource/edit
 Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMjA4NTQsImlhdCI6MTc0NzEzNDQ1NCwidXNlcklkIjoxfQ.ppcdvIX_l3bK1VDBVz_MWIpv1QHslZBDMCuXpzH86iE
 
 {
-  "id": 26,
-  "name": "test-1",
-  "type": "mysql",
-  "config": "{\"dsn\":\"root:root@tcp(192.168.49.2:31426)/w\"}",
+  "id": 49,
+  "name": "model-ollama-llama3.2",
+  "type": "model",
+  "config": "{\"model\":\"llama3.2:latest\",\"baseUrl\":\"http://10.10.0.167:11434/api/generate\",\"apiKey\":\"\",\"tag\":[\"125K\",\"function\",\"llama\"],\"describe\":\"llama 本地大模型\"}",
   "switch": 1
 }
 

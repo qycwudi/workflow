@@ -30,11 +30,11 @@ func TestChain_compile(t *testing.T) {
 	result, err := agent.Invoke(context, []*schema.Message{
 		{
 			Role:    "system",
-			Content: "你是一个json编辑器，请根据用户的问题给出json。",
+			Content: "你是一个json编辑器，请根据用户的问题给出json,只需要输出json字符串,不要格式化，不要换行符",
 		},
 		{
 			Role:    "user",
-			Content: "请帮我mock 一个用户信息的 json,10个字段左右，各种基本数据类型都有,只需要输出json,只需要输出json",
+			Content: "请帮我mock 一个用户信息的 json,10个字段左右，各种基本数据类型都有",
 		},
 	})
 	if err != nil {

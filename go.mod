@@ -5,6 +5,7 @@ go 1.24.0
 require (
 	github.com/bytedance/sonic v1.13.2
 	github.com/cloudwego/eino v0.3.31
+	github.com/cloudwego/eino-ext/components/model/ollama v0.0.0-20250513023651-7b19c6ffbf4a
 	github.com/cloudwego/eino-ext/components/model/openai v0.0.0-20250512035704-1e06fdfda207
 	github.com/dcron-contrib/commons v0.0.2
 	github.com/dcron-contrib/redisdriver v0.0.1
@@ -87,6 +88,7 @@ require (
 	github.com/munnerz/goautoneg v0.0.0-20191010083416-a7dc8b61c822 // indirect
 	github.com/nakabonne/tstorage v0.3.6 // indirect
 	github.com/nikolalohinski/gonja v1.5.3 // indirect
+	github.com/ollama/ollama v0.5.12 // indirect
 	github.com/openzipkin/zipkin-go v0.4.3 // indirect
 	github.com/pelletier/go-toml/v2 v2.2.2 // indirect
 	github.com/perimeterx/marshmallow v1.1.4 // indirect
@@ -125,7 +127,7 @@ require (
 	go.opentelemetry.io/proto/otlp v1.5.0 // indirect
 	go.uber.org/automaxprocs v1.6.0 // indirect
 	golang.org/x/arch v0.17.0 // indirect
-	golang.org/x/exp v0.0.0-20230713183714-613f0c0eb8a1 // indirect
+	golang.org/x/exp v0.0.0-20231110203233-9a3e6036ecaa // indirect
 	golang.org/x/mod v0.22.0 // indirect
 	golang.org/x/net v0.38.0 // indirect
 	golang.org/x/sync v0.12.0 // indirect

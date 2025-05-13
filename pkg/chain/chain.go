@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/bytedance/sonic"
+	"github.com/cloudwego/eino-ext/components/model/ollama"
 	"github.com/cloudwego/eino-ext/components/model/openai"
 	"github.com/cloudwego/eino/compose"
 	"github.com/cloudwego/eino/schema"
@@ -47,13 +48,29 @@ func (c *Chain) compile(ctx context.Context, modelCfg string) (compose.Runnable[
 	if err != nil {
 		return nil, err
 	}
-	chatModel, err := openai.NewChatModel(ctx, &openai.ChatModelConfig{
-		BaseURL: config.BaseURL,
-		APIKey:  config.APIKey,
-		Model:   config.Model,
-	})
+
 	chain := compose.NewChain[[]*schema.Message, *schema.Message]()
-	chain.AppendChatModel(chatModel, compose.WithNodeName("chat_model"))
+	if config.APIKey == "" {
+		chatModel, err := ollama.NewChatModel(ctx, &ollama.ChatModelConfig{
+			BaseURL: config.BaseURL,
+			Model:   config.Model,
+		})
+		if err != nil {
+			return nil, err
+		}
+		chain.AppendChatModel(chatModel, compose.WithNodeName("chat_model"))
+
+	} else {
+		chatModel, err := openai.NewChatModel(ctx, &openai.ChatModelConfig{
+			BaseURL: config.BaseURL,
+			APIKey:  config.APIKey,
+			Model:   config.Model,
+		})
+		if err != nil {
+			return nil, err
+		}
+		chain.AppendChatModel(chatModel, compose.WithNodeName("chat_model"))
+	}
 	agent, err := chain.Compile(ctx)
 	if err != nil {
 		logx.Errorf("compile chain failed: %s", err)
