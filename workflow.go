@@ -23,6 +23,7 @@ import (
 	"workflow/internal/handler"
 	"workflow/internal/svc"
 	"workflow/internal/workflow"
+	"workflow/pkg/chain"
 	"workflow/pkg/engine"
 )
 
@@ -103,6 +104,8 @@ func main() {
 	workflow.InitEngine(ctx)
 	// 初始化 openapi 引擎
 	workflow.InitOpenApiEngine(ctx)
+	// 初始化 chain
+	chain.InitChain(ctx.DatasourceModel)
 	// 初始化 trace
 	engine.NewTrace(ctx.TraceModel)
 	// defer workflow.Close()

@@ -48,7 +48,7 @@ Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcwMjQyMDUsImlhdCI6MTc0NjkzNzgwNSwidXNlcklkIjoxfQ.3UDBpjwnX6AVtlWDRtG4EN8MakBCROa4bZBvr_tpxv0
 
 {
-  "id": "d03l4kl3sjtgm7gc9su0",
+  "id": "d03l4kl3sjtgm7gc9ai0",
   "params":{
 	"name": "d03l4kl3sjtgm7gc9su0",
 	"auth": "Bearer ecab0d05783949c8a3169df8ab085a9c"
@@ -59,12 +59,12 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcwMjQyMDUsImlh
 POST http://127.0.0.1:8888/workflow/canvas/run
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcwMjQyMDUsImlhdCI6MTc0NjkzNzgwNSwidXNlcklkIjoxfQ.3UDBpjwnX6AVtlWDRtG4EN8MakBCROa4bZBvr_tpxv0
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMDcxNTEsImlhdCI6MTc0NzEyMDc1MSwidXNlcklkIjoxfQ.A1PdKTzlsAeqNZ6tesnNxMeuMaTIPjMEB8FhYh9-tH0
 
 {
-  "id": "d03l4kl3sjtgm7gc9su0",
+  "id": "d03l4kl3sjtgm7gc9ai0",
   "params":{
-	"name": "d03l4kl3sjtgm7gc9su0",
+	"name": "雪兔2",
 	"auth": "Bearer ecab0d05783949c8a3169df8ab085a9c",
 	"age": 18,
 	"age1": 18,
@@ -639,11 +639,220 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMjY5ODEsImlh
 }
 }
 
+
+### 画布-AI
+POST http://127.0.0.1:8888/workflow/canvas/draft
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMDcxNTEsImlhdCI6MTc0NzEyMDc1MSwidXNlcklkIjoxfQ.A1PdKTzlsAeqNZ6tesnNxMeuMaTIPjMEB8FhYh9-tH0
+
+{
+  "id": "d03l4kl3sjtgm7gc9ai0",
+  "graph": {
+    "id": "d03l4kl3sjtgm7gc9ai0",
+    "name": "Sample Workflow",
+    "description": "This is a sample workflow definition",
+    "version": "1.0.0",
+    "createTime": "2023-10-01T12:00:00Z",
+    "updateTime": "2023-10-02T14:30:00Z",
+    "nodes": {
+        "start-node-1": {
+            "id": "start-node-1",
+            "name": "Start Node",
+            "type": "start",
+            "outputs": [
+                {
+                    "name": "name",
+                    "type": ["string"],
+                    "deftValue": null,
+                    "desc": "用户名称",
+                    "schema": []
+                },
+                {
+                    "name": "age",
+                    "type": ["integer"],
+                    "deftValue": 0,
+                    "desc": "用户年龄",
+                    "schema": []
+                },
+                {
+                    "name": "info",
+                    "type": ["object"],
+                    "deftValue": {},
+                    "desc": "用户信息对象",
+                    "schema": [
+                        {
+                            "name": "city",
+                            "type": ["string"],
+                            "deftValue": "",
+                            "desc": "城市",
+                            "schema": []
+                        },
+                        {
+                            "name": "country",
+                            "type": ["string"],
+                            "deftValue": "",
+                            "desc": "国家",
+                            "schema": []
+                        },
+                        {
+                            "name": "height",
+                            "type": ["float"],
+                            "deftValue": 0.0,
+                            "desc": "身高",
+                            "schema": []
+                        },
+                        {
+                            "name": "weight",
+                            "type": ["float"],
+                            "deftValue": 0.0,
+                            "desc": "体重",
+                            "schema": []
+                        },
+                        {
+                            "name": "phone",
+                            "type": ["integer"],
+                            "deftValue": 0,
+                            "desc": "电话号码",
+                            "schema": []
+                        },
+                        {
+                            "name": "email",
+                            "type": ["array", "string"],
+                            "deftValue": [],
+                            "desc": "电子邮件列表",
+                            "schema": []
+                        },
+                        {
+                            "name": "like",
+                            "type": ["object"],
+                            "deftValue": {},
+                            "desc": "喜好信息",
+                            "schema": [
+                                {
+                                    "name": "food",
+                                    "type": ["array", "string"],
+                                    "deftValue": [],
+                                    "desc": "喜爱的食物",
+                                    "schema": []
+                                },
+                                {
+                                    "name": "sport",
+                                    "type": ["array", "string"],
+                                    "deftValue": [],
+                                    "desc": "喜爱的运动",
+                                    "schema": []
+                                }
+                            ]
+                        }
+                    ]
+                },
+                {
+                    "name": "address",
+                    "type": ["array", "string"],
+                    "deftValue": [],
+                    "desc": "地址列表",
+                    "schema": []
+                },
+                {
+                    "name": "mritalStatus",
+                    "type": ["boolean"],
+                    "deftValue": false,
+                    "desc": "婚姻状态",
+                    "schema": []
+                },
+                {
+                    "name": "sight",
+                    "type": ["float"],
+                    "deftValue": 0.0,
+                    "desc": "视力",
+                    "schema": []
+                }
+            ]
+        },
+        "model-node-1":{
+            "id": "model-node-1",
+            "name": "Model Node",
+            "type": "model",
+            "inputs":[],
+            "outputs":[
+                {
+                    "name": "data",
+                    "type": ["string"],
+                    "deftValue": "{}",
+                    "desc": "模型输出数据",
+                    "schema": []
+                }
+            ],
+            "config":{
+                "modelId":48,
+                "tools":[],
+                "params":[
+                    {
+                        "name": "name",
+                        "type": ["string"],
+                        "value": {
+                            "content": {
+                                "name": "name",
+                                "value": "",
+                                "blockId": "start-node-1"
+                            },
+                            "type": "ref"
+                        }
+                    }
+                ],
+                "systemPrompt":"你是一个json工具助手，请根据用户的问题给出目标json,要求只输出 json格式的内容，不要输出任何其他内容。请确保json格式正确，且符合用户的需求。",
+                "userPrompt":"请帮我mock一个用户name是{{name}}的个人信息json,2个字段左右，各种基本数据类型都有"
+            }
+        },
+        "end-node-1": {
+            "id": "end-node-1",
+            "name": "End Node",
+            "type": "end",
+            "inputs": [
+                {
+                    "name": "output",
+                    "type": ["string"],
+                    "value": {
+                        "content": {
+                            "blockId": "model-node-1",
+                            "name": "data"
+                        },
+                        "type": "ref"
+                    }
+                }
+            ]
+        }
+    },
+    "connections": [
+        {
+            "from": "start-node-1",
+            "to": "model-node-1",
+            "condition": "success"
+        },
+        {
+            "from": "model-node-1",
+            "to": "end-node-1",
+            "condition": "success"
+        }
+    ],
+    "config": {
+        "timeout": 30,
+        "retryPolicy": {
+            "maxAttempts": 3,
+            "interval": 5,
+            "maxInterval": 30,
+            "multiplier": 2.0
+        }
+    }
+}
+}
+
 ### 画布-草稿 http://127.0.0.1:8888/workflow/canvas/draft
 POST http://10.99.100.49:8888/workflow/canvas/draft
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY3NjAwMzIsImlhdCI6MTc0NjY3MzYzMiwidXNlcklkIjoxfQ.ijDRf3Hfl0clSfJ8Hl26oFGwMHPgHpXql14ll6Tz1sk
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMDcxNTEsImlhdCI6MTc0NzEyMDc1MSwidXNlcklkIjoxfQ.A1PdKTzlsAeqNZ6tesnNxMeuMaTIPjMEB8FhYh9-tH0
 
 {
   "id": "d03l4kl3sjtgm7gc9su0",

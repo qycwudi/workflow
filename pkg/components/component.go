@@ -25,6 +25,7 @@ const (
 	HTTP      = "http"
 	Codejs    = "codejs"
 	Branch    = "branch"
+	Model     = "model"
 	Iteration = "iteration"
 	StartItem = "start-item"
 	EndItem   = "end-item"
@@ -53,6 +54,8 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, nodeConfig *core.N
 		return NewHTTPComponent(jsonConfig)
 	case Codejs:
 		return NewCodejsComponent(jsonConfig)
+	case Model:
+		return NewModelComponent(jsonConfig)
 	case Branch:
 		return NewBranchComponent(jsonConfig)
 	case Iteration:
