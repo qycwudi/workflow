@@ -30,24 +30,24 @@ func InitOpenApiEngine(ctx *svc.ServiceContext) {
 		Register(context.Background(), api.ApiId, api.Dsl)
 		count++
 	}
-	logx.Infow("[工作流] 注册API成功", logx.Field("数量", count))
+	logx.Infof("[工作流] 注册API成功 [数量:%d]", count)
 }
 
 func Register(ctx context.Context, id string, dsl string) error {
 	var workflowDefinition core.WorkflowDef
 	err := sonic.Unmarshal([]byte(dsl), &workflowDefinition)
 	if err != nil {
-		logx.Errorw("[工作流] 解析工作流文件失败", logx.Field("错误", err))
+		logx.Errorf("[工作流] 解析工作流文件失败 [错误:%s]", err)
 		return err
 	}
 
-	logx.Debugw("[工作流] 工作流DSL", logx.Field("dsl", dsl))
+	logx.Debugf("[工作流] 工作流DSL [ID:%s] [DSL:%s]", id, dsl)
 	definitionBytes, _ := sonic.MarshalIndent(workflowDefinition, "", "  ")
-	logx.Infow("[工作流] 工作流定义", logx.Field("definition", string(definitionBytes)))
+	logx.Infof("[工作流] 工作流定义 [ID:%s] [定义:%s]", id, string(definitionBytes))
 
 	err = eg.RegisterWorkflow(ctx, id, &workflowDefinition)
 	if err != nil {
-		logx.Errorw("[工作流] 注册工作流失败", logx.Field("错误", err))
+		logx.Errorf("[工作流] 注册工作流失败 [错误:%s]", err)
 		return err
 	}
 	return nil
@@ -55,22 +55,22 @@ func Register(ctx context.Context, id string, dsl string) error {
 
 func Run(ctx context.Context, serialId, workspaceId string, data map[string]any) (string, core.NodeResult, error) {
 	defer func() {
-		logx.Infow("[工作流] 清除执行上下文", logx.Field("工作空间ID", workspaceId), logx.Field("序列ID", serialId))
+		logx.Infof("[工作流] 清除执行上下文 [工作空间ID:%s] [序列ID:%s]", workspaceId, serialId)
 		clearErr := eg.ClearExecutionContext(workspaceId, serialId)
 		if clearErr != nil {
-			logx.Errorw("[工作流] 清除执行上下文失败", logx.Field("错误", clearErr.Error()))
+			logx.Errorf("[工作流] 清除执行上下文失败 [错误:%s]", clearErr.Error())
 		}
-		logx.Infow("[工作流] 清除执行上下文成功", logx.Field("工作空间ID", workspaceId), logx.Field("序列ID", serialId))
+		logx.Infof("[工作流] 清除执行上下文成功 [工作空间ID:%s] [序列ID:%s]", workspaceId, serialId)
 	}()
 	// 执行工作流
 	if err := eg.ExecuteWorkflow(ctx, workspaceId, serialId, data); err != nil {
-		logx.Errorw("[工作流] 工作流执行失败", logx.Field("traceId", serialId), logx.Field("错误", err))
+		logx.Errorf("[工作流] 工作流执行失败 [traceId:%s] [错误:%s]", serialId, err)
 		return serialId, core.NodeResult{}, err
 	}
 
 	endResult, ok := eg.GetNodeResult(workspaceId, serialId, "end-node-1")
 	if !ok {
-		logx.Errorw("[工作流] 未找到结束节点的执行结果", logx.Field("工作空间ID", workspaceId), logx.Field("序列ID", serialId))
+		logx.Errorf("[工作流] 未找到结束节点的执行结果 [工作空间ID:%s] [序列ID:%s]", workspaceId, serialId)
 		return serialId, core.NodeResult{}, errors.New("未找到结束节点的执行结果:" + workspaceId + "," + serialId)
 	}
 	return serialId, *endResult, nil
@@ -80,7 +80,7 @@ func RunSingle(ctx context.Context, serialId, workspaceId string, nodeId string,
 	// 执行工作流
 	result, err := eg.ExecuteSingleWorkflow(ctx, workspaceId, serialId, nodeId, data)
 	if err != nil {
-		logx.Errorw("工作流执行失败", logx.Field("error", err))
+		logx.Errorf("[工作流] 工作流执行失败 [traceId:%s] [错误:%s]", serialId, err)
 		return serialId, *result, err
 	}
 
