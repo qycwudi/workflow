@@ -36,3 +36,10 @@ Job:
   - Name: DataSourceClientSync
     Enable: true
     Cron: '0 0 0/10 * * *'
+
+OpenObserveConfig:
+  OPEN_OBSERVE_ENABLE: false
+  OPEN_OBSERVE_ENDPOINT: ""
+  OPEN_OBSERVE_TOKEN: ""
+  OPEN_OBSERVE_ORGANIZATION: ""
+  OPEN_OBSERVE_HOST_NAME: ""

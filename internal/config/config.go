@@ -16,7 +16,8 @@ type Config struct {
 		AccessSecret string
 		AccessExpire int64
 	}
-	ApiUrl string `json:"ApiUrl" default:"http://127.0.0.1:8889/api/role/v1"`
+	ApiUrl            string `json:"ApiUrl" default:"http://127.0.0.1:8889/api/role/v1"`
+	OpenObserveConfig OpenObserveConfig
 }
 
 type RedisConfig struct {
@@ -29,4 +30,12 @@ type JobBase struct {
 	Name   string `json:"name"`                  // 任务名称
 	Enable bool   `json:"enable" default:"true"` // 是否启用
 	Cron   string `json:"cron"`                  // cron表达式
+}
+
+type OpenObserveConfig struct {
+	OPEN_OBSERVE_ENABLE       bool   `json:",env=OPEN_OBSERVE_ENABLE"`       // 是否启用
+	OPEN_OBSERVE_ENDPOINT     string `json:",env=OPEN_OBSERVE_ENDPOINT"`     // 端点
+	OPEN_OBSERVE_TOKEN        string `json:",env=OPEN_OBSERVE_TOKEN"`        // 令牌
+	OPEN_OBSERVE_ORGANIZATION string `json:",env=OPEN_OBSERVE_ORGANIZATION"` // 组织
+	OPEN_OBSERVE_HOST_NAME    string `json:",env=OPEN_OBSERVE_HOST_NAME"`    // 主机名
 }

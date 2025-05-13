@@ -22,7 +22,7 @@ func InitEngine(ctx *svc.ServiceContext) {
 func InitOpenApiEngine(ctx *svc.ServiceContext) {
 	apis, err := ctx.ApiModel.FindByOn(context.Background())
 	if err != nil {
-		logx.Errorw("[工作流] 查询API失败", logx.Field("错误", err))
+		logx.Errorf("[工作流] 查询API失败 [错误:%s]", err)
 		return
 	}
 	count := 0
@@ -41,9 +41,9 @@ func Register(ctx context.Context, id string, dsl string) error {
 		return err
 	}
 
-	logx.Debugf("[工作流] 工作流DSL [ID:%s] [DSL:%s]", id, dsl)
-	definitionBytes, _ := sonic.MarshalIndent(workflowDefinition, "", "  ")
-	logx.Infof("[工作流] 工作流定义 [ID:%s] [定义:%s]", id, string(definitionBytes))
+	// logx.Debugf("[工作流] 工作流DSL [ID:%s] [DSL:%s]", id, dsl)
+	// definitionBytes, _ := sonic.MarshalIndent(workflowDefinition, "", "  ")
+	// logx.Infof("[工作流] 工作流定义 [ID:%s] [定义:%s]", id, string(definitionBytes))
 
 	err = eg.RegisterWorkflow(ctx, id, &workflowDefinition)
 	if err != nil {

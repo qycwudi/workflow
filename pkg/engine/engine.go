@@ -264,7 +264,6 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext) error {
 	// 总执行计划
 	logx.Debugf("[工作流] 总执行计划: %d", len(executor.executionPlan.Phases))
-
 	for phaseIdx, phase := range executor.executionPlan.Phases {
 		if err := e.executePhase(ctx, executor, execCtx, phase, phaseIdx); err != nil {
 			logx.Errorw("[工作流] 执行阶段失败", logx.Field("阶段索引", phaseIdx), logx.Field("错误", err.Error()))

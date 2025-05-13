@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"flag"
 	"fmt"
 	"log"
@@ -22,6 +23,7 @@ import (
 	"workflow/internal/datasource"
 	"workflow/internal/handler"
 	"workflow/internal/svc"
+	"workflow/internal/utils"
 	"workflow/internal/workflow"
 	"workflow/pkg/chain"
 	"workflow/pkg/engine"
@@ -96,7 +98,15 @@ func main() {
 	defer server.Stop()
 
 	ctx := svc.NewServiceContext(c)
-
+	// 初始化 ob
+	if c.OpenObserveConfig.OPEN_OBSERVE_ENABLE {
+		fmt.Println("初始化 openobserve")
+		fmt.Printf("OpenObserveConfig: %+v\n", c.OpenObserveConfig)
+		// 配置logx导出
+		loggerProvider := utils.InitLogger(c.OpenObserveConfig)
+		defer loggerProvider.Shutdown(context.Background())
+		logx.AddWriter(utils.NewOtelLogWriter(utils.GetLogger(loggerProvider)))
+	}
 	handler.RegisterHandlers(server, ctx)
 	// 初始化 redis
 	cache.NewRedis(ctx.RedisClient)
