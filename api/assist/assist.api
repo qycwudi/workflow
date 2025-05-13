@@ -1,0 +1,22 @@
+syntax = "v1"
+
+type AiAssistGenCodeJsRequest {
+	ModelId int64  `json:"modelId"` // 模型ID
+	Params  string `json:"params"`  // 参数
+	Code    string `json:"code"`    // 代码
+	Demand  string `json:"demand"`  // 需求
+}
+
+type AiAssistGenCodeJsResponse {
+	Content string `json:"content"` // 内容
+}
+
+@server (
+	group: assist
+	prefix: /workflow
+)
+service workflow-api {
+	@doc "AI代码生成 JS"
+	@handler AiAssistGenCodeJsHandler
+	post /assist/gen/code/js (AiAssistGenCodeJsRequest) returns (AiAssistGenCodeJsResponse)
+}

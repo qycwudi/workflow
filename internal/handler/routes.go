@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	api "workflow/internal/handler/api"
+	assist "workflow/internal/handler/assist"
 	basics "workflow/internal/handler/basics"
 	canvas "workflow/internal/handler/canvas"
 	datasource "workflow/internal/handler/datasource"
@@ -120,6 +121,18 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// AI代码生成 JS
+				Method:  http.MethodPost,
+				Path:    "/assist/gen/code/js",
+				Handler: assist.AiAssistGenCodeJsHandler(serverCtx),
+			},
+		},
 		rest.WithPrefix("/workflow"),
 	)
 

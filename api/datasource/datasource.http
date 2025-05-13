@@ -42,7 +42,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMjA4NTQsImlh
   "switch": 1,
   "name": "ollama-llama3.2-1",
   "type": "model",
-  "config": "{\"model\":\"llama3.2:latest\",\"baseUrl\":\"http://10.10.0.167:11434/api/generate\",\"apiKey\":\"\",\"tag\":[\"125K\",\"function\",\"llama\"],\"describe\":\"llama 本地大模型\"}"
+  "config": "{\"model\":\"llama3.2\",\"baseUrl\":\"http://10.10.0.167:11434\",\"apiKey\":\"\",\"tag\":[\"125K\",\"function\",\"llama\"],\"describe\":\"llama 本地大模型\"}"
 }
 
 ### 数据源-新增

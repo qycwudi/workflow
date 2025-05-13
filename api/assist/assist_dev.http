@@ -1,0 +1,11 @@
+### API调用
+POST http://127.0.0.1:8888/workflow/assist/gen/code/js
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+	"modelId": 51,
+	"params": "{\"name\":\"d0etjhc84aimc6c73f40\",\"auth\":\"Bearer ecab0d05783949c8a3169df8ab085a9c\",\"age\":18,\"age1\":18,\"info\":{\"city\":\"hangzhou\",\"country\":\"china\",\"height\":170.5,\"weight\":65.5,\"phone\":17635800128,\"email\":[\"zhangsan@example.com\",\"lisi@example.com\"],\"like\":{\"food\":[\"apple\",\"banana\"],\"sport\":[\"basketball\",\"football\"]}},\"address\":[\"beijing\",\"shanghai\",\"hangzhou\"],\"mritalStatus\":false,\"sight\":1.0}",
+	"code": "function main(params) {var result = {}; return result;}",
+	"demand": "把email字段提取出来,并对里面的数据进行混淆，防止邮箱泄露"
+}
