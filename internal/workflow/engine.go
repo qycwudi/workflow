@@ -54,6 +54,7 @@ func Register(ctx context.Context, id string, dsl string) error {
 }
 
 func Run(ctx context.Context, serialId, workspaceId string, data map[string]any) (string, core.NodeResult, error) {
+	logx.Infof("[工作流] 开始执行工作流 [工作空间ID:%s] [序列ID:%s]", workspaceId, serialId)
 	defer func() {
 		logx.Infof("[工作流] 清除执行上下文 [工作空间ID:%s] [序列ID:%s]", workspaceId, serialId)
 		clearErr := eg.ClearExecutionContext(workspaceId, serialId)

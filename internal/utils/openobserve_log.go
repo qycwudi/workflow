@@ -3,8 +3,8 @@ package utils
 
 import (
 	"context"
-	"fmt"
 
+	"github.com/zeromicro/go-zero/core/logx"
 	"go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc"
 	"go.opentelemetry.io/otel/log"
 	sdklog "go.opentelemetry.io/otel/sdk/log"
@@ -26,7 +26,7 @@ func InitLogger(config config.OpenObserveConfig) *sdklog.LoggerProvider {
 		otlploggrpc.WithInsecure(),
 	)
 	if err != nil {
-		fmt.Println(err)
+		logx.Errorf("Failed to create openobserve exporter: %v", err)
 	}
 
 	processor := sdklog.NewBatchProcessor(exporter)
