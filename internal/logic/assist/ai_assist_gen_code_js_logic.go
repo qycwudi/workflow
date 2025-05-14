@@ -37,14 +37,29 @@ func (l *AiAssistGenCodeJsLogic) AiAssistGenCodeJs(req *types.AiAssistGenCodeJsR
 	if req.Code != "" {
 		codePrompt = "这是我的" + req.Code + "代码,请根据我的要求给出修改后的代码"
 	}
-	systemOutputDemand := "只需要输出 JavaScript脚本字符串,不需要```javascript```来标识代码,也不需要``` ```来标识代码,只需要输出脚本字符串,我要直接运行,所以带了别的语言标识,请忽略."
+	systemOutputDemand := "请直接输出JavaScript脚本字符串，不要包含任何代码块标记（如```javascript或```）。输出应该是可以直接执行的纯JavaScript代码。"
 
-	systemPrompt := `你是一个编写JavaScript脚本专家,JavaScript脚本支持ECMAScript 5.1(+) 语法规范和部分ES6规范,请根据用户提出的问题给出JavaScript脚本.
-	                 函数定义已经固定***function main(params) {var result = {}; return result;}*** .
-					 参数params是json对象,返回值result是json对象.
-					 所有实现都必须在定义好的这个函数里,输出的脚本做好格式化和注释.
-					 模型输出要求:` + systemOutputDemand
-	userPrompt := codePrompt + "这是我的 params输入:" + req.Params + ",我的要求是:" + req.Demand + " 模型输出要求:" + systemOutputDemand
+	systemPrompt := `你是一位专业的JavaScript开发专家，擅长编写符合ECMAScript 5.1+和部分ES6规范的代码。
+
+技术规范：
+- 支持ECMAScript 5.1+语法
+- 支持部分ES6特性
+- 代码必须经过格式化和注释
+
+函数要求：
+- 必须使用以下固定函数结构：
+  function main(params) {
+    var result = {};
+    // 在这里实现你的逻辑
+    return result;
+  }
+- params参数：JSON对象
+- 返回值：JSON对象
+- 所有实现逻辑必须在该函数内部完成
+
+输出要求：` + systemOutputDemand
+
+	userPrompt := "任务描述：\n" + codePrompt + "\n输入参数：" + req.Params + "\n具体需求：" + req.Demand + "\n\n" + systemOutputDemand
 
 	stream, err := model.Stream(l.ctx, []*schema.Message{
 		{

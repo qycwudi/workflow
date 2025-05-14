@@ -16,9 +16,6 @@ Log:
   # json plain
   Encoding: plain
   Path: ./app/logs
-Telemetry:
-  Endpoint: "./app/logs/trace.log"
-  Batcher: "file"
 # 指定开发mysql
 MySqlUrn: root:root@tcp(14.103.249.105:30006)/workflow_dev?charset=utf8mb4&parseTime=True&loc=Local
 # 指定开发redis db5
