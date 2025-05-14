@@ -22,7 +22,7 @@ require (
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/panjf2000/ants/v2 v2.11.3
 	github.com/pkg/sftp v1.13.7
-	github.com/redis/go-redis/v9 v9.7.3
+	github.com/redis/go-redis/v9 v9.8.0
 	github.com/rs/xid v1.6.0
 	github.com/samber/lo v1.47.0
 	github.com/sijms/go-ora/v2 v2.8.22
@@ -32,7 +32,7 @@ require (
 	github.com/uptrace/bun/dialect/mysqldialect v1.2.6
 	github.com/uptrace/bun/dialect/oracledialect v1.2.6
 	github.com/valyala/fasthttp v1.60.0
-	github.com/zeromicro/go-zero v1.8.2
+	github.com/zeromicro/go-zero v1.8.3
 	github.com/zeromicro/x v0.0.0-20240408115609-8224c482b07e
 	go.opentelemetry.io/otel v1.35.0
 	go.opentelemetry.io/otel/exporters/otlp/otlplog/otlploggrpc v0.11.0

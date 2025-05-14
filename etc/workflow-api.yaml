@@ -2,7 +2,7 @@ Name: workflow
 Host: 0.0.0.0
 Port: 8888
 ApiPort: 8889
-Timeout: 60000
+Timeout: 1000000
 RuleServerLimitSize: 1
 RuleServerTrace: false
 ApiUrl: http://localhost:8889/api/role/v1
@@ -16,6 +16,8 @@ Log:
   # json plain
   Encoding: plain
   Path: ./app/logs
+Telemetry:
+  Disabled: true
 # 指定开发mysql
 MySqlUrn: root:root@tcp(14.103.249.105:30006)/workflow_dev?charset=utf8mb4&parseTime=True&loc=Local
 # 指定开发redis db5
