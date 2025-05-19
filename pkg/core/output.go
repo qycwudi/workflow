@@ -78,7 +78,7 @@ func ValidateOutput(data any, output Output) error {
 			return errors.New("输出 " + output.Name + " 必须是数组类型")
 		}
 		// 如果有更复杂的数组元素验证，可以在这里添加
-		if output.Type[1] != "" {
+		if len(output.Type) > 1 && output.Type[1] != "" {
 			if len(arr) > 0 {
 				err := ValidateOutput(arr[0], Output{Type: []string{output.Type[1]}})
 				if err != nil {

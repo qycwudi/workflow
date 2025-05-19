@@ -8,6 +8,7 @@ build-back:
     - make gogogo
   only:
     - main
+    - dev
     - /^dev-.*$/
     - /^release\/\d+\.\d+$/
     - /^release\/\d+\.\d+\.\d+$/

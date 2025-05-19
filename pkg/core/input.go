@@ -115,6 +115,9 @@ func validateAndConvertType(value any, expectedType []string) (any, error) {
 	case "array":
 		if arr, ok := value.([]any); ok {
 			// 解析expectedType[1]元素类型
+			if len(expectedType) <= 1 {
+				return arr, nil
+			}
 			elementType := expectedType[1]
 			for _, item := range arr {
 				_, err := validateAndConvertType(item, []string{elementType})
