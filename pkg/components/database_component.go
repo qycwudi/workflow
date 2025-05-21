@@ -110,18 +110,18 @@ func (d *DatabaseComponent) replaceExprs(expr string, inputMap map[string]any, r
 	var ok bool
 	var value any
 	var args []any
-	for _, filed := range matches {
-		cutFiled, _ := strings.CutPrefix(filed, "{{")
-		cutFiled, _ = strings.CutSuffix(cutFiled, "}}")
+	for _, field := range matches {
+		cutFiled := strings.Trim(field, "{{}}")
 		if value, ok = inputMap[cutFiled]; !ok {
-			return "", nil, fmt.Errorf("input 中没有 %s 变量", cutFiled)
+			// 本节点 input 里没有该变量
+			return "", nil, fmt.Errorf("节点 input 中不存在变量 [%s]", cutFiled)
 		}
 		if value == nil {
 			value = reflect.Zero(reflect.TypeOf(value)).Interface()
 		}
 		// 替换
 		args = append(args, value)
-		expr = replaceFun(expr, filed, value)
+		expr = replaceFun(expr, field, value)
 	}
 	return expr, args, nil
 }
