@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"maps"
+	"reflect"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -604,7 +605,12 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 
 // validateComponent 验证组件
 func (e *WorkflowEngine) validateComponent(component components.Component, node *core.NodeDefinition) error {
-	if validateErrors := component.Validate(); len(validateErrors) > 0 {
+	validateErrors := component.Validate()
+	exception := component.Exception()
+	if !reflect.ValueOf(exception).IsZero() {
+		validateErrors = exception.Validate()
+	}
+	if len(validateErrors) > 0 {
 		return errors.New("组件 [" + node.ID + "] 验证失败: " + fmt.Sprintf("%+v", validateErrors))
 	}
 	return nil
@@ -615,7 +621,24 @@ func (e *WorkflowEngine) executeComponent(ctx *core.ExecutionContext, err error,
 	if err != nil {
 		return nil, err
 	}
-	return component.Execute(ctx, input)
+
+	exceptionCnf := component.Exception()
+	if reflect.ValueOf(exceptionCnf).IsZero() {
+		return component.Execute(ctx, input)
+	}
+
+	timeoutCtx, cancel := context.WithTimeout(ctx, time.Duration(exceptionCnf.Timeout)*time.Second)
+	defer cancel()
+
+	var result *core.Result
+	for i := 0; i < exceptionCnf.RetryTimes; i++ {
+		result, err = component.Execute(timeoutCtx, input)
+		if err == nil && ctx.Err() == nil {
+			break
+		}
+		logx.Debug("执行失败，重试: ", err.Error())
+	}
+	return result, err
 }
 
 // Clear 释放资源

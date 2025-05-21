@@ -27,13 +27,14 @@ type HTTPComponent struct {
 }
 
 type HTTPConfig struct {
-	URL     string        `json:"url"`
-	Method  string        `json:"method"`
-	Headers []core.Inputs `json:"headers"`
-	Params  []core.Inputs `json:"params"`
-	Body    []core.Inputs `json:"body,omitempty"`
-	Retries int           `json:"retries"`
-	Timeout int64         `json:"timeout"`
+	URL             string          `json:"url"`
+	Method          string          `json:"method"`
+	Headers         []core.Inputs   `json:"headers"`
+	Params          []core.Inputs   `json:"params"`
+	Body            []core.Inputs   `json:"body,omitempty"`
+	Retries         int             `json:"retries"`
+	Timeout         int64           `json:"timeout"`
+	ExceptionConfig ExceptionConfig `json:"exceptionConfig"`
 }
 
 var httpComponentPool = sync.Pool{
@@ -130,6 +131,10 @@ func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return input, nil
 }
 
+func (c *HTTPComponent) Exception() ExceptionConfig {
+	return ExceptionConfig{}
+}
+
 func parseMethod(execCtx *core.ExecutionContext, method string) (string, error) {
 	logx.Debugf("method before: %v\n", method)
 	// 解析有多少个{{}}
@@ -219,7 +224,7 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 			logx.Field("错误", err))
 		return &core.Result{
 			Route:  []string{Failed},
-			Output: nil,
+			Output: c.config.ExceptionConfig.OutputOnError,
 		}, err
 	}
 	logx.Infow("[HTTP组件] 请求成功",
@@ -230,7 +235,7 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 	if err := sonic.Unmarshal(body, &result); err != nil {
 		return &core.Result{
 			Route:  []string{Failed},
-			Output: nil,
+			Output: c.config.ExceptionConfig.OutputOnError,
 		}, err
 	}
 	logx.Debugw("[HTTP组件] 请求结果",

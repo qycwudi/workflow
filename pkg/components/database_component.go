@@ -21,10 +21,10 @@ type DatabaseComponent struct {
 	config DatabaseConfig
 }
 type DatabaseConfig struct {
-	DatasourceType  string      `json:"datasourceType"`
-	DatasourceId    int64       `json:"datasourceId"`
-	SQL             string      `json:"sql"`
-	ExceptionConfig interface{} `json:"exceptionConfig"`
+	DatasourceType  string          `json:"datasourceType"`
+	DatasourceId    int64           `json:"datasourceId"`
+	SQL             string          `json:"sql"`
+	ExceptionConfig ExceptionConfig `json:"exceptionConfig"`
 }
 
 var databaseComponentPool = sync.Pool{
@@ -53,9 +53,9 @@ func (d *DatabaseComponent) Execute(ctx context.Context, input any) (*core.Resul
 	var err error
 	var args []any
 	var condition string
-	if splitSql := strings.Split(strings.ToLower(d.config.SQL), "where"); len(splitSql) == 2 {
-		d.config.SQL = splitSql[0]
-		condition = "where" + splitSql[1]
+	if statements := strings.Split(strings.ToLower(d.config.SQL), "where"); len(statements) == 2 {
+		d.config.SQL = statements[0]
+		condition = "where" + statements[1]
 	}
 	if condition != "" {
 		if condition, args, err = d.replaceExprs(condition, inputMap, func(expr, old string, value any) string {
@@ -75,16 +75,14 @@ func (d *DatabaseComponent) Execute(ctx context.Context, input any) (*core.Resul
 	// sql 替换完成，开始执行
 	output, err := d.executeSQL(ctx, d.config.SQL, args)
 	if err != nil {
-		logx.Infow("[DATABASE组件] 执行失败",
-			logx.Field("SQL", d.config.SQL))
+		logx.Infow("[DATABASE组件] 执行失败", logx.Field("SQL", d.config.SQL))
 		return &core.Result{
 			Route:  []string{Failed},
-			Output: nil,
+			Output: d.config.ExceptionConfig.OutputOnError,
 		}, err
 	}
 
-	logx.Infow("[DATABASE组件] 执行成功",
-		logx.Field("SQL", d.config.SQL))
+	logx.Infow("[DATABASE组件] 执行成功", logx.Field("SQL", d.config.SQL))
 	return &core.Result{
 		Route:  []string{Success},
 		Output: output,
@@ -97,6 +95,10 @@ func (d *DatabaseComponent) Validate() []core.ValidationError {
 
 func (d *DatabaseComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
+}
+
+func (d *DatabaseComponent) Exception() ExceptionConfig {
+	return d.config.ExceptionConfig
 }
 
 func (d *DatabaseComponent) Clear() {
@@ -206,7 +208,7 @@ func queryResult(rows *sql.Rows) ([]any, error) {
 
 // 执行查询
 func (d *DatabaseComponent) executeQuery(ctx context.Context, sql string, args []interface{}) (any, error) {
-	rows, err := datasource.DataSourcePool.Query(d.config.DatasourceId, sql, args...)
+	rows, err := datasource.DataSourcePool.Query(ctx, d.config.DatasourceId, sql, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -227,7 +229,7 @@ func (d *DatabaseComponent) executeQuery(ctx context.Context, sql string, args [
 
 // 执行插入
 func (d *DatabaseComponent) executeInsert(ctx context.Context, sql string, args []interface{}) (any, error) {
-	result, err := datasource.DataSourcePool.Insert(d.config.DatasourceId, sql, args...)
+	result, err := datasource.DataSourcePool.Insert(ctx, d.config.DatasourceId, sql, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -240,7 +242,7 @@ func (d *DatabaseComponent) executeInsert(ctx context.Context, sql string, args 
 
 // 执行更新
 func (d *DatabaseComponent) executeUpdate(ctx context.Context, sql string, args []interface{}) (any, error) {
-	result, err := datasource.DataSourcePool.Update(d.config.DatasourceId, sql, args...)
+	result, err := datasource.DataSourcePool.Update(ctx, d.config.DatasourceId, sql, args...)
 	if err != nil {
 		return nil, err
 	}
@@ -253,7 +255,7 @@ func (d *DatabaseComponent) executeUpdate(ctx context.Context, sql string, args 
 
 // 执行删除
 func (d *DatabaseComponent) executeDelete(ctx context.Context, sql string, args []interface{}) (any, error) {
-	result, err := datasource.DataSourcePool.Delete(d.config.DatasourceId, sql, args...)
+	result, err := datasource.DataSourcePool.Delete(ctx, d.config.DatasourceId, sql, args...)
 	if err != nil {
 		return nil, err
 	}

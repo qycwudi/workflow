@@ -159,34 +159,34 @@ func (manager *DataSourceManager) ClearDataSource(id int64) error {
 	return nil
 }
 
-func (manager *DataSourceManager) Query(id int64, sql string, args ...interface{}) (*sql.Rows, error) {
+func (manager *DataSourceManager) Query(ctx context.Context, id int64, sql string, args ...interface{}) (*sql.Rows, error) {
 	db, ok := manager.dbs[id]
 	if !ok {
 		return nil, errors.New("data source not found")
 	}
-	return db.QueryContext(context.Background(), sql, args...)
+	return db.QueryContext(ctx, sql, args...)
 }
 
-func (manager *DataSourceManager) Insert(id int64, sql string, args ...interface{}) (sql.Result, error) {
+func (manager *DataSourceManager) Insert(ctx context.Context, id int64, sql string, args ...interface{}) (sql.Result, error) {
 	db, ok := manager.dbs[id]
 	if !ok {
 		return nil, errors.New("data source not found")
 	}
-	return db.ExecContext(context.Background(), sql, args...)
+	return db.ExecContext(ctx, sql, args...)
 }
 
-func (manager *DataSourceManager) Update(id int64, sql string, args ...interface{}) (sql.Result, error) {
+func (manager *DataSourceManager) Update(ctx context.Context, id int64, sql string, args ...interface{}) (sql.Result, error) {
 	db, ok := manager.dbs[id]
 	if !ok {
 		return nil, errors.New("data source not found")
 	}
-	return db.ExecContext(context.Background(), sql, args...)
+	return db.ExecContext(ctx, sql, args...)
 }
 
-func (manager *DataSourceManager) Delete(id int64, sql string, args ...interface{}) (sql.Result, error) {
+func (manager *DataSourceManager) Delete(ctx context.Context, id int64, sql string, args ...interface{}) (sql.Result, error) {
 	db, ok := manager.dbs[id]
 	if !ok {
 		return nil, errors.New("data source not found")
 	}
-	return db.ExecContext(context.Background(), sql, args...)
+	return db.ExecContext(ctx, sql, args...)
 }

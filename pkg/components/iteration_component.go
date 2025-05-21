@@ -147,6 +147,10 @@ func (i *IterationComponent) Validate() []core.ValidationError {
 	return nil
 }
 
+func (c *IterationComponent) Exception() ExceptionConfig {
+	return ExceptionConfig{}
+}
+
 // var _ Component = new(IterationComponent)
 
 func (i *IterationComponent) Clear() {

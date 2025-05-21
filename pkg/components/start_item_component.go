@@ -38,6 +38,10 @@ func (c *StartItemComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
 }
 
+func (c *StartItemComponent) Exception() ExceptionConfig {
+	return ExceptionConfig{}
+}
+
 func (c *StartItemComponent) Clear() {
 	startItemComponentPool.Put(c)
 }

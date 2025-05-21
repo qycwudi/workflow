@@ -37,6 +37,7 @@ type Component interface {
 	Validate() []core.ValidationError
 	AnalyzeInputs(ctx context.Context) (any, error)
 	Execute(ctx context.Context, input any) (*core.Result, error)
+	Exception() ExceptionConfig
 	Clear()
 }
 
@@ -69,4 +70,31 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, nodeConfig *core.N
 		return NewDatabaseComponent(jsonConfig)
 	}
 	return nil, errors.New("Component type not found: " + nodeType)
+}
+
+type ExceptionConfig struct {
+	Timeout    int64 `json:"timeout"`
+	RetryTimes int   `json:"retry_times"`
+	// 处理方式，中断流程 / 返回设定内容 / 执行异常流程；如果是执行异常流程，会增加两个异常输出
+	// 中断和执行异常流程 已经在 workflow 执行逻辑中实现了，组件只需要实现返回设定内
+	// 发生异常时可以返回固定内容
+	OutputOnError map[string]any `json:"output_on_error"`
+}
+
+func (e ExceptionConfig) Validate() []core.ValidationError {
+	if e.RetryTimes > 10 || e.RetryTimes < 0 {
+		return []core.ValidationError{
+			{
+				Message: "retry_times 值必须在 0 到 10 之间",
+			},
+		}
+	}
+	if e.Timeout <= 0 {
+		return []core.ValidationError{
+			{
+				Message: "timeout 值必须大于 0",
+			},
+		}
+	}
+	return nil
 }

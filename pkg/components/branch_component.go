@@ -266,6 +266,10 @@ func (c *BranchComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return conditions, nil
 }
 
+func (c *BranchComponent) Exception() ExceptionConfig {
+	return ExceptionConfig{}
+}
+
 // compareValues 比较两个值
 func compareValues(left, right any) (float64, float64, error) {
 	// 转换为float64进行比较

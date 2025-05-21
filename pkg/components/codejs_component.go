@@ -69,6 +69,10 @@ func (c *CodejsComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
 }
 
+func (c *CodejsComponent) Exception() ExceptionConfig {
+	return ExceptionConfig{}
+}
+
 // GojaJsEngine goja js engine
 type GojaJsEngine struct {
 	vmPool            sync.Pool

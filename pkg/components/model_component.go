@@ -113,6 +113,10 @@ func (c *ModelComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
 }
 
+func (c *ModelComponent) Exception() ExceptionConfig {
+	return ExceptionConfig{}
+}
+
 func (c *ModelComponent) Clear() {
 	modelComponentPool.Put(c)
 }
