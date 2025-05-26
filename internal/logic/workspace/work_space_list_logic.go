@@ -2,7 +2,6 @@ package workspace
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/samber/lo"
 	"github.com/zeromicro/go-zero/core/logx"
@@ -49,8 +48,9 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 
 		workSpacePage, err := l.svcCtx.WorkSpaceModel.FindInWorkSpaceId(l.ctx, workspaceIds)
 		if err != nil {
-			if err == sql.ErrNoRows {
+			if err == model.ErrNotFound {
 				resp.Data = []types.WorkSpacePage{}
+				resp.Total = 0
 				return resp, nil
 			}
 			return nil, errors.New(int(logic.SystemOrmError), "过滤查询空间列表数据失败")
