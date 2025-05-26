@@ -91,6 +91,8 @@ func (c customWorkspaceTagMappingModel) FindPageByTagId(ctx context.Context, cur
 	switch err {
 	case nil:
 		return resp, total, nil
+	case sqlx.ErrNotFound:
+		return nil, 0, ErrNotFound
 	default:
 		logc.Infov(ctx, err)
 		return nil, 0, err

@@ -17,11 +17,11 @@ Log:
   Encoding: plain
   Path: ./app/logs
 # 指定开发mysql
-MySqlUrn: root:root@tcp(14.103.249.105:30006)/workflow_old?charset=utf8mb4&parseTime=True&loc=Local
+MySqlUrn: root:Root@123@tcp(10.99.51.9:3306)/workflow-dev?charset=utf8mb4&parseTime=True&loc=Local
 # 指定开发redis db5
 Redis:
-  Host: 14.103.249.105:30007
-  Password: '123456'
+  Host: 10.90.64.57:6379
+  Password: 'redis123'
   DB: 6
 
 DevServer:

@@ -43,9 +43,18 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 		// 查询满足条件的workspace
 		workspaceIds, totalNum, err := l.svcCtx.WorkspaceTagMappingModel.FindPageByTagId(l.ctx, req.Current, req.PageSize, req.WorkSpaceTag)
 		if err != nil {
+			if err == model.ErrNotFound {
+				resp.Data = []types.WorkSpacePage{}
+				resp.Total = 0
+				return resp, nil
+			}
 			return nil, errors.New(int(logic.SystemOrmError), "标签查询空间列表数据失败")
 		}
-
+		if len(workspaceIds) == 0 {
+			resp.Data = []types.WorkSpacePage{}
+			resp.Total = 0
+			return resp, errors.New(int(logic.SystemOrmError), "请回到第一页,当前分页无数据")
+		}
 		workSpacePage, err := l.svcCtx.WorkSpaceModel.FindInWorkSpaceId(l.ctx, workspaceIds)
 		if err != nil {
 			if err == model.ErrNotFound {
