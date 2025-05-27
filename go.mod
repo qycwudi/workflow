@@ -15,7 +15,6 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/hibiken/asynq v0.25.1
-	github.com/hibiken/asynqmon v0.7.2
 	github.com/iyashjayesh/monigo v1.0.2
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/libi/dcron v0.6.0
@@ -27,6 +26,7 @@ require (
 	github.com/samber/lo v1.47.0
 	github.com/sijms/go-ora/v2 v2.8.22
 	github.com/tidwall/gjson v1.18.0
+	github.com/trungdlp-wolffun/asynqmon v0.7.2
 	github.com/uptrace/bun v1.2.6
 	github.com/uptrace/bun/dialect/mssqldialect v1.2.6
 	github.com/uptrace/bun/dialect/mysqldialect v1.2.6
@@ -79,7 +79,6 @@ require (
 	github.com/klauspost/cpuid/v2 v2.2.10 // indirect
 	github.com/kr/fs v0.1.0 // indirect
 	github.com/mailru/easyjson v0.7.7 // indirect
-	github.com/marianogappa/sqlparser v0.0.0-20210802195049-c86231987420 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
 	github.com/meguminnnnnnnnn/go-openai v0.0.0-20250408071642-761325becfd6 // indirect
@@ -114,7 +113,6 @@ require (
 	github.com/valyala/bytebufferpool v1.0.0 // indirect
 	github.com/vmihailenco/msgpack/v5 v5.4.1 // indirect
 	github.com/vmihailenco/tagparser/v2 v2.0.0 // indirect
-	github.com/xwb1989/sqlparser v0.0.0-20180606152119-120387863bf2 // indirect
 	github.com/yargevad/filepathx v1.0.0 // indirect
 	github.com/yusufpapurcu/wmi v1.2.4 // indirect
 	go.opentelemetry.io/auto/sdk v1.1.0 // indirect
