@@ -36,6 +36,15 @@ func NewCanvasRunLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CanvasR
 func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.CanvasRunResponse, err error) {
 	traceId := "trace-" + trace.TraceIDFromContext(l.ctx)
 	startTime := time.Now()
+	// canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
+	// if err != nil {
+	// 	logx.Errorw("[画布] 获取工作流定义失败",
+	// 		logx.Field("工作空间ID", req.Id),
+	// 		logx.Field("错误", err))
+	// 	return nil, errors.New(int(logic.SystemOrmError), "获取工作流定义失败")
+	// }
+
+	// flowgram 测试 default 工作流
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {
 		logx.Errorw("[画布] 获取工作流定义失败",

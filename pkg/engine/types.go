@@ -57,7 +57,7 @@ type ExecutionPhase struct {
 
 // WorkflowNode 工作流节点
 type WorkflowNode struct {
-	*core.NodeDefinition
+	*core.Nodes
 	Component components.Component
 }
 

@@ -8,13 +8,15 @@ Content-Type: application/json
 	"pageSize": 10
 }
 
+
+
 ### 查询组件运行结果
 POST http://127.0.0.1:8888/workflow/trace/components/query
 Content-Type: application/json
 
 {
-	"id": "d03l4kl3sjtgm7gc9ai0",
-  	"serialId": "trace-bd9fb75a22b5dd80841667c2887714c4"
+	"id": "default",
+  	"serialId": "trace-2fac139d32765480bdf42ebf090f1320"
 }
 
 ### 查询组件运行结果

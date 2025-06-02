@@ -153,72 +153,68 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 	)
 
 	server.AddRoutes(
-		rest.WithMiddlewares(
-			[]rest.Middleware{serverCtx.PermissionMiddleware},
-			[]rest.Route{
-				{
-					// 画布详情
-					Method:  http.MethodPost,
-					Path:    "/canvas/detail",
-					Handler: canvas.CanvasDetailHandler(serverCtx),
-				},
-				{
-					// 画布更新
-					Method:  http.MethodPost,
-					Path:    "/canvas/draft",
-					Handler: canvas.CanvasDraftHandler(serverCtx),
-				},
-				{
-					// 获取历史版本列表
-					Method:  http.MethodPost,
-					Path:    "/canvas/history/list",
-					Handler: canvas.GetCanvasHistoryListHandler(serverCtx),
-				},
-				{
-					// 恢复历史版本
-					Method:  http.MethodPost,
-					Path:    "/canvas/history/restore",
-					Handler: canvas.RestoreCanvasHistoryHandler(serverCtx),
-				},
-				{
-					// 保存历史版本
-					Method:  http.MethodPost,
-					Path:    "/canvas/history/save",
-					Handler: canvas.SaveCanvasHistoryHandler(serverCtx),
-				},
-				{
-					// 全部运行
-					Method:  http.MethodPost,
-					Path:    "/canvas/run",
-					Handler: canvas.CanvasRunHandler(serverCtx),
-				},
-				{
-					// 获取画布运行详情
-					Method:  http.MethodGet,
-					Path:    "/canvas/run/detail/:recordId",
-					Handler: canvas.GetCanvasRunDetailHandler(serverCtx),
-				},
-				{
-					// 获取画布运行历史
-					Method:  http.MethodGet,
-					Path:    "/canvas/run/history/:workSpaceId",
-					Handler: canvas.GetCanvasRunHistoryHandler(serverCtx),
-				},
-				{
-					// 单组件运行
-					Method:  http.MethodPost,
-					Path:    "/canvas/run/single",
-					Handler: canvas.CanvasRunSingleHandler(serverCtx),
-				},
-				{
-					// 组件运行详情
-					Method:  http.MethodPost,
-					Path:    "/canvas/run/single/detail",
-					Handler: canvas.CanvasRunSingleDetailHandler(serverCtx),
-				},
-			}...,
-		),
-		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		[]rest.Route{
+			{
+				// 画布详情
+				Method:  http.MethodPost,
+				Path:    "/canvas/detail",
+				Handler: canvas.CanvasDetailHandler(serverCtx),
+			},
+			{
+				// 画布更新
+				Method:  http.MethodPost,
+				Path:    "/canvas/draft",
+				Handler: canvas.CanvasDraftHandler(serverCtx),
+			},
+			{
+				// 获取历史版本列表
+				Method:  http.MethodPost,
+				Path:    "/canvas/history/list",
+				Handler: canvas.GetCanvasHistoryListHandler(serverCtx),
+			},
+			{
+				// 恢复历史版本
+				Method:  http.MethodPost,
+				Path:    "/canvas/history/restore",
+				Handler: canvas.RestoreCanvasHistoryHandler(serverCtx),
+			},
+			{
+				// 保存历史版本
+				Method:  http.MethodPost,
+				Path:    "/canvas/history/save",
+				Handler: canvas.SaveCanvasHistoryHandler(serverCtx),
+			},
+			{
+				// 全部运行
+				Method:  http.MethodPost,
+				Path:    "/canvas/run",
+				Handler: canvas.CanvasRunHandler(serverCtx),
+			},
+			{
+				// 获取画布运行详情
+				Method:  http.MethodGet,
+				Path:    "/canvas/run/detail/:recordId",
+				Handler: canvas.GetCanvasRunDetailHandler(serverCtx),
+			},
+			{
+				// 获取画布运行历史
+				Method:  http.MethodGet,
+				Path:    "/canvas/run/history/:workSpaceId",
+				Handler: canvas.GetCanvasRunHistoryHandler(serverCtx),
+			},
+			{
+				// 单组件运行
+				Method:  http.MethodPost,
+				Path:    "/canvas/run/single",
+				Handler: canvas.CanvasRunSingleHandler(serverCtx),
+			},
+			{
+				// 组件运行详情
+				Method:  http.MethodPost,
+				Path:    "/canvas/run/single/detail",
+				Handler: canvas.CanvasRunSingleDetailHandler(serverCtx),
+			},
+		},
 		rest.WithPrefix("/workflow"),
 	)
 

@@ -69,7 +69,7 @@ func Run(ctx context.Context, serialId, workspaceId string, data map[string]any)
 		return serialId, core.NodeResult{}, err
 	}
 
-	endResult, ok := eg.GetNodeResult(workspaceId, serialId, "end-node-1")
+	endResult, ok := eg.GetNodeResult(workspaceId, serialId, "end_0")
 	if !ok {
 		logx.Errorf("[工作流] 未找到结束节点的执行结果 [工作空间ID:%s] [序列ID:%s]", workspaceId, serialId)
 		return serialId, core.NodeResult{}, errors.New("未找到结束节点的执行结果:" + workspaceId + "," + serialId)

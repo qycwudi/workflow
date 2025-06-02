@@ -27,14 +27,14 @@ type HTTPComponent struct {
 }
 
 type HTTPConfig struct {
-	URL             string          `json:"url"`
-	Method          string          `json:"method"`
-	Headers         []core.Inputs   `json:"headers"`
-	Params          []core.Inputs   `json:"params"`
-	Body            []core.Inputs   `json:"body,omitempty"`
-	Retries         int             `json:"retries"`
-	Timeout         int64           `json:"timeout"`
-	ExceptionConfig ExceptionConfig `json:"exceptionConfig"`
+	URL             string            `json:"url"`
+	Method          string            `json:"method"`
+	Headers         map[string]string `json:"headers"`
+	Params          map[string]any    `json:"params"`
+	Body            string            `json:"body,omitempty"`
+	Retries         int               `json:"retries"`
+	Timeout         int64             `json:"timeout"`
+	ExceptionConfig ExceptionConfig   `json:"exceptionConfig"`
 }
 
 var httpComponentPool = sync.Pool{
@@ -85,50 +85,51 @@ var urlKey = "url"
 var isJSONKey = "isJSON"
 
 func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
-	var input map[string]any = make(map[string]any, 3)
-	execCtx := ctx.(*core.ExecutionContext)
-	headers, err := core.ParseNodeInputs(c.config.Headers, execCtx)
-	if err != nil {
-		logx.Errorw("[HTTP组件] 解析参数失败",
-			logx.Field("错误", err))
-		return nil, err
-	}
-	headersMap := make(map[string]interface{})
-	for k, v := range headers {
-		headersMap[k] = v
-	}
-	input[headerKey] = headersMap
+	// var input map[string]any = make(map[string]any, 3)
+	// execCtx := ctx.(*core.ExecutionContext)
+	// headers, err := core.ParseNodeInputs(c.config.Headers, execCtx)
+	// if err != nil {
+	// 	logx.Errorw("[HTTP组件] 解析参数失败",
+	// 		logx.Field("错误", err))
+	// 	return nil, err
+	// }
+	// headersMap := make(map[string]interface{})
+	// for k, v := range headers {
+	// 	headersMap[k] = v
+	// }
+	// input[headerKey] = headersMap
 
-	// body
-	params := make(map[string]any)
-	isJSON := false
-	if len(c.config.Params) != 0 {
-		params, err = core.ParseNodeInputs(c.config.Params, execCtx)
-		if err != nil {
-			logx.Errorw("[HTTP组件] 解析参数失败",
-				logx.Field("错误", err))
-			return nil, err
-		}
-	}
-	if len(c.config.Body) != 0 {
-		params, err = core.ParseNodeInputs(c.config.Body, execCtx)
-		if err != nil {
-			logx.Errorw("[HTTP组件] 解析请求体失败",
-				logx.Field("错误", err))
-			return nil, err
-		}
-		isJSON = true
-	}
-	// method http://localhost/{{block_output_100001.name}}/sss/sss 表达式{{}}如何解析
-	url, err := parseMethod(execCtx, c.config.URL)
-	if err != nil {
-		return nil, err
-	}
-	input[urlKey] = url
-	input[bodyKey] = params
-	input[isJSONKey] = isJSON
+	// // body
+	// params := make(map[string]any)
+	// isJSON := false
+	// if len(c.config.Params) != 0 {
+	// 	params, err = core.ParseNodeInputs(c.config.Params, execCtx)
+	// 	if err != nil {
+	// 		logx.Errorw("[HTTP组件] 解析参数失败",
+	// 			logx.Field("错误", err))
+	// 		return nil, err
+	// 	}
+	// }
+	// if len(c.config.Body) != 0 {
+	// 	params, err = core.ParseNodeInputs(c.config.Body, execCtx)
+	// 	if err != nil {
+	// 		logx.Errorw("[HTTP组件] 解析请求体失败",
+	// 			logx.Field("错误", err))
+	// 		return nil, err
+	// 	}
+	// 	isJSON = true
+	// }
+	// // method http://localhost/{{block_output_100001.name}}/sss/sss 表达式{{}}如何解析
+	// url, err := parseMethod(execCtx, c.config.URL)
+	// if err != nil {
+	// 	return nil, err
+	// }
+	// input[urlKey] = url
+	// input[bodyKey] = params
+	// input[isJSONKey] = isJSON
 
-	return input, nil
+	// return input, nil
+	return nil, nil
 }
 
 func (c *HTTPComponent) Exception() ExceptionConfig {

@@ -24,10 +24,10 @@ type BranchConfig struct {
 }
 
 type Condition struct {
-	Left     core.Inputs `json:"left"`
-	Right    core.Inputs `json:"right"`
-	Route    string      `json:"route"`
-	Operator string      `json:"operator"`
+	Left     map[string]any `json:"left"`
+	Right    map[string]any `json:"right"`
+	Route    string         `json:"route"`
+	Operator string         `json:"operator"`
 }
 
 const (
@@ -244,25 +244,25 @@ func (c *BranchComponent) Validate() []core.ValidationError {
 	return nil
 }
 func (c *BranchComponent) AnalyzeInputs(ctx context.Context) (any, error) {
-	execCtx := ctx.(*core.ExecutionContext)
+	// execCtx := ctx.(*core.ExecutionContext)
 	conditions := make([]Cp, len(c.config.Conditions))
-	for i, condition := range c.config.Conditions {
-		left, err := core.ParseNodeInputs([]core.Inputs{condition.Left}, execCtx)
-		if err != nil {
-			return nil, err
-		}
-		right, err := core.ParseNodeInputs([]core.Inputs{condition.Right}, execCtx)
-		if err != nil {
-			return nil, err
-		}
-		conditions[i] = Cp{
-			Left:     left[condition.Left.Name],
-			Right:    right[condition.Right.Name],
-			Route:    condition.Route,
-			Operator: condition.Operator,
-		}
-	}
-	logx.Debugf("conditions: %+v\n", conditions)
+	// for i, condition := range c.config.Conditions {
+	// 	left, err := core.ParseNodeInputs(condition.Left, execCtx)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	right, err := core.ParseNodeInputs(condition.Right, execCtx)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	conditions[i] = Cp{
+	// 		Left:     left,
+	// 		Right:    right,
+	// 		Route:    condition.Route,
+	// 		Operator: condition.Operator,
+	// 	}
+	// }
+	// logx.Debugf("conditions: %+v\n", conditions)
 	return conditions, nil
 }
 

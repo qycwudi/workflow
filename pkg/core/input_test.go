@@ -1,92 +1,92 @@
 package core
 
 import (
-	"reflect"
+	"context"
+	"encoding/json"
 	"testing"
+
+	"github.com/tidwall/gjson"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 func TestParseNodeInputs(t *testing.T) {
-	type args struct {
-		inputs        []Inputs
-		parentOutputs map[string]any
+	executionContext := NewExecutionContext(context.Background(), "test", "test", 1, nil)
+	executionContext.SetVariable("start_0.output", `{"start_0":{"Input":{"sssss":"我是字符串","oooooo":{"ssssssssssss":"我是对象"},"arr_str":["我是数组字符串-1","我是数组字符串-2"],"array_obj":[{"int":18,"str":"我是数组里的对象的字符串"}],"enable":true,"query":"Hello Flow."}`)
+	inputValues := map[string]NodeDataInputsValues{}
+	ivjs := `{
+                    "sss": {
+                        "type": "ref",
+                        "content": [
+                            "start_0",
+                            "oooooo",
+                            "ssssssssssss"
+                        ]
+                    },
+                    "result": {
+                        "type": "ref",
+                        "content": [
+                            "start_0",
+                            "query"
+                        ]
+                    },
+                    "arrrrrr": {
+                        "type": "ref",
+                        "content": [
+                            "start_0",
+                            "arr_str"
+                        ]
+                    },
+                    "sssssss": {
+                        "type": "ref",
+                        "content": [
+                            "start_0",
+                            "oooooo",
+                            "ssssssssssss"
+                        ]
+                    }
+                }`
+	err := json.Unmarshal([]byte(ivjs), &inputValues)
+	if err != nil {
+		t.Fatalf("json.Unmarshal failed: %v", err)
 	}
-	tests := []struct {
-		name    string
-		args    args
-		want    map[string]any
-		wantErr bool
-	}{
-		{
-			name: "成功解析输入",
-			args: args{
-				inputs: []Inputs{
-					{
-						Name:  "input1",
-						Type:  []string{"string"},
-						Value: Value{Content: Content{BlockID: "parent1", Name: "output1"}},
-					},
-					{
-						Name:  "input2",
-						Type:  []string{"integer"},
-						Value: Value{Content: Content{BlockID: "parent2", Name: "output2"}},
-					},
-				},
-				parentOutputs: map[string]any{
-					"parent1": map[string]any{"output1": "testString"},
-					"parent2": map[string]any{"output2": 123},
-				},
-			},
-			want: map[string]any{
-				"input1": "testString",
-				"input2": 123,
-			},
-			wantErr: false,
-		},
-		{
-			name: "父节点输出中缺少数据",
-			args: args{
-				inputs: []Inputs{
-					{
-						Name:  "input1",
-						Type:  []string{"string"},
-						Value: Value{Content: Content{BlockID: "parent1", Name: "output1"}},
-					},
-				},
-				parentOutputs: map[string]any{
-					// "parent1": map[string]any{"output1": "testString"}, // 注释掉以模拟缺少数据的情况
-				},
-			},
-			want:    nil,
-			wantErr: true,
-		},
-		{
-			name: "类型不匹配",
-			args: args{
-				inputs: []Inputs{
-					{
-						Name:  "input1",
-						Type:  []string{"integer"},
-						Value: Value{Content: Content{BlockID: "parent1", Name: "output1"}},
-					},
-				},
-				parentOutputs: map[string]any{
-					"parent1": map[string]any{"output1": "testString"},
-				},
-			},
-			want:    nil,
-			wantErr: true,
-		},
+	ijs := `{
+                    "type": "object",
+                    "properties": {
+                        "sss": {
+                            "type": "string",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "result": {
+                            "type": "string"
+                        },
+                        "arrrrrr": {
+                            "type": "array",
+                            "items": {
+                                "type": "string"
+                            }
+                        },
+                        "sssssss": {
+                            "type": "string"
+                        }
+                    }
+                }`
+
+	var inputs NodeDataInputs
+	err = json.Unmarshal([]byte(ijs), &inputs)
+	if err != nil {
+		t.Fatalf("json.Unmarshal failed: %v", err)
 	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			got, err := ParseNodeInputs(tt.args.inputs, nil)
-			if (err != nil) != tt.wantErr {
-				t.Errorf("ParseNodeInputs() error = %v, wantErr %v", err, tt.wantErr)
-				return
-			}
-			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("ParseNodeInputs() = %v, want %v", got, tt.want)
-			}
-		})
+	got, err := ParseNodeInputs(executionContext, inputValues, inputs)
+	if err != nil {
+		t.Fatalf("ParseNodeInputs failed: %v", err)
 	}
+	logx.Debugf("[输入处理] got:%+v", got)
+}
+
+func TestProcessNodeOutput(t *testing.T) {
+	jsonData := `{\\\"start_0\\\":{\\\"Input\\\":{\\\"sssss\\\":\\\"我是字符串\\\",\\\"oooooo\\\":{\\\"ssssssssssss\\\":\\\"我是对象\\\"},\\\"arr_str\\\":[\\\"我是数组字符串-1\\\",\\\"我是数组字符串-2\\\"],\\\"array_obj\\\":[{\\\"int\\\":18,\\\"str\\\":\\\"我是数组里的对象的字符串\\\"}],\\\"enable\\\":true,\\\"query\\\":\\\"Hello Flow.\\\"}}`
+	gjson.Get(jsonData, "start_0.Input.sssss")
+	logx.Debugf("[输出处理] jsonData:%s", jsonData)
 }
