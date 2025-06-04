@@ -1,8 +1,6 @@
 package asynq
 
 import (
-	"fmt"
-
 	"github.com/hibiken/asynq"
 	"github.com/zeromicro/go-zero/core/logx"
 
@@ -34,8 +32,8 @@ func InitAsynqServer(ctx *svc.ServiceContext) {
 	// 启动服务
 	go func() {
 		if err := server.Run(mux); err != nil {
-			logx.Errorf("[异步任务] 服务器启动失败 [错误:%v]", err)
+			logx.Errorf("[Async Task] Server startup failed [Error:%v]", err)
 		}
 	}()
-	fmt.Println("[异步任务] 服务器初始化成功")
+	logx.Infof("[Async Task] Server startup success")
 }

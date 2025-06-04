@@ -14,13 +14,13 @@ func (e *WorkflowEngine) RegisterWorkflow(ctx context.Context, id string, def *c
 	// 构建执行计划
 	plan, err := e.buildExecutionPlan(ctx, def)
 	if err != nil {
-		return errors.New("无法构建执行计划: " + err.Error())
+		return errors.New("failed to build execution plan: " + err.Error())
 	}
 
 	// 构建条件路由
 	condition, err := e.buildConditionRouter(def)
 	if err != nil {
-		return errors.New("无法构建条件映射: " + err.Error())
+		return errors.New("failed to build condition mapping: " + err.Error())
 	}
 
 	// 创建新的执行器
@@ -73,7 +73,7 @@ func (e *WorkflowEngine) buildExecutionPlan(ctx context.Context, def *core.Workf
 		}
 
 		if len(phaseNodes) == 0 {
-			return nil, errors.New("工作流中存在循环依赖")
+			return nil, errors.New("workflow has circular dependency")
 		}
 
 		phases = append(phases, ExecutionPhase{Nodes: phaseNodes})

@@ -2,7 +2,6 @@ package engine
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"maps"
 	"reflect"
@@ -11,6 +10,7 @@ import (
 	"time"
 
 	"github.com/bytedance/sonic"
+	"github.com/rotisserie/eris"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/components"
@@ -21,10 +21,10 @@ import (
 func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string, serialID string, params map[string]any) error {
 	// 参数校验
 	if params == nil {
-		return errors.New("参数为空")
+		return eris.New("params is nil")
 	}
 
-	logx.Debugf("[工作流] 执行参数: %+v", params)
+	logx.Debugf("[Workflow] Execute parameters: %+v", params)
 
 	// 获取工作流执行器
 	e.mu.RLock()
@@ -32,12 +32,12 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 	e.mu.RUnlock()
 
 	if !ok {
-		return errors.New("工作流未找到: " + workflowID)
+		return eris.New("workflow not found: " + workflowID)
 	}
 
 	// 检查工作流状态
 	if executor.status == core.WorkflowStatusShutdown {
-		return errors.New("工作流正在关闭: " + workflowID)
+		return eris.New("workflow is shutting down: " + workflowID)
 	}
 
 	// 更新访问时间
@@ -82,7 +82,7 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 	startTime := time.Now()
 	executor, ok := e.executorPool[workflowID]
 	if !ok {
-		return nil, errors.New("工作流未找到: " + workflowID)
+		return nil, eris.New("workflow not found: " + workflowID)
 	}
 
 	var node *core.Nodes
@@ -110,15 +110,15 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 	// 执行节点
 	component, err := components.ComponentFactory(e, node.Type, node.Data)
 	if err != nil {
-		logx.Errorw("无法创建组件", logx.Field("error", err.Error()))
+		logx.Errorw("failed to create component", logx.Field("error", err.Error()))
 		nodeResult.Error = err.Error()
-		return nodeResult, errors.New("无法创建组件: " + err.Error())
+		return nodeResult, eris.New("failed to create component: " + err.Error())
 	}
 	result, err := e.executeNode(execCtx, 0, nodeId, node, component, params)
 	if err != nil {
-		logx.Errorw("执行节点失败", logx.Field("error", err.Error()))
+		logx.Errorw("failed to execute node", logx.Field("error", err.Error()))
 		nodeResult.Error = err.Error()
-		return nodeResult, errors.New("执行节点失败: " + err.Error())
+		return nodeResult, eris.New("failed to execute node: " + err.Error())
 	}
 	nodeResult.Output = result.Output
 	nodeResult.Duration = time.Since(startTime).Milliseconds()
@@ -132,20 +132,20 @@ func (e *WorkflowEngine) GetNodeResult(workflowID, serialID, nodeID string) (*co
 	e.mu.RUnlock()
 
 	if !ok {
-		logx.Debugf("[工作流] 获取节点结果, 工作流未找到: %s", workflowID)
+		logx.Debugf("[Workflow] Get node result, workflow not found: %s", workflowID)
 		return nil, false
 	}
 
 	// 使用sync.Map获取执行上下文
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
-		logx.Debugf("[工作流] 获取节点结果, 执行上下文未找到: %s", serialID)
+		logx.Debugf("[Workflow] Get node result, execution context not found: %s", serialID)
 		return nil, false
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
 	if !ok {
-		logx.Debugf("[工作流] 获取节点结果, 执行上下文类型错误: %s", serialID)
+		logx.Debugf("[Workflow] Get node result, execution context type error: %s", serialID)
 		return nil, false
 	}
 
@@ -155,10 +155,10 @@ func (e *WorkflowEngine) GetNodeResult(workflowID, serialID, nodeID string) (*co
 // executeWorkflowPhases 执行工作流阶段
 func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext) error {
 	// 总执行计划
-	logx.Debugf("[工作流] 总执行计划: %d", len(executor.executionPlan.Phases))
+	logx.Debugf("[Workflow] Total execution plan: %d", len(executor.executionPlan.Phases))
 	for phaseIdx, phase := range executor.executionPlan.Phases {
 		if err := e.executePhase(ctx, executor, execCtx, phase, phaseIdx); err != nil {
-			logx.Errorw("[工作流] 执行阶段失败", logx.Field("阶段索引", phaseIdx), logx.Field("错误", err.Error()))
+			logx.Errorw("[Workflow] Execute phase failed", logx.Field("phase index", phaseIdx), logx.Field("error", err.Error()))
 		}
 	}
 	return nil
@@ -170,14 +170,14 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
 
-	logx.Debugf("[工作流] 执行阶段: %d, 节点数: %d", phaseIdx, len(phase.Nodes))
+	logx.Debugf("[Workflow] Execute phase: %d, node count: %d", phaseIdx, len(phase.Nodes))
 	// 获取单例协程池
 	var execWg sync.WaitGroup
 	pool := GetGlobalPool()
 
 	// 创建错误收集器
 	var errMu sync.Mutex
-	var errors []error
+	var eris []error
 
 	for i, node := range phase.Nodes {
 		execWg.Add(1)
@@ -185,38 +185,30 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 			defer execWg.Done()
 			err := e.handleNodeExecution(execCtx, phaseIdx*1000+i, executor, node)
 			if err != nil {
-				logx.Errorw("[工作流] 执行节点失败",
-					logx.Field("节点ID", node.ID),
-					logx.Field("节点名称", node.Data.Title),
-					logx.Field("节点类型", node.Type),
-					logx.Field("traceId", execCtx.TraceId),
-					logx.Field("error", err.Error()))
+				logx.Errorf("[Workflow] Execute node failed: id %s, name %s, type %s, traceId %s, error %s",
+					node.ID, node.Data.Title, node.Type, execCtx.TraceId, err.Error())
 
 				// 收集错误
 				errMu.Lock()
-				errors = append(errors, fmt.Errorf("节点[%s]执行失败: %w", node.ID, err))
+				eris = append(eris, fmt.Errorf("node[%s] execute failed: %w", node.ID, err))
 				errMu.Unlock()
 			}
 		})
 		if err != nil {
-			logx.Errorw("[工作流] 提交节点失败",
-				logx.Field("节点ID", node.ID),
-				logx.Field("节点名称", node.Data.Title),
-				logx.Field("节点类型", node.Type),
-				logx.Field("traceId", execCtx.TraceId),
-				logx.Field("error", err.Error()))
+			logx.Errorf("[Workflow] Submit node failed: id %s, name %s, type %s, traceId %s, error %s",
+				node.ID, node.Data.Title, node.Type, execCtx.TraceId, err.Error())
 
 			// 收集提交错误
 			errMu.Lock()
-			errors = append(errors, fmt.Errorf("节点[%s]提交失败: %w", node.ID, err))
+			eris = append(eris, fmt.Errorf("节点[%s]提交失败: %w", node.ID, err))
 			errMu.Unlock()
 		}
 	}
 	execWg.Wait()
 
 	// 如果有错误，返回组合错误
-	if len(errors) > 0 {
-		return fmt.Errorf("阶段[%d]执行失败: %v", phaseIdx, errors)
+	if len(eris) > 0 {
+		return fmt.Errorf("phase[%d] execute failed: %v", phaseIdx, eris)
 	}
 	return nil
 }
@@ -234,14 +226,14 @@ func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, pha
 		return err
 	}
 	if !ok {
-		logx.Debugf("[工作流] 节点路由跳过: %s", node.ID)
+		logx.Debugf("[Workflow] Node route skipped: %s", node.ID)
 		return nil
 	}
 
 	// 创建并执行组件
 	component, err := components.ComponentFactory(e, node.Type, node.Data)
 	if err != nil {
-		return errors.New("无法创建组件 [" + node.ID + "]: " + err.Error())
+		return eris.New("failed to create component [" + node.ID + "]: " + err.Error())
 	}
 
 	// 直接执行节点，不使用线程池
@@ -257,7 +249,7 @@ func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, pha
 func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseIdx int64, node *WorkflowNode) error {
 	params, bool := execCtx.GetVariable("_zero")
 	if !bool {
-		return errors.New("无数据输入")
+		return eris.New("no data input")
 	}
 	output, err := core.ProcessNodeOutput(params.(map[string]any), node.Data.NodeDataOutputs)
 	var errorMsg string
@@ -303,7 +295,7 @@ func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseI
 func (e *WorkflowEngine) checkNodeRoute(execCtx *core.ExecutionContext, executor *Executor, node *WorkflowNode) (bool, error) {
 	route, ok := executor.conditionRouter[node.ID]
 	if !ok {
-		return false, errors.New("节点初始化路由未找到: " + node.ID)
+		return false, eris.New("node initialization route not found: " + node.ID)
 	}
 
 	if !execCtx.CheckRoute(route) {
@@ -317,7 +309,8 @@ func (e *WorkflowEngine) checkNodeRoute(execCtx *core.ExecutionContext, executor
 // handleSkippedNode 处理跳过的节点
 func (e *WorkflowEngine) handleSkippedNode(execCtx *core.ExecutionContext, node *WorkflowNode) error {
 	// todo 补齐默认值
-	logx.Debugf("%s节点必要路由未找到,补空参数\n", node.ID)
+
+	logx.Debugf("[Workflow] %s node necessary route not found, fill empty parameters\n", node.ID)
 
 	output, err := core.ProcessNodeOutput(map[string]any{}, node.Data.NodeDataOutputs)
 	if err != nil {
@@ -348,7 +341,7 @@ func (e *WorkflowEngine) prepareNodeInput(ctx *core.ExecutionContext, err error,
 	if node.Type == "start" {
 		zero, ok := ctx.GetVariable("_zero")
 		if !ok {
-			return nil, errors.New("输入参数未找到")
+			return nil, eris.New("input parameter not found")
 		}
 		return core.ProcessNodeOutput(zero.(map[string]any), node.Data.NodeDataOutputs)
 	}
@@ -365,7 +358,7 @@ func (e *WorkflowEngine) prepareNodeInput(ctx *core.ExecutionContext, err error,
 	// 1. 获取自定义输入
 	customInput, err := component.AnalyzeInputs(ctx)
 	if err != nil {
-		return nil, errors.New("分析自定义输入失败: " + err.Error())
+		return nil, eris.New("failed to analyze custom input: " + err.Error())
 	}
 
 	// 2. 如果有自定义输入，先复制到合并结果中
@@ -375,14 +368,14 @@ func (e *WorkflowEngine) prepareNodeInput(ctx *core.ExecutionContext, err error,
 				mergedInput[k] = v
 			}
 		} else {
-			return nil, errors.New("自定义输入必须是map类型")
+			return nil, eris.New("custom input must be map type")
 		}
 	}
 
 	// 3. 获取标准输入
 	standardInput, err := core.ParseNodeInputs(ctx, node.Data.NodeDataInputsValue, node.Data.NodeDataInputs)
 	if err != nil {
-		return nil, errors.New("解析标准输入失败: " + err.Error())
+		return nil, eris.New("failed to parse standard input: " + err.Error())
 	}
 
 	// 4. 合并标准输入
@@ -412,7 +405,7 @@ func (e *WorkflowEngine) processNodeOutput(input any, err error, result *core.Re
 
 	output, err := core.ProcessNodeOutput(result.Output.(map[string]any), node.Data.NodeDataOutputs)
 	if err != nil {
-		return nil, errors.New("处理输出映射失败: " + err.Error())
+		return nil, eris.New("failed to process output mapping: " + err.Error())
 	}
 	return output, nil
 }
@@ -488,21 +481,18 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 	// 6. 创建并返回结果
 	nodeResult := e.createNodeResult(node, input, output, result, startTime)
 	if err := e.updateWorkflowState(ctx, nil, []*core.NodeResult{nodeResult}); err != nil {
-		logx.Errorf("[工作流状态] 更新失败 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [错误:%v]",
+		logx.Errorf("[Workflow] Update failed [WorkflowID:%s] [SerialID:%s] [NodeID:%s] [Error:%v]",
 			ctx.WorkspaceId, ctx.TraceId, node.ID, err)
 		return nil, err
 	}
 	outputJson, err := sonic.Marshal(output)
 	if err != nil {
-		logx.Errorf("[工作流状态] 输出结果序列化失败 [工作流ID:%s] [序列ID:%s] [节点ID:%s] [错误:%v]",
+		logx.Errorf("[Workflow] Output result serialization failed [WorkflowID:%s] [SerialID:%s] [NodeID:%s] [Error:%v]",
 			ctx.WorkspaceId, ctx.TraceId, node.ID, err)
 		return nil, err
 	}
 
-	logx.Infow("[引擎] 节点执行完成",
-		logx.Field("traceId", ctx.TraceId),
-		logx.Field("节点ID", nodeID),
-		logx.Field("输出", string(outputJson)))
+	logx.Infof("[Workflow] Node execution completed traceId: %s, node id: %s, output: %s", ctx.TraceId, nodeID, string(outputJson))
 	return result, nil
 }
 
@@ -514,7 +504,7 @@ func (e *WorkflowEngine) validateComponent(component components.Component, nodeI
 		validateErrors = exception.Validate()
 	}
 	if len(validateErrors) > 0 {
-		return errors.New("组件 [" + nodeID + "] 验证失败: " + fmt.Sprintf("%+v", validateErrors))
+		return eris.New("component [" + nodeID + "] validation failed: " + fmt.Sprintf("%+v", validateErrors))
 	}
 	return nil
 }
@@ -539,7 +529,7 @@ func (e *WorkflowEngine) executeComponent(ctx *core.ExecutionContext, err error,
 		if err == nil && ctx.Err() == nil {
 			break
 		}
-		logx.Debug("执行失败，重试: ", err.Error())
+		logx.Debugf("[Workflow] Execute failed, retry: %s", err.Error())
 	}
 	return result, err
 }
@@ -550,7 +540,7 @@ func (e *WorkflowEngine) updateNodeContext(ctx *core.ExecutionContext, err error
 		return err
 	}
 	if output != nil {
-		logx.Debugf("[工作流] 更新节点上下文: %s, %+v", nodeID, output)
+		logx.Debugf("[Workflow] Update node context: %s, %+v", nodeID, output)
 		ctx.SetVariable(nodeID+".output", output)
 	}
 	return nil
@@ -599,14 +589,11 @@ func (e *WorkflowEngine) updateWorkflowState(ctx *core.ExecutionContext, err err
 	// 使用安全的方法进行序列化
 	resjson, err := ctx.MarshalResult()
 	if err != nil {
-		logx.Errorf("[工作流状态] 序列化失败 [工作流ID:%s] [序列ID:%s] [错误:%v]",
+		logx.Errorf("[Workflow] Serialization failed [WorkflowID:%s] [SerialID:%s] [Error:%v]",
 			ctx.WorkspaceId, ctx.TraceId, err)
 		return err
 	}
 
-	logx.Infow("[引擎] 阶段执行结果",
-		logx.Field("traceId", ctx.TraceId),
-		logx.Field("工作流ID", ctx.WorkspaceId),
-		logx.Field("输出", string(resjson)))
+	logx.Infof("[Workflow] Phase execution result traceId: %s, workflowId: %s, output: %s", ctx.TraceId, ctx.WorkspaceId, string(resjson))
 	return nil
 }

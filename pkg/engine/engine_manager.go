@@ -79,7 +79,7 @@ func (e *WorkflowEngine) DeregisterWorkflow(ctx context.Context, workflowID stri
 	executor, exists := e.executorPool[workflowID]
 	if !exists {
 		e.mu.Unlock()
-		return errors.New("工作流未找到: " + workflowID)
+		return errors.New("workflow not found: " + workflowID)
 	}
 
 	executor.status = core.WorkflowStatusShutdown
@@ -131,7 +131,7 @@ func (e *WorkflowEngine) gracefulDeregister(ctx context.Context, workflowID stri
 // Clear 释放资源
 func (e *WorkflowEngine) Clear(component components.Component) {
 	component.Clear()
-	logx.Debugf("[工作流] 释放组件")
+	logx.Debugf("[Workflow] Release component")
 }
 
 // 启动清理协程
@@ -197,7 +197,7 @@ func (e *WorkflowEngine) Cleanup() {
 	for id, executor := range e.executorPool {
 		close(executor.shutdownCh)
 		delete(e.executorPool, id)
-		logx.Debugf("[工作流] 关闭执行器: %s", id)
+		logx.Debugf("[Workflow] Close executor: %s", id)
 	}
 	e.mu.Unlock()
 }
@@ -209,17 +209,17 @@ func (e *WorkflowEngine) GetExecutionContext(workflowID, serialID string) (*core
 
 	executor, ok := e.executorPool[workflowID]
 	if !ok {
-		return nil, errors.New("工作流未找到: " + workflowID)
+		return nil, errors.New("workflow not found: " + workflowID)
 	}
 
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
-		return nil, errors.New("执行上下文未找到: " + workflowID + ", " + serialID)
+		return nil, errors.New("execution context not found: " + workflowID + ", " + serialID)
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
 	if !ok {
-		return nil, errors.New("执行上下文类型错误: " + workflowID + ", " + serialID)
+		return nil, errors.New("execution context type error: " + workflowID + ", " + serialID)
 	}
 
 	return execCtx, nil
@@ -230,12 +230,12 @@ func (e *WorkflowEngine) ClearExecutionContext(workflowID, serialID string) erro
 	executor, ok := e.executorPool[workflowID]
 	e.mu.RUnlock()
 	if !ok {
-		return errors.New("工作流未找到: " + workflowID)
+		return errors.New("workflow not found: " + workflowID)
 	}
 
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
-		return errors.New("执行上下文未找到: " + workflowID + ", " + serialID)
+		return errors.New("execution context not found: " + workflowID + ", " + serialID)
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
@@ -279,28 +279,28 @@ func (e *WorkflowEngine) PauseWorkflow(ctx context.Context, workflowID string, s
 	e.mu.RUnlock()
 
 	if !ok {
-		return errors.New("工作流未找到: " + workflowID)
+		return errors.New("workflow not found: " + workflowID)
 	}
 
 	// 检查工作流状态
 	if executor.status == core.WorkflowStatusShutdown {
-		return errors.New("工作流正在关闭: " + workflowID)
+		return errors.New("workflow is shutting down: " + workflowID)
 	}
 
 	// 使用sync.Map获取执行上下文
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
-		return errors.New("工作流执行实例未找到: " + workflowID + ", " + serialID)
+		return errors.New("workflow execution instance not found: " + workflowID + ", " + serialID)
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
 	if !ok {
-		return errors.New("工作流执行上下文类型错误: " + workflowID + ", " + serialID)
+		return errors.New("workflow execution context type error: " + workflowID + ", " + serialID)
 	}
 
 	// 检查执行状态
 	if execCtx.State.Status != core.StatusRunning {
-		return errors.New("工作流执行状态不是运行中: " + workflowID + ", " + serialID + ", 当前状态: " + string(execCtx.State.Status))
+		return errors.New("workflow execution status is not running: " + workflowID + ", " + serialID + ", current status: " + string(execCtx.State.Status))
 	}
 
 	// 更新执行状态为暂停
@@ -309,12 +309,12 @@ func (e *WorkflowEngine) PauseWorkflow(ctx context.Context, workflowID string, s
 	// 获取并调用取消函数
 	cancelVal, ok := execCtx.GetVariable("cancel")
 	if !ok {
-		return errors.New("无法获取取消函数: " + workflowID + ", " + serialID)
+		return errors.New("failed to get cancel function: " + workflowID + ", " + serialID)
 	}
 
 	cancel, ok := cancelVal.(context.CancelFunc)
 	if !ok {
-		return errors.New("取消函数类型错误: " + workflowID + ", " + serialID)
+		return errors.New("cancel function type error: " + workflowID + ", " + serialID)
 	}
 
 	// 调用取消函数

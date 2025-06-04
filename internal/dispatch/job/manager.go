@@ -30,9 +30,7 @@ func (m *DcronManager) AddJob(id string, cron string, job dcron.Job) error {
 	}
 	err := m.Dcron.AddJob(id, cron, job)
 	if err != nil {
-		logx.Errorw("[任务管理器] 创建任务失败",
-			logx.Field("任务ID", id),
-			logx.Field("错误", err))
+		logx.Errorf("[Job Manager] Job creation failed [JobID:%s] [Error:%v]", id, err)
 		return err
 	}
 
@@ -41,10 +39,7 @@ func (m *DcronManager) AddJob(id string, cron string, job dcron.Job) error {
 	for _, job := range jobs {
 		jobNames = append(jobNames, job.Name)
 	}
-	logx.Infow("[任务管理器] 任务创建成功",
-		logx.Field("任务ID", id),
-		logx.Field("当前任务数", len(jobs)),
-		logx.Field("任务列表", jobNames))
+	logx.Infof("[Job Manager] Job creation success [JobID:%s] [CurrentJobCount:%d] [JobList:%v]", id, len(jobs), jobNames)
 	return nil
 }
 
@@ -58,10 +53,7 @@ func (m *DcronManager) RemoveJob(id string) {
 	for _, job := range jobs {
 		jobNames = append(jobNames, job.Name)
 	}
-	logx.Infow("[任务管理器] 移除任务成功",
-		logx.Field("任务ID", id),
-		logx.Field("当前任务数", len(jobs)),
-		logx.Field("任务列表", jobNames))
+	logx.Infof("[Job Manager] Job removal success [JobID:%s] [CurrentJobCount:%d] [JobList:%v]", id, len(jobs), jobNames)
 }
 
 // 编辑任务
@@ -71,10 +63,7 @@ func (m *DcronManager) EditJob(id string, cron string, job dcron.Job) error {
 	m.Dcron.Remove(id)
 	err := m.Dcron.AddJob(id, cron, job)
 	if err != nil {
-		logx.Errorw("[任务管理器] 更新任务状态失败",
-			logx.Field("任务ID", id),
-			logx.Field("状态", "编辑"),
-			logx.Field("错误", err))
+		logx.Errorf("[Job Manager] Job update failed [JobID:%s] [Error:%v]", id, err)
 		return err
 	}
 	jobs := m.Dcron.GetJobs(false)
@@ -83,9 +72,7 @@ func (m *DcronManager) EditJob(id string, cron string, job dcron.Job) error {
 	for _, job := range jobs {
 		jobNames = append(jobNames, job.Name)
 	}
-	logx.Infow("[任务管理器] 任务状态更新成功",
-		logx.Field("任务ID", id),
-		logx.Field("状态", "编辑"))
+	logx.Infof("[Job Manager] Job update success [JobID:%s] [CurrentJobCount:%d] [JobList:%v]", id, len(jobs), jobNames)
 	return nil
 }
 
@@ -93,7 +80,5 @@ func (m *DcronManager) EditJob(id string, cron string, job dcron.Job) error {
 func (m *DcronManager) Stop() {
 	m.Cancel()
 	jobs := m.Dcron.GetJobs(false)
-	logx.Infow("[任务管理器] 停止所有任务",
-		logx.Field("当前任务数", len(jobs)),
-		logx.Field("任务列表", jobs))
+	logx.Infof("[Job Manager] Stop all jobs [CurrentJobCount:%d] [JobList:%v]", len(jobs), jobs)
 }

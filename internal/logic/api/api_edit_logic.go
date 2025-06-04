@@ -29,33 +29,33 @@ func NewApiEditLogic(ctx context.Context, svcCtx *svc.ServiceContext) *ApiEditLo
 func (l *ApiEditLogic) ApiEdit(req *types.ApiEditRequest) (resp *types.ApiEditResponse, err error) {
 	// 校验参数
 	if req.ApiId == "" {
-		return nil, errors.New(int(logic.SystemError), "apiId不能为空")
+		return nil, errors.New(int(logic.SystemError), "apiId is required")
 	}
 	// 校验 apiName
 	if req.ApiName == "" {
-		return nil, errors.New(int(logic.SystemError), "apiName不能为空")
+		return nil, errors.New(int(logic.SystemError), "apiName is required")
 	}
 	// 校验 apiDesc
 	if req.ApiDesc == "" {
-		return nil, errors.New(int(logic.SystemError), "apiDesc不能为空")
+		return nil, errors.New(int(logic.SystemError), "apiDesc is required")
 	}
 	// 查询api
 	api, err := l.svcCtx.ApiModel.FindOneByApiId(l.ctx, req.ApiId)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "apiId不存在")
+		return nil, errors.New(int(logic.SystemError), "apiId not found")
 	}
 	// 更新api
 	api.ApiName = req.ApiName
 	api.ApiDesc = req.ApiDesc
 	tagJson, err := sonic.Marshal(req.Tag)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "tag转换失败")
+		return nil, errors.New(int(logic.SystemError), "tag conversion failed")
 	}
 	api.Tag = string(tagJson)
 
 	err = l.svcCtx.ApiModel.Update(l.ctx, api)
 	if err != nil {
-		return nil, errors.New(int(logic.SystemError), "更新api失败")
+		return nil, errors.New(int(logic.SystemError), "update api failed")
 	}
 
 	return &types.ApiEditResponse{

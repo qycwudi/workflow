@@ -48,10 +48,8 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 				UpdateBy:    userIdStr,
 			})
 			if err != nil {
-				logx.Errorw("[画布] 新增画布草案失败",
-					logx.Field("工作空间ID", req.Id),
-					logx.Field("错误", err))
-				return nil, errors.New(int(logic.SystemOrmError), "新增画布草案失败")
+				logx.Errorf("[Canvas] Failed to add canvas draft [WorkspaceID:%s] [Error:%v]", req.Id, err)
+				return nil, errors.New(int(logic.SystemOrmError), "Failed to add canvas draft")
 			}
 			resp = &types.CanvasDraftResponse{
 				Hash:       utils.NewUuid(),
@@ -59,10 +57,8 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 			}
 			return resp, nil
 		} else {
-			logx.Errorw("[画布] 查询画布草案失败",
-				logx.Field("工作空间ID", req.Id),
-				logx.Field("错误", err))
-			return nil, errors.New(int(logic.SystemOrmError), "查询画布草案失败")
+			logx.Errorf("[Canvas] Failed to query canvas draft [WorkspaceID:%s] [Error:%v]", req.Id, err)
+			return nil, errors.New(int(logic.SystemOrmError), "Failed to query canvas draft")
 		}
 	}
 	// 更新
@@ -71,10 +67,8 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 	canvas.UpdateBy = userIdStr
 	err = l.svcCtx.CanvasModel.Update(l.ctx, canvas)
 	if err != nil {
-		logx.Errorw("[画布] 更新画布草案失败",
-			logx.Field("工作空间ID", req.Id),
-			logx.Field("错误", err))
-		return nil, errors.New(int(logic.SystemOrmError), "更新画布草案失败")
+		logx.Errorf("[Canvas] Failed to update canvas draft [WorkspaceID:%s] [Error:%v]", req.Id, err)
+		return nil, errors.New(int(logic.SystemOrmError), "Failed to update canvas draft")
 	}
 	resp = &types.CanvasDraftResponse{
 		Hash:       utils.NewUuid(),

@@ -41,13 +41,13 @@ type TraceRecore struct {
 func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 	input, err := sonic.Marshal(trace.Input)
 	if err != nil {
-		logx.Errorw("[追踪] 序列化输入数据失败", logx.Field("错误", err))
+		logx.Errorf("[Trace] Serialization failed [Input:%v] [Error:%v]", trace.Input, err)
 	}
 	var logic string
 	if trace.Logic != nil {
 		logics, err := sonic.Marshal(trace.Logic)
 		if err != nil {
-			logx.Errorw("[追踪] 序列化逻辑数据失败", logx.Field("错误", err))
+			logx.Errorf("[Trace] Serialization failed [Logic:%v] [Error:%v]", trace.Logic, err)
 		}
 		logic = string(logics)
 	} else {
@@ -57,7 +57,7 @@ func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 	if trace.Output != "" {
 		output, err = sonic.Marshal(trace.Output)
 		if err != nil {
-			logx.Errorw("[追踪] 序列化输出数据失败", logx.Field("错误", err))
+			logx.Errorf("[Trace] Serialization failed [Output:%v] [Error:%v]", trace.Output, err)
 		}
 	}
 	result, err := t.TraceModel.Insert(ctx, &model.Trace{
@@ -76,13 +76,13 @@ func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 		ErrorMsg:    trace.ErrorMsg,
 	})
 	if err != nil {
-		logx.Errorw("[追踪] 插入追踪记录失败", logx.Field("错误", err))
+		logx.Errorf("[Trace] Insert failed [Error:%v]", err)
 	}
 	rows, err := result.RowsAffected()
 	if err != nil {
-		logx.Errorw("[追踪] 获取影响行数失败", logx.Field("错误", err))
+		logx.Errorf("[Trace] Get affected rows failed [Error:%v]", err)
 	}
-	logx.Infow("[追踪] 创建追踪记录", logx.Field("影响行数", rows))
+	logx.Infof("[Trace] Create trace record [AffectedRows:%d]", rows)
 }
 
 func (t *TraceModel) UpdateTrace(ctx context.Context, trace *TraceRecore) {
