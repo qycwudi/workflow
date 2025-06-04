@@ -3,13 +3,13 @@ package components
 import (
 	"bytes"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
-	"regexp"
+	"net/url"
 	"strings"
 	"sync"
+	"text/template"
 	"time"
 
 	"github.com/bytedance/sonic"
@@ -27,14 +27,22 @@ type HTTPComponent struct {
 }
 
 type HTTPConfig struct {
-	URL             string            `json:"url"`
-	Method          string            `json:"method"`
-	Headers         map[string]string `json:"headers"`
-	Params          map[string]any    `json:"params"`
-	Body            string            `json:"body,omitempty"`
-	Retries         int               `json:"retries"`
-	Timeout         int64             `json:"timeout"`
-	ExceptionConfig ExceptionConfig   `json:"exceptionConfig"`
+	ApiURL               string                               `json:"apiUrl"`
+	ApiMethod            string                               `json:"apiMethod"`
+	BodyType             string                               `json:"bodyType"`
+	IgnoreError          bool                                 `json:"ignoreError"`
+	Retries              int64                                `json:"retries"`
+	Timeout              int64                                `json:"timeout"` // 秒
+	RequestHeaders       core.NodeDataInputs                  `json:"requestHeaders"`
+	RequestHeadersValues map[string]core.NodeDataInputsValues `json:"requestHeadersValues"`
+	RequestParams        core.NodeDataInputs                  `json:"requestParams"`
+	RequestParamsValues  map[string]core.NodeDataInputsValues `json:"requestParamsValues"`
+	BodyFormData         core.NodeDataInputs                  `json:"bodyFormData"`
+	BodyFormDataValues   map[string]core.NodeDataInputsValues `json:"bodyFormDataValues"`
+
+	BodyData string `json:"bodyData"`
+
+	ExceptionConfig ExceptionConfig `json:"exceptionConfig"`
 }
 
 var httpComponentPool = sync.Pool{
@@ -43,19 +51,17 @@ var httpComponentPool = sync.Pool{
 	},
 }
 
-func NewHTTPComponent(config json.RawMessage) (*HTTPComponent, error) {
-	c := HTTPConfig{}
-	if err := sonic.Unmarshal(config, &c); err != nil {
+func NewHTTPComponent(config any) (*HTTPComponent, error) {
+	jsonConfig, err := sonic.Marshal(config)
+	if err != nil {
 		return nil, errors.New("解析HTTP配置失败: " + err.Error())
 	}
-	if c.Timeout == 0 {
-		c.Timeout = 10
+	c := HTTPConfig{}
+	if err := sonic.Unmarshal(jsonConfig, &c); err != nil {
+		return nil, errors.New("解析HTTP配置失败: " + err.Error())
 	}
-	if c.Retries == 0 {
-		c.Retries = 1
-	}
-	timeout := time.Duration(c.Timeout) * time.Second
-	c.Timeout = int64(timeout)
+	c.ExceptionConfig.Timeout = c.Timeout
+	c.ExceptionConfig.RetryTimes = int(c.Retries)
 	// 使用pool
 	component := httpComponentPool.Get().(*HTTPComponent)
 	component.config = c
@@ -64,15 +70,15 @@ func NewHTTPComponent(config json.RawMessage) (*HTTPComponent, error) {
 
 func (c *HTTPComponent) Validate() []core.ValidationError {
 	var errors []core.ValidationError
-	if c.config.URL == "" {
+	if c.config.ApiURL == "" {
 		errors = append(errors, core.ValidationError{
-			Field:   "url",
-			Message: "URL不能为空",
+			Field:   "Url",
+			Message: "API URL不能为空",
 		})
 	}
-	if c.config.Method == "" {
+	if c.config.ApiMethod == "" {
 		errors = append(errors, core.ValidationError{
-			Field:   "method",
+			Field:   "Method",
 			Message: "请求方法不能为空",
 		})
 	}
@@ -84,98 +90,140 @@ var bodyKey = "body"
 var urlKey = "url"
 var isJSONKey = "isJSON"
 
+var bodyTypeJson = "json"
+var bodyTypeForm = "form-data"
+var bodyTypeNone = "none"
+
 func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
-	// var input map[string]any = make(map[string]any, 3)
-	// execCtx := ctx.(*core.ExecutionContext)
-	// headers, err := core.ParseNodeInputs(c.config.Headers, execCtx)
-	// if err != nil {
-	// 	logx.Errorw("[HTTP组件] 解析参数失败",
-	// 		logx.Field("错误", err))
-	// 	return nil, err
-	// }
-	// headersMap := make(map[string]interface{})
-	// for k, v := range headers {
-	// 	headersMap[k] = v
-	// }
-	// input[headerKey] = headersMap
+	var input map[string]any = make(map[string]any, 3)
+	execCtx := ctx.(*core.ExecutionContext)
+	headers, err := core.ParseNodeInputs(execCtx, c.config.RequestHeadersValues, c.config.RequestHeaders)
+	if err != nil {
+		logx.Errorw("[HTTP组件] 解析参数失败",
+			logx.Field("错误", err))
+		return nil, err
+	}
+	headersMap := make(map[string]interface{})
+	for k, v := range headers {
+		headersMap[k] = v
+	}
+	input[headerKey] = headersMap
 
-	// // body
-	// params := make(map[string]any)
-	// isJSON := false
-	// if len(c.config.Params) != 0 {
-	// 	params, err = core.ParseNodeInputs(c.config.Params, execCtx)
-	// 	if err != nil {
-	// 		logx.Errorw("[HTTP组件] 解析参数失败",
-	// 			logx.Field("错误", err))
-	// 		return nil, err
-	// 	}
-	// }
-	// if len(c.config.Body) != 0 {
-	// 	params, err = core.ParseNodeInputs(c.config.Body, execCtx)
-	// 	if err != nil {
-	// 		logx.Errorw("[HTTP组件] 解析请求体失败",
-	// 			logx.Field("错误", err))
-	// 		return nil, err
-	// 	}
-	// 	isJSON = true
-	// }
-	// // method http://localhost/{{block_output_100001.name}}/sss/sss 表达式{{}}如何解析
-	// url, err := parseMethod(execCtx, c.config.URL)
-	// if err != nil {
-	// 	return nil, err
-	// }
-	// input[urlKey] = url
-	// input[bodyKey] = params
-	// input[isJSONKey] = isJSON
+	isJSON := false
+	params := make(map[string]any)
+	// body form表单
+	if len(c.config.RequestParamsValues) > 0 {
+		requestParams, err := core.ParseNodeInputs(execCtx, c.config.RequestParamsValues, c.config.RequestParams)
+		if err != nil {
+			logx.Errorw("[HTTP组件] 解析参数失败",
+				logx.Field("错误", err))
+			return nil, err
+		}
+		params = requestParams
+	}
 
-	// return input, nil
-	return nil, nil
+	// method http://localhost/{{name}}/sss/sss 表达式{{}}
+	url, err := parseMethod(params, c.config.ApiURL)
+	if err != nil {
+		return nil, err
+	}
+
+	switch c.config.BodyType {
+	case bodyTypeForm:
+		if len(c.config.BodyFormDataValues) > 0 {
+			formData, err := core.ParseNodeInputs(execCtx, c.config.BodyFormDataValues, c.config.BodyFormData)
+			if err != nil {
+				logx.Errorw("[HTTP组件] 解析参数失败",
+					logx.Field("错误", err))
+				return nil, err
+			}
+			params = formData
+		}
+	case bodyTypeJson:
+		if c.config.BodyData != "{}" || c.config.BodyData != "" {
+			// 表达式 {{var}} 替换为 {{.var}} 去掉多余的双引号
+			jsonTemplate := strings.ReplaceAll(c.config.BodyData, "\"{{", "{{json .")
+			jsonTemplate = strings.ReplaceAll(jsonTemplate, "}}\"", "}}")
+			funcMap := template.FuncMap{
+				"json": func(v interface{}) (string, error) {
+					jsonData, err := sonic.Marshal(v)
+					if err != nil {
+						return "", err
+					}
+					return string(jsonData), nil
+				},
+			}
+			tmpl, err := template.New("json").Funcs(funcMap).Parse(jsonTemplate)
+			if err != nil {
+				logx.Errorw("[HTTP组件] 解析模板失败",
+					logx.Field("错误", err))
+				return nil, err
+			}
+			if err != nil {
+				logx.Errorw("[HTTP组件] 解析模板失败",
+					logx.Field("错误", err))
+				return nil, err
+			}
+
+			// 将数据应用到模板，并将结果写入一个 buffer
+			var filledJson bytes.Buffer
+			err = tmpl.Execute(&filledJson, params)
+			if err != nil {
+				logx.Errorw("[HTTP组件] 执行模板失败",
+					logx.Field("错误", err))
+				return nil, err
+			}
+			result := filledJson.String()
+			logx.Debugw("[HTTP组件] 执行模板后",
+				logx.Field("结果", result))
+			var bodyData map[string]any
+			if err := sonic.Unmarshal([]byte(result), &bodyData); err != nil {
+				logx.Errorw("[HTTP组件] 解析模板结果失败",
+					logx.Field("错误", err))
+				return nil, err
+			}
+			params = bodyData
+			isJSON = true
+		} else {
+			// 默认透传 params
+		}
+	case bodyTypeNone:
+		params = nil
+	default:
+		return nil, errors.New("bodyType 类型不支持")
+	}
+
+	input[urlKey] = url
+	input[bodyKey] = params
+	input[isJSONKey] = isJSON
+
+	return input, nil
 }
 
 func (c *HTTPComponent) Exception() ExceptionConfig {
 	return ExceptionConfig{}
 }
 
-func parseMethod(execCtx *core.ExecutionContext, method string) (string, error) {
-	logx.Debugf("method before: %v\n", method)
-	// 解析有多少个{{}}
-	re := regexp.MustCompile(`{{.*?}}`)
-	matches := re.FindAllString(method, -1)
-	blockMap := make(map[string]string, len(matches))
-	// 解析{{}}
-	for _, match := range matches {
-		logx.Debugw("[HTTP组件] 匹配表达式",
-			logx.Field("表达式", match))
-		// 去除{{}}
-		blockName := strings.Trim(match, "{{}}")
-		// start-node-1.output.name 读取截取output前的内容
-		blockNames := strings.Split(blockName, ".")
-		if len(blockNames) > 1 {
-			blockName = blockNames[0] + "." + blockNames[1]
-		}
-		value, ok := execCtx.GetVariable(blockName)
-		if !ok {
-			return "", errors.New("找不到变量: " + blockName)
-		}
-
-		for i := 2; i < len(blockNames); i++ {
-			// 嵌套查找 可能存在info.city
-			value, ok = value.(map[string]any)[blockNames[i]]
-			if !ok {
-				return "", errors.New("找不到变量: " + blockName + ",all:" + match)
-			}
-		}
-		blockMap[match] = fmt.Sprintf("%s", value)
+func parseMethod(params map[string]any, url string) (string, error) {
+	logx.Debugf("[HTTP组件] url before: %v\n", url)
+	// 1. 创建一个新的模板并解析模板定义
+	tmpl, err := template.New("json").Parse(url)
+	if err != nil {
+		logx.Errorw("[HTTP组件] 解析方法失败",
+			logx.Field("错误", err))
+		return "", err
 	}
-	logx.Debugw("[HTTP组件] 变量映射",
-		logx.Field("映射", blockMap))
-	// 替换表达式
-	for key, value := range blockMap {
-		method = strings.Replace(method, key, value, -1)
+	var filledJson bytes.Buffer
+	err = tmpl.Execute(&filledJson, params)
+	if err != nil {
+		logx.Errorw("[HTTP组件] 执行模板失败",
+			logx.Field("错误", err))
+		return "", err
 	}
+	result := filledJson.String()
 	logx.Debugw("[HTTP组件] 解析方法后",
-		logx.Field("方法", method))
-	return method, nil
+		logx.Field("方法", result))
+	return result, nil
 }
 
 func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
@@ -210,9 +258,9 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 		return nil, fmt.Errorf("url 类型不匹配")
 	}
 
-	client := NewHttpClient(time.Duration(c.config.Timeout), c.config.Retries)
+	client := NewHttpClient(time.Duration(c.config.Timeout)*time.Second, int(c.config.Retries))
 	statusCode, body, err := client.DoRequest(RequestOptions{
-		Method:  c.config.Method,
+		Method:  c.config.ApiMethod,
 		URL:     url,
 		Headers: headers,
 		Body:    params,
@@ -221,7 +269,7 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 	if err != nil {
 		logx.Errorw("[HTTP组件] 请求失败",
 			logx.Field("URL", url),
-			logx.Field("方法", c.config.Method),
+			logx.Field("方法", c.config.ApiMethod),
 			logx.Field("错误", err))
 		return &core.Result{
 			Route:  []string{Failed},
@@ -230,7 +278,7 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 	}
 	logx.Infow("[HTTP组件] 请求成功",
 		logx.Field("URL", url),
-		logx.Field("方法", c.config.Method),
+		logx.Field("方法", c.config.ApiMethod),
 		logx.Field("状态码", statusCode))
 	var result map[string]interface{}
 	if err := sonic.Unmarshal(body, &result); err != nil {
@@ -320,20 +368,18 @@ func (h *HttpClient) DoRequest(opts RequestOptions) (int, []byte, error) {
 			}
 			req.Header.Set("Content-Type", "application/json")
 		} else {
-			if str, ok := opts.Body.(string); ok {
-				bodyBytes = []byte(str)
-				req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
-			} else if formData, ok := opts.Body.(map[string]string); ok {
-				var formDataBytes bytes.Buffer
-				for key, value := range formData {
-					_, _ = formDataBytes.WriteString(key + "=" + value + "&")
+			if formData, ok := opts.Body.(map[string]any); ok {
+				data := url.Values{}
+				for k, v := range formData {
+					data.Set(k, fmt.Sprintf("%v", v))
 				}
-				bodyBytes = formDataBytes.Bytes()[:len(formDataBytes.Bytes())-1] // 去掉最后一个&
-				req.Header.Set("Content-Type", "multipart/form-data")
+				bodyBytes = []byte(data.Encode())
+				req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
 			} else {
 				return 0, nil, errors.New("invalid form body format")
 			}
 		}
+
 		req.SetBody(bodyBytes)
 	}
 

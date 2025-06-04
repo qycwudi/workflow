@@ -1,0 +1,322 @@
+{
+    "edges": [
+        {
+            "sourceNodeID": "start_0",
+            "targetNodeID": "http_1749015210539"
+        },
+        {
+            "sourceNodeID": "http_1749015210539",
+            "targetNodeID": "end_0"
+        }
+    ],
+    "nodes": [
+        {
+            "id": "start_0",
+            "data": {
+                "title": "Start",
+                "outputs": {
+                    "type": "object",
+                    "required": [
+                        "age",
+                        "graduation",
+                        "height",
+                        "name",
+                        "address",
+                        "info"
+                    ],
+                    "properties": {
+                        "age": {
+                            "key": 9,
+                            "name": "age",
+                            "type": "integer",
+                            "extra": {
+                                "index": 0
+                            },
+                            "description": "年龄",
+                            "isPropertyRequired": true
+                        },
+                        "info": {
+                            "key": 13,
+                            "name": "info",
+                            "type": "object",
+                            "extra": {
+                                "index": 5
+                            },
+                            "required": [],
+                            "properties": {
+                                "sex": {
+                                    "key": 14,
+                                    "name": "sex",
+                                    "type": "string",
+                                    "extra": {
+                                        "index": 0
+                                    },
+                                    "isPropertyRequired": false
+                                },
+                                "auth": {
+                                    "key": 44,
+                                    "name": "auth",
+                                    "type": "string",
+                                    "extra": {
+                                        "index": 3
+                                    }
+                                },
+                                "hobby": {
+                                    "key": 15,
+                                    "name": "hobby",
+                                    "type": "array",
+                                    "extra": {
+                                        "index": 1
+                                    },
+                                    "items": {
+                                        "type": "string"
+                                    },
+                                    "isPropertyRequired": false
+                                }
+                            },
+                            "isPropertyRequired": true
+                        },
+                        "name": {
+                            "key": 51,
+                            "name": "name",
+                            "type": "string",
+                            "extra": {
+                                "index": 3
+                            },
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "姓名",
+                            "isPropertyRequired": true
+                        },
+                        "height": {
+                            "key": 11,
+                            "name": "height",
+                            "type": "number",
+                            "extra": {
+                                "index": 2
+                            },
+                            "description": "身高",
+                            "isPropertyRequired": true
+                        },
+                        "vector": {
+                            "key": 16,
+                            "name": "vector",
+                            "type": "array",
+                            "extra": {
+                                "index": 6
+                            },
+                            "items": {
+                                "type": "number"
+                            },
+                            "isPropertyRequired": false
+                        },
+                        "address": {
+                            "key": 12,
+                            "name": "address",
+                            "type": "array",
+                            "extra": {
+                                "index": 4
+                            },
+                            "items": {
+                                "type": "string"
+                            },
+                            "isPropertyRequired": true
+                        },
+                        "graduation": {
+                            "key": 10,
+                            "name": "graduation",
+                            "type": "boolean",
+                            "extra": {
+                                "index": 1
+                            },
+                            "description": "是否毕业",
+                            "isPropertyRequired": true
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 172.2161327818325,
+                    "y": 3.028946017852661
+                }
+            },
+            "type": "start"
+        },
+        {
+            "id": "end_0",
+            "data": {
+                "title": "End",
+                "outputs": {
+                    "type": "object",
+                    "properties": {
+                        "code": {
+                            "type": "integer"
+                        },
+                        "bbody": {
+                            "type": "string"
+                        },
+                        "header": {
+                            "type": "string"
+                        }
+                    }
+                },
+                "inputsValues": {
+                    "code": {
+                        "type": "ref",
+                        "content": [
+                            "start_0",
+                            "age"
+                        ]
+                    },
+                    "bbody": {
+                        "type": "ref",
+                        "content": [
+                            "http_1749015210539",
+                            "body"
+                        ]
+                    },
+                    "header": {
+                        "type": "ref",
+                        "content": [
+                            "http_1749015210539",
+                            "headers"
+                        ]
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 1079.2161327818326,
+                    "y": 104.02894601785266
+                }
+            },
+            "type": "end"
+        },
+        {
+            "id": "http_1749015210539",
+            "data": {
+                "title": "http",
+                "custom": {
+                    "retry": 2,
+                    "apiUrl": "http://10.99.169.49:8889/api/role/v1/cvl313pnhrgp7l45jlk0",
+                    "timeout": 10,
+                    "bodyData": "{\n\t\"name\":\"{{name}}\",\n\t\"age\":\"{{age}}\",\n\t\"info\":\"{{sex}}\",\n\t\"address\":\"{{address}}\",\n\t\"sex\":\"{{sex}}\"\n}",
+                    "bodyType": "json",
+                    "apiMethod": "POST",
+                    "ignoreError": true,
+                    "requestParams": {
+                        "properties": {
+                            "age": {
+                                "type": "integer"
+                            },
+                            "hob": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "sex": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "address": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "requestHeaders": {
+                        "properties": {
+                            "auth": {
+                                "type": "string"
+                            },
+                            "Authorization": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "requestParamsValues": {
+                        "age": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "age"
+                            ]
+                        },
+                        "hob": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "hobby"
+                            ]
+                        },
+                        "sex": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "sex"
+                            ]
+                        },
+                        "name": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "name"
+                            ]
+                        },
+                        "address": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "address"
+                            ]
+                        }
+                    },
+                    "requestHeadersValues": {
+                        "auth": {
+                            "type": "constant",
+                            "content": "Bearer ecab0d05783949c8a3169df8ab085a9c"
+                        },
+                        "Authorization": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "auth"
+                            ]
+                        }
+                    }
+                },
+                "outputs": {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "type": "string"
+                        },
+                        "headers": {
+                            "type": "string"
+                        },
+                        "statusCode": {
+                            "type": "number"
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 568.2161327818326,
+                    "y": 187.02894601785263
+                }
+            },
+            "type": "http"
+        }
+    ]
+}

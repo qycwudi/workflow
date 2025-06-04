@@ -92,11 +92,11 @@ func (e *WorkflowEngine) buildExecutionPlan(ctx context.Context, def *core.Workf
 func (e *WorkflowEngine) buildConditionRouter(def *core.WorkflowDef) (map[string][]string, error) {
 	router := make(map[string][]string)
 	for _, conn := range def.Edges {
-		if conn.Condition == "" {
+		if conn.SourcePortID == "" {
 			// 如果条件为空,则默认成功
-			conn.Condition = components.Success
+			conn.SourcePortID = components.Success
 		}
-		router[conn.TargetNodeID] = append(router[conn.TargetNodeID], conn.SourceNodeID+"_"+conn.Condition)
+		router[conn.TargetNodeID] = append(router[conn.TargetNodeID], conn.SourceNodeID+"_"+conn.SourcePortID)
 	}
 	return router, nil
 }

@@ -10,9 +10,11 @@ type Nodes struct {
 
 type NodeData struct {
 	Title               string                          `json:"title"`
+	Custom              any                             `json:"custom"`       // 自定义配置
 	NodeDataInputsValue map[string]NodeDataInputsValues `json:"inputsValues"` // 输入值
 	NodeDataInputs      NodeDataInputs                  `json:"inputs"`       // 输入定义
 	NodeDataOutputs     NodeDataOutputs                 `json:"outputs"`      // 输出定义
+	Conditions          []Condition                     `json:"conditions"`   // 条件定义
 }
 
 type NodeDataInputsValues struct {
@@ -41,6 +43,19 @@ type Properties struct {
 	Type               string                `json:"type"`
 	Extra              Extra                 `json:"extra"`
 	Default            any                   `json:"default"`
+}
+
+type Condition struct {
+	Value     ConditionValue `json:"value"`
+	Key       string         `json:"key"`
+	LeftType  string         `json:"leftType"`  // 左值类型 undefined 未定义
+	RightType string         `json:"rightType"` // 右值类型
+}
+
+type ConditionValue struct {
+	Left     NodeDataInputsValues `json:"left"`
+	Operator string               `json:"operator"`
+	Right    NodeDataInputsValues `json:"right"`
 }
 
 type Extra struct {

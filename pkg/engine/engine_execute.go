@@ -108,7 +108,7 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 	execCtx.Expiration = time.Now().Add(executor.defaultTTL)
 
 	// 执行节点
-	component, err := components.ComponentFactory(e, node.Type, node.Data.NodeDataInputs)
+	component, err := components.ComponentFactory(e, node.Type, node.Data)
 	if err != nil {
 		logx.Errorw("无法创建组件", logx.Field("error", err.Error()))
 		nodeResult.Error = err.Error()
@@ -239,7 +239,7 @@ func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, pha
 	}
 
 	// 创建并执行组件
-	component, err := components.ComponentFactory(e, node.Type, node.Data.NodeDataInputs)
+	component, err := components.ComponentFactory(e, node.Type, node.Data)
 	if err != nil {
 		return errors.New("无法创建组件 [" + node.ID + "]: " + err.Error())
 	}

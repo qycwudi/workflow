@@ -2,6 +2,7 @@ package components
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 
 	"github.com/bytedance/sonic"
@@ -17,6 +18,8 @@ const (
 
 	True  = "true"
 	False = "false"
+
+	Else = "else"
 )
 
 const (
@@ -42,32 +45,32 @@ type Component interface {
 }
 
 // ComponentFactory 组件工厂
-func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeDataInputs) (Component, error) {
-	jsonConfig, err := sonic.Marshal(inputs.Properties)
-	if err != nil {
-		return nil, errors.New("component configuration serialization failed: " + err.Error())
-	}
+func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeData) (Component, error) {
 	switch nodeType {
 	case Start:
 		return NewStartComponent()
 	case End:
-		return NewEndComponent(jsonConfig)
+		return NewEndComponent(json.RawMessage("{}"))
 	case HTTP:
-		return NewHTTPComponent(jsonConfig)
+		return NewHTTPComponent(inputs.Custom)
 	case Codejs:
-		return NewCodejsComponent(jsonConfig)
+		return NewCodejsComponent(json.RawMessage("{}"))
 	case Model:
-		return NewModelComponent(jsonConfig)
+		return NewModelComponent(json.RawMessage("{}"))
 	case Branch:
+		jsonConfig, err := sonic.Marshal(inputs.Conditions)
+		if err != nil {
+			return nil, errors.New("component configuration serialization failed: " + err.Error())
+		}
 		return NewBranchComponent(jsonConfig)
 	case Iteration:
-		return NewIterationComponent(e, jsonConfig)
+		return NewIterationComponent(e, json.RawMessage("{}"))
 	case StartItem:
 		return NewStartItemComponent()
 	case EndItem:
-		return NewEndItemComponent(jsonConfig)
+		return NewEndItemComponent(json.RawMessage("{}"))
 	case Database:
-		return NewDatabaseComponent(jsonConfig)
+		return NewDatabaseComponent(json.RawMessage("{}"))
 	}
 	return nil, errors.New("Component type not found: " + nodeType)
 }

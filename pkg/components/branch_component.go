@@ -6,6 +6,7 @@ import (
 	"errors"
 	"reflect"
 	"slices"
+	"strings"
 	"sync"
 
 	"github.com/bytedance/sonic"
@@ -20,35 +21,25 @@ type BranchComponent struct {
 }
 
 type BranchConfig struct {
-	Conditions []Condition `json:"conditions"`
-}
-
-type Condition struct {
-	Left     map[string]any `json:"left"`
-	Right    map[string]any `json:"right"`
-	Route    string         `json:"route"`
-	Operator string         `json:"operator"`
+	Conditions []core.Condition `json:"conditions"`
 }
 
 const (
-	OperatorEquals    = "eq"
-	OperatorNotEquals = "ne"
-	OperatorIn        = "in"
-	OperatorNotIn     = "nin"
-	OperatorIsNull    = "isNull"
-	OperatorIsNotNull = "isNotNull"
-	OperatorGt        = "gt"
-	OperatorLt        = "lt"
-	OperatorGe        = "ge"
-	OperatorLe        = "le"
+	OperatorEquals      = "eq"           // 等于
+	OperatorNotEquals   = "neq"          // 不等于
+	OperatorGt          = "gt"           // 大于
+	OperatorGte         = "gte"          // 大于等于
+	OperatorLt          = "lt"           // 小于
+	OperatorLte         = "lte"          // 小于等于
+	OperatorIn          = "in"           // 包含 左值在右值数组中
+	OperatorNotIn       = "nin"          // 不包含 左值不在右值数组中
+	OperatorContains    = "contains"     // 字符串包含 左值包含右值
+	OperatorNotContains = "ncontains"    // 字符串不包含 左值不包含右值
+	OperatorIsEmpty     = "is_empty"     // 为空
+	OperatorIsNotEmpty  = "is_not_empty" // 不为空
+	OperatorIsTrue      = "is_true"      // 为真
+	OperatorIsFalse     = "is_false"     // 为假
 )
-
-type Cp struct {
-	Left     any    `json:"left"`
-	Right    any    `json:"right"`
-	Route    string `json:"route"`
-	Operator string `json:"operator"`
-}
 
 var branchComponentPool = sync.Pool{
 	New: func() interface{} {
@@ -58,159 +49,189 @@ var branchComponentPool = sync.Pool{
 
 func NewBranchComponent(config json.RawMessage) (*BranchComponent, error) {
 	var branchConfig BranchConfig
-	if err := sonic.Unmarshal(config, &branchConfig); err != nil {
+	var conditions []core.Condition
+	if err := sonic.Unmarshal(config, &conditions); err != nil {
 		return nil, errors.New("解析分支组件配置失败: " + err.Error())
 	}
 	// 使用pool
 	component := branchComponentPool.Get().(*BranchComponent)
+	branchConfig.Conditions = conditions
 	component.config = branchConfig
 	return component, nil
 }
 
 func (c *BranchComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
-	inputArray, ok := input.([]Cp)
-	output := make(map[string]any)
-	output["branch"] = inputArray
-	if !ok {
-		return nil, errors.New("输入类型不匹配")
-	}
+	inputMap := input.(map[string]any)
 	var route = []string{}
-	for _, condition := range inputArray {
-		logx.Debugf("branch execute condition: %+v\n", condition)
-		switch condition.Operator {
+	for _, condition := range c.config.Conditions {
+		left, ok := inputMap[condition.Key+"_left"]
+		if !ok {
+			logx.Errorf("左值不存在")
+			continue
+		}
+		right, ok := inputMap[condition.Key+"_right"]
+		if !ok {
+			right = nil
+		}
+		logx.Debugf("branch execute condition: %s, left:%v, right:%v\n", condition.Value.Operator, left, right)
+		switch condition.Value.Operator {
 		case OperatorEquals:
-			if condition.Left == condition.Right {
-				route = append(route, condition.Route)
+			if left == right {
+				route = append(route, condition.Key)
 			}
 		case OperatorNotEquals:
-			if condition.Left != condition.Right {
-				route = append(route, condition.Route)
+			if left != right {
+				route = append(route, condition.Key)
 			}
 		case OperatorGt:
 			// 比较数值
-			left, right, err := compareValues(condition.Left, condition.Right)
+			left, right, err := compareValues(left, right)
 			if err != nil {
 				logx.Errorf("比较数值失败: %v", err)
 				continue
 			}
 			if left <= right {
-				logx.Errorf("左值不大于右值")
 				continue
 			}
-			route = append(route, condition.Route)
-		case OperatorLt:
+			route = append(route, condition.Key)
+		case OperatorGte:
 			// 比较数值
-			left, right, err := compareValues(condition.Left, condition.Right)
-			if err != nil {
-				logx.Errorf("比较数值失败: %v", err)
-				continue
-			}
-			if left >= right {
-				logx.Errorf("左值不小于右值")
-				continue
-			}
-			route = append(route, condition.Route)
-		case OperatorGe:
-			// 比较数值
-			left, right, err := compareValues(condition.Left, condition.Right)
+			left, right, err := compareValues(left, right)
 			if err != nil {
 				logx.Errorf("比较数值失败: %v", err)
 				continue
 			}
 			if left < right {
-				logx.Errorf("左值小于右值")
 				continue
 			}
-			route = append(route, condition.Route)
-		case OperatorLe:
+			route = append(route, condition.Key)
+		case OperatorLt:
 			// 比较数值
-			left, right, err := compareValues(condition.Left, condition.Right)
+			left, right, err := compareValues(left, right)
 			if err != nil {
-				return nil, err
+				logx.Errorf("比较数值失败: %v", err)
+				continue
+			}
+			if left >= right {
+				continue
+			}
+			route = append(route, condition.Key)
+		case OperatorLte:
+			// 比较数值
+			left, right, err := compareValues(left, right)
+			if err != nil {
+				logx.Errorf("比较数值失败: %v", err)
+				continue
 			}
 			if left > right {
-				logx.Errorf("左值大于右值")
 				continue
 			}
-			route = append(route, condition.Route)
+			route = append(route, condition.Key)
 		case OperatorIn:
 			// 检查左值是否在右值数组中
-			rightArray, ok := condition.Right.([]any)
+			if right == nil {
+				logx.Errorf("IN 右值为空")
+				continue
+			}
+			rightArray, ok := right.([]any)
 			if !ok {
-				return &core.Result{
-					Route:  []string{False},
-					Output: output,
-				}, errors.New("IN 右值类型不匹配,不是数组")
+				logx.Errorf("IN 值类型不匹配,不是数组")
+				continue
 			}
 
-			// 如果左值是数组，检查是否有任意一个元素在右值数组中
-			if leftArray, ok := condition.Left.([]any); ok {
-				found := false
-				for _, left := range leftArray {
-					if slices.Contains(rightArray, left) {
-						found = true
-						break
-					}
-				}
-				if !found {
-					logx.Errorf("左值数组中没有元素在右值数组中")
-					continue
-				}
-			} else {
-				// 如果左值是单个值，直接检查是否在右值数组中
-				if !slices.Contains(rightArray, condition.Left) {
-					logx.Errorf("左值不在右值数组中")
-					continue
-				}
+			// 如果左值是单个值，直接检查是否在右值数组中
+			if !slices.Contains(rightArray, left) {
+				continue
 			}
-			route = append(route, condition.Route)
+
+			route = append(route, condition.Key)
 		case OperatorNotIn:
 			// 检查左值是否不在右值数组中
-			rightArray, ok := condition.Right.([]any)
+			if right == nil {
+				logx.Errorf("NOT IN 右值为空")
+				continue
+			}
+			rightArray, ok := right.([]any)
 			if !ok {
-				return &core.Result{
-					Route:  []string{False},
-					Output: output,
-				}, errors.New("NOT IN 右值类型不匹配,不是数组")
+				logx.Errorf("NOT IN 右值类型不匹配,不是数组")
+				continue
 			}
 
-			// 如果左值是数组，检查是否所有元素都不在右值数组中
-			if leftArray, ok := condition.Left.([]any); ok {
-				for _, left := range leftArray {
-					if slices.Contains(rightArray, left) {
-						logx.Errorf("左值数组中有元素在右值数组中")
-						continue
-					}
-				}
-			} else {
-				// 如果左值是单个值，直接检查是否不在右值数组中
-				if slices.Contains(rightArray, condition.Left) {
-					logx.Errorf("左值在右值数组中")
-					continue
-				}
-			}
-			route = append(route, condition.Route)
-		case OperatorIsNull:
-			if condition.Left != nil {
-				logx.Errorf("左值不为空")
+			// 如果左值是单个值，直接检查是否不在右值数组中
+			if slices.Contains(rightArray, left) {
 				continue
 			}
-			route = append(route, condition.Route)
-		case OperatorIsNotNull:
-			if condition.Left == nil {
-				logx.Errorf("左值为空")
+			route = append(route, condition.Key)
+		case OperatorContains:
+			leftStr, ok := left.(string)
+			if !ok {
+				logx.Errorf("左值类型不匹配,不是字符串")
 				continue
 			}
-			route = append(route, condition.Route)
+			rightStr, ok := right.(string)
+			if !ok {
+				logx.Errorf("右值类型不匹配,不是字符串")
+				continue
+			}
+			if !strings.Contains(leftStr, rightStr) {
+				continue
+			}
+			route = append(route, condition.Key)
+		case OperatorNotContains:
+			leftStr, ok := left.(string)
+			if !ok {
+				logx.Errorf("左值类型不匹配,不是字符串")
+				continue
+			}
+			rightStr, ok := right.(string)
+			if !ok {
+				logx.Errorf("右值类型不匹配,不是字符串")
+				continue
+			}
+			if strings.Contains(leftStr, rightStr) {
+				continue
+			}
+			route = append(route, condition.Key)
+		case OperatorIsEmpty:
+			if left != nil {
+				continue
+			}
+			route = append(route, condition.Key)
+		case OperatorIsNotEmpty:
+			if left == nil {
+				continue
+			}
+			route = append(route, condition.Key)
+		case OperatorIsTrue:
+			leftBool, ok := left.(bool)
+			if !ok {
+				logx.Errorf("左值类型不匹配,不是布尔值")
+				continue
+			}
+			if !leftBool {
+				continue
+			}
+			route = append(route, condition.Key)
+		case OperatorIsFalse:
+			leftBool, ok := left.(bool)
+			if !ok {
+				logx.Errorf("左值类型不匹配,不是布尔值")
+				continue
+			}
+			if leftBool {
+				continue
+			}
+			route = append(route, condition.Key)
 		}
+		logx.Debugf("branch execute condition: %s, route:%v\n", condition.Value.Operator, route)
 	}
 	if len(route) == 0 {
-		logx.Errorf("没有满足条件的路由")
-		route = append(route, False)
+		logx.Debugf("没有满足条件的路由,执行else路由")
+		route = append(route, Else)
 	}
 	return &core.Result{
 		Route:  route,
-		Output: output,
+		Output: route,
 	}, nil
 }
 
@@ -224,18 +245,10 @@ func (c *BranchComponent) Validate() []core.ValidationError {
 		}
 	}
 	for _, condition := range c.config.Conditions {
-		if condition.Route == "" {
+		if condition.Value.Operator == "" {
 			return []core.ValidationError{
 				{
 					Field:   "route",
-					Message: "路由不能为空",
-				},
-			}
-		}
-		if condition.Operator == "" {
-			return []core.ValidationError{
-				{
-					Field:   "operator",
 					Message: "操作符不能为空",
 				},
 			}
@@ -244,26 +257,61 @@ func (c *BranchComponent) Validate() []core.ValidationError {
 	return nil
 }
 func (c *BranchComponent) AnalyzeInputs(ctx context.Context) (any, error) {
-	// execCtx := ctx.(*core.ExecutionContext)
-	conditions := make([]Cp, len(c.config.Conditions))
-	// for i, condition := range c.config.Conditions {
-	// 	left, err := core.ParseNodeInputs(condition.Left, execCtx)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	right, err := core.ParseNodeInputs(condition.Right, execCtx)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	conditions[i] = Cp{
-	// 		Left:     left,
-	// 		Right:    right,
-	// 		Route:    condition.Route,
-	// 		Operator: condition.Operator,
-	// 	}
-	// }
-	// logx.Debugf("conditions: %+v\n", conditions)
-	return conditions, nil
+	execCtx := ctx.(*core.ExecutionContext)
+	result := make(map[string]any)
+	for i, condition := range c.config.Conditions {
+		// 构造输入值
+		leftKey := condition.Key + "_left"
+		leftInputValue := core.NodeDataInputsValues{
+			Type:    "ref",
+			Content: condition.Value.Left.Content,
+		}
+		leftInputMap := map[string]core.NodeDataInputsValues{
+			leftKey: leftInputValue,
+		}
+
+		leftInput := core.NodeDataInputs{
+			Properties: map[string]core.Properties{
+				leftKey: {
+					Type: condition.LeftType,
+				},
+			},
+			Required: []string{leftKey},
+		}
+		left, err := core.ParseNodeInputs(execCtx, leftInputMap, leftInput)
+		if err != nil {
+			return nil, err
+		}
+		result[leftKey] = left[leftKey]
+
+		// 构造右值输入值
+		var rightInputValue core.NodeDataInputsValues
+		if condition.RightType != "undefined" {
+			rightInputValue = core.NodeDataInputsValues{
+				Type:    "ref",
+				Content: condition.Value.Right.Content,
+			}
+			rightKey := condition.Key + "_right"
+			rightInputMap := map[string]core.NodeDataInputsValues{
+				rightKey: rightInputValue,
+			}
+			rightInput := core.NodeDataInputs{
+				Properties: map[string]core.Properties{
+					rightKey: {
+						Type: condition.RightType,
+					},
+				},
+				Required: []string{rightKey},
+			}
+			right, err := core.ParseNodeInputs(execCtx, rightInputMap, rightInput)
+			if err != nil {
+				return nil, err
+			}
+			result[rightKey] = right[rightKey]
+		}
+		logx.Debugf("branch component analyze inputs values: index:%d, %+v\n", i, result)
+	}
+	return result, nil
 }
 
 func (c *BranchComponent) Exception() ExceptionConfig {
@@ -301,6 +349,7 @@ func compareValues(left, right any) (float64, float64, error) {
 		return 0, 0, errors.New("不支持的右值类型: " + reflect.TypeOf(right).String())
 	}
 
+	logx.Debugf("compareValues: left:%v, right:%v\n", leftFloat, rightFloat)
 	return leftFloat, rightFloat, nil
 }
 
