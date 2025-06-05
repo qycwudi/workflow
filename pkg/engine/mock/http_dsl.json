@@ -2,11 +2,34 @@
     "edges": [
         {
             "sourceNodeID": "start_0",
-            "targetNodeID": "http_1749015210539"
+            "targetNodeID": "condition_bOCov"
         },
         {
             "sourceNodeID": "http_1749015210539",
             "targetNodeID": "end_0"
+        },
+        {
+            "sourceNodeID": "195835",
+            "targetNodeID": "end_0"
+        },
+        {
+            "sourceNodeID": "546823",
+            "targetNodeID": "end_0"
+        },
+        {
+            "sourceNodeID": "condition_bOCov",
+            "sourcePortID": "if_UaFWd",
+            "targetNodeID": "http_1749015210539"
+        },
+        {
+            "sourceNodeID": "condition_bOCov",
+            "sourcePortID": "if_sekjg",
+            "targetNodeID": "195835"
+        },
+        {
+            "sourceNodeID": "condition_bOCov",
+            "sourcePortID": "else",
+            "targetNodeID": "546823"
         }
     ],
     "nodes": [
@@ -22,7 +45,8 @@
                         "height",
                         "name",
                         "address",
-                        "info"
+                        "info",
+                        "vector"
                     ],
                     "properties": {
                         "age": {
@@ -32,6 +56,7 @@
                             "extra": {
                                 "index": 0
                             },
+                            "default": 1111111,
                             "description": "年龄",
                             "isPropertyRequired": true
                         },
@@ -42,31 +67,36 @@
                             "extra": {
                                 "index": 5
                             },
-                            "required": [],
+                            "default": "{}",
+                            "required": [
+                                "auth",
+                                "sex"
+                            ],
                             "properties": {
                                 "sex": {
-                                    "key": 14,
+                                    "key": 10,
                                     "name": "sex",
                                     "type": "string",
                                     "extra": {
-                                        "index": 0
+                                        "index": 1
                                     },
-                                    "isPropertyRequired": false
+                                    "isPropertyRequired": true
                                 },
                                 "auth": {
                                     "key": 44,
                                     "name": "auth",
                                     "type": "string",
                                     "extra": {
-                                        "index": 3
-                                    }
+                                        "index": 0
+                                    },
+                                    "isPropertyRequired": true
                                 },
                                 "hobby": {
-                                    "key": 15,
+                                    "key": 20,
                                     "name": "hobby",
                                     "type": "array",
                                     "extra": {
-                                        "index": 1
+                                        "index": 2
                                     },
                                     "items": {
                                         "type": "string"
@@ -109,7 +139,7 @@
                             "items": {
                                 "type": "number"
                             },
-                            "isPropertyRequired": false
+                            "isPropertyRequired": true
                         },
                         "address": {
                             "key": 12,
@@ -138,8 +168,8 @@
             },
             "meta": {
                 "position": {
-                    "x": 172.2161327818325,
-                    "y": 3.028946017852661
+                    "x": 357.8118918918919,
+                    "y": -101.02126126126126
                 }
             },
             "type": "start"
@@ -147,37 +177,37 @@
         {
             "id": "end_0",
             "data": {
-                "title": "End",
+                "title": "Endsss",
                 "outputs": {
                     "type": "object",
                     "properties": {
-                        "code": {
-                            "type": "integer"
-                        },
-                        "bbody": {
+                        "batch_1": {
                             "type": "string"
                         },
-                        "header": {
+                        "batch_2": {
+                            "type": "string"
+                        },
+                        "batch_3": {
                             "type": "string"
                         }
                     }
                 },
                 "inputsValues": {
-                    "code": {
+                    "batch_1": {
                         "type": "ref",
                         "content": [
-                            "start_0",
-                            "age"
+                            "546823",
+                            "headers"
                         ]
                     },
-                    "bbody": {
+                    "batch_2": {
                         "type": "ref",
                         "content": [
-                            "http_1749015210539",
-                            "body"
+                            "195835",
+                            "headers"
                         ]
                     },
-                    "header": {
+                    "batch_3": {
                         "type": "ref",
                         "content": [
                             "http_1749015210539",
@@ -188,8 +218,8 @@
             },
             "meta": {
                 "position": {
-                    "x": 1079.2161327818326,
-                    "y": 104.02894601785266
+                    "x": 1657.8,
+                    "y": 222
                 }
             },
             "type": "end"
@@ -233,7 +263,7 @@
                     },
                     "requestHeaders": {
                         "properties": {
-                            "auth": {
+                            "Branch": {
                                 "type": "string"
                             },
                             "Authorization": {
@@ -281,9 +311,9 @@
                         }
                     },
                     "requestHeadersValues": {
-                        "auth": {
+                        "Branch": {
                             "type": "constant",
-                            "content": "Bearer ecab0d05783949c8a3169df8ab085a9c"
+                            "content": ">20"
                         },
                         "Authorization": {
                             "type": "ref",
@@ -299,21 +329,334 @@
                     "type": "object",
                     "properties": {
                         "body": {
-                            "type": "string"
+                            "type": "string",
+                            "default": "{}"
                         },
                         "headers": {
-                            "type": "string"
+                            "type": "string",
+                            "default": "{}"
                         },
                         "statusCode": {
-                            "type": "number"
+                            "type": "number",
+                            "default": 0
                         }
-                    }
+                    },
+                    "required":["body","headers","statusCode"]
                 }
             },
             "meta": {
                 "position": {
-                    "x": 568.2161327818326,
-                    "y": 187.02894601785263
+                    "x": 1148.9,
+                    "y": 7.978738738738739
+                }
+            },
+            "type": "http"
+        },
+        {
+            "id": "condition_bOCov",
+            "data": {
+                "title": "Condition",
+                "conditions": [
+                    {
+                        "key": "if_UaFWd",
+                        "value": {
+                            "left": {
+                                "type": "ref",
+                                "content": [
+                                    "start_0",
+                                    "age"
+                                ]
+                            },
+                            "right": {
+                                "type": "constant",
+                                "content": 20
+                            },
+                            "operator": "gt"
+                        },
+                        "leftType": "integer",
+                        "rightType": "undefined"
+                    },
+                    {
+                        "key": "if_sekjg",
+                        "value": {
+                            "left": {
+                                "type": "ref",
+                                "content": [
+                                    "start_0",
+                                    "name"
+                                ]
+                            },
+                            "right": {
+                                "type": "constant",
+                                "content": "xuetu"
+                            },
+                            "operator": "eq"
+                        },
+                        "leftType": "string",
+                        "rightType": "undefined"
+                    }
+                ]
+            },
+            "meta": {
+                "position": {
+                    "x": 640,
+                    "y": 141.5
+                }
+            },
+            "type": "condition"
+        },
+        {
+            "id": "195835",
+            "data": {
+                "title": "http",
+                "custom": {
+                    "retry": 2,
+                    "apiUrl": "http://10.99.169.49:8889/api/role/v1/cvl313pnhrgp7l45jlk0",
+                    "timeout": 10,
+                    "bodyData": "{\n\t\"name\":\"{{name}}\",\n\t\"age\":\"{{age}}\",\n\t\"info\":\"{{sex}}\",\n\t\"address\":\"{{address}}\",\n\t\"sex\":\"{{sex}}\"\n}",
+                    "bodyType": "json",
+                    "apiMethod": "POST",
+                    "ignoreError": true,
+                    "requestParams": {
+                        "properties": {
+                            "age": {
+                                "type": "integer"
+                            },
+                            "hob": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "sex": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "address": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "requestHeaders": {
+                        "properties": {
+                            "Branch": {
+                                "type": "string"
+                            },
+                            "Authorization": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "requestParamsValues": {
+                        "age": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "age"
+                            ]
+                        },
+                        "hob": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "hobby"
+                            ]
+                        },
+                        "sex": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "sex"
+                            ]
+                        },
+                        "name": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "name"
+                            ]
+                        },
+                        "address": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "address"
+                            ]
+                        }
+                    },
+                    "requestHeadersValues": {
+                        "Branch": {
+                            "type": "constant",
+                            "content": "name=xuetu"
+                        },
+                        "Authorization": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "auth"
+                            ]
+                        }
+                    }
+                },
+                "outputs": {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "type": "string",
+                            "default": "{}"
+                        },
+                        "headers": {
+                            "type": "string",
+                            "default": "{}"
+                        },
+                        "statusCode": {
+                            "type": "number",
+                            "default": 0
+                        }
+                    },
+                    "required":["body","headers","statusCode"]
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 1138.5697410924438,
+                    "y": 222
+                }
+            },
+            "type": "http"
+        },
+        {
+            "id": "546823",
+            "data": {
+                "title": "http",
+                "custom": {
+                    "retry": 2,
+                    "apiUrl": "http://10.99.169.49:8889/api/role/v1/cvl313pnhrgp7l45jlk0",
+                    "timeout": 10,
+                    "bodyData": "{\n\t\"name\":\"{{name}}\",\n\t\"age\":\"{{age}}\",\n\t\"info\":\"{{sex}}\",\n\t\"address\":\"{{address}}\",\n\t\"sex\":\"{{sex}}\"\n}",
+                    "bodyType": "json",
+                    "apiMethod": "POST",
+                    "ignoreError": true,
+                    "requestParams": {
+                        "properties": {
+                            "age": {
+                                "type": "integer"
+                            },
+                            "hob": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            },
+                            "sex": {
+                                "type": "string"
+                            },
+                            "name": {
+                                "type": "string"
+                            },
+                            "address": {
+                                "type": "array",
+                                "items": {
+                                    "type": "string"
+                                }
+                            }
+                        }
+                    },
+                    "requestHeaders": {
+                        "properties": {
+                            "Branch": {
+                                "type": "string"
+                            },
+                            "Authorization": {
+                                "type": "string"
+                            }
+                        }
+                    },
+                    "requestParamsValues": {
+                        "age": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "age"
+                            ]
+                        },
+                        "hob": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "hobby"
+                            ]
+                        },
+                        "sex": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "sex"
+                            ]
+                        },
+                        "name": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "name"
+                            ]
+                        },
+                        "address": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "address"
+                            ]
+                        }
+                    },
+                    "requestHeadersValues": {
+                        "Branch": {
+                            "type": "constant",
+                            "content": "else"
+                        },
+                        "Authorization": {
+                            "type": "ref",
+                            "content": [
+                                "start_0",
+                                "info",
+                                "auth"
+                            ]
+                        }
+                    }
+                },
+                "outputs": {
+                    "type": "object",
+                    "properties": {
+                        "body": {
+                            "type": "string",
+                            "default": "{}"
+                        },
+                        "headers": {
+                            "type": "string",
+                            "default": "{}"
+                        },
+                        "statusCode": {
+                            "type": "number",
+                            "default": 0
+                        }
+                    },
+                    "required":["body","headers","statusCode"]
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 1148.9,
+                    "y": 410.02126126126126
                 }
             },
             "type": "http"

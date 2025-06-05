@@ -16,11 +16,11 @@ import (
 )
 
 // StartComponent 启动组件
-type BranchComponent struct {
-	config BranchConfig
+type ConditionComponent struct {
+	config ConditionConfig
 }
 
-type BranchConfig struct {
+type ConditionConfig struct {
 	Conditions []core.Condition `json:"conditions"`
 }
 
@@ -43,24 +43,24 @@ const (
 
 var branchComponentPool = sync.Pool{
 	New: func() interface{} {
-		return &BranchComponent{}
+		return &ConditionComponent{}
 	},
 }
 
-func NewBranchComponent(config json.RawMessage) (*BranchComponent, error) {
-	var branchConfig BranchConfig
+func NewConditionComponent(config json.RawMessage) (*ConditionComponent, error) {
+	var branchConfig ConditionConfig
 	var conditions []core.Condition
 	if err := sonic.Unmarshal(config, &conditions); err != nil {
 		return nil, errors.New("解析分支组件配置失败: " + err.Error())
 	}
 	// 使用pool
-	component := branchComponentPool.Get().(*BranchComponent)
+	component := branchComponentPool.Get().(*ConditionComponent)
 	branchConfig.Conditions = conditions
 	component.config = branchConfig
 	return component, nil
 }
 
-func (c *BranchComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
+func (c *ConditionComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
 	inputMap := input.(map[string]any)
 	var route = []string{}
 	for _, condition := range c.config.Conditions {
@@ -73,7 +73,7 @@ func (c *BranchComponent) Execute(ctx context.Context, input any) (*core.Result,
 		if !ok {
 			right = nil
 		}
-		logx.Debugf("branch execute condition: %s, left:%v, right:%v\n", condition.Value.Operator, left, right)
+		logx.Debugf("branch execute expect: %s, condition: %s, left:%v, right:%v\n", condition.Key, condition.Value.Operator, left, right)
 		switch condition.Value.Operator {
 		case OperatorEquals:
 			if left == right {
@@ -229,13 +229,16 @@ func (c *BranchComponent) Execute(ctx context.Context, input any) (*core.Result,
 		logx.Debugf("没有满足条件的路由,执行else路由")
 		route = append(route, Else)
 	}
+	outPut := map[string]interface{}{
+		"routes": route,
+	}
 	return &core.Result{
 		Route:  route,
-		Output: route,
+		Output: outPut,
 	}, nil
 }
 
-func (c *BranchComponent) Validate() []core.ValidationError {
+func (c *ConditionComponent) Validate() []core.ValidationError {
 	if len(c.config.Conditions) == 0 {
 		return []core.ValidationError{
 			{
@@ -256,7 +259,7 @@ func (c *BranchComponent) Validate() []core.ValidationError {
 	}
 	return nil
 }
-func (c *BranchComponent) AnalyzeInputs(ctx context.Context) (any, error) {
+func (c *ConditionComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	execCtx := ctx.(*core.ExecutionContext)
 	result := make(map[string]any)
 	for i, condition := range c.config.Conditions {
@@ -286,12 +289,14 @@ func (c *BranchComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 
 		// 构造右值输入值
 		var rightInputValue core.NodeDataInputsValues
+		rightKey := condition.Key + "_right"
+
 		if condition.RightType != "undefined" {
 			rightInputValue = core.NodeDataInputsValues{
 				Type:    "ref",
 				Content: condition.Value.Right.Content,
 			}
-			rightKey := condition.Key + "_right"
+
 			rightInputMap := map[string]core.NodeDataInputsValues{
 				rightKey: rightInputValue,
 			}
@@ -308,13 +313,22 @@ func (c *BranchComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 				return nil, err
 			}
 			result[rightKey] = right[rightKey]
+		} else {
+			if condition.Value.Right.Type == core.CONTENT {
+				// 要和左边的值类型保持一致 leftType
+				convertedValue, err := core.ConvertValue(condition.Value.Right.Content, condition.LeftType)
+				if err != nil {
+					return nil, err
+				}
+				result[rightKey] = convertedValue
+			}
 		}
 		logx.Debugf("branch component analyze inputs values: index:%d, %+v\n", i, result)
 	}
 	return result, nil
 }
 
-func (c *BranchComponent) Exception() ExceptionConfig {
+func (c *ConditionComponent) Exception() ExceptionConfig {
 	return ExceptionConfig{}
 }
 
@@ -353,6 +367,6 @@ func compareValues(left, right any) (float64, float64, error) {
 	return leftFloat, rightFloat, nil
 }
 
-func (c *BranchComponent) Clear() {
+func (c *ConditionComponent) Clear() {
 	branchComponentPool.Put(c)
 }

@@ -2,7 +2,8 @@ package engine
 
 import (
 	"context"
-	"errors"
+
+	"github.com/rotisserie/eris"
 
 	"workflow/pkg/components"
 	"workflow/pkg/core"
@@ -14,13 +15,13 @@ func (e *WorkflowEngine) RegisterWorkflow(ctx context.Context, id string, def *c
 	// 构建执行计划
 	plan, err := e.buildExecutionPlan(ctx, def)
 	if err != nil {
-		return errors.New("failed to build execution plan: " + err.Error())
+		return eris.New("failed to build execution plan: " + err.Error())
 	}
 
 	// 构建条件路由
 	condition, err := e.buildConditionRouter(def)
 	if err != nil {
-		return errors.New("failed to build condition mapping: " + err.Error())
+		return eris.New("failed to build condition mapping: " + err.Error())
 	}
 
 	// 创建新的执行器
@@ -47,7 +48,7 @@ func (e *WorkflowEngine) buildExecutionPlan(ctx context.Context, def *core.Workf
 		// 	logx.Debugf("[工作流] 迭代组件初始化: %s", def.ID)
 		// 	err := e.RegisterWorkflow(ctx, node.SubWorkflow.ID, node.SubWorkflow)
 		// 	if err != nil {
-		// 		return nil, errors.New("迭代组件初始化失败: " + err.Error())
+		// 		return nil, eris.New("迭代组件初始化失败: " + err.Error())
 		// 	}
 		// }
 	}
@@ -73,7 +74,7 @@ func (e *WorkflowEngine) buildExecutionPlan(ctx context.Context, def *core.Workf
 		}
 
 		if len(phaseNodes) == 0 {
-			return nil, errors.New("workflow has circular dependency")
+			return nil, eris.New("workflow has circular dependency")
 		}
 
 		phases = append(phases, ExecutionPhase{Nodes: phaseNodes})

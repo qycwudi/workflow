@@ -2,11 +2,11 @@ package engine
 
 import (
 	"context"
-	"errors"
 	"sync"
 	"sync/atomic"
 	"time"
 
+	"github.com/rotisserie/eris"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/components"
@@ -79,7 +79,7 @@ func (e *WorkflowEngine) DeregisterWorkflow(ctx context.Context, workflowID stri
 	executor, exists := e.executorPool[workflowID]
 	if !exists {
 		e.mu.Unlock()
-		return errors.New("workflow not found: " + workflowID)
+		return eris.New("workflow not found: " + workflowID)
 	}
 
 	executor.status = core.WorkflowStatusShutdown
@@ -209,17 +209,17 @@ func (e *WorkflowEngine) GetExecutionContext(workflowID, serialID string) (*core
 
 	executor, ok := e.executorPool[workflowID]
 	if !ok {
-		return nil, errors.New("workflow not found: " + workflowID)
+		return nil, eris.New("workflow not found: " + workflowID)
 	}
 
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
-		return nil, errors.New("execution context not found: " + workflowID + ", " + serialID)
+		return nil, eris.New("execution context not found: " + workflowID + ", " + serialID)
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
 	if !ok {
-		return nil, errors.New("execution context type error: " + workflowID + ", " + serialID)
+		return nil, eris.New("execution context type error: " + workflowID + ", " + serialID)
 	}
 
 	return execCtx, nil
@@ -230,12 +230,12 @@ func (e *WorkflowEngine) ClearExecutionContext(workflowID, serialID string) erro
 	executor, ok := e.executorPool[workflowID]
 	e.mu.RUnlock()
 	if !ok {
-		return errors.New("workflow not found: " + workflowID)
+		return eris.New("workflow not found: " + workflowID)
 	}
 
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
-		return errors.New("execution context not found: " + workflowID + ", " + serialID)
+		return eris.New("execution context not found: " + workflowID + ", " + serialID)
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
@@ -279,28 +279,28 @@ func (e *WorkflowEngine) PauseWorkflow(ctx context.Context, workflowID string, s
 	e.mu.RUnlock()
 
 	if !ok {
-		return errors.New("workflow not found: " + workflowID)
+		return eris.New("workflow not found: " + workflowID)
 	}
 
 	// 检查工作流状态
 	if executor.status == core.WorkflowStatusShutdown {
-		return errors.New("workflow is shutting down: " + workflowID)
+		return eris.New("workflow is shutting down: " + workflowID)
 	}
 
 	// 使用sync.Map获取执行上下文
 	val, ok := executor.execContexts.Load(serialID)
 	if !ok {
-		return errors.New("workflow execution instance not found: " + workflowID + ", " + serialID)
+		return eris.New("workflow execution instance not found: " + workflowID + ", " + serialID)
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
 	if !ok {
-		return errors.New("workflow execution context type error: " + workflowID + ", " + serialID)
+		return eris.New("workflow execution context type error: " + workflowID + ", " + serialID)
 	}
 
 	// 检查执行状态
 	if execCtx.State.Status != core.StatusRunning {
-		return errors.New("workflow execution status is not running: " + workflowID + ", " + serialID + ", current status: " + string(execCtx.State.Status))
+		return eris.New("workflow execution status is not running: " + workflowID + ", " + serialID + ", current status: " + string(execCtx.State.Status))
 	}
 
 	// 更新执行状态为暂停
@@ -309,12 +309,12 @@ func (e *WorkflowEngine) PauseWorkflow(ctx context.Context, workflowID string, s
 	// 获取并调用取消函数
 	cancelVal, ok := execCtx.GetVariable("cancel")
 	if !ok {
-		return errors.New("failed to get cancel function: " + workflowID + ", " + serialID)
+		return eris.New("failed to get cancel function: " + workflowID + ", " + serialID)
 	}
 
 	cancel, ok := cancelVal.(context.CancelFunc)
 	if !ok {
-		return errors.New("cancel function type error: " + workflowID + ", " + serialID)
+		return eris.New("cancel function type error: " + workflowID + ", " + serialID)
 	}
 
 	// 调用取消函数

@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/panjf2000/ants/v2"
+	"github.com/zeromicro/go-zero/core/logx"
 )
 
 const (
@@ -26,7 +27,7 @@ func InitGlobalPool(opts ...ants.Option) error {
 		options := []ants.Option{
 			ants.WithExpiryDuration(ExpiryDuration),
 			ants.WithPanicHandler(func(err interface{}) {
-				log.Printf("ants pool worker panic: %v", err)
+				logx.Errorf("ants pool worker panic: %v", err)
 			}),
 			ants.WithNonblocking(false), // 如果池满，Submit会阻塞等待，推荐在高并发时设为false
 			ants.WithPreAlloc(true),     // 预分配内存，减少运行时分配开销

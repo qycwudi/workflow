@@ -27,7 +27,7 @@ const (
 	End       = "end"
 	HTTP      = "http"
 	Codejs    = "codejs"
-	Branch    = "branch"
+	Condition = "condition"
 	Model     = "model"
 	Iteration = "iteration"
 	StartItem = "start-item"
@@ -57,12 +57,12 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeDa
 		return NewCodejsComponent(json.RawMessage("{}"))
 	case Model:
 		return NewModelComponent(json.RawMessage("{}"))
-	case Branch:
+	case Condition:
 		jsonConfig, err := sonic.Marshal(inputs.Conditions)
 		if err != nil {
 			return nil, errors.New("component configuration serialization failed: " + err.Error())
 		}
-		return NewBranchComponent(jsonConfig)
+		return NewConditionComponent(jsonConfig)
 	case Iteration:
 		return NewIterationComponent(e, json.RawMessage("{}"))
 	case StartItem:

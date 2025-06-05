@@ -8,6 +8,11 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 )
 
+const (
+	REF     = "ref"
+	CONTENT = "constant"
+)
+
 // ParseNodeInputs 解析节点输入
 func ParseNodeInputs(parentOutputs *ExecutionContext, inputsValues map[string]NodeDataInputsValues, inputs NodeDataInputs) (map[string]any, error) {
 	result := make(map[string]any)
@@ -33,10 +38,10 @@ func ParseNodeInputs(parentOutputs *ExecutionContext, inputsValues map[string]No
 
 		// 根据输入类型处理
 		switch inputValue.Type {
-		case "constant":
+		case CONTENT:
 			// 常量类型直接使用值
 			value = inputValue.Content
-		case "ref":
+		case REF:
 			// 引用类型需要从父节点获取
 			content, ok := inputValue.Content.([]any)
 			if !ok || len(content) < 2 {
@@ -72,7 +77,7 @@ func ParseNodeInputs(parentOutputs *ExecutionContext, inputsValues map[string]No
 		}
 
 		// 类型转换和验证
-		convertedValue, err := convertValue(value, prop.Type)
+		convertedValue, err := ConvertValue(value, prop.Type)
 		if err != nil {
 			return nil, fmt.Errorf("字段 %s 类型转换失败: %v", name, err)
 		}
@@ -85,7 +90,7 @@ func ParseNodeInputs(parentOutputs *ExecutionContext, inputsValues map[string]No
 }
 
 // convertValue 转换值到指定类型
-func convertValue(value any, targetType string) (any, error) {
+func ConvertValue(value any, targetType string) (any, error) {
 	// 将值转换为 JSON 字符串
 	jsonData, err := json.Marshal(value)
 	if err != nil {

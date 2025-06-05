@@ -177,7 +177,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 
 	// 创建错误收集器
 	var errMu sync.Mutex
-	var eris []error
+	var errorStack []error
 
 	for i, node := range phase.Nodes {
 		execWg.Add(1)
@@ -185,30 +185,29 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 			defer execWg.Done()
 			err := e.handleNodeExecution(execCtx, phaseIdx*1000+i, executor, node)
 			if err != nil {
-				logx.Errorf("[Workflow] Execute node failed: id %s, name %s, type %s, traceId %s, error %s",
-					node.ID, node.Data.Title, node.Type, execCtx.TraceId, err.Error())
-
+				errField := eris.ToString(err, true)
+				logx.Errorf("[Workflow] Execute node failed: id:%s, name:%s, type:%s, traceId:%s, error %s",
+					node.ID, node.Data.Title, node.Type, execCtx.TraceId, errField)
 				// 收集错误
 				errMu.Lock()
-				eris = append(eris, fmt.Errorf("node[%s] execute failed: %w", node.ID, err))
+				errorStack = append(errorStack, fmt.Errorf("node[%s] execute failed: %w", node.ID, err))
 				errMu.Unlock()
 			}
 		})
 		if err != nil {
-			logx.Errorf("[Workflow] Submit node failed: id %s, name %s, type %s, traceId %s, error %s",
+			logx.Errorf("[Workflow] Submit node failed: id:%s, name:%s, type:%s, traceId:%s, error:%s",
 				node.ID, node.Data.Title, node.Type, execCtx.TraceId, err.Error())
-
 			// 收集提交错误
 			errMu.Lock()
-			eris = append(eris, fmt.Errorf("节点[%s]提交失败: %w", node.ID, err))
+			errorStack = append(errorStack, fmt.Errorf("节点[%s]提交失败: %w", node.ID, err))
 			errMu.Unlock()
 		}
 	}
 	execWg.Wait()
 
 	// 如果有错误，返回组合错误
-	if len(eris) > 0 {
-		return fmt.Errorf("phase[%d] execute failed: %v", phaseIdx, eris)
+	if len(errorStack) > 0 {
+		return fmt.Errorf("phase[%d] execute failed: %v", phaseIdx, errorStack)
 	}
 	return nil
 }
@@ -308,11 +307,10 @@ func (e *WorkflowEngine) checkNodeRoute(execCtx *core.ExecutionContext, executor
 
 // handleSkippedNode 处理跳过的节点
 func (e *WorkflowEngine) handleSkippedNode(execCtx *core.ExecutionContext, node *WorkflowNode) error {
-	// todo 补齐默认值
-
 	logx.Debugf("[Workflow] %s node necessary route not found, fill empty parameters\n", node.ID)
-
-	output, err := core.ProcessNodeOutput(map[string]any{}, node.Data.NodeDataOutputs)
+	// 补齐默认零值
+	input := make(map[string]any)
+	output, err := core.ProcessNodeOutput(input, node.Data.NodeDataOutputs)
 	if err != nil {
 		return err
 	}
@@ -320,7 +318,7 @@ func (e *WorkflowEngine) handleSkippedNode(execCtx *core.ExecutionContext, node 
 	execCtx.SetVariable(node.ID+".output", output)
 
 	nodeResult := &core.NodeResult{
-		Input:    map[string]any{},
+		Input:    input,
 		Output:   output,
 		Route:    []string{components.Skip},
 		NodeID:   node.ID,

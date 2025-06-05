@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 
+	"github.com/bytedance/sonic"
+	"github.com/rotisserie/eris"
 	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
 )
@@ -22,7 +24,7 @@ func ProcessNodeOutput(data map[string]any, outputs NodeDataOutputs) (map[string
 	// 将数据转换为 JSON 字符串
 	jsonData, err := json.Marshal(data)
 	if err != nil {
-		return nil, fmt.Errorf("数据序列化失败: %v", err)
+		return nil, eris.New(fmt.Sprintf("ProcessNodeOutput Data Marshal failed: %v", err))
 	}
 	result := gjson.ParseBytes(jsonData)
 
@@ -33,15 +35,67 @@ func ProcessNodeOutput(data map[string]any, outputs NodeDataOutputs) (map[string
 	for name, prop := range outputs.Properties {
 		// 获取输入值
 		value := result.Get(name)
-
 		// 如果值不存在且是必需字段
 		if !value.Exists() {
 			if isStringInSlice(name, outputs.Required) || prop.IsPropertyRequired {
 				if prop.Default != nil {
-					output[name] = prop.Default
+					switch prop.Type {
+					case object:
+						{
+							// 强转 string
+							if defaultJson, ok := prop.Default.(string); ok {
+								var r map[string]any
+								err := sonic.UnmarshalString(defaultJson, &r)
+								if err != nil {
+									return nil, eris.New(fmt.Sprintf("Failed to process object field %s: %s", name, err.Error()))
+								}
+								output[name] = r
+							} else {
+								// 默认值不是 string 类型，则直接赋空 map
+								logx.Errorf("[Output processing] Object field %s default value is not string type: %v", name, prop.Default)
+								output[name] = make(map[string]any)
+							}
+						}
+					case str:
+						{
+							// 强转 string
+							if defaultStr, ok := prop.Default.(string); ok {
+								output[name] = defaultStr
+							} else {
+								output[name] = ""
+							}
+						}
+					case number:
+						{
+							// 强转 number
+							if defaultNum, ok := prop.Default.(float64); ok {
+								output[name] = defaultNum
+							} else {
+								output[name] = 0
+							}
+						}
+					case boolean:
+						{
+							// 强转 boolean
+							if defaultBool, ok := prop.Default.(bool); ok {
+								output[name] = defaultBool
+							} else {
+								output[name] = false
+							}
+						}
+					case array:
+						{
+							// 强转 array
+							if defaultArr, ok := prop.Default.([]any); ok {
+								output[name] = defaultArr
+							} else {
+								output[name] = []any{}
+							}
+						}
+					}
 					continue
 				}
-				return nil, fmt.Errorf("缺少必需字段: %s", name)
+				return nil, eris.New(fmt.Sprintf("Missing required field: %s", name))
 			}
 			continue
 		}
@@ -49,12 +103,13 @@ func ProcessNodeOutput(data map[string]any, outputs NodeDataOutputs) (map[string
 		// 根据类型处理值
 		processedValue, err := processValue(value, prop)
 		if err != nil {
-			return nil, fmt.Errorf("处理字段 %s 失败: %w", name, err)
+			logx.Errorf("[Output processing] Failed to process field %s: %s", name, err.Error())
+			return nil, eris.New(fmt.Sprintf("Failed to process field %s: %s", name, err.Error()))
 		}
 		output[name] = processedValue
 	}
 
-	logx.Debugf("[输出处理结束] output:%+v", output)
+	logx.Debugf("[Output processing completed] output:%+v", output)
 	return output, nil
 }
 
@@ -63,28 +118,28 @@ func processValue(value gjson.Result, prop Properties) (any, error) {
 	switch prop.Type {
 	case str:
 		if value.Type != gjson.String {
-			return nil, fmt.Errorf("期望字符串类型，实际为 %s", value.Type.String())
+			return nil, eris.New(fmt.Sprintf("Expected string type, got %s", value.Type.String()))
 		}
 		return value.String(), nil
 
 	case integer, number:
 		if value.Type != gjson.Number {
-			return nil, fmt.Errorf("期望数字类型，实际为 %s", value.Type.String())
+			return nil, eris.New(fmt.Sprintf("Expected number type, got %s", value.Type.String()))
 		}
 		if prop.Type == integer && value.Float() != float64(value.Int()) {
-			return nil, fmt.Errorf("期望整数类型，实际为浮点数 %f", value.Float())
+			return nil, eris.New(fmt.Sprintf("Expected integer type, got float %f", value.Float()))
 		}
 		return value.Float(), nil
 
 	case boolean:
 		if value.Type != gjson.True && value.Type != gjson.False {
-			return nil, fmt.Errorf("期望布尔类型，实际为 %s", value.Type.String())
+			return nil, eris.New(fmt.Sprintf("Expected boolean type, got %s", value.Type.String()))
 		}
 		return value.Bool(), nil
 
 	case array:
 		if !value.IsArray() {
-			return nil, fmt.Errorf("期望数组类型，实际为 %s", value.Type.String())
+			return nil, eris.New(fmt.Sprintf("Expected array type, got %s", value.Type.String()))
 		}
 
 		// 处理数组元素
@@ -104,16 +159,16 @@ func processValue(value gjson.Result, prop Properties) (any, error) {
 			}
 			processedItem, err := processValue(item, itemProp)
 			if err != nil {
-				return nil, fmt.Errorf("处理数组元素 %d 失败: %w", i, err)
+				return nil, eris.New(fmt.Sprintf("Failed to process array element %d: %s", i, err.Error()))
 			}
 			result[i] = processedItem
 		}
 		return result, nil
 
 	case object:
-		logx.Debugf("[输出处理] 对象字段")
+		logx.Debugf("[Output processing] Object field")
 		if !value.IsObject() {
-			return nil, fmt.Errorf("期望对象类型，实际为 %s", value.Type.String())
+			return nil, eris.New(fmt.Sprintf("Expected object type, got %s", value.Type.String()))
 		}
 
 		// 处理对象属性
@@ -123,25 +178,38 @@ func processValue(value gjson.Result, prop Properties) (any, error) {
 			if !fieldValue.Exists() {
 				if isStringInSlice(name, prop.Item.Required) || fieldProp.IsPropertyRequired {
 					if fieldProp.Default != nil {
-						result[name] = fieldProp.Default
+						// 强转 string
+						if defaultJson, ok := fieldProp.Default.(string); ok {
+							var r map[string]any
+							err := sonic.UnmarshalString(defaultJson, &r)
+							if err != nil {
+								return nil, eris.New(fmt.Sprintf("Failed to process object field %s: %s", name, err.Error()))
+							}
+							result[name] = r
+						} else {
+							// 默认值不是 string 类型，则直接赋空 map
+							logx.Errorf("[Output processing] Object field %s default value is not string type: %v", name, fieldProp.Default)
+							result[name] = make(map[string]any)
+						}
+
 						continue
 					}
-					return nil, fmt.Errorf("对象缺少必需字段: %s", name)
+					return nil, eris.New(fmt.Sprintf("Object missing required field: %s", name))
 				}
 				continue
 			}
 
 			processedField, err := processValue(fieldValue, fieldProp)
-			logx.Debugf("[输出处理] 对象字段 %s 处理结果: %+v", name, processedField)
+			logx.Debugf("[Output processing] Object field %s processing result: %+v", name, processedField)
 			if err != nil {
-				return nil, fmt.Errorf("处理对象字段 %s 失败: %w", name, err)
+				return nil, eris.New(fmt.Sprintf("Failed to process object field %s: %s", name, err.Error()))
 			}
 			result[name] = processedField
 		}
 		return result, nil
 
 	default:
-		return nil, fmt.Errorf("不支持的类型: %s", prop.Type)
+		return nil, eris.New(fmt.Sprintf("Unsupported type: %s", prop.Type))
 	}
 }
 

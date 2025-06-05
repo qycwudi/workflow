@@ -90,3 +90,9 @@ func TestProcessNodeOutput(t *testing.T) {
 	gjson.Get(jsonData, "start_0.Input.sssss")
 	logx.Debugf("[输出处理] jsonData:%s", jsonData)
 }
+
+func TestConvertValue(t *testing.T) {
+	j := "1"
+	id, err := json.Marshal(j)
+	t.Logf("id:%s,err:%v", id, err)
+}
