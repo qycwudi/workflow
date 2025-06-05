@@ -93,41 +93,26 @@ Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
 
 {
-  "id": "d03l4kl3sjtgm7gc9su1",
-  "nodeId": "http-node-1",
-  "params":{
-  "url": "http://10.99.169.49:8889/api/role/v1/cvpnt0hnhrgu82dh8iqg",
-  "body": {
-    "age": 18,
-    "info": {
-      "city": "hangzhou",
-      "like": {
-        "food": [
-          "apple",
-          "banana"
-        ],
-        "sport": [
-          "basketball",
-          "football"
-        ]
-      },
-      "email": [
-        "zhangsan@example.com",
-        "lisi@example.com"
-      ],
-      "phone": 17635800128,
-      "height": 170.5,
-      "weight": 65.5,
-      "country": "china"
+  "id": "default",
+  "nodeId": "http_1749015210539",
+  "params": {
+    "url": "http://10.99.169.49:8889/api/role/v1/cvl313pnhrgp7l45jlk0",
+    "body": {
+      "age": 30,
+      "sex": "男",
+      "info": "雪兔雪兔",
+      "name": "张三",
+      "address": [
+        "北京市海淀区",
+        "上海市浦东新区"
+      ]
     },
-    "name": "d03l4kl3sjtgm7gc9su1"
-  },
-  "isJSON": true,
-  "headers": {
-    "Auth": "Bearer 1234567890",
-    "Content-Type": "application/json"
+    "isJSON": true,
+    "headers": {
+      "Branch": "name=xuetu",
+      "Authorization": "Bearer ecab0d05783949c8a3169df8ab085a9c"
+    }
   }
-}
 }
 
 ### 画布-草稿-js

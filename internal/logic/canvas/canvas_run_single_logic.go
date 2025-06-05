@@ -38,16 +38,12 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 	startTime := time.Now()
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {
-		logx.Errorw("[画布] 获取工作流定义失败",
-			logx.Field("工作空间ID", req.Id),
-			logx.Field("错误", err))
+		logx.Errorf("[画布] 获取工作流定义失败,工作空间ID:%s,错误:%s", req.Id, err.Error())
 		return nil, errors.New(int(logic.SystemOrmError), "获取工作流定义失败")
 	}
 	err = workflow.Register(l.ctx, req.Id, canvas.Draft)
 	if err != nil {
-		logx.Errorw("[画布] 注册工作流失败",
-			logx.Field("工作空间ID", req.Id),
-			logx.Field("错误", err))
+		logx.Errorf("[画布] 注册工作流失败,工作空间ID:%s,错误:%s", req.Id, err.Error())
 		return nil, errors.New(int(logic.SystemError), "注册工作流失败")
 	}
 
@@ -71,10 +67,7 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 	// 查询工作流执行输入
 	_, result, err := workflow.RunSingle(l.ctx, traceId, canvas.WorkspaceId, req.NodeId, data)
 	if err != nil {
-		logx.Errorw("[画布] 执行单节点失败",
-			logx.Field("工作空间ID", req.Id),
-			logx.Field("节点ID", req.NodeId),
-			logx.Field("错误", err))
+		logx.Errorf("[画布] 执行单节点失败,工作空间ID:%s,节点ID:%s,错误:%s", req.Id, req.NodeId, err.Error())
 		spaceRecord.Status = enum.RecordStatusFail
 	} else {
 		spaceRecord.Status = enum.RecordStatusSuccess
@@ -104,10 +97,7 @@ func (l *CanvasRunSingleLogic) CanvasRunSingle(req *types.CanvasRunSingleRequest
 		},
 	}
 	if err != nil {
-		logx.Errorw("[画布] 获取节点执行结果失败",
-			logx.Field("工作空间ID", req.Id),
-			logx.Field("节点ID", req.NodeId),
-			logx.Field("错误", err))
+		logx.Errorf("[画布] 获取节点执行结果失败,工作空间ID:%s,节点ID:%s,错误:%s", req.Id, req.NodeId, err.Error())
 		return nil, errors.New(int(logic.SystemError), "获取节点执行结果失败")
 	}
 	return resp, nil
