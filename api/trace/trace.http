@@ -16,7 +16,7 @@ Content-Type: application/json
 
 {
 	"id": "default",
-  	"serialId": "trace-ae51a7d812b7ebe8bd6d4c9fe8cc7ab7"
+  	"serialId": "trace-0d6b96dd9e8b37dbbb14d9b53c6f12a0"
 }
 
 ### 查询组件运行结果

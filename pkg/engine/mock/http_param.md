@@ -1,4 +1,4 @@
-全部类型
+ 全部类型
 {
     "age": 25,
     "graduation": true,

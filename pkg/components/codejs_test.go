@@ -26,7 +26,7 @@ func TestNewGojaJsEngine(t *testing.T) {
 	`
 
 	t.Logf("创建 GojaJsEngine...")
-	engine, err := NewGojaJsEngine(jsScript, nil)
+	engine, err := NewGojaJsEngine(jsScript, nil, 5)
 	if err != nil {
 		t.Fatalf("创建引擎失败: %s\n", err)
 	}

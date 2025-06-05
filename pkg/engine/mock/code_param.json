@@ -1,0 +1,20 @@
+{
+    "age": 11,
+    "graduation": true,
+    "height": 175.5,
+    "name": "xuetu",
+    "address": [
+      "北京","杭州"
+    ],
+    "info": {
+      "sex": "男",
+      "hobby": ["篮球", "编程", "旅行"],
+      "auth": "Bearer ecab0d05783949c8a3169df8ab085a9c"
+    },
+    "vector": [
+      {
+        "index": "idididididid",
+        "value": "vavavavavva"
+      }
+    ]
+  }

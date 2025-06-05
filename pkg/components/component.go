@@ -26,7 +26,7 @@ const (
 	Start     = "start"
 	End       = "end"
 	HTTP      = "http"
-	Codejs    = "codejs"
+	Code      = "code"
 	Condition = "condition"
 	Model     = "model"
 	Iteration = "iteration"
@@ -53,8 +53,8 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeDa
 		return NewEndComponent(json.RawMessage("{}"))
 	case HTTP:
 		return NewHTTPComponent(inputs.Custom)
-	case Codejs:
-		return NewCodejsComponent(json.RawMessage("{}"))
+	case Code:
+		return NewCodeComponent(inputs.Custom)
 	case Model:
 		return NewModelComponent(json.RawMessage("{}"))
 	case Condition:

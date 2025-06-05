@@ -3,8 +3,6 @@ package components
 import (
 	"context"
 	"crypto/md5"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"strings"
 	"sync"
@@ -12,47 +10,67 @@ import (
 
 	"github.com/bytedance/sonic"
 	"github.com/dop251/goja"
+	"github.com/rotisserie/eris"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/core"
 )
 
 // CodejsComponent 代码执行组件
-type CodejsComponent struct {
+type CodeComponent struct {
 	engine *GojaJsEngine
 }
 
-var codejsComponentPool = sync.Pool{
+var codeComponentPool = sync.Pool{
 	New: func() interface{} {
-		return &CodejsComponent{}
+		return &CodeComponent{}
 	},
 }
 
-type CodejsConfig struct {
-	Code string `json:"code"`
+type CodeConfig struct {
+	Code              string `json:"code"`
+	Language          string `json:"language"`
+	ErrorHandlingMode string `json:"errorHandlingMode"`
+	Retry             int64  `json:"retry"`
+	Timeout           int64  `json:"timeout"`
 }
 
-func NewCodejsComponent(config json.RawMessage) (*CodejsComponent, error) {
-	component := codejsComponentPool.Get().(*CodejsComponent)
-	var codejsConfig CodejsConfig
-	if err := sonic.Unmarshal(config, &codejsConfig); err != nil {
-		return nil, errors.New("解析代码执行组件配置失败: " + err.Error())
-	}
-	logx.Debugf("[代码执行] 配置内容: %s", codejsConfig.Code)
-	engine, err := NewGojaJsEngine(codejsConfig.Code, nil)
+const (
+	languagesJs     = "javascript"
+	languagesGolang = "golang"
+	languagesPython = "python"
+
+	errorHandlingModes_abort = "abort" // 中断
+	errorHandlingModes_retry = "retry" // 重试
+)
+
+func NewCodeComponent(config any) (*CodeComponent, error) {
+	jsonConfig, err := sonic.Marshal(config)
 	if err != nil {
-		logx.Errorf("[代码执行] 创建引擎失败 [错误:%v]", err)
-		return nil, errors.New("创建代码执行组件失败: " + err.Error())
+		return nil, eris.Wrap(err, "failed to parse code execution component config")
+	}
+	component := codeComponentPool.Get().(*CodeComponent)
+	var codeConfig CodeConfig
+	if err := sonic.Unmarshal(jsonConfig, &codeConfig); err != nil {
+		return nil, eris.Wrap(err, "failed to parse code execution component config")
+	}
+	logx.Debugf("[Code Execution] Config content: %s", codeConfig.Code)
+	engine, err := NewGojaJsEngine(codeConfig.Code, nil, codeConfig.Timeout)
+	if err != nil {
+		logx.Errorf("[Code Execution] Failed to create engine [error:%v]", err)
+		return nil, eris.Wrap(err, "failed to create code execution component")
 	}
 	component.engine = engine
 	return component, nil
 }
 
-func (c *CodejsComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
-
+func (c *CodeComponent) Clear() {
+	codeComponentPool.Put(c)
+}
+func (c *CodeComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
 	result, err := c.engine.Execute("main", input)
 	if err != nil {
-		return nil, errors.New("执行代码执行组件失败: " + err.Error())
+		return nil, eris.Wrap(err, "failed to execute code component")
 	}
 
 	return &core.Result{
@@ -61,15 +79,15 @@ func (c *CodejsComponent) Execute(ctx context.Context, input any) (*core.Result,
 	}, nil
 }
 
-func (c *CodejsComponent) Validate() []core.ValidationError {
+func (c *CodeComponent) Validate() []core.ValidationError {
 	return nil
 }
 
-func (c *CodejsComponent) AnalyzeInputs(ctx context.Context) (any, error) {
+func (c *CodeComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
 }
 
-func (c *CodejsComponent) Exception() ExceptionConfig {
+func (c *CodeComponent) Exception() ExceptionConfig {
 	return ExceptionConfig{}
 }
 
@@ -82,13 +100,15 @@ type GojaJsEngine struct {
 }
 
 type Config struct {
-	Udf map[string]interface{}
+	Udf     map[string]interface{}
+	Timeout int64
 }
 
 // NewGojaJsEngine Create a new instance of the JavaScript engine
-func NewGojaJsEngine(jsScript string, fromVars map[string]interface{}) (*GojaJsEngine, error) {
+func NewGojaJsEngine(jsScript string, fromVars map[string]interface{}, timeout int64) (*GojaJsEngine, error) {
 	config := Config{
-		Udf: make(map[string]interface{}),
+		Udf:     make(map[string]interface{}),
+		Timeout: timeout,
 	}
 	if config.Udf == nil {
 		config.Udf = make(map[string]interface{})
@@ -100,16 +120,16 @@ func NewGojaJsEngine(jsScript string, fromVars map[string]interface{}) (*GojaJsE
 
 	program, err := goja.Compile("", jsScript, true)
 	if err != nil {
-		logx.Errorf("[代码执行] 编译JS脚本失败 [错误:%v]", err)
-		return nil, err
+		logx.Errorf("[Code Execution] Failed to compile JS script [error:%v]", err)
+		return nil, eris.Wrap(err, "failed to compile JS script")
 	}
 	jsEngine := &GojaJsEngine{
 		config:   config,
 		jsScript: program,
 	}
 	if err = jsEngine.PreCompileJs(config); err != nil {
-		logx.Errorf("[代码执行] 预编译JS脚本失败 [错误:%v]", err)
-		return nil, err
+		logx.Errorf("[Code Execution] Failed to pre-compile JS script [error:%v]", err)
+		return nil, eris.Wrap(err, "failed to pre-compile JS script")
 	}
 	jsEngine.vmPool = sync.Pool{
 		New: func() interface{} {
@@ -125,8 +145,8 @@ func (g *GojaJsEngine) PreCompileJs(config Config) error {
 	for k, v := range config.Udf {
 		if jsFuncStr, ok := v.(string); ok {
 			if p, err := goja.Compile(k, jsFuncStr, true); err != nil {
-				logx.Errorf("[代码执行] 编译UDF脚本失败 [函数:%s] [错误:%v]", k, err)
-				return err
+				logx.Errorf("[Code Execution] Failed to compile UDF script [function:%s] [error:%v]", k, err)
+				return eris.Wrap(err, "failed to compile UDF script")
 			} else {
 				jsUdfProgramCache[k] = p
 			}
@@ -134,8 +154,8 @@ func (g *GojaJsEngine) PreCompileJs(config Config) error {
 			if script.Type == Js || script.Type == "" {
 				if c, ok := script.Content.(string); ok {
 					if p, err := goja.Compile(k, c, true); err != nil {
-						logx.Errorf("[代码执行] 编译脚本内容失败 [函数:%s] [错误:%v]", k, err)
-						return err
+						logx.Errorf("[Code Execution] Failed to compile script content [function:%s] [error:%v]", k, err)
+						return eris.Wrap(err, "failed to compile script content")
 					} else {
 						jsUdfProgramCache[k] = p
 					}
@@ -188,12 +208,12 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]interface{}) *go
 			vars[k] = vm.ToValue(v)
 		}
 		if err != nil {
-			logx.Errorf("[代码执行] 解析JS脚本失败 [脚本:%s] [错误:%v]", k, err)
+			logx.Errorf("[Code Execution] Failed to parse JS script [script:%s] [error:%v]", k, err)
 		}
 	}
 	for k, v := range vars {
 		if err := vm.Set(k, v); err != nil {
-			logx.Errorf("[代码执行] 设置变量失败 [变量:%s] [错误:%v]", k, err)
+			logx.Errorf("[Code Execution] Failed to set variable [variable:%s] [error:%v]", k, err)
 		}
 	}
 
@@ -204,7 +224,7 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]interface{}) *go
 	closeStateChan(state)
 
 	if err != nil {
-		logx.Errorf("[代码执行] JS虚拟机执行失败 [错误:%v]", err)
+		logx.Errorf("[Code Execution] JS VM execution failed [error:%v]", err)
 	}
 	return vm
 }
@@ -213,8 +233,8 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]interface{}) *go
 func (g *GojaJsEngine) Execute(functionName string, argumentList ...interface{}) (out interface{}, err error) {
 	defer func() {
 		if caught := recover(); caught != nil {
-			logx.Errorf("[代码执行] 执行过程发生panic [函数名:%s] [错误:%v]", functionName, caught)
-			err = errors.New(fmt.Sprintf("%s", caught))
+			logx.Errorf("[Code Execution] Panic occurred during execution [function:%s] [error:%v]", functionName, caught)
+			err = eris.New(fmt.Sprintf("%s", caught))
 		}
 	}()
 
@@ -226,8 +246,8 @@ func (g *GojaJsEngine) Execute(functionName string, argumentList ...interface{})
 
 	f, ok := goja.AssertFunction(vm.Get(functionName))
 	if !ok {
-		logx.Errorf("[代码执行] 函数不存在 [函数名:%s]", functionName)
-		return nil, errors.New(functionName + " is not a function")
+		logx.Errorf("[Code Execution] Function does not exist [function:%s]", functionName)
+		return nil, eris.New(functionName + " is not a function")
 	}
 	var params []goja.Value
 	for _, v := range argumentList {
@@ -240,9 +260,8 @@ func (g *GojaJsEngine) Execute(functionName string, argumentList ...interface{})
 	g.vmPool.Put(vm)
 	if err != nil {
 		params, _ := sonic.Marshal(argumentList)
-		logx.Errorf("[代码执行] 执行函数失败 [函数名:%s] [参数:%s] [错误:%v]", functionName, string(params), err)
-
-		return nil, errors.New("执行函数失败:" + err.Error())
+		logx.Errorf("[Code Execution] Failed to execute function [function:%s] [params:%s] [error:%v]", functionName, string(params), err)
+		return nil, eris.Wrap(err, "failed to execute function")
 	}
 	return res.Export(), nil
 }
@@ -254,7 +273,7 @@ func (g *GojaJsEngine) Stop() {
 func (g *GojaJsEngine) setTimeout(vm *goja.Runtime) chan int {
 	state := make(chan int, 1)
 	state <- 0
-	time.AfterFunc(5*time.Second, func() {
+	time.AfterFunc(time.Duration(g.config.Timeout)*time.Second, func() {
 		if <-state == 0 {
 			state <- 2
 			vm.Interrupt("execution timeout")
@@ -281,7 +300,3 @@ type Script struct {
 const (
 	Js = "Js" // Represents JavaScript scripting language.
 )
-
-func (c *CodejsComponent) Clear() {
-	codejsComponentPool.Put(c)
-}
