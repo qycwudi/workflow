@@ -3,28 +3,32 @@ package components
 import (
 	"context"
 	"database/sql"
-	"encoding/json"
-	"errors"
 	"fmt"
 	"reflect"
 	"regexp"
 	"strings"
 	"sync"
-	"workflow/internal/datasource"
-	"workflow/pkg/core"
 
 	"github.com/bytedance/sonic"
+	"github.com/rotisserie/eris"
 	"github.com/zeromicro/go-zero/core/logx"
+
+	"workflow/internal/datasource"
+	"workflow/internal/enum"
+	"workflow/pkg/core"
 )
 
 type DatabaseComponent struct {
 	config DatabaseConfig
 }
 type DatabaseConfig struct {
-	DatasourceType  string          `json:"datasourceType"`
-	DatasourceId    int64           `json:"datasourceId"`
-	SQL             string          `json:"sql"`
-	ExceptionConfig ExceptionConfig `json:"exceptionConfig"`
+	DatasourceId      int64           `json:"datasourceId"`
+	SQL               string          `json:"sql"`
+	ErrorHandlingMode string          `json:"errorHandlingMode"`
+	Retry             int64           `json:"retry"`
+	Timeout           int64           `json:"timeout"`
+	DatasourceType    string          `json:"datasourceType"`
+	ExceptionConfig   ExceptionConfig `json:"exceptionConfig"`
 }
 
 var databaseComponentPool = sync.Pool{
@@ -33,12 +37,23 @@ var databaseComponentPool = sync.Pool{
 	},
 }
 
-func NewDatabaseComponent(config json.RawMessage) (*DatabaseComponent, error) {
-	// 使用pool
+func NewDatabaseComponent(config any) (*DatabaseComponent, error) {
+	jsonConfig, err := sonic.Marshal(config)
+	if err != nil {
+		return nil, eris.Wrap(err, "failed to parse database component config")
+	}
 	component := databaseComponentPool.Get().(*DatabaseComponent)
 	var databaseConfig DatabaseConfig
-	if err := sonic.Unmarshal(config, &databaseConfig); err != nil {
-		return nil, errors.New("解析迭代结束组件配置失败: " + err.Error())
+	if err := sonic.Unmarshal(jsonConfig, &databaseConfig); err != nil {
+		return nil, eris.Wrap(err, "failed to parse database component config")
+	}
+	databaseConfig.ExceptionConfig = ExceptionConfig{
+		Timeout:    databaseConfig.Timeout,
+		RetryTimes: int(databaseConfig.Retry),
+		OutputOnError: map[string]any{
+			"outputList": []map[string]any{},
+			"rowNum":     0,
+		},
 	}
 	component.config = databaseConfig
 	return component, nil
@@ -47,42 +62,28 @@ func NewDatabaseComponent(config json.RawMessage) (*DatabaseComponent, error) {
 func (d *DatabaseComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
 	inputMap, ok := input.(map[string]any)
 	if !ok {
-		return nil, fmt.Errorf("input 类型不匹配")
+		return nil, eris.New("input type mismatch")
 	}
 
-	var err error
-	var args []any
-	var condition string
-	if statements := strings.Split(strings.ToLower(d.config.SQL), "where"); len(statements) == 2 {
-		d.config.SQL = statements[0]
-		condition = "where" + statements[1]
-	}
-	if condition != "" {
-		if condition, args, err = d.replaceExprs(condition, inputMap, func(expr, old string, value any) string {
-			return strings.ReplaceAll(expr, old, "?")
-		}); err != nil {
-			return nil, err
-		}
-		d.config.SQL = d.config.SQL + condition
-	}
-
-	if d.config.SQL, _, err = d.replaceExprs(d.config.SQL, inputMap, func(expr, old string, value any) string {
-		return strings.ReplaceAll(expr, old, reflect.ValueOf(value).String())
-	}); err != nil {
+	// 直接替换所有变量为 ?，并收集参数
+	sql, args, err := d.replaceExprs(d.config.SQL, inputMap, func(expr, old string, value any) string {
+		return strings.ReplaceAll(expr, old, "?")
+	})
+	if err != nil {
 		return nil, err
 	}
 
 	// sql 替换完成，开始执行
-	output, err := d.executeSQL(ctx, d.config.SQL, args)
+	param := fmt.Sprintf("sql:%s,args:%+v", sql, args)
+	logx.Debugf("[DATABASE] %s", param)
+	output, err := d.executeSQL(ctx, sql, args)
 	if err != nil {
-		logx.Infow("[DATABASE组件] 执行失败", logx.Field("SQL", d.config.SQL))
+		logx.Errorf("[DATABASE] execute failed param:%s,error:%s", param, err.Error())
 		return &core.Result{
 			Route:  []string{Failed},
 			Output: d.config.ExceptionConfig.OutputOnError,
-		}, err
+		}, eris.Wrap(err, "failed to replace exprs param:"+param)
 	}
-
-	logx.Infow("[DATABASE组件] 执行成功", logx.Field("SQL", d.config.SQL))
 	return &core.Result{
 		Route:  []string{Success},
 		Output: output,
@@ -116,21 +117,31 @@ func (d *DatabaseComponent) replaceExprs(expr string, inputMap map[string]any, r
 		cutFiled := strings.Trim(field, "{{}}")
 		if value, ok = inputMap[cutFiled]; !ok {
 			// 本节点 input 里没有该变量
-			return "", nil, fmt.Errorf("节点 input 中不存在变量 [%s]", cutFiled)
+			return "", nil, eris.Errorf("node input does not exist variable [%s]", cutFiled)
 		}
 		if value == nil {
+			logx.Errorf("[DATABASE] value is nil,cutFiled:%s", cutFiled)
 			value = reflect.Zero(reflect.TypeOf(value)).Interface()
 		}
-		// 替换
-		args = append(args, value)
-		expr = replaceFun(expr, field, value)
+		// 如果是数组,要转成 f1,f2,f3 这种格式
+		if reflect.TypeOf(value).Kind() == reflect.Slice {
+			slice := reflect.ValueOf(value)
+			for i := 0; i < slice.Len(); i++ {
+				args = append(args, slice.Index(i).Interface())
+			}
+			expr = replaceFun(expr, field, args)
+		} else {
+			// 替换
+			args = append(args, value)
+			expr = replaceFun(expr, field, value)
+		}
 	}
 	return expr, args, nil
 }
 
 // 执行SQL语句
 func (d *DatabaseComponent) executeSQL(ctx context.Context, sql string, args []interface{}) (any, error) {
-	if d.config.DatasourceType == "Oracle" {
+	if d.config.DatasourceType == enum.OracleType.String() {
 		sql = strings.ReplaceAll(sql, ";", "")
 	}
 
@@ -216,9 +227,7 @@ func (d *DatabaseComponent) executeQuery(ctx context.Context, sql string, args [
 
 	result, err := queryResult(rows)
 	if err != nil {
-		logx.Errorw("[DATABASE组件] Query执行失败",
-			logx.Field("SQL", sql),
-			logx.Field("错误", err))
+		logx.Errorf("[DATABASE] query failed,SQL:%s,error:%s", sql, err.Error())
 		return nil, err
 	}
 	return map[string]any{

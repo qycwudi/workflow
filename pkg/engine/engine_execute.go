@@ -447,12 +447,34 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 	// 3. 执行组件
 	result, err := e.executeComponent(ctx, nil, component, input)
 	if err != nil {
+		// 更新 trace 记录错误信息
+		if ctx.IsTrace {
+			Trace.UpdateTrace(ctx, &TraceRecore{
+				NodeId:      nodeID,
+				TraceId:     ctx.TraceId,
+				Output:      nil,
+				Status:      string(core.StatusFailed),
+				ElapsedTime: time.Since(startTime).Milliseconds(),
+				ErrorMsg:    err.Error(),
+			})
+		}
 		return nil, err
 	}
 
 	// 4. 处理输出数据
 	output, err := e.processNodeOutput(input, nil, result, node)
 	if err != nil {
+		// 更新 trace 记录错误信息
+		if ctx.IsTrace {
+			Trace.UpdateTrace(ctx, &TraceRecore{
+				NodeId:      nodeID,
+				TraceId:     ctx.TraceId,
+				Output:      nil,
+				Status:      string(core.StatusFailed),
+				ElapsedTime: time.Since(startTime).Milliseconds(),
+				ErrorMsg:    err.Error(),
+			})
+		}
 		return nil, err
 	}
 

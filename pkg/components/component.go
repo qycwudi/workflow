@@ -32,7 +32,7 @@ const (
 	Iteration = "iteration"
 	StartItem = "start-item"
 	EndItem   = "end-item"
-	Database  = "database"
+	Database  = "sql"
 )
 
 // Component 定义组件核心接口
@@ -70,7 +70,7 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeDa
 	case EndItem:
 		return NewEndItemComponent(json.RawMessage("{}"))
 	case Database:
-		return NewDatabaseComponent(json.RawMessage("{}"))
+		return NewDatabaseComponent(inputs.Custom)
 	}
 	return nil, errors.New("Component type not found: " + nodeType)
 }
