@@ -171,7 +171,7 @@ func (g *GojaJsEngine) PreCompileJs(config Config) error {
 }
 
 // NewVm new a js VM
-func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]interface{}) *goja.Runtime {
+func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]any) *goja.Runtime {
 	vm := goja.New()
 	vars := make(map[string]interface{})
 	if fromVars != nil {
@@ -230,7 +230,7 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]interface{}) *go
 }
 
 // Execute Execute JavaScript script
-func (g *GojaJsEngine) Execute(functionName string, argumentList ...interface{}) (out interface{}, err error) {
+func (g *GojaJsEngine) Execute(functionName string, argumentList ...any) (out interface{}, err error) {
 	defer func() {
 		if caught := recover(); caught != nil {
 			logx.Errorf("[Code Execution] Panic occurred during execution [function:%s] [error:%v]", functionName, caught)

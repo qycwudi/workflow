@@ -140,12 +140,12 @@ func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 			params = formData
 		}
 	case bodyTypeJson:
-		if c.config.BodyData != "{}" || c.config.BodyData != "" {
+		if c.config.BodyData != "{}" && c.config.BodyData != "" {
 			// 表达式 {{var}} 替换为 {{.var}} 去掉多余的双引号
 			jsonTemplate := strings.ReplaceAll(c.config.BodyData, "\"{{", "{{json .")
 			jsonTemplate = strings.ReplaceAll(jsonTemplate, "}}\"", "}}")
 			funcMap := template.FuncMap{
-				"json": func(v interface{}) (string, error) {
+				"json": func(v any) (string, error) {
 					jsonData, err := sonic.Marshal(v)
 					if err != nil {
 						return "", err
@@ -154,11 +154,6 @@ func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 				},
 			}
 			tmpl, err := template.New("json").Funcs(funcMap).Parse(jsonTemplate)
-			if err != nil {
-				logx.Errorw("[HTTP组件] 解析模板失败",
-					logx.Field("错误", err))
-				return nil, err
-			}
 			if err != nil {
 				logx.Errorw("[HTTP组件] 解析模板失败",
 					logx.Field("错误", err))

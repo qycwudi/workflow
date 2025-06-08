@@ -4,6 +4,7 @@ import (
 	"context"
 
 	"github.com/rotisserie/eris"
+	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/components"
 	"workflow/pkg/core"
@@ -44,13 +45,16 @@ func (e *WorkflowEngine) buildExecutionPlan(ctx context.Context, def *core.Workf
 		inDegree[node.ID] = 0
 		graph[node.ID] = []string{}
 		// 迭代组件初始化
-		// if node.Type == "iteration" {
-		// 	logx.Debugf("[工作流] 迭代组件初始化: %s", def.ID)
-		// 	err := e.RegisterWorkflow(ctx, node.SubWorkflow.ID, node.SubWorkflow)
-		// 	if err != nil {
-		// 		return nil, eris.New("迭代组件初始化失败: " + err.Error())
-		// 	}
-		// }
+		if node.Type == components.Loop {
+			logx.Debugf("[工作流] 迭代组件初始化: %s", node.ID)
+			err := e.RegisterWorkflow(ctx, node.ID, &core.WorkflowDef{
+				Nodes: node.Blocks,
+				Edges: node.Edges,
+			})
+			if err != nil {
+				return nil, eris.New("迭代组件初始化失败: " + err.Error())
+			}
+		}
 	}
 
 	// 构建图结构

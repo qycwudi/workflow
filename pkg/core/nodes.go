@@ -6,6 +6,9 @@ type Nodes struct {
 	ID   string   `json:"id"`
 	Type string   `json:"type"`
 	Data NodeData `json:"data"`
+	// 迭代组件的子流程
+	Blocks []Nodes `json:"blocks"`
+	Edges  []Edges `json:"edges"`
 }
 
 type NodeData struct {
@@ -15,6 +18,8 @@ type NodeData struct {
 	NodeDataInputs      NodeDataInputs                  `json:"inputs"`       // 输入定义
 	NodeDataOutputs     NodeDataOutputs                 `json:"outputs"`      // 输出定义
 	Conditions          []Condition                     `json:"conditions"`   // 条件定义
+
+	BatchFor NodeDataInputsValues `json:"batchFor"`
 }
 
 type NodeDataInputsValues struct {

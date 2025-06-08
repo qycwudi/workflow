@@ -2,7 +2,6 @@ package components
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 	"sync"
 
@@ -16,10 +15,10 @@ type IterationComponent struct {
 }
 
 type IterationConfig struct {
-	IterationType  string              `json:"iterationType"`
-	IterationValue map[string]any      `json:"iterationValue"`
-	SubWorkflowId  string              `json:"subWorkflowId"`
-	workflowEngine core.WorkflowEngine `json:"-"`
+	EndId string `json:"endId"`
+	// IterationType  string              `json:"iterationType"`
+	workflowEngine core.WorkflowEngine       `json:"-"`
+	BatchFor       core.NodeDataInputsValues `json:"batchFor"`
 }
 
 var iterationComponentPool = sync.Pool{
@@ -28,26 +27,37 @@ var iterationComponentPool = sync.Pool{
 	},
 }
 
-func NewIterationComponent(e core.WorkflowEngine, config json.RawMessage) (*IterationComponent, error) {
+func NewIterationComponent(e core.WorkflowEngine, batchFor core.NodeDataInputsValues, config any) (*IterationComponent, error) {
+	jsonConfig, err := sonic.Marshal(config)
+	if err != nil {
+		return nil, errors.New("loop component configuration serialization failed: " + err.Error())
+	}
 	// 使用pool
 	component := iterationComponentPool.Get().(*IterationComponent)
 	var iteraConfig IterationConfig
-	if err := sonic.Unmarshal(config, &iteraConfig); err != nil {
-		return nil, errors.New("解析迭代执行组件配置失败: " + err.Error())
+	if err := sonic.Unmarshal(jsonConfig, &iteraConfig); err != nil {
+		return nil, errors.New("loop component configuration serialization failed: " + err.Error())
 	}
 	iteraConfig.workflowEngine = e
+	iteraConfig.BatchFor = batchFor
 	component.config = iteraConfig
 	return component, nil
 }
 
-const (
-	iterationTotal = "iterationTotal"
-)
-
 // AnalyzeInputs implements Component.
 func (i *IterationComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	// execCtx := ctx.(*core.ExecutionContext)
-	// valMap, err := core.ParseNodeInputs([]core.Inputs{i.config.IterationValue}, execCtx)
+	// // 构造
+	// inputs := map[string]core.NodeDataInputsValues{"batchFor": i.config.BatchFor}
+	// inputValues := core.NodeDataInputs{
+	// 	Properties: map[string]core.Properties{
+	// 		"batchFor": {
+	// 			Type: i.config.BatchFor.Type,
+	// 		},
+	// 	},
+	// 	Required: []string{"batchFor"},
+	// }
+	// valMap, err := core.ParseNodeInputs(execCtx, inputs, inputValues)
 	// if err != nil {
 	// 	return nil, errors.New("解析迭代值失败: " + err.Error())
 	// }
@@ -109,7 +119,7 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 	// 			if err != nil {
 	// 				return nil, errors.New("迭代执行失败: " + err.Error())
 	// 			}
-	// 			result, ok := i.config.workflowEngine.GetNodeResult(workflowID, serialID, "end-item-node")
+	// 			result, ok := i.config.workflowEngine.GetNodeResult(workflowID, serialID, i.config.EndId)
 	// 			if !ok {
 	// 				return nil, errors.New("获取迭代执行结果失败")
 	// 			}

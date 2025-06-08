@@ -29,7 +29,7 @@ const (
 	Code      = "code"
 	Condition = "condition"
 	Model     = "llm"
-	Iteration = "iteration"
+	Loop      = "loop"
 	StartItem = "start-item"
 	EndItem   = "end-item"
 	Database  = "sql"
@@ -63,8 +63,8 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeDa
 			return nil, errors.New("component configuration serialization failed: " + err.Error())
 		}
 		return NewConditionComponent(jsonConfig)
-	case Iteration:
-		return NewIterationComponent(e, json.RawMessage("{}"))
+	case Loop:
+		return NewIterationComponent(e, inputs.BatchFor, inputs.Custom)
 	case StartItem:
 		return NewStartItemComponent()
 	case EndItem:
