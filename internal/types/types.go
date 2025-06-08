@@ -314,6 +314,61 @@ type CanvasRunSingleResponse struct {
 	Result Result `json:"result"` // 组件运行结果
 }
 
+type Case struct {
+	WorkspaceId string `json:"workspaceId"`
+	CaseId      string `json:"caseId"`
+	CaseName    string `json:"caseName"`
+	CaseParams  string `json:"caseParams"`
+	CreateAt    string `json:"createAt"`
+	UpdateAt    string `json:"updateAt"`
+	CreateBy    string `json:"createBy"`
+	UpdateBy    string `json:"updateBy"`
+}
+
+type CaseCreateRequest struct {
+	WorkspaceId string `json:"workspaceId"`
+	CaseName    string `json:"caseName"`
+	CaseParams  string `json:"caseParams"`
+}
+
+type CaseCreateResponse struct {
+	CaseId string `json:"caseId"`
+}
+
+type CaseDeleteRequest struct {
+	CaseId string `json:"caseId"`
+}
+
+type CaseDeleteResponse struct {
+	Success bool `json:"success"`
+}
+
+type CaseDetailRequest struct {
+	CaseId string `json:"caseId"`
+}
+
+type CaseDetailResponse struct {
+	Case Case `json:"case"`
+}
+
+type CaseEditRequest struct {
+	CaseId     string `json:"caseId"`
+	CaseName   string `json:"caseName"`
+	CaseParams string `json:"caseParams"`
+}
+
+type CaseEditResponse struct {
+	Success bool `json:"success"`
+}
+
+type CaseListRequest struct {
+	WorkspaceId string `json:"workspaceId"`
+}
+
+type CaseListResponse struct {
+	CaseList []Case `json:"caseList"`
+}
+
 type ComponentDetail struct {
 	Id        string                 `json:"id"`        // 组件ID
 	Name      string                 `json:"name"`      // 组件名称

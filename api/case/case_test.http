@@ -1,0 +1,10 @@
+### 用例发布
+POST http://127.0.0.1:8888/workflow/api/case/publish
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzcwMjQ5NzEsImlhdCI6MTczNjkzODU3MSwidXNlcklkIjoxfQ.2vIi1FF-PBa89C9HTMRpGWAkNrOW2hsWcp0xVqtfckU
+
+{
+  "workspaceId": "123",
+  "caseName": "test",
+  "caseParams": "test"
+}

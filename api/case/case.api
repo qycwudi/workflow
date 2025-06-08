@@ -1,0 +1,87 @@
+syntax = "v1"
+
+type CaseCreateRequest {
+	WorkspaceId string `json:"workspaceId"`
+	CaseName    string `json:"caseName"`
+	CaseParams  string `json:"caseParams"`
+}
+
+type CaseCreateResponse {
+	CaseId string `json:"caseId"`
+}
+
+type CaseListRequest {
+	WorkspaceId string `json:"workspaceId"`
+}
+
+type Case {
+	WorkspaceId string `json:"workspaceId"`
+	CaseId      string `json:"caseId"`
+	CaseName    string `json:"caseName"`
+	CaseParams  string `json:"caseParams"`
+	CreateAt    string `json:"createAt"`
+	UpdateAt    string `json:"updateAt"`
+	CreateBy    string `json:"createBy"`
+	UpdateBy    string `json:"updateBy"`
+}
+
+type CaseListResponse {
+	CaseList []Case `json:"caseList"`
+}
+
+type CaseDetailRequest {
+	CaseId string `json:"caseId"`
+}
+
+type CaseDetailResponse {
+	Case Case `json:"case"`
+}
+
+type CaseDeleteRequest {
+	CaseId string `json:"caseId"`
+}
+
+type CaseDeleteResponse {
+	Success bool `json:"success"`
+}
+
+type CaseEditRequest {
+	CaseId     string `json:"caseId"`
+	CaseName   string `json:"caseName"`
+	CaseParams string `json:"caseParams"`
+}
+
+type CaseEditResponse {
+	Success bool `json:"success"`
+}
+
+@server (
+	// 代表当前 service 代码块下的路由生成代码时都会被放到 login 目录下
+	group: tcase
+	// 定义路由前缀为 "/v1"
+	prefix: /workflow
+	// jwt: Auth // 开启 jwt 认证
+	// middleware: PermissionMiddleware // 开启权限认证
+)
+service workflow-api {
+	@doc "用例发布"
+	@handler CaseCreateHandler
+	post /case/publish (CaseCreateRequest) returns (CaseCreateResponse)
+
+	@doc "用例列表"
+	@handler CaseListHandler
+	post /case/list (CaseListRequest) returns (CaseListResponse)
+
+	@doc "用例详情"
+	@handler CaseDetailHandler
+	post /case/detail (CaseDetailRequest) returns (CaseDetailResponse)
+
+	@doc "用例删除"
+	@handler CaseDeleteHandler
+	post /case/delete (CaseDeleteRequest) returns (CaseDeleteResponse)
+
+	@doc "用例编辑"
+	@handler CaseEditHandler
+	post /case/edit (CaseEditRequest) returns (CaseEditResponse)
+
+}

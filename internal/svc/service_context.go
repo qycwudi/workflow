@@ -35,6 +35,7 @@ type ServiceContext struct {
 	KvModel                  model.KvModel
 	JobRecordModel           model.JobRecordModel
 	JobModel                 model.JobModel
+	CaseModel                model.CaseModel
 	PermissionMiddleware     func(next http.HandlerFunc) http.HandlerFunc
 }
 
@@ -81,6 +82,7 @@ func NewServiceContext(c config.Config) *ServiceContext {
 		KvModel:                  model.NewKvModel(conn),
 		JobRecordModel:           model.NewJobRecordModel(conn),
 		JobModel:                 model.NewJobModel(conn),
+		CaseModel:                model.NewCaseModel(conn),
 		PermissionMiddleware:     middleware.NewPermissionMiddleware(permissionsModel).Handle,
 	}
 }

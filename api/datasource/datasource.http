@@ -48,7 +48,7 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcyMjA4NTQsImlh
 ### 数据源-新增
 POST http://127.0.0.1:8888/workflow/datasource/add
 Content-Type: application/json
-Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDcxMDYxMDgsImlhdCI6MTc0NzAxOTcwOCwidXNlcklkIjoxfQ._mVtkHrxWG0KOMJMqFnZS0LUEB00lt2sbRTdFLliVGM
+Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk0NzM5MjksImlhdCI6MTc0OTM4NzUyOSwidXNlcklkIjoxfQ.hfYmsKiO_0eV1x5spDN7iDFE1mkOPFIKQGLxNGDu3EI
 
 {
   "switch": 1,

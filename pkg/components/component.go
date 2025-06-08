@@ -28,7 +28,7 @@ const (
 	HTTP      = "http"
 	Code      = "code"
 	Condition = "condition"
-	Model     = "model"
+	Model     = "llm"
 	Iteration = "iteration"
 	StartItem = "start-item"
 	EndItem   = "end-item"
@@ -56,7 +56,7 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeDa
 	case Code:
 		return NewCodeComponent(inputs.Custom)
 	case Model:
-		return NewModelComponent(json.RawMessage("{}"))
+		return NewModelComponent(inputs.Custom)
 	case Condition:
 		jsonConfig, err := sonic.Marshal(inputs.Conditions)
 		if err != nil {

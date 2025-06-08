@@ -15,6 +15,7 @@ import (
 	openapi "workflow/internal/handler/openapi"
 	permission "workflow/internal/handler/permission"
 	role "workflow/internal/handler/role"
+	tcase "workflow/internal/handler/tcase"
 	trace "workflow/internal/handler/trace"
 	user "workflow/internal/handler/user"
 	workspace "workflow/internal/handler/workspace"
@@ -485,6 +486,42 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 			}...,
 		),
 		rest.WithJwt(serverCtx.Config.Auth.AccessSecret),
+		rest.WithPrefix("/workflow"),
+	)
+
+	server.AddRoutes(
+		[]rest.Route{
+			{
+				// 用例删除
+				Method:  http.MethodPost,
+				Path:    "/case/delete",
+				Handler: tcase.CaseDeleteHandler(serverCtx),
+			},
+			{
+				// 用例详情
+				Method:  http.MethodPost,
+				Path:    "/case/detail",
+				Handler: tcase.CaseDetailHandler(serverCtx),
+			},
+			{
+				// 用例编辑
+				Method:  http.MethodPost,
+				Path:    "/case/edit",
+				Handler: tcase.CaseEditHandler(serverCtx),
+			},
+			{
+				// 用例列表
+				Method:  http.MethodPost,
+				Path:    "/case/list",
+				Handler: tcase.CaseListHandler(serverCtx),
+			},
+			{
+				// 用例发布
+				Method:  http.MethodPost,
+				Path:    "/case/publish",
+				Handler: tcase.CaseCreateHandler(serverCtx),
+			},
+		},
 		rest.WithPrefix("/workflow"),
 	)
 

@@ -22,11 +22,11 @@ require (
 	github.com/panjf2000/ants/v2 v2.11.3
 	github.com/pkg/sftp v1.13.7
 	github.com/redis/go-redis/v9 v9.8.0
+	github.com/rotisserie/eris v0.5.4
 	github.com/rs/xid v1.6.0
 	github.com/samber/lo v1.47.0
 	github.com/sijms/go-ora/v2 v2.8.22
 	github.com/tidwall/gjson v1.18.0
-	github.com/trungdlp-wolffun/asynqmon v0.7.2
 	github.com/uptrace/bun v1.2.6
 	github.com/uptrace/bun/dialect/mssqldialect v1.2.6
 	github.com/uptrace/bun/dialect/mysqldialect v1.2.6
@@ -67,7 +67,6 @@ require (
 	github.com/golang-sql/sqlexp v0.1.0 // indirect
 	github.com/google/pprof v0.0.0-20241210010833-40e02aabc2ad // indirect
 	github.com/goph/emperror v0.17.2 // indirect
-	github.com/gorilla/mux v1.8.0 // indirect
 	github.com/grpc-ecosystem/grpc-gateway/v2 v2.26.1 // indirect
 	github.com/hashicorp/errwrap v1.1.0 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
@@ -99,7 +98,6 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.4.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/rotisserie/eris v0.5.4 // indirect
 	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/slongfield/pyfmt v0.0.0-20220222012616-ea85ff4c361f // indirect
