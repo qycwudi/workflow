@@ -6,6 +6,8 @@ import (
 	"sync"
 
 	"github.com/bytedance/sonic"
+	"github.com/google/uuid"
+	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/core"
 )
@@ -15,10 +17,12 @@ type IterationComponent struct {
 }
 
 type IterationConfig struct {
-	EndId string `json:"endId"`
-	// IterationType  string              `json:"iterationType"`
-	workflowEngine core.WorkflowEngine       `json:"-"`
-	BatchFor       core.NodeDataInputsValues `json:"batchFor"`
+	NodeID         string              `json:"nodeId"`
+	BatchForType   string              `json:"batchForType"`
+	workflowEngine core.WorkflowEngine `json:"-"`
+
+	BatchFor core.NodeDataInputsValues  `json:"batchFor"`
+	Outputs  map[string]core.Properties `json:"outputs"`
 }
 
 var iterationComponentPool = sync.Pool{
@@ -26,6 +30,10 @@ var iterationComponentPool = sync.Pool{
 		return &IterationComponent{}
 	},
 }
+
+const (
+	itemKey = "items"
+)
 
 func NewIterationComponent(e core.WorkflowEngine, batchFor core.NodeDataInputsValues, config any) (*IterationComponent, error) {
 	jsonConfig, err := sonic.Marshal(config)
@@ -41,115 +49,129 @@ func NewIterationComponent(e core.WorkflowEngine, batchFor core.NodeDataInputsVa
 	iteraConfig.workflowEngine = e
 	iteraConfig.BatchFor = batchFor
 	component.config = iteraConfig
+	logx.Debugf("loop component configuration: %+v", iteraConfig)
 	return component, nil
 }
 
 // AnalyzeInputs implements Component.
 func (i *IterationComponent) AnalyzeInputs(ctx context.Context) (any, error) {
-	// execCtx := ctx.(*core.ExecutionContext)
-	// // 构造
-	// inputs := map[string]core.NodeDataInputsValues{"batchFor": i.config.BatchFor}
-	// inputValues := core.NodeDataInputs{
-	// 	Properties: map[string]core.Properties{
-	// 		"batchFor": {
-	// 			Type: i.config.BatchFor.Type,
-	// 		},
-	// 	},
-	// 	Required: []string{"batchFor"},
-	// }
-	// valMap, err := core.ParseNodeInputs(execCtx, inputs, inputValues)
-	// if err != nil {
-	// 	return nil, errors.New("解析迭代值失败: " + err.Error())
-	// }
+	execCtx := ctx.(*core.ExecutionContext)
+	// 构造
+	inputs := map[string]core.NodeDataInputsValues{"batchFor": i.config.BatchFor}
+	inputValues := core.NodeDataInputs{
+		Properties: map[string]core.Properties{
+			"batchFor": {
+				Type: "array",
+				Item: core.NodeDataOutputs{
+					Type: i.config.BatchForType,
+				},
+			},
+		},
+		Required: []string{"batchFor"},
+	}
+	valMap, err := core.ParseNodeInputs(execCtx, inputs, inputValues)
+	if err != nil {
+		return nil, errors.New("[loop] analyze inputs failed: " + err.Error())
+	}
 
-	// if len(valMap) == 0 {
-	// 	return nil, errors.New("迭代值为空")
-	// }
+	if len(valMap) == 0 {
+		return nil, errors.New("[loop] analyze inputs failed: input is empty")
+	}
 
-	// // 获取第一个值
-	// var value any
-	// for _, v := range valMap {
-	// 	value = v
-	// 	break
-	// }
+	// 获取第一个值
+	var value any
+	for _, v := range valMap {
+		value = v
+		break
+	}
 
-	// input := map[string]any{}
-	// switch i.config.IterationType {
-	// case "array":
-	// 	arr, ok := value.([]any)
-	// 	if !ok {
-	// 		return nil, errors.New("迭代值必须是数组类型")
-	// 	}
-	// 	input[i.config.IterationValue.Name] = arr
-	// case "index":
-	// 	num, ok := value.(int64)
-	// 	if !ok {
-	// 		return nil, errors.New("迭代值必须是数字类型")
-	// 	}
-	// 	input[iterationTotal] = num
-	// default:
-	// 	return nil, errors.New("不支持的迭代类型: " + i.config.IterationType)
-	// }
-	// return input, nil
-	return nil, nil
+	input := map[string]any{}
+	arr, ok := value.([]any)
+	if !ok {
+		return nil, errors.New("[loop] analyze inputs failed: input is not array")
+	}
+	input[itemKey] = arr
+
+	return input, nil
 }
 
 // Execute implements Component.
 func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
-	// r := []any{}
-	// workflowID := i.config.SubWorkflowId
-	// switch i.config.IterationValue.Type[0] {
-	// case "array":
-	// 	{
-	// 		// 封装参数
-	// 		inputMap, ok := input.(map[string]any)
-	// 		if !ok {
-	// 			return nil, errors.New("输入类型不匹配")
-	// 		}
-	// 		iterVal, ok := inputMap[i.config.IterationValue.Name].([]any)
-	// 		if !ok {
-	// 			return nil, errors.New("迭代值类型不匹配")
-	// 		}
-	// 		// results := []core.NodeResult{}
-	// 		for idx, v := range iterVal {
-	// 			inputMap[i.config.IterationValue.Name] = v
-	// 			inputMap["_index"] = idx
-	// 			serialID := uuid.New().String()
-	// 			err := i.config.workflowEngine.ExecuteWorkflow(ctx, workflowID, serialID, inputMap)
-	// 			if err != nil {
-	// 				return nil, errors.New("迭代执行失败: " + err.Error())
-	// 			}
-	// 			result, ok := i.config.workflowEngine.GetNodeResult(workflowID, serialID, i.config.EndId)
-	// 			if !ok {
-	// 				return nil, errors.New("获取迭代执行结果失败")
-	// 			}
-	// 			// results = append(results, *result)
-	// 			r = append(r, result.Output)
-	// 			logx.Debugf(" 迭代索引: %d\n 迭代参数: %+v\n 迭代结果: %+v\n", idx, inputMap, result)
-	// 		}
-	// 	}
-	// case "index":
-	// 	{
-	// 		// 封装参数
-	// 		inputMap, ok := input.(map[string]any)
-	// 		if !ok {
-	// 			return nil, errors.New("输入类型不匹配")
-	// 		}
-	// 		iterVal, ok := inputMap[iterationTotal].(int64)
-	// 		if !ok {
-	// 			return nil, errors.New("迭代值类型不匹配")
-	// 		}
-	// 		logx.Debugf("迭代内容: %d\n", iterVal)
-	// 	}
-	// }
-	// ret := make(map[string]any, 1)
-	// ret["result"] = r
-	// result := core.Result{
-	// 	Output: ret,
-	// 	Route:  []string{Success},
-	// }
-	// return &result, nil
-	return nil, nil
+	execCtx := ctx.(*core.ExecutionContext)
+	r := make(map[string]interface{}, 0)
+	/*
+		{
+			"result_1": [
+				{
+					"key": "value"
+				}
+			],
+			"result_2": [
+				{
+					"key": "value"
+				}
+			]
+		}
+	*/
+	workflowID := i.config.NodeID
+	// 封装参数
+	inputMap, ok := input.(map[string]any)
+	if !ok {
+		return nil, errors.New("[loop] execute failed: input type mismatch")
+	}
+	iterVal, ok := inputMap[itemKey].([]any)
+	if !ok {
+		return nil, errors.New("[loop] execute failed: item type mismatch")
+	}
+	for idx, v := range iterVal {
+		// 迭代参数
+		inputMap["item"] = v
+		// 迭代索引
+		inputMap["index"] = idx
+		// 构造 loop 输出 以_locals 结尾,迭代组件字段会在原来 loopId 上追加,防止后续组件的输入被覆盖
+		execCtx.SetVariable(workflowID+"_locals"+".output", inputMap)
+		logx.Debugf("[loop] setVariable success: index: %d, output: %+v", idx, inputMap)
+		serialID := uuid.New().String()
+		err := i.config.workflowEngine.ExecuteWorkflow(execCtx, workflowID, serialID, inputMap)
+		if err != nil {
+			return nil, errors.New("[loop] execute failed: " + err.Error())
+		}
+		// 获取指定节点输出
+		subResult := make(map[string]any, 0)
+		for _, output := range i.config.Outputs {
+			key := output.Extra.InputKey
+			outputKey := output.Extra.OutputKey
+			subNodeId := output.Extra.NodeId
+			result, ok := i.config.workflowEngine.GetNodeResult(workflowID, serialID, subNodeId)
+			if !ok {
+				return nil, errors.New("[loop] execute failed: get node result failed")
+			}
+			outputValue, ok := result.Output.(map[string]any)
+			if !ok {
+				return nil, errors.New("[loop] execute failed: output type mismatch")
+			}
+			// 赋值
+			subResult[key] = outputValue[outputKey]
+		}
+		// 把subResult append 到 r
+		for key, value := range subResult {
+			if _, ok := r[key]; !ok {
+				r[key] = make([]any, 0)
+			}
+			// 类型断言并追加
+			if arr, ok := r[key].([]any); ok {
+				r[key] = append(arr, value)
+			}
+		}
+
+		logx.Debugf("[loop] execute success: index: %d, item: %+v, result: %+v", idx, inputMap, r)
+	}
+
+	result := core.Result{
+		Output: r,
+		Route:  []string{Success},
+	}
+	return &result, nil
 }
 
 // Validate implements Component.

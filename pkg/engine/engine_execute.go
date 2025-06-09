@@ -43,11 +43,10 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 	// 更新访问时间
 	atomic.StoreInt64(&executor.lastAccessed, time.Now().UnixNano())
 
+	// 创建执行上下文
+	executionContext := core.NewExecutionContext(ctx, workflowID, serialID, executor.totalNodes, params)
 	// 创建带超时的上下文
 	execCtx, cancel := context.WithTimeout(ctx, e.config.ExecutionTimeout)
-
-	// 创建执行上下文
-	executionContext := core.NewExecutionContext(execCtx, workflowID, serialID, executor.totalNodes, params)
 	executionContext.Context = execCtx
 	executionContext.Expiration = time.Now().Add(executor.defaultTTL)
 
@@ -186,7 +185,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 			err := e.handleNodeExecution(execCtx, phaseIdx*1000+i, executor, node)
 			if err != nil {
 				errField := eris.ToString(err, true)
-				logx.Errorf("[Workflow] Execute node failed: id:%s, name:%s, type:%s, traceId:%s, error %s",
+				logx.Errorf("[Workflow] Execute node failed, id:%s, name:%s, type:%s, traceId:%s, error %s",
 					node.ID, node.Data.Title, node.Type, execCtx.TraceId, errField)
 				// 收集错误
 				errMu.Lock()
@@ -294,7 +293,8 @@ func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseI
 func (e *WorkflowEngine) checkNodeRoute(execCtx *core.ExecutionContext, executor *Executor, node *WorkflowNode) (bool, error) {
 	route, ok := executor.conditionRouter[node.ID]
 	if !ok {
-		return false, eris.New("node initialization route not found: " + node.ID)
+		logx.Debugf("[Workflow] Node route not found, skip[loop single node]: %s", node.ID)
+		return true, nil
 	}
 
 	if !execCtx.CheckRoute(route) {

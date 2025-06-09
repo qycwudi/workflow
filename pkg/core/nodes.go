@@ -65,6 +65,11 @@ type ConditionValue struct {
 
 type Extra struct {
 	Index int64 `json:"index"`
+
+	NodeId        string `json:"nodeId"`        //loop组件用到 子组件id
+	InputKey      string `json:"inputKey"`      //loop组件用到 loop组件输出 key
+	OutputKey     string `json:"outputKey"`     //loop组件用到 loop子组件输出字段名
+	SelectedValue string `json:"selectedValue"` //loop组件用到 loop子组件输出变量表达式
 }
 
 // WorkflowConfig 工作流配置

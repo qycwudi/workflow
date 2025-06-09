@@ -68,12 +68,21 @@ var execContextPool = sync.Pool{
 // NewExecutionContext 创建新的执行上下文
 func NewExecutionContext(ctx context.Context, workspaceId string, serialID string, totalNodes int64, params map[string]any) *ExecutionContext {
 
+	// 如果ctx是ExecutionContext，则读取全部参数（用于loop组件）
+	var allVariables map[string]any
+	if ect, ok := ctx.(*ExecutionContext); ok {
+		// 读取全部参数
+		allVariables = ect.GetAllVariable()
+		logx.Debugf("[Workflow] allVariables:%+v", allVariables)
+	}
+
 	execCtx := execContextPool.Get().(*ExecutionContext)
 	// 如果serialID以trace-开头，则认为是追踪
 	if strings.HasPrefix(serialID, "trace-") {
 		execCtx.IsTrace = true
 	}
-	execCtx.Context = ctx
+
+	// execCtx.Context = ctx
 	execCtx.TraceId = serialID
 	execCtx.WorkspaceId = workspaceId
 	execCtx.TotalNodes = totalNodes
@@ -82,8 +91,12 @@ func NewExecutionContext(ctx context.Context, workspaceId string, serialID strin
 	execCtx.startTime = time.Now()
 	execCtx.Expiration = time.Now().Add(5 * time.Minute) // 设置过期时间
 	execCtx.metrics = make(map[string]float64)
+
 	execCtx.variables = make(map[string]any, totalNodes+1)
 	execCtx.variables["_zero"] = params
+	for key, value := range allVariables {
+		execCtx.SetVariable(key, value)
+	}
 	return execCtx
 }
 
@@ -114,6 +127,12 @@ func (ctx *ExecutionContext) GetVariable(key string) (any, bool) {
 	defer ctx.mu.RUnlock()
 	value, ok := ctx.variables[key]
 	return value, ok
+}
+
+func (ctx *ExecutionContext) GetAllVariable() map[string]any {
+	ctx.mu.RLock()
+	defer ctx.mu.RUnlock()
+	return ctx.variables
 }
 
 // SetVariable 设置变量值
