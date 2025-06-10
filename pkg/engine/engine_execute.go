@@ -257,6 +257,10 @@ func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseI
 		errorMsg = err.Error()
 	}
 	if execCtx.IsTrace {
+		subIndex, ok := execCtx.GetVariable("sub_index")
+		if !ok {
+			subIndex = -1
+		}
 		// 创建 trace
 		Trace.CreateTrace(execCtx, &TraceRecore{
 			WorkspaceId: execCtx.WorkspaceId,
@@ -272,6 +276,7 @@ func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseI
 			StartTime:   time.Now(),
 			ElapsedTime: 0,
 			ErrorMsg:    errorMsg,
+			SubIndex:    int64(subIndex.(int)), // 子索引 默认-1 loop 组件为索引值
 		})
 	}
 
@@ -431,6 +436,11 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 
 	// 创建 trace
 	if ctx.IsTrace {
+		subIndex, ok := ctx.GetVariable("sub_index")
+		if !ok {
+			subIndex = -1
+		}
+
 		trace := &TraceRecore{
 			WorkspaceId: ctx.WorkspaceId,
 			TraceId:     ctx.TraceId,
@@ -441,12 +451,13 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 			Logic:       "",
 			StartTime:   startTime,
 			Step:        step,
+			SubIndex:    int64(subIndex.(int)),
 		}
 		Trace.CreateTrace(ctx, trace)
 	}
 
 	// 3. 执行组件
-	result, err := e.executeComponent(ctx, nil, component, input)
+	result, err := e.executeComponent(ctx, component, input, nil)
 	if err != nil {
 		// 更新 trace 记录错误信息
 		if ctx.IsTrace {
@@ -531,7 +542,7 @@ func (e *WorkflowEngine) validateComponent(component components.Component, nodeI
 }
 
 // executeComponent 执行组件
-func (e *WorkflowEngine) executeComponent(ctx *core.ExecutionContext, err error, component components.Component, input any) (*core.Result, error) {
+func (e *WorkflowEngine) executeComponent(ctx *core.ExecutionContext, component components.Component, input any, err error) (*core.Result, error) {
 	if err != nil {
 		return nil, err
 	}

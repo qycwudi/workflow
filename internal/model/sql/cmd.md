@@ -1,4 +1,4 @@
-goctl model mysql ddl --src user.sql --dir .. -i ''
+goctl model mysql ddl --src trace.sql --dir .. -i ''
 
 brew install ariga/tap/atlas
 

@@ -51,6 +51,7 @@ type (
 		ElapsedTime int64     `db:"elapsed_time"` // 运行耗时
 		StartTime   time.Time `db:"start_time"`   // 执行时间
 		ErrorMsg    string    `db:"error_msg"`    // 错误信息
+		SubIndex    int64     `db:"sub_index"`    // 子索引
 	}
 )
 
@@ -82,14 +83,14 @@ func (m *defaultTraceModel) FindOne(ctx context.Context, id int64) (*Trace, erro
 }
 
 func (m *defaultTraceModel) Insert(ctx context.Context, data *Trace) (sql.Result, error) {
-	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, traceRowsExpectAutoSet)
-	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.TraceId, data.Input, data.Logic, data.Output, data.Step, data.NodeId, data.NodeName, data.NodeType, data.Status, data.ElapsedTime, data.StartTime, data.ErrorMsg)
+	query := fmt.Sprintf("insert into %s (%s) values (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)", m.table, traceRowsExpectAutoSet)
+	ret, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.TraceId, data.Input, data.Logic, data.Output, data.Step, data.NodeId, data.NodeName, data.NodeType, data.Status, data.ElapsedTime, data.StartTime, data.ErrorMsg, data.SubIndex)
 	return ret, err
 }
 
 func (m *defaultTraceModel) Update(ctx context.Context, data *Trace) error {
 	query := fmt.Sprintf("update %s set %s where `id` = ?", m.table, traceRowsWithPlaceHolder)
-	_, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.TraceId, data.Input, data.Logic, data.Output, data.Step, data.NodeId, data.NodeName, data.NodeType, data.Status, data.ElapsedTime, data.StartTime, data.ErrorMsg, data.Id)
+	_, err := m.conn.ExecCtx(ctx, query, data.WorkspaceId, data.TraceId, data.Input, data.Logic, data.Output, data.Step, data.NodeId, data.NodeName, data.NodeType, data.Status, data.ElapsedTime, data.StartTime, data.ErrorMsg, data.SubIndex, data.Id)
 	return err
 }
 

@@ -1,0 +1,621 @@
+{
+    "edges": [
+        {
+            "sourceNodeID": "start_0",
+            "targetNodeID": "condition_rJPtA"
+        },
+        {
+            "sourceNodeID": "code_1749474847172",
+            "targetNodeID": "end_0"
+        },
+        {
+            "sourceNodeID": "condition_rJPtA",
+            "sourcePortID": "if_cpTJsN",
+            "targetNodeID": "llm_1749474814361"
+        },
+        {
+            "sourceNodeID": "condition_rJPtA",
+            "sourcePortID": "if_gPdc2",
+            "targetNodeID": "code_1749535278284"
+        },
+        {
+            "sourceNodeID": "condition_rJPtA",
+            "sourcePortID": "if_gPdc2",
+            "targetNodeID": "sql_1749474843833"
+        },
+        {
+            "sourceNodeID": "code_1749535278284",
+            "targetNodeID": "http_1749474810209"
+        },
+        {
+            "sourceNodeID": "http_1749474810209",
+            "targetNodeID": "code_1749474847172"
+        },
+        {
+            "sourceNodeID": "llm_1749474814361",
+            "targetNodeID": "code_1749474847172"
+        },
+        {
+            "sourceNodeID": "sql_1749474843833",
+            "targetNodeID": "code_1749474847172"
+        }
+    ],
+    "nodes": [
+        {
+            "id": "start_0",
+            "data": {
+                "title": "Start",
+                "outputs": {
+                    "type": "object",
+                    "required": [
+                        "name",
+                        "age"
+                    ],
+                    "properties": {
+                        "age": {
+                            "key": 2,
+                            "name": "age",
+                            "type": "integer",
+                            "extra": {
+                                "index": 1
+                            },
+                            "isPropertyRequired": true
+                        },
+                        "name": {
+                            "key": 51,
+                            "name": "name",
+                            "type": "string",
+                            "extra": {
+                                "index": 0
+                            },
+                            "items": {
+                                "type": "string"
+                            },
+                            "description": "姓名",
+                            "isPropertyRequired": true
+                        },
+                        "address": {
+                            "key": 23,
+                            "name": "address",
+                            "type": "array",
+                            "extra": {
+                                "index": 3
+                            },
+                            "items": {
+                                "type": "string"
+                            },
+                            "isPropertyRequired": false
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 180,
+                    "y": 252
+                }
+            },
+            "type": "start"
+        },
+        {
+            "id": "end_0",
+            "data": {
+                "title": "Endsss",
+                "outputs": {
+                    "type": "object",
+                    "properties": {
+                        "code1": {
+                            "type": "string"
+                        },
+                        "code2": {
+                            "type": "string"
+                        },
+                        "code3": {
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "inputsValues": {
+                    "code1": {
+                        "type": "ref",
+                        "content": [
+                            "code_1749474847172",
+                            "result"
+                        ]
+                    },
+                    "code2": {
+                        "type": "ref",
+                        "content": [
+                            "code_1749474847172",
+                            "content"
+                        ]
+                    },
+                    "code3": {
+                        "type": "ref",
+                        "content": [
+                            "code_1749474847172",
+                            "list"
+                        ]
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 2407.3,
+                    "y": 3.5
+                }
+            },
+            "type": "end"
+        },
+        {
+            "id": "condition_rJPtA",
+            "data": {
+                "title": "Condition",
+                "conditions": [
+                    {
+                        "key": "if_gPdc2",
+                        "value": {
+                            "left": {
+                                "type": "ref",
+                                "content": [
+                                    "start_0",
+                                    "name"
+                                ]
+                            },
+                            "right": {
+                                "type": "constant",
+                                "content": "xuetu"
+                            },
+                            "operator": "eq"
+                        },
+                        "leftType": "string",
+                        "rightType": "undefined"
+                    },
+                    {
+                        "key": "if_cpTJsN",
+                        "value": {
+                            "left": {
+                                "type": "ref",
+                                "content": [
+                                    "start_0",
+                                    "age"
+                                ]
+                            },
+                            "type": "expression",
+                            "right": {
+                                "type": "constant",
+                                "content": 20
+                            },
+                            "content": "",
+                            "operator": "gt"
+                        },
+                        "leftType": "integer",
+                        "rightType": "undefined"
+                    }
+                ]
+            },
+            "meta": {
+                "position": {
+                    "x": 591.9186186186187,
+                    "y": 138.52990990990992
+                }
+            },
+            "type": "condition"
+        },
+        {
+            "id": "http_1749474810209",
+            "data": {
+                "title": "http-1",
+                "custom": {
+                    "retry": 2,
+                    "apiUrl": "http://jsonplaceholder.typicode.com/posts/3",
+                    "timeout": 10,
+                    "bodyType": "none",
+                    "apiMethod": "GET",
+                    "ignoreError": false,
+                    "requestHeaders": {
+                        "properties": {}
+                    },
+                    "requestHeadersValues": {}
+                },
+                "outputs": {
+                    "type": "object",
+                    "required": [
+                        "body",
+                        "statusCode",
+                        "headers"
+                    ],
+                    "properties": {
+                        "body": {
+                            "type": "string",
+                            "default": "{}"
+                        },
+                        "headers": {
+                            "type": "string",
+                            "default": "{}"
+                        },
+                        "statusCode": {
+                            "type": "number",
+                            "default": 0
+                        }
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 1460,
+                    "y": -248.5
+                }
+            },
+            "type": "http"
+        },
+        {
+            "id": "llm_1749474814361",
+            "data": {
+                "title": "大模型调用",
+                "custom": {
+                    "retry": 3,
+                    "tools": [],
+                    "output": {
+                        "type": "object",
+                        "required": [
+                            "content",
+                            "totalTokens",
+                            "promptTokens",
+                            "completionTokens"
+                        ],
+                        "properties": {
+                            "content": {
+                                "type": "string",
+                                "default": ""
+                            },
+                            "totalTokens": {
+                                "type": "integer",
+                                "default": 0
+                            },
+                            "promptTokens": {
+                                "type": "integer",
+                                "default": 0
+                            },
+                            "completionTokens": {
+                                "type": "integer",
+                                "default": 0
+                            }
+                        }
+                    },
+                    "modelId": 2,
+                    "timeout": 30,
+                    "outputType": "string",
+                    "userPrompt": "给{{input1}}生成一个生日邀请函，邀请他来参加我的 7 月 10 日的生日派对",
+                    "systemPrompt": "你是一个专业的AI助手，请根据用户的需求提供帮助。",
+                    "errorHandlingMode": "abort"
+                },
+                "inputs": {
+                    "properties": {
+                        "input1": {
+                            "type": "string",
+                            "title": "input1"
+                        }
+                    }
+                },
+                "outputs": {
+                    "type": "object",
+                    "required": [
+                        "content",
+                        "totalTokens",
+                        "promptTokens",
+                        "completionTokens"
+                    ],
+                    "properties": {
+                        "content": {
+                            "type": "string",
+                            "default": ""
+                        },
+                        "totalTokens": {
+                            "type": "integer",
+                            "default": 0
+                        },
+                        "promptTokens": {
+                            "type": "integer",
+                            "default": 0
+                        },
+                        "completionTokens": {
+                            "type": "integer",
+                            "default": 0
+                        }
+                    }
+                },
+                "inputsValues": {
+                    "input1": {
+                        "type": "ref",
+                        "content": [
+                            "start_0",
+                            "name"
+                        ]
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 1069.7774174174174,
+                    "y": 235.10132132132128
+                }
+            },
+            "type": "llm"
+        },
+        {
+            "id": "sql_1749474843833",
+            "data": {
+                "title": "SQL 执行",
+                "custom": {
+                    "sql": "SELECT real_name as rname,\n    phone,\n    email \n  FROM users\n  WHERE username = {{input1}}\n  limit 1;",
+                    "retry": 3,
+                    "timeout": 30,
+                    "datasourceId": 1,
+                    "datasourceType": "mysql",
+                    "errorHandlingMode": "abort"
+                },
+                "inputs": {
+                    "properties": {
+                        "input1": {
+                            "type": "string",
+                            "title": "input1"
+                        }
+                    }
+                },
+                "outputs": {
+                    "type": "object",
+                    "required": [
+                        "outputList",
+                        "rowNum"
+                    ],
+                    "properties": {
+                        "rowNum": {
+                            "key": 61,
+                            "name": "rowNum",
+                            "type": "integer",
+                            "extra": {
+                                "index": 1
+                            },
+                            "default": 0,
+                            "isPropertyRequired": true
+                        },
+                        "outputList": {
+                            "key": 60,
+                            "name": "outputList",
+                            "type": "array",
+                            "extra": {
+                                "index": 0
+                            },
+                            "items": {
+                                "type": "object",
+                                "required": [
+                                    "rname",
+                                    "phone",
+                                    "email"
+                                ],
+                                "properties": {
+                                    "email": {
+                                        "key": 64,
+                                        "name": "email",
+                                        "type": "string",
+                                        "extra": {
+                                            "index": 3
+                                        },
+                                        "isPropertyRequired": true
+                                    },
+                                    "phone": {
+                                        "key": 63,
+                                        "name": "phone",
+                                        "type": "string",
+                                        "extra": {
+                                            "index": 2
+                                        },
+                                        "isPropertyRequired": true
+                                    },
+                                    "rname": {
+                                        "key": 62,
+                                        "name": "rname",
+                                        "type": "string",
+                                        "extra": {
+                                            "index": 1
+                                        },
+                                        "isPropertyRequired": true
+                                    }
+                                }
+                            },
+                            "default": [],
+                            "isPropertyRequired": true
+                        }
+                    }
+                },
+                "inputsValues": {
+                    "input1": {
+                        "type": "ref",
+                        "content": [
+                            "start_0",
+                            "name"
+                        ]
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 1069.7774174174174,
+                    "y": 732.1444444444445
+                }
+            },
+            "type": "sql"
+        },
+        {
+            "id": "code_1749474847172",
+            "data": {
+                "title": "代码执行",
+                "custom": {
+                    "code": "function main(params) {\n  return {\n      result: params.input1,\n      content: params.input2,\n      list:params.input3\n  };\n}",
+                    "retry": 3,
+                    "timeout": 30,
+                    "language": "javascript",
+                    "errorHandlingMode": "abort"
+                },
+                "inputs": {
+                    "properties": {
+                        "input1": {
+                            "type": "string",
+                            "title": "输入1"
+                        },
+                        "input2": {
+                            "type": "string"
+                        },
+                        "input3": {
+                            "type": "array",
+                            "items": {
+                                "type": "object"
+                            }
+                        }
+                    }
+                },
+                "outputs": {
+                    "type": "object",
+                    "required": [
+                        "result",
+                        "content"
+                    ],
+                    "properties": {
+                        "list": {
+                            "key": 92,
+                            "name": "list",
+                            "type": "array",
+                            "extra": {
+                                "index": 2
+                            },
+                            "items": {
+                                "type": "object"
+                            },
+                            "isPropertyRequired": false
+                        },
+                        "result": {
+                            "key": 54,
+                            "name": "result",
+                            "type": "string",
+                            "extra": {
+                                "index": 0
+                            },
+                            "default": "",
+                            "isPropertyRequired": true
+                        },
+                        "content": {
+                            "key": 55,
+                            "name": "content",
+                            "type": "string",
+                            "extra": {
+                                "index": 1
+                            },
+                            "default": "",
+                            "isPropertyRequired": true
+                        }
+                    }
+                },
+                "inputsValues": {
+                    "input1": {
+                        "type": "ref",
+                        "content": [
+                            "http_1749474810209",
+                            "body"
+                        ]
+                    },
+                    "input2": {
+                        "type": "ref",
+                        "content": [
+                            "llm_1749474814361",
+                            "content"
+                        ]
+                    },
+                    "input3": {
+                        "type": "ref",
+                        "content": [
+                            "sql_1749474843833",
+                            "outputList"
+                        ]
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 1933.65,
+                    "y": -60.5
+                }
+            },
+            "type": "code"
+        },
+        {
+            "id": "code_1749535278284",
+            "data": {
+                "title": "代码执行",
+                "custom": {
+                    "code": "function main(params) {\n  return {\n      key0: params.input1 + params.input1,\n      key1: [\"hello\", \"world\"],\n      key2: {\n          key21: \"hi\"\n      },\n  };\n}",
+                    "retry": 3,
+                    "timeout": 30,
+                    "language": "javascript",
+                    "errorHandlingMode": "abort"
+                },
+                "inputs": {
+                    "properties": {
+                        "input1": {
+                            "type": "string",
+                            "title": "输入1"
+                        }
+                    }
+                },
+                "outputs": {
+                    "type": "object",
+                    "required": [
+                        "key0",
+                        "error"
+                    ],
+                    "properties": {
+                        "key0": {
+                            "key": 159,
+                            "name": "key0",
+                            "type": "string",
+                            "extra": {
+                                "index": 0
+                            },
+                            "default": "",
+                            "isPropertyRequired": true
+                        },
+                        "error": {
+                            "key": 160,
+                            "name": "error",
+                            "type": "string",
+                            "extra": {
+                                "index": 1
+                            },
+                            "default": "",
+                            "isPropertyRequired": true
+                        }
+                    }
+                },
+                "inputsValues": {
+                    "input1": {
+                        "type": "ref",
+                        "content": [
+                            "start_0",
+                            "name"
+                        ]
+                    }
+                }
+            },
+            "meta": {
+                "position": {
+                    "x": 1050,
+                    "y": -38.5
+                }
+            },
+            "type": "code"
+        }
+    ]
+}

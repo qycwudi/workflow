@@ -891,6 +891,7 @@ type Record struct {
 	Duration  int64       `json:"duration"`
 	Status    string      `json:"status"` // 枚举[pending,running,paused,completed,failed,canceled]
 	StartTime string      `json:"startTime"`
+	SubIndex  int64       `json:"subIndex"`
 }
 
 type RestoreCanvasHistoryReq struct {

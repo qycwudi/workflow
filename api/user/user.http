@@ -34,10 +34,10 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU0NzM5O
 POST http://127.0.0.1:8888/workflow/user/register
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzU4NzUwNTUsImlhdCI6MTczNTc4ODY1NSwidXNlcklkIjoxfQ.KK2pD8Jkk_BoAxuEqlpTVmVbjhIy1aM7XvwNTTvatpA
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDk2MzgzMzYsImlhdCI6MTc0OTU1MTkzNiwidWlkIjoxLCJ1c2VySWQiOjF9.mANzTvsTsEA_htTB9YC3W8qveETD6rwdiC-6l1HU2vE
 
 {
-  "username": "admin-1",
+  "username": "admin007",
   "password": "123456"
 }
 

@@ -13,6 +13,7 @@ CREATE TABLE `trace` (
     `elapsed_time` int(11) NOT NULL COMMENT '运行耗时',
     `start_time` datetime NOT NULL COMMENT '执行时间',
     `error_msg` longtext NOT NULL COMMENT '错误信息',
+    `sub_index` int(11) NOT NULL COMMENT '子索引',
     PRIMARY KEY (`id`),
     KEY `unidx_workspace_id` (`workspace_id`),
     KEY `unidx_trace_id` (`trace_id`)

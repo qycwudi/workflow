@@ -53,7 +53,7 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 	_, err = l.svcCtx.CanvasModel.Insert(l.ctx, &model.Canvas{
 		WorkspaceId: spaceModel.WorkspaceId,
 		// strconv.Itoa(int(time.Now().UnixMilli()))
-		Draft:    fmt.Sprintf(`{"id": "%s"}`, spaceModel.WorkspaceId),
+		Draft:    fmt.Sprintf(defaultGraph),
 		CreateAt: time.Now(),
 		UpdateAt: time.Now(),
 		CreateBy: userIdStr,
@@ -135,3 +135,50 @@ func createTag(ctx context.Context, svcCtx *svc.ServiceContext, workSpaceTag []s
 	}
 	return nil
 }
+
+const defaultGraph = `{
+  "nodes": [
+    {
+      "id": "start_0",
+      "type": "start",
+      "meta": {
+        "position": {
+          "x": 180,
+          "y": 0
+        }
+      },
+      "data": {
+        "outputs": {
+          "properties": {},
+          "required": [],
+          "type": "object"
+        },
+        "title": "开始"
+      }
+    },
+    {
+      "id": "end_0",
+      "type": "end",
+      "meta": {
+        "position": {
+          "x": 640,
+          "y": 0
+        }
+      },
+      "data": {
+        "inputsValues": {},
+        "outputs": {
+          "properties": {},
+          "type": "object"
+        },
+        "title": "结束"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "sourceNodeID": "start_0",
+      "targetNodeID": "end_0"
+    }
+  ]
+}`

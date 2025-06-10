@@ -6,7 +6,6 @@ import (
 	"sync"
 
 	"github.com/bytedance/sonic"
-	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/core"
@@ -130,9 +129,10 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 		inputMap["index"] = idx
 		// 构造 loop 输出 以_locals 结尾,迭代组件字段会在原来 loopId 上追加,防止后续组件的输入被覆盖
 		execCtx.SetVariable(workflowID+"_locals"+".output", inputMap)
+		execCtx.SetVariable("sub_index", idx)
 		logx.Debugf("[loop] setVariable success: index: %d, output: %+v", idx, inputMap)
-		serialID := uuid.New().String()
-		err := i.config.workflowEngine.ExecuteWorkflow(execCtx, workflowID, serialID, inputMap)
+
+		err := i.config.workflowEngine.ExecuteWorkflow(execCtx, workflowID, execCtx.TraceId, inputMap)
 		if err != nil {
 			// todo 错误处理机制
 			return nil, errors.New("[loop] execute failed: " + err.Error())
@@ -143,7 +143,7 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 			key := output.Extra.InputKey
 			outputKey := output.Extra.OutputKey
 			subNodeId := output.Extra.NodeId
-			result, ok := i.config.workflowEngine.GetNodeResult(workflowID, serialID, subNodeId)
+			result, ok := i.config.workflowEngine.GetNodeResult(workflowID, execCtx.TraceId, subNodeId)
 			if !ok {
 				return nil, errors.New("[loop] execute failed: get node result failed")
 			}
@@ -164,7 +164,8 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 				r[key] = append(arr, value)
 			}
 		}
-
+		// 清空 sub_index
+		execCtx.SetVariable("sub_index", -1)
 		logx.Debugf("[loop] execute success: index: %d, item: %+v, result: %+v", idx, inputMap, r)
 	}
 

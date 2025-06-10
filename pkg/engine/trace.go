@@ -36,6 +36,7 @@ type TraceRecore struct {
 	ElapsedTime int64     `db:"elapsed_time"` // 运行耗时
 	StartTime   time.Time `db:"start_time"`   // 执行时间
 	ErrorMsg    string    `db:"error_msg"`    // 错误信息
+	SubIndex    int64     `db:"sub_index"`    // 子索引
 }
 
 func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
@@ -74,6 +75,7 @@ func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 		StartTime:   trace.StartTime,
 		ElapsedTime: trace.ElapsedTime,
 		ErrorMsg:    trace.ErrorMsg,
+		SubIndex:    trace.SubIndex,
 	})
 	if err != nil {
 		logx.Errorf("[Trace] Insert failed [Error:%v]", err)

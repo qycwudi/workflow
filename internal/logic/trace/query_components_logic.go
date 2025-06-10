@@ -69,6 +69,7 @@ func (l *QueryComponentsLogic) QueryComponents(req *types.QueryComponentsRequest
 			Duration:  trace.ElapsedTime,
 			Status:    trace.Status,
 			StartTime: utils.FormatDate(trace.StartTime),
+			SubIndex:  trace.SubIndex,
 		}
 	}
 	// 根据 step 升序
