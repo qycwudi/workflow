@@ -40,7 +40,7 @@ func (l *UserLoginLogic) UserLogin(req *types.UserLoginRequest) (resp *types.Use
 		return nil, errors.New(int(logic.SystemOrmError), "密码错误")
 	}
 	// 生成token
-	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, user.Id)
+	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, int64(user.Id), user.Uid)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "生成token失败")
 	}

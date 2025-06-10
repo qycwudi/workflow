@@ -30,7 +30,7 @@ func NewUserUpdateInfoLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Us
 
 func (l *UserUpdateInfoLogic) UserUpdateInfo(req *types.UserUpdateInfoRequest) (resp *types.UserUpdateInfoResponse, err error) {
 	// 查询用户是否存在
-	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, req.UserId)
+	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, uint64(req.UserId))
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "用户不存在")
 	}

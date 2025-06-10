@@ -134,6 +134,7 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 		serialID := uuid.New().String()
 		err := i.config.workflowEngine.ExecuteWorkflow(execCtx, workflowID, serialID, inputMap)
 		if err != nil {
+			// todo 错误处理机制
 			return nil, errors.New("[loop] execute failed: " + err.Error())
 		}
 		// 获取指定节点输出

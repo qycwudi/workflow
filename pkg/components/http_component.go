@@ -275,13 +275,13 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 		logx.Field("URL", url),
 		logx.Field("方法", c.config.ApiMethod),
 		logx.Field("状态码", statusCode))
-	var result map[string]interface{}
-	if err := sonic.Unmarshal(body, &result); err != nil {
-		return &core.Result{
-			Route:  []string{Failed},
-			Output: c.config.ExceptionConfig.OutputOnError,
-		}, err
-	}
+	// var result map[string]interface{}
+	// if err := sonic.Unmarshal(body, &result); err != nil {
+	// 	return &core.Result{
+	// 		Route:  []string{Failed},
+	// 		Output: c.config.ExceptionConfig.OutputOnError,
+	// 	}, err
+	// }
 	logx.Debugw("[HTTP组件] 请求结果",
 		logx.Field("结果", string(body)))
 	jsonHeaders, _ := sonic.Marshal(headers)

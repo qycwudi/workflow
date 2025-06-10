@@ -12,11 +12,12 @@ import (
 // @iat: 时间戳
 // @seconds: 过期时间，单位秒
 // @userId: 用户id
-func GenerateJwtToken(secretKey string, iat, seconds int64, userId int64) (string, error) {
+func GenerateJwtToken(secretKey string, iat, seconds int64, userId int64, uid string) (string, error) {
 	claims := make(jwt.MapClaims)
 	claims["exp"] = iat + seconds
 	claims["iat"] = iat
 	claims["userId"] = userId
+	claims["uid"] = userId
 	token := jwt.New(jwt.SigningMethodHS256)
 	token.Claims = claims
 	return token.SignedString([]byte(secretKey))
@@ -39,4 +40,16 @@ func GetUserId(ctx context.Context) (int64, error) {
 		return -1, errors.New("invalid user id")
 	}
 	return userIdInt64, nil
+}
+
+func GetUId(ctx context.Context) (string, error) {
+	uid := ctx.Value("uid")
+	if uid == nil {
+		return "", errors.New("user not login")
+	}
+	uidStr, ok := uid.(string)
+	if !ok {
+		return "", errors.New("invalid user id")
+	}
+	return uidStr, nil
 }

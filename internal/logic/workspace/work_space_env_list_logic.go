@@ -10,6 +10,7 @@ import (
 	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type WorkSpaceEnvListLogic struct {
@@ -27,7 +28,11 @@ func NewWorkSpaceEnvListLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 }
 
 func (l *WorkSpaceEnvListLogic) WorkSpaceEnvList(req *types.WorkSpaceEnvListRequest) (resp *types.WorkSpaceEnvListResponse, err error) {
-	workspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceId(l.ctx, req.Id)
+	userId, err := utils.GetUId(l.ctx)
+	if err != nil {
+		userId = ""
+	}
+	workspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceIdCreateBy(l.ctx, req.Id, userId)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询环境变量失败")
 	}

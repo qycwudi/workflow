@@ -38,7 +38,7 @@ func (l *UserListLogic) UserList(req *types.UserListRequest) (resp *types.UserLi
 	}
 	userIds := make([]int64, len(users))
 	for i, user := range users {
-		userIds[i] = user.Id
+		userIds[i] = int64(user.Id)
 	}
 	// 批量查询用户角色
 	userRoles, err := l.svcCtx.UserRolesModel.FindByUserIds(l.ctx, userIds)
@@ -70,11 +70,11 @@ func (l *UserListLogic) UserList(req *types.UserListRequest) (resp *types.UserLi
 	var list []types.User
 	for _, user := range users {
 		roleId := int64(-1) // 默认为-1表示未绑定角色
-		if id, ok := userRoleMap[user.Id]; ok {
+		if id, ok := userRoleMap[int64(user.Id)]; ok {
 			roleId = id
 		}
 		list = append(list, types.User{
-			Id:        user.Id,
+			Id:        int64(user.Id),
 			Username:  user.Username,
 			RealName:  user.RealName.String,
 			Phone:     user.Phone.String,

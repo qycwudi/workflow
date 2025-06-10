@@ -28,7 +28,7 @@ func NewUserUpdateStatusLogic(ctx context.Context, svcCtx *svc.ServiceContext) *
 
 func (l *UserUpdateStatusLogic) UserUpdateStatus(req *types.UserUpdateStatusRequest) (resp *types.UserUpdateStatusResponse, err error) {
 	// 查询用户是否存在
-	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, req.UserId)
+	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, uint64(req.UserId))
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "用户不存在")
 	}

@@ -16,6 +16,7 @@ import (
 	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type WorkSpaceCopyLogic struct {
@@ -34,7 +35,11 @@ func NewWorkSpaceCopyLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Wor
 
 func (l *WorkSpaceCopyLogic) WorkSpaceCopy(req *types.WorkSpaceCopyRequest) (resp *types.WorkSpaceCopyResponse, err error) {
 	// 复制workspace
-	oldWorkspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceId(l.ctx, req.Id)
+	userId, err := utils.GetUId(l.ctx)
+	if err != nil {
+		userId = ""
+	}
+	oldWorkspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceIdCreateBy(l.ctx, req.Id, userId)
 	if err != nil {
 		logx.Errorf("FindOneByWorkspaceId error: %+v", err)
 		return nil, errors.New(int(logic.SystemStoreError), "查询空间失败")

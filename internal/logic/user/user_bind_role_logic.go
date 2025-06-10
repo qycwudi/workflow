@@ -30,7 +30,7 @@ func NewUserBindRoleLogic(ctx context.Context, svcCtx *svc.ServiceContext) *User
 
 func (l *UserBindRoleLogic) UserBindRole(req *types.UserBindRoleRequest) (resp *types.UserBindRoleResponse, err error) {
 	// 获取用户信息
-	_, err = l.svcCtx.UsersModel.FindOne(l.ctx, req.UserId)
+	_, err = l.svcCtx.UsersModel.FindOne(l.ctx, uint64(req.UserId))
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取用户信息失败")
 	}

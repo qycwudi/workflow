@@ -31,13 +31,13 @@ func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserIn
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取用户信息失败")
 	}
-	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, userId)
+	user, err := l.svcCtx.UsersModel.FindOne(l.ctx, uint64(userId))
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取用户信息失败")
 	}
 
 	// 获取角色名称
-	role, err := l.svcCtx.UserRolesModel.FindOneByUserId(l.ctx, user.Id)
+	role, err := l.svcCtx.UserRolesModel.FindOneByUserId(l.ctx, int64(user.Id))
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "获取用户角色关系失败")
 	}
@@ -48,7 +48,7 @@ func (l *UserInfoLogic) UserInfo(req *types.UserInfoRequest) (resp *types.UserIn
 
 	return &types.UserInfoResponse{
 		User: types.User{
-			Id:        user.Id,
+			Id:        int64(user.Id),
 			Username:  user.Username,
 			RealName:  user.RealName.String,
 			Phone:     user.Phone.String,

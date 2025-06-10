@@ -10,6 +10,7 @@ import (
 	"workflow/internal/logic"
 	"workflow/internal/svc"
 	"workflow/internal/types"
+	"workflow/internal/utils"
 )
 
 type CanvasDetailLogic struct {
@@ -28,8 +29,11 @@ func NewCanvasDetailLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Canv
 
 func (l *CanvasDetailLogic) CanvasDetail(req *types.CanvasDetailRequest) (resp *types.CanvasDetailResponse, err error) {
 	resp = &types.CanvasDetailResponse{}
-
-	workspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceId(l.ctx, req.Id)
+	userId, err := utils.GetUId(l.ctx)
+	if err != nil {
+		userId = ""
+	}
+	workspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceIdCreateBy(l.ctx, req.Id, userId)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "查询工作空间失败")
 	}

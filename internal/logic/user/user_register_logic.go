@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"time"
 
+	"github.com/google/uuid"
 	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlc"
 	"github.com/zeromicro/x/errors"
@@ -43,6 +44,7 @@ func (l *UserRegisterLogic) UserRegister(req *types.UserRegisterRequest) (resp *
 	salt := time.Now().Format("20060102150405")
 	password := utils.Md5(req.Password + salt)
 	user = &model.Users{
+		Uid:       uuid.New().String(),
 		Username:  req.Username,
 		Salt:      salt,
 		Password:  password,
@@ -57,7 +59,7 @@ func (l *UserRegisterLogic) UserRegister(req *types.UserRegisterRequest) (resp *
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "注册失败")
 	}
-	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, user.Id)
+	token, err := utils.GenerateJwtToken(l.svcCtx.Config.Auth.AccessSecret, time.Now().Unix(), l.svcCtx.Config.Auth.AccessExpire, int64(user.Id), user.Uid)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "生成token失败")
 	}
