@@ -158,6 +158,7 @@ func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Ex
 	for phaseIdx, phase := range executor.executionPlan.Phases {
 		if err := e.executePhase(ctx, executor, execCtx, phase, phaseIdx); err != nil {
 			logx.Errorw("[Workflow] Execute phase failed", logx.Field("phase index", phaseIdx), logx.Field("error", err.Error()))
+			return err
 		}
 	}
 	return nil
