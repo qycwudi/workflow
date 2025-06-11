@@ -38,11 +38,15 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 	}
 	var page []*model.Workspace
 	var total int64
+	uid, err := utils.GetUId(l.ctx)
+	if err != nil {
+		uid = "default"
+	}
 	// 标签过滤,走in逻辑
 	// todo 这里有问题，要修改下 sql 改成标签和名称混合查询，数据量不会太大 不考虑性能问题
 	if len(req.WorkSpaceTag) > 0 {
 		// 查询满足条件的workspace
-		workspaceIds, totalNum, err := l.svcCtx.WorkspaceTagMappingModel.FindPageByTagId(l.ctx, req.Current, req.PageSize, req.WorkSpaceTag)
+		workspaceIds, totalNum, err := l.svcCtx.WorkspaceTagMappingModel.FindPageByTagId(l.ctx, uid, req.Current, req.PageSize, req.WorkSpaceTag)
 		if err != nil {
 			return nil, errors.New(int(logic.SystemOrmError), "标签查询空间列表数据失败")
 		}
@@ -59,7 +63,7 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 		page = workSpacePage
 	} else {
 		// 走正常逻辑
-		workSpacePage, totalNum, err := l.svcCtx.WorkSpaceModel.FindPage(l.ctx, req.Current, req.PageSize, req.WorkSpaceType, req.WorkSpaceName)
+		workSpacePage, totalNum, err := l.svcCtx.WorkSpaceModel.FindPage(l.ctx, uid, req.Current, req.PageSize, req.WorkSpaceType, req.WorkSpaceName)
 		if err != nil {
 			return nil, errors.New(int(logic.SystemOrmError), "查询空间列表数据失败")
 		}

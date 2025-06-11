@@ -5,7 +5,6 @@ import (
 	"database/sql"
 	errors2 "errors"
 	"fmt"
-	"strconv"
 	"time"
 
 	"github.com/rs/xid"
@@ -34,8 +33,13 @@ func NewWorkSpaceNewLogic(ctx context.Context, svcCtx *svc.ServiceContext) *Work
 }
 
 func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *types.WorkSpaceNewResponse, err error) {
+	uid, err := utils.GetUId(l.ctx)
+	if err != nil {
+		uid = "default"
+	}
 	// 创建workspace
 	spaceModel := workSpaceNewRequest2WorkSpaceModel(req)
+	spaceModel.CreateBy = uid
 	_, err = l.svcCtx.WorkSpaceModel.Insert(l.ctx, spaceModel)
 	if err != nil {
 		return nil, errors.New(int(logic.SystemStoreError), "创建空间错误")
@@ -48,16 +52,15 @@ func (l *WorkSpaceNewLogic) WorkSpaceNew(req *types.WorkSpaceNewRequest) (resp *
 	}
 
 	// 初始化画布
-	userId, _ := utils.GetUserId(l.ctx)
-	userIdStr := strconv.FormatInt(userId, 10)
+
 	_, err = l.svcCtx.CanvasModel.Insert(l.ctx, &model.Canvas{
 		WorkspaceId: spaceModel.WorkspaceId,
 		// strconv.Itoa(int(time.Now().UnixMilli()))
 		Draft:    fmt.Sprintf(defaultGraph),
 		CreateAt: time.Now(),
 		UpdateAt: time.Now(),
-		CreateBy: userIdStr,
-		UpdateBy: userIdStr,
+		CreateBy: uid,
+		UpdateBy: uid,
 	})
 	if err != nil {
 		return nil, errors.New(int(logic.SystemStoreError), "创建start节点错误")

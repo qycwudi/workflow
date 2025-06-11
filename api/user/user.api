@@ -99,6 +99,10 @@ service workflow-api {
 	@doc "用户登录"
 	@handler UserLoginHandler
 	post /user/login (UserLoginRequest) returns (UserLoginResponse)
+
+	@doc "用户注册"
+	@handler UserRegisterHandler
+	post /user/register (UserRegisterRequest) returns (UserRegisterResponse)
 }
 
 @server (
@@ -114,10 +118,6 @@ service workflow-api {
 	@doc "用户信息"
 	@handler UserInfoHandler
 	post /user/info (UserInfoRequest) returns (UserInfoResponse)
-
-	@doc "用户注册"
-	@handler UserRegisterHandler
-	post /user/register (UserRegisterRequest) returns (UserRegisterResponse)
 
 	@doc "用户退出登录"
 	@handler UserLogoutHandler

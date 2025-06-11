@@ -34,14 +34,22 @@ func (l *UserUpdateInfoLogic) UserUpdateInfo(req *types.UserUpdateInfoRequest) (
 	if err != nil {
 		return nil, errors.New(int(logic.SystemOrmError), "用户不存在")
 	}
-	user.Username = req.Username
-	user.Email = sql.NullString{String: req.Email, Valid: req.Email != ""}
-	user.Phone = sql.NullString{String: req.Phone, Valid: req.Phone != ""}
-	// 密码加密 - 加入盐值
-	salt := time.Now().Format("20060102150405")
-	password := utils.Md5(req.Password + salt)
-	user.Salt = salt
-	user.Password = password
+	if req.Username != "" {
+		user.Username = req.Username
+	}
+	if req.Email != "" {
+		user.Email = sql.NullString{String: req.Email, Valid: req.Email != ""}
+	}
+	if req.Phone != "" {
+		user.Phone = sql.NullString{String: req.Phone, Valid: req.Phone != ""}
+	}
+	if req.Password != "" {
+		// 密码加密 - 加入盐值
+		salt := time.Now().Format("20060102150405")
+		password := utils.Md5(req.Password + salt)
+		user.Salt = salt
+		user.Password = password
+	}
 	user.UpdatedAt = time.Now()
 	// 更新用户信息
 	err = l.svcCtx.UsersModel.Update(l.ctx, user)

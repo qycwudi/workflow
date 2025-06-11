@@ -16,7 +16,7 @@ type (
 	// and implement the added methods in customWorkspaceModel.
 	WorkspaceModel interface {
 		workspaceModel
-		FindPage(ctx context.Context, current, pageSize int, workSpaceType, workSpaceName string) ([]*Workspace, int64, error)
+		FindPage(ctx context.Context, uid string, current, pageSize int, workSpaceType, workSpaceName string) ([]*Workspace, int64, error)
 		FindInWorkSpaceId(ctx context.Context, workspaceId []string) ([]*Workspace, error)
 		Remove(ctx context.Context, workSpaceId string) error
 		UpdateByWorkspaceId(ctx context.Context, data *Workspace) error
@@ -73,14 +73,14 @@ func (c customWorkspaceModel) UpdateByWorkspaceId(ctx context.Context, data *Wor
 	return nil
 }
 
-func (c customWorkspaceModel) FindPage(ctx context.Context, current, pageSize int, workSpaceType, workSpaceName string) ([]*Workspace, int64, error) {
+func (c customWorkspaceModel) FindPage(ctx context.Context, uid string, current, pageSize int, workSpaceType, workSpaceName string) ([]*Workspace, int64, error) {
 	// 初始化SQL语句和参数
 	var queryBuilder strings.Builder
 	var totalBuilder strings.Builder
 	params := make([]interface{}, 0, 4) // 参数数量最多为4
 
-	queryBuilder.WriteString(fmt.Sprintf("SELECT %s FROM %s WHERE is_delete = 0", workspaceRows, c.table))
-	totalBuilder.WriteString(fmt.Sprintf("SELECT count(*) FROM %s WHERE is_delete = 0", c.table))
+	queryBuilder.WriteString(fmt.Sprintf("SELECT %s FROM %s WHERE is_delete = 0 and create_by = ?", workspaceRows, c.table))
+	totalBuilder.WriteString(fmt.Sprintf("SELECT count(*) FROM %s WHERE is_delete = 0 and create_by = ?", c.table))
 
 	// 如果workSpaceType不为空，则添加到查询条件
 	if workSpaceType != "" {
@@ -95,6 +95,7 @@ func (c customWorkspaceModel) FindPage(ctx context.Context, current, pageSize in
 		totalBuilder.WriteString(" AND `workspace_name` like CONCAT('%', ?, '%')")
 		params = append(params, workSpaceName)
 	}
+	params = append(params, uid)
 	// 查询total
 	// 执行查询总数的SQL
 	var total int64

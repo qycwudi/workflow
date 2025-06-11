@@ -17,7 +17,7 @@ type (
 	WorkspaceTagMappingModel interface {
 		workspaceTagMappingModel
 		FindByWorkSpaceId(ctx context.Context, workSpaceId []string) ([]*WorkspaceTagNameMapping, error)
-		FindPageByTagId(ctx context.Context, current int, pageSize int, tagId []int64) ([]string, int64, error)
+		FindPageByTagId(ctx context.Context, uid string, current int, pageSize int, tagId []int64) ([]string, int64, error)
 		DeleteByWorkSpace(ctx context.Context, workSpaceId string) error
 	}
 
@@ -69,7 +69,7 @@ func (m *defaultWorkspaceTagMappingModel) FindByWorkSpaceId(ctx context.Context,
 	}
 }
 
-func (c customWorkspaceTagMappingModel) FindPageByTagId(ctx context.Context, current int, pageSize int, tagId []int64) ([]string, int64, error) {
+func (c customWorkspaceTagMappingModel) FindPageByTagId(ctx context.Context, uid string, current int, pageSize int, tagId []int64) ([]string, int64, error) {
 	placeholders := make([]string, len(tagId))
 	for i := range tagId {
 		placeholders[i] = "?"
@@ -79,11 +79,12 @@ func (c customWorkspaceTagMappingModel) FindPageByTagId(ctx context.Context, cur
 	for i, v := range tagId {
 		params[i] = v
 	}
-	totalQuery := fmt.Sprintf("select count(*) from `workspace` as a join `workspace_tag_mapping` as b on a.workspace_id = b.workspace_id where b.tag_id in (%s)", inClause)
+	params = append(params, uid)
+	totalQuery := fmt.Sprintf("select count(*) from `workspace` as a join `workspace_tag_mapping` as b on a.workspace_id = b.workspace_id where b.tag_id in (%s) and a.create_by = ?", inClause)
 	var total int64
 	_ = c.conn.QueryRowCtx(ctx, &total, totalQuery, params...)
 
-	query := fmt.Sprintf("select a.workspace_id from `workspace` as a join `workspace_tag_mapping` as b on a.workspace_id = b.workspace_id where b.tag_id in (%s) order by b.id desc LIMIT ?, ?", inClause)
+	query := fmt.Sprintf("select a.workspace_id from `workspace` as a join `workspace_tag_mapping` as b on a.workspace_id = b.workspace_id where b.tag_id in (%s) and a.create_by = ? order by b.id desc LIMIT ?, ?", inClause)
 	var resp []string
 	params = append(params, (current-1)*pageSize)
 	params = append(params, pageSize)

@@ -557,6 +557,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 				Path:    "/user/login",
 				Handler: user.UserLoginHandler(serverCtx),
 			},
+			{
+				// 用户注册
+				Method:  http.MethodPost,
+				Path:    "/user/register",
+				Handler: user.UserRegisterHandler(serverCtx),
+			},
 		},
 		rest.WithPrefix("/workflow"),
 	)
@@ -588,12 +594,6 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/user/logout",
 					Handler: user.UserLogoutHandler(serverCtx),
-				},
-				{
-					// 用户注册
-					Method:  http.MethodPost,
-					Path:    "/user/register",
-					Handler: user.UserRegisterHandler(serverCtx),
 				},
 				{
 					// 更新用户信息
