@@ -19,6 +19,7 @@ type (
 		FindByTraceId(ctx context.Context, id string) ([]*Trace, error)
 		FindOneByNodeIdAndWorkspaceId(ctx context.Context, traceId, nodeId string) (*Trace, error)
 		FindOneByNodeId(ctx context.Context, nodeId string) (*Trace, error)
+		UpdateById(ctx context.Context, data *Trace) error
 	}
 
 	customTraceModel struct {
@@ -53,6 +54,12 @@ func NewTraceModel(conn sqlx.SqlConn) TraceModel {
 func (m *defaultTraceModel) UpdateByTraceIdAndNodeId(ctx context.Context, data *Trace) error {
 	query := fmt.Sprintf("update %s set elapsed_time = ?,`output` = ?,status = ?,error_msg = ? where `trace_id` = ? and node_id = ?", m.table)
 	_, err := m.conn.ExecCtx(ctx, query, data.ElapsedTime, data.Output, data.Status, data.ErrorMsg, data.TraceId, data.NodeId)
+	return err
+}
+
+func (m *defaultTraceModel) UpdateById(ctx context.Context, data *Trace) error {
+	query := fmt.Sprintf("update %s set elapsed_time = ?,`output` = ?,status = ?,error_msg = ? where `id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, data.ElapsedTime, data.Output, data.Status, data.ErrorMsg, data.Id)
 	return err
 }
 

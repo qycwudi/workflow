@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"fmt"
 
 	"github.com/golang-jwt/jwt/v5"
 )
@@ -17,7 +18,7 @@ func GenerateJwtToken(secretKey string, iat, seconds int64, userId int64, uid st
 	claims["exp"] = iat + seconds
 	claims["iat"] = iat
 	claims["userId"] = userId
-	claims["uid"] = userId
+	claims["uid"] = uid
 	token := jwt.New(jwt.SigningMethodHS256)
 	token.Claims = claims
 	return token.SignedString([]byte(secretKey))
@@ -49,7 +50,7 @@ func GetUId(ctx context.Context) (string, error) {
 	}
 	uidStr, ok := uid.(string)
 	if !ok {
-		return "", errors.New("invalid user id")
+		return "", fmt.Errorf("invalid user id: %+v", uid)
 	}
 	return uidStr, nil
 }

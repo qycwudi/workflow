@@ -31,6 +31,7 @@ func (l *CanvasDetailLogic) CanvasDetail(req *types.CanvasDetailRequest) (resp *
 	resp = &types.CanvasDetailResponse{}
 	userId, err := utils.GetUId(l.ctx)
 	if err != nil {
+		logx.Errorf("CanvasDetailLogic CanvasDetail GetUId error: %v", err)
 		userId = ""
 	}
 	workspace, err := l.svcCtx.WorkSpaceModel.FindOneByWorkspaceIdCreateBy(l.ctx, req.Id, userId)

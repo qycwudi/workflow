@@ -370,15 +370,17 @@ type CaseListResponse struct {
 }
 
 type ComponentDetail struct {
-	Id        string                 `json:"id"`        // 组件ID
-	Name      string                 `json:"name"`      // 组件名称
-	Logic     string                 `json:"logic"`     // 组件类型
-	StartTime int64                  `json:"startTime"` // 开始时间戳
-	Duration  int64                  `json:"duration"`  // 耗时(ms)
-	Status    string                 `json:"status"`    // 组件运行状态 success/failed
-	Error     string                 `json:"error"`     // 组件错误信息
-	Input     map[string]interface{} `json:"input"`     // 输入参数
-	Output    map[string]interface{} `json:"output"`    // 输出结果
+	Id         string                 `json:"id"`         // 组件ID
+	Index      int64                  `json:"index"`      // 组件索引
+	Name       string                 `json:"name"`       // 组件名称
+	Logic      string                 `json:"logic"`      // 组件类型
+	StartTime  int64                  `json:"startTime"`  // 开始时间戳
+	Duration   int64                  `json:"duration"`   // 耗时(ms)
+	Status     string                 `json:"status"`     // 组件运行状态 success/failed
+	Error      string                 `json:"error"`      // 组件错误信息
+	Input      map[string]interface{} `json:"input"`      // 输入参数
+	Output     map[string]interface{} `json:"output"`     // 输出结果
+	Components []ComponentDetail      `json:"components"` // 子组件列表
 }
 
 type CreateKvRequest struct {

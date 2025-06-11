@@ -262,7 +262,7 @@ func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseI
 			subIndex = -1
 		}
 		// 创建 trace
-		Trace.CreateTrace(execCtx, &TraceRecore{
+		_, _ = Trace.CreateTrace(execCtx, &TraceRecore{
 			WorkspaceId: execCtx.WorkspaceId,
 			TraceId:     execCtx.TraceId,
 			NodeId:      node.ID,
@@ -434,6 +434,7 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 		}
 	}
 
+	var tid int64
 	// 创建 trace
 	if ctx.IsTrace {
 		subIndex, ok := ctx.GetVariable("sub_index")
@@ -453,7 +454,10 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 			Step:        step,
 			SubIndex:    int64(subIndex.(int)),
 		}
-		Trace.CreateTrace(ctx, trace)
+		tid, err = Trace.CreateTrace(ctx, trace)
+		if err != nil {
+			logx.Errorf("[Workflow] Create trace failed [Error:%v]", err)
+		}
 	}
 
 	// 3. 执行组件
@@ -461,7 +465,8 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 	if err != nil {
 		// 更新 trace 记录错误信息
 		if ctx.IsTrace {
-			Trace.UpdateTrace(ctx, &TraceRecore{
+			Trace.UpdateTraceById(ctx, &TraceRecore{
+				Id:          tid,
 				NodeId:      nodeID,
 				TraceId:     ctx.TraceId,
 				Output:      nil,
@@ -478,7 +483,8 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 	if err != nil {
 		// 更新 trace 记录错误信息
 		if ctx.IsTrace {
-			Trace.UpdateTrace(ctx, &TraceRecore{
+			Trace.UpdateTraceById(ctx, &TraceRecore{
+				Id:          tid,
 				NodeId:      nodeID,
 				TraceId:     ctx.TraceId,
 				Output:      nil,
@@ -495,7 +501,8 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 
 	// 更新 trace
 	if ctx.IsTrace {
-		Trace.UpdateTrace(ctx, &TraceRecore{
+		Trace.UpdateTraceById(ctx, &TraceRecore{
+			Id:          tid,
 			NodeId:      nodeID,
 			TraceId:     ctx.TraceId,
 			Output:      output,

@@ -23,6 +23,7 @@ func NewTrace(model model.TraceModel) {
 }
 
 type TraceRecore struct {
+	Id          int64     `db:"id"`           // 主键 ID
 	WorkspaceId string    `db:"workspace_id"` // 空间 ID
 	TraceId     string    `db:"trace_id"`     // 追踪 ID
 	Input       any       `db:"input"`        // 组件输入
@@ -39,7 +40,7 @@ type TraceRecore struct {
 	SubIndex    int64     `db:"sub_index"`    // 子索引
 }
 
-func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
+func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) (int64, error) {
 	input, err := sonic.Marshal(trace.Input)
 	if err != nil {
 		logx.Errorf("[Trace] Serialization failed [Input:%v] [Error:%v]", trace.Input, err)
@@ -85,6 +86,7 @@ func (t *TraceModel) CreateTrace(ctx context.Context, trace *TraceRecore) {
 		logx.Errorf("[Trace] Get affected rows failed [Error:%v]", err)
 	}
 	logx.Infof("[Trace] Create trace record [AffectedRows:%d]", rows)
+	return result.LastInsertId()
 }
 
 func (t *TraceModel) UpdateTrace(ctx context.Context, trace *TraceRecore) {
@@ -97,6 +99,26 @@ func (t *TraceModel) UpdateTrace(ctx context.Context, trace *TraceRecore) {
 		}
 	}
 	t.TraceModel.UpdateByTraceIdAndNodeId(ctx, &model.Trace{
+		TraceId:     trace.TraceId,
+		NodeId:      trace.NodeId,
+		Status:      trace.Status,
+		Output:      string(output),
+		ErrorMsg:    trace.ErrorMsg,
+		ElapsedTime: trace.ElapsedTime,
+	})
+}
+
+func (t *TraceModel) UpdateTraceById(ctx context.Context, trace *TraceRecore) {
+	var output []byte
+	var err error
+	if trace.Output != "" {
+		output, err = sonic.Marshal(trace.Output)
+		if err != nil {
+			logx.Error(ctx, err)
+		}
+	}
+	t.TraceModel.UpdateById(ctx, &model.Trace{
+		Id:          trace.Id,
 		TraceId:     trace.TraceId,
 		NodeId:      trace.NodeId,
 		Status:      trace.Status,
