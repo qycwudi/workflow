@@ -22,6 +22,10 @@ func NewStartComponent() (*StartComponent, error) {
 	return c, nil
 }
 
+func (c *StartComponent) Name() string {
+	return Start
+}
+
 func (c *StartComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
 	return &core.Result{
 		Route:  []string{Success},

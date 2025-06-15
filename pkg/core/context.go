@@ -66,7 +66,7 @@ var execContextPool = sync.Pool{
 }
 
 // NewExecutionContext 创建新的执行上下文
-func NewExecutionContext(ctx context.Context, workspaceId string, serialID string, totalNodes int64, params map[string]any) *ExecutionContext {
+func NewExecutionContext(ctx context.Context, workspaceId string, serialID string, params map[string]any) *ExecutionContext {
 
 	// 如果ctx是ExecutionContext，则读取全部参数（用于loop组件）
 	var allVariables map[string]any
@@ -85,14 +85,13 @@ func NewExecutionContext(ctx context.Context, workspaceId string, serialID strin
 	// execCtx.Context = ctx
 	execCtx.TraceId = serialID
 	execCtx.WorkspaceId = workspaceId
-	execCtx.TotalNodes = totalNodes
 	execCtx.State = NewWorkflowState()
 	execCtx.Route = make(map[string]struct{})
 	execCtx.startTime = time.Now()
 	execCtx.Expiration = time.Now().Add(5 * time.Minute) // 设置过期时间
 	execCtx.metrics = make(map[string]float64)
 
-	execCtx.variables = make(map[string]any, totalNodes+1)
+	execCtx.variables = make(map[string]any, 0)
 	execCtx.variables["_zero"] = params
 	for key, value := range allVariables {
 		execCtx.SetVariable(key, value)

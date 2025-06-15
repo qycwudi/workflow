@@ -34,6 +34,10 @@ const (
 	itemKey = "items"
 )
 
+func (c *IterationComponent) Name() string {
+	return Loop
+}
+
 func NewIterationComponent(e core.WorkflowEngine, batchFor core.NodeDataInputsValues, config any) (*IterationComponent, error) {
 	jsonConfig, err := sonic.Marshal(config)
 	if err != nil {

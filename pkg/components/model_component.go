@@ -43,6 +43,10 @@ type ModelConfig struct {
 	OutputSchema      string               `json:"outputSchema"`
 }
 
+func (c *ModelComponent) Name() string {
+	return Model
+}
+
 func NewModelComponent(config any) (*ModelComponent, error) {
 	jsonConfig, err := sonic.Marshal(config)
 	if err != nil {

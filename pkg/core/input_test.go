@@ -10,7 +10,7 @@ import (
 )
 
 func TestParseNodeInputs(t *testing.T) {
-	executionContext := NewExecutionContext(context.Background(), "test", "test", 1, nil)
+	executionContext := NewExecutionContext(context.Background(), "test", "test", nil)
 	executionContext.SetVariable("start_0.output", `{"start_0":{"Input":{"sssss":"我是字符串","oooooo":{"ssssssssssss":"我是对象"},"arr_str":["我是数组字符串-1","我是数组字符串-2"],"array_obj":[{"int":18,"str":"我是数组里的对象的字符串"}],"enable":true,"query":"Hello Flow."}`)
 	inputValues := map[string]NodeDataInputsValues{}
 	ivjs := `{

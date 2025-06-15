@@ -44,6 +44,10 @@ const (
 	errorHandlingModes_retry = "retry" // 重试
 )
 
+func (c *CodeComponent) Name() string {
+	return Code
+}
+
 func NewCodeComponent(config any) (*CodeComponent, error) {
 	jsonConfig, err := sonic.Marshal(config)
 	if err != nil {

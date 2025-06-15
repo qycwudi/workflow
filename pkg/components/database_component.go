@@ -37,6 +37,10 @@ var databaseComponentPool = sync.Pool{
 	},
 }
 
+func (d *DatabaseComponent) Name() string {
+	return Database
+}
+
 func NewDatabaseComponent(config any) (*DatabaseComponent, error) {
 	jsonConfig, err := sonic.Marshal(config)
 	if err != nil {
@@ -103,7 +107,7 @@ func (d *DatabaseComponent) Exception() ExceptionConfig {
 }
 
 func (d *DatabaseComponent) Clear() {
-	endItemComponentPool.Put(d)
+	databaseComponentPool.Put(d)
 }
 
 func (d *DatabaseComponent) replaceExprs(expr string, inputMap map[string]any, replaceFun func(expr, old string, value any) string) (string, []any, error) {

@@ -51,6 +51,10 @@ var httpComponentPool = sync.Pool{
 	},
 }
 
+func (c *HTTPComponent) Name() string {
+	return "HTTP"
+}
+
 func NewHTTPComponent(config any) (*HTTPComponent, error) {
 	jsonConfig, err := sonic.Marshal(config)
 	if err != nil {

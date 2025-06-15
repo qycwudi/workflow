@@ -2,7 +2,6 @@ package components
 
 import (
 	"context"
-	"encoding/json"
 	"errors"
 
 	"github.com/bytedance/sonic"
@@ -42,6 +41,7 @@ type Component interface {
 	Execute(ctx context.Context, input any) (*core.Result, error)
 	Exception() ExceptionConfig
 	Clear()
+	Name() string
 }
 
 // ComponentFactory 组件工厂
@@ -50,7 +50,7 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeDa
 	case Start:
 		return NewStartComponent()
 	case End:
-		return NewEndComponent(json.RawMessage("{}"))
+		return NewEndComponent()
 	case HTTP:
 		return NewHTTPComponent(inputs.Custom)
 	case Code:
@@ -65,10 +65,6 @@ func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeDa
 		return NewConditionComponent(jsonConfig)
 	case Loop:
 		return NewIterationComponent(e, inputs.BatchFor, inputs.Custom)
-	case StartItem:
-		return NewStartItemComponent()
-	case EndItem:
-		return NewEndItemComponent(json.RawMessage("{}"))
 	case Database:
 		return NewDatabaseComponent(inputs.Custom)
 	}

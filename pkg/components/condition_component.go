@@ -47,6 +47,10 @@ var branchComponentPool = sync.Pool{
 	},
 }
 
+func (c *ConditionComponent) Name() string {
+	return Condition
+}
+
 func NewConditionComponent(config json.RawMessage) (*ConditionComponent, error) {
 	var branchConfig ConditionConfig
 	var conditions []core.Condition

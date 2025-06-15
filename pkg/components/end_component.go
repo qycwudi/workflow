@@ -2,11 +2,8 @@ package components
 
 import (
 	"context"
-	"encoding/json"
-	"errors"
 	"sync"
 
-	"github.com/bytedance/sonic"
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/core"
@@ -27,14 +24,13 @@ var endComponentPool = sync.Pool{
 	},
 }
 
-func NewEndComponent(config json.RawMessage) (*EndComponent, error) {
-	var endConfig EndConfig
-	if err := sonic.Unmarshal(config, &endConfig); err != nil {
-		return nil, errors.New("解析结束组件配置失败: " + err.Error())
-	}
+func (c *EndComponent) Name() string {
+	return End
+}
+
+func NewEndComponent() (*EndComponent, error) {
 	// 使用pool
 	component := endComponentPool.Get().(*EndComponent)
-	component.config = endConfig
 	return component, nil
 }
 

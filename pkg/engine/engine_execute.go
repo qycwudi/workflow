@@ -6,7 +6,6 @@ import (
 	"maps"
 	"reflect"
 	"sync"
-	"sync/atomic"
 	"time"
 
 	"github.com/bytedance/sonic"
@@ -40,11 +39,8 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 		return eris.New("workflow is shutting down: " + workflowID)
 	}
 
-	// 更新访问时间
-	atomic.StoreInt64(&executor.lastAccessed, time.Now().UnixNano())
-
 	// 创建执行上下文
-	executionContext := core.NewExecutionContext(ctx, workflowID, serialID, executor.totalNodes, params)
+	executionContext := core.NewExecutionContext(ctx, workflowID, serialID, params)
 	// 创建带超时的上下文
 	execCtx, cancel := context.WithTimeout(ctx, e.config.ExecutionTimeout)
 	executionContext.Context = execCtx
@@ -102,7 +98,7 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 		NodeName: node.Data.Title,
 	}
 	// 创建执行上下文
-	execCtx := core.NewExecutionContext(ctx, workflowID, serialID, executor.totalNodes, params)
+	execCtx := core.NewExecutionContext(ctx, workflowID, serialID, params)
 	execCtx.Context = ctx
 	execCtx.Expiration = time.Now().Add(executor.defaultTTL)
 
@@ -152,7 +148,7 @@ func (e *WorkflowEngine) GetNodeResult(workflowID, serialID, nodeID string) (*co
 }
 
 // executeWorkflowPhases 执行工作流阶段
-func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext) error {
+func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Runnable, execCtx *core.ExecutionContext) error {
 	// 总执行计划
 	logx.Debugf("[Workflow] Total execution plan: %d", len(executor.executionPlan.Phases))
 	for phaseIdx, phase := range executor.executionPlan.Phases {
@@ -165,7 +161,7 @@ func (e *WorkflowEngine) executeWorkflowPhases(ctx context.Context, executor *Ex
 }
 
 // executePhase 执行单个阶段
-func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, execCtx *core.ExecutionContext, phase ExecutionPhase, phaseIdx int) error {
+func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Runnable, execCtx *core.ExecutionContext, phase ExecutionPhase, phaseIdx int) error {
 	// 添加上下文超时控制
 	ctx, cancel := context.WithTimeout(ctx, 30*time.Second)
 	defer cancel()
@@ -213,7 +209,7 @@ func (e *WorkflowEngine) executePhase(ctx context.Context, executor *Executor, e
 }
 
 // handleNodeExecution 处理节点执行
-func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, phaseIdx int, executor *Executor, node *WorkflowNode) error {
+func (e *WorkflowEngine) handleNodeExecution(execCtx *core.ExecutionContext, phaseIdx int, executor *Runnable, node *WorkflowNode) error {
 	// 开始类型的组件跳过路由检查
 	if node.Type == components.Start || node.Type == components.StartItem {
 		return e.executeStartNode(execCtx, int64(phaseIdx), node)
@@ -296,7 +292,7 @@ func (e *WorkflowEngine) executeStartNode(execCtx *core.ExecutionContext, phaseI
 }
 
 // checkNodeRoute 检查节点路由
-func (e *WorkflowEngine) checkNodeRoute(execCtx *core.ExecutionContext, executor *Executor, node *WorkflowNode) (bool, error) {
+func (e *WorkflowEngine) checkNodeRoute(execCtx *core.ExecutionContext, executor *Runnable, node *WorkflowNode) (bool, error) {
 	route, ok := executor.conditionRouter[node.ID]
 	if !ok {
 		logx.Debugf("[Workflow] Node route not found, skip[loop single node]: %s", node.ID)
@@ -497,7 +493,7 @@ func (e *WorkflowEngine) executeNode(ctx *core.ExecutionContext, step int64, nod
 	}
 
 	// 5. 释放组件
-	e.Clear(component)
+	component.Clear()
 
 	// 更新 trace
 	if ctx.IsTrace {
