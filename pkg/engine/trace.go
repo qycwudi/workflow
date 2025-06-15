@@ -109,21 +109,33 @@ func (t *TraceModel) UpdateTrace(ctx context.Context, trace *TraceRecore) {
 }
 
 func (t *TraceModel) UpdateTraceById(ctx context.Context, trace *TraceRecore) {
-	var output []byte
-	var err error
-	if trace.Output != "" {
-		output, err = sonic.Marshal(trace.Output)
-		if err != nil {
-			logx.Error(ctx, err)
-		}
+
+	if trace.Input == "" {
+		trace.Input = []byte("{}")
 	}
-	t.TraceModel.UpdateById(ctx, &model.Trace{
+	if trace.Output == "" {
+		trace.Output = []byte("{}")
+	}
+	input, err := sonic.Marshal(trace.Input)
+	if err != nil {
+		logx.Error(ctx, err)
+	}
+	output, err := sonic.Marshal(trace.Output)
+	if err != nil {
+		logx.Error(ctx, err)
+	}
+
+	err = t.TraceModel.UpdateById(ctx, &model.Trace{
 		Id:          trace.Id,
 		TraceId:     trace.TraceId,
 		NodeId:      trace.NodeId,
 		Status:      trace.Status,
+		Input:       string(input),
 		Output:      string(output),
 		ErrorMsg:    trace.ErrorMsg,
 		ElapsedTime: trace.ElapsedTime,
 	})
+	if err != nil {
+		logx.Error(ctx, err)
+	}
 }

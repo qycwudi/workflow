@@ -5,6 +5,8 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
+	"net"
 	"net/http"
 	"net/url"
 	"strings"
@@ -41,8 +43,6 @@ type HTTPConfig struct {
 	BodyFormDataValues   map[string]core.NodeDataInputsValues `json:"bodyFormDataValues"`
 
 	BodyData string `json:"bodyData"`
-
-	ExceptionConfig ExceptionConfig `json:"exceptionConfig"`
 }
 
 var httpComponentPool = sync.Pool{
@@ -64,8 +64,7 @@ func NewHTTPComponent(config any) (*HTTPComponent, error) {
 	if err := sonic.Unmarshal(jsonConfig, &c); err != nil {
 		return nil, errors.New("解析HTTP配置失败: " + err.Error())
 	}
-	c.ExceptionConfig.Timeout = c.Timeout
-	c.ExceptionConfig.RetryTimes = int(c.Retries)
+
 	// 使用pool
 	component := httpComponentPool.Get().(*HTTPComponent)
 	component.config = c
@@ -100,7 +99,10 @@ var bodyTypeNone = "none"
 
 func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	var input map[string]any = make(map[string]any, 3)
-	execCtx := ctx.(*core.ExecutionContext)
+	execCtx, ok := ctx.(*core.ExecutionContext)
+	if !ok {
+		return nil, errors.New("http component context type error")
+	}
 	headers, err := core.ParseNodeInputs(execCtx, c.config.RequestHeadersValues, c.config.RequestHeaders)
 	if err != nil {
 		logx.Errorw("[HTTP组件] 解析参数失败",
@@ -199,10 +201,6 @@ func (c *HTTPComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return input, nil
 }
 
-func (c *HTTPComponent) Exception() ExceptionConfig {
-	return ExceptionConfig{}
-}
-
 func parseMethod(params map[string]any, url string) (string, error) {
 	logx.Debugf("[HTTP组件] url before: %v\n", url)
 	// 1. 创建一个新的模板并解析模板定义
@@ -272,7 +270,7 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 			logx.Field("错误", err))
 		return &core.Result{
 			Route:  []string{Failed},
-			Output: c.config.ExceptionConfig.OutputOnError,
+			Output: nil,
 		}, err
 	}
 	logx.Infow("[HTTP组件] 请求成功",
@@ -324,6 +322,24 @@ type HttpClient struct {
 
 // NewHttpClient 复用单例 client
 func NewHttpClient(timeout time.Duration, maxRetries int) *HttpClient {
+	logx.Debugf("[HTTP组件] 创建 HTTP 客户端, 超时时间: %f 秒, 重试次数: %d", timeout.Seconds(), maxRetries)
+
+	// 配置 fasthttp 客户端 - 激进修复连接问题
+	globalClient.MaxConnsPerHost = 100                  // 每个主机最大连接数：100（适合中等负载）
+	globalClient.MaxIdleConnDuration = 90 * time.Second // 空闲连接保持时间：90秒（平衡复用和资源）
+	globalClient.MaxConnDuration = 10 * time.Minute     // 连接最大持续时间：10分钟（避免长时间占用）
+	globalClient.MaxConnWaitTimeout = 30 * time.Second  // 等待连接超时：30秒（容忍网络延迟）
+	globalClient.ReadTimeout = timeout
+	globalClient.WriteTimeout = timeout
+	globalClient.DisableHeaderNamesNormalizing = true
+	globalClient.NoDefaultUserAgentHeader = true
+	globalClient.DisablePathNormalizing = true
+
+	// 配置自定义拨号器以设置拨号超时 - 每次都建立新连接
+	globalClient.Dial = func(addr string) (net.Conn, error) {
+		return fasthttp.DialTimeout(addr, 5*time.Second)
+	}
+
 	return &HttpClient{
 		client:     globalClient,
 		Timeout:    timeout,
@@ -340,8 +356,22 @@ type RequestOptions struct {
 	IsJSON  bool
 }
 
-// DoRequest 复用 Request/Response
+// DoRequest 复用 Request/Response - 修复连接问题
 func (h *HttpClient) DoRequest(opts RequestOptions) (int, []byte, error) {
+	// 首先尝试fasthttp
+	statusCode, body, err := h.doRequestWithFastHTTP(opts)
+	if err != nil && (strings.Contains(err.Error(), "connection") ||
+		strings.Contains(err.Error(), "closed") ||
+		strings.Contains(err.Error(), "first response byte")) {
+		// 如果fasthttp失败，fallback到标准net/http
+		logx.Debugf("[HTTP请求] fasthttp失败，切换到net/http: %v", err)
+		return h.doRequestWithNetHTTP(opts)
+	}
+	return statusCode, body, err
+}
+
+// doRequestWithFastHTTP 使用fasthttp执行请求
+func (h *HttpClient) doRequestWithFastHTTP(opts RequestOptions) (int, []byte, error) {
 	req := requestPool.Get().(*fasthttp.Request)
 	resp := responsePool.Get().(*fasthttp.Response)
 	defer requestPool.Put(req)
@@ -352,6 +382,13 @@ func (h *HttpClient) DoRequest(opts RequestOptions) (int, []byte, error) {
 
 	req.SetRequestURI(opts.URL)
 	req.Header.SetMethod(opts.Method)
+
+	// 激进的请求头设置 - 强制避免连接复用
+	req.Header.Set("Connection", "close")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; WorkflowBot/1.0)")
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Cache-Control", "no-cache")
+	req.Header.Set("Pragma", "no-cache")
 
 	for key, value := range opts.Headers {
 		req.Header.Set(key, value)
@@ -378,20 +415,175 @@ func (h *HttpClient) DoRequest(opts RequestOptions) (int, []byte, error) {
 				return 0, nil, errors.New("invalid form body format")
 			}
 		}
-
 		req.SetBody(bodyBytes)
+	} else {
+		req.SetBody(nil)
 	}
 
+	var lastErr error
 	for i := 0; i <= h.MaxRetries; i++ {
+		logx.Debugf("[HTTP请求] fasthttp请求重试 %d 次, 超时时间: %f 秒", i+1, h.Timeout.Seconds())
+
+		// 每次请求前重置响应
+		resp.Reset()
+
 		err := h.client.DoTimeout(req, resp, h.Timeout)
-		if err == nil {
-			return resp.StatusCode(), resp.Body(), nil
+		if err != nil {
+			lastErr = err
+			logx.Errorw("[HTTP请求] fasthttp请求失败",
+				logx.Field("URL", opts.URL),
+				logx.Field("方法", opts.Method),
+				logx.Field("重试次数", i+1),
+				logx.Field("错误", lastErr))
+
+			// 连接错误直接返回，让外层fallback到net/http
+			if strings.Contains(err.Error(), "connection") ||
+				strings.Contains(err.Error(), "timeout") ||
+				strings.Contains(err.Error(), "closed") ||
+				strings.Contains(err.Error(), "first response byte") {
+				return 0, nil, fmt.Errorf("fasthttp connection error: %v", err)
+			}
+
+			// 其他错误等待后重试
+			if i < h.MaxRetries {
+				time.Sleep(time.Duration(i+1) * 300 * time.Millisecond)
+			}
+			continue
 		}
-		logx.Errorf("[HTTP请求] 请求失败 [URL:%s] [方法:%s] [重试次数:%d] [错误:%v]",
-			opts.URL, opts.Method, i+1, err)
+
+		// 检查响应状态码
+		statusCode := resp.StatusCode()
+		if statusCode >= 200 && statusCode < 300 {
+			// 复制响应体，因为响应对象会被重用
+			bodyBytes := make([]byte, len(resp.Body()))
+			copy(bodyBytes, resp.Body())
+			return statusCode, bodyBytes, nil
+		} else if statusCode >= 400 && statusCode < 500 {
+			// 4xx错误不重试
+			bodyBytes := make([]byte, len(resp.Body()))
+			copy(bodyBytes, resp.Body())
+			return statusCode, bodyBytes, fmt.Errorf("client error: %d", statusCode)
+		} else {
+			// 5xx错误可以重试
+			lastErr = fmt.Errorf("server error: status code %d", statusCode)
+			logx.Errorw("[HTTP请求] 服务器错误",
+				logx.Field("URL", opts.URL),
+				logx.Field("状态码", statusCode),
+				logx.Field("重试次数", i+1))
+		}
+
+		// 在重试之前等待一小段时间
+		if i < h.MaxRetries {
+			time.Sleep(time.Duration(i+1) * 200 * time.Millisecond)
+		}
 	}
 
-	return 0, nil, errors.New("request failed after retries")
+	return 0, nil, fmt.Errorf("fasthttp request failed after %d retries: %v", h.MaxRetries, lastErr)
+}
+
+// doRequestWithNetHTTP 使用标准net/http作为fallback
+func (h *HttpClient) doRequestWithNetHTTP(opts RequestOptions) (int, []byte, error) {
+	logx.Debugf("[HTTP请求] 使用net/http fallback")
+
+	client := &http.Client{
+		Timeout: h.Timeout,
+		Transport: &http.Transport{
+			DisableKeepAlives:   true, // 禁用keep-alive
+			MaxIdleConns:        1,
+			MaxIdleConnsPerHost: 1,
+			IdleConnTimeout:     1 * time.Second,
+		},
+	}
+
+	var body *bytes.Buffer
+	if opts.Body != nil {
+		if opts.IsJSON {
+			jsonData, err := sonic.Marshal(opts.Body)
+			if err != nil {
+				return 0, nil, err
+			}
+			body = bytes.NewBuffer(jsonData)
+		} else {
+			if formData, ok := opts.Body.(map[string]any); ok {
+				data := url.Values{}
+				for k, v := range formData {
+					data.Set(k, fmt.Sprintf("%v", v))
+				}
+				body = bytes.NewBufferString(data.Encode())
+			} else {
+				return 0, nil, errors.New("invalid form body format")
+			}
+		}
+	}
+
+	var req *http.Request
+	var err error
+	if body != nil {
+		req, err = http.NewRequest(opts.Method, opts.URL, body)
+	} else {
+		req, err = http.NewRequest(opts.Method, opts.URL, nil)
+	}
+	if err != nil {
+		return 0, nil, err
+	}
+
+	// 设置请求头
+	req.Header.Set("Connection", "close")
+	req.Header.Set("User-Agent", "Mozilla/5.0 (compatible; WorkflowBot/1.0)")
+	req.Header.Set("Accept", "*/*")
+	req.Header.Set("Cache-Control", "no-cache")
+
+	if opts.Body != nil {
+		if opts.IsJSON {
+			req.Header.Set("Content-Type", "application/json")
+		} else {
+			req.Header.Set("Content-Type", "application/x-www-form-urlencoded")
+		}
+	}
+
+	for key, value := range opts.Headers {
+		req.Header.Set(key, value)
+	}
+
+	var lastErr error
+	for i := 0; i <= h.MaxRetries; i++ {
+		logx.Debugf("[HTTP请求] net/http请求重试 %d 次", i+1)
+
+		resp, err := client.Do(req)
+		if err != nil {
+			lastErr = err
+			logx.Errorw("[HTTP请求] net/http请求失败",
+				logx.Field("URL", opts.URL),
+				logx.Field("方法", opts.Method),
+				logx.Field("重试次数", i+1),
+				logx.Field("错误", lastErr))
+
+			if i < h.MaxRetries {
+				time.Sleep(time.Duration(i+1) * 500 * time.Millisecond)
+			}
+			continue
+		}
+
+		defer resp.Body.Close()
+		respBody, err := io.ReadAll(resp.Body)
+		if err != nil {
+			lastErr = err
+			continue
+		}
+
+		if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+			return resp.StatusCode, respBody, nil
+		} else if resp.StatusCode >= 400 && resp.StatusCode < 500 {
+			return resp.StatusCode, respBody, fmt.Errorf("client error: %d", resp.StatusCode)
+		} else {
+			lastErr = fmt.Errorf("server error: status code %d", resp.StatusCode)
+			if i < h.MaxRetries {
+				time.Sleep(time.Duration(i+1) * 500 * time.Millisecond)
+			}
+		}
+	}
+
+	return 0, nil, fmt.Errorf("net/http request failed after %d retries: %v", h.MaxRetries, lastErr)
 }
 
 func (c *HTTPComponent) Clear() {

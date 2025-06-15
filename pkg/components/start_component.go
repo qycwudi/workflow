@@ -41,10 +41,6 @@ func (c *StartComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
 }
 
-func (c *StartComponent) Exception() ExceptionConfig {
-	return ExceptionConfig{}
-}
-
 func (c *StartComponent) Clear() {
 	startComponentPool.Put(c)
 }

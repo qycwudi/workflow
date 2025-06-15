@@ -36,29 +36,22 @@ func NewCanvasRunLogic(ctx context.Context, svcCtx *svc.ServiceContext) *CanvasR
 func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.CanvasRunResponse, err error) {
 	traceId := "trace-" + trace.TraceIDFromContext(l.ctx)
 	startTime := time.Now()
-	// canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
-	// if err != nil {
-	// 	logx.Errorw("[画布] 获取工作流定义失败",
-	// 		logx.Field("工作空间ID", req.Id),
-	// 		logx.Field("错误", err))
-	// 	return nil, errors.New(int(logic.SystemOrmError), "获取工作流定义失败")
-	// }
 
 	// flowgram 测试 default 工作流
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {
-		logx.Errorw("[画布] 获取工作流定义失败",
-			logx.Field("工作空间ID", req.Id),
-			logx.Field("错误", err))
-		return nil, errors.New(int(logic.SystemOrmError), "获取工作流定义失败")
+		logx.Errorw("[canvas] find canvas by workspace id failed",
+			logx.Field("workspace id", req.Id),
+			logx.Field("error", err))
+		return nil, errors.New(int(logic.SystemOrmError), "find canvas by workspace id failed")
 	}
 	// 注册任务流
 	err = workflow.Register(l.ctx, canvas.WorkspaceId, canvas.Draft)
 	if err != nil {
-		logx.Errorw("[画布] 注册工作流失败",
-			logx.Field("工作空间ID", req.Id),
-			logx.Field("错误", err))
-		return nil, errors.New(int(logic.SystemError), "注册工作流失败")
+		logx.Errorw("[canvas] register workflow failed",
+			logx.Field("workspace id", req.Id),
+			logx.Field("error", err))
+		return nil, errors.New(int(logic.SystemError), "register workflow failed")
 	}
 
 	// 读取 参数
@@ -76,7 +69,7 @@ func (l *CanvasRunLogic) CanvasRun(req *types.CanvasRunRequest) (resp *types.Can
 	// 记录
 	_, err = l.svcCtx.SpaceRecordModel.Insert(l.ctx, &spaceRecord)
 	if err != nil {
-		logx.Errorw("Failed to save the running record", logx.Field("error", err))
+		logx.Errorw("[canvas] save space record failed", logx.Field("error", err))
 	}
 
 	resp = &types.CanvasRunResponse{
@@ -92,25 +85,19 @@ func run(ctx context.Context, svcCtx *svc.ServiceContext, traceId, workspaceId s
 	// 运行文件
 	_, result, err := workflow.Run(ctx, traceId, workspaceId, data)
 	if err != nil {
-		executeErr = fmt.Errorf("[画布] 执行工作流失败 [工作空间ID:%s] [序列ID:%s] [错误:%v]", workspaceId, traceId, err)
-		logx.Errorw("[画布] 执行工作流失败",
-			logx.Field("工作空间ID", workspaceId),
-			logx.Field("序列ID", traceId),
-			logx.Field("错误", err))
+		executeErr = fmt.Errorf("[canvas] execute workflow failed [workspace id:%s] [trace id:%s] [error:%v]", workspaceId, traceId, err)
+		logx.Errorw("[canvas] execute workflow failed",
+			logx.Field("workspace id", workspaceId),
+			logx.Field("trace id", traceId),
+			logx.Field("error", err))
 	} else {
-		logx.Infow("Run the task flow successfully", logx.Field("result", result))
+		logx.Infow("[canvas] execute workflow successfully", logx.Field("result", result))
 	}
 	record, _ := svcCtx.SpaceRecordModel.FindOneBySerialNumber(ctx, traceId)
-	other, _ := sonic.Marshal(result.Output)
+	other, _ := sonic.Marshal(result)
 	record.Other = string(other)
 	status := enum.RecordStatusSuccess
-	if result.Error != "" {
-		status = enum.RecordStatusFail
-		other, _ = sonic.Marshal(map[string]string{
-			"error": result.Error,
-		})
-		record.Other = string(other)
-	}
+
 	if executeErr != nil {
 		record.Status = enum.RecordStatusFail
 		other, _ = sonic.Marshal(map[string]string{
@@ -124,6 +111,6 @@ func run(ctx context.Context, svcCtx *svc.ServiceContext, traceId, workspaceId s
 
 	err = svcCtx.SpaceRecordModel.Update(ctx, record)
 	if err != nil {
-		logx.Errorw("更新运行记录失败", logx.Field("error", err))
+		logx.Errorw("[canvas] update space record failed", logx.Field("error", err))
 	}
 }

@@ -18,6 +18,7 @@ require (
 	github.com/iyashjayesh/monigo v1.0.2
 	github.com/jlaffaye/ftp v0.2.0
 	github.com/libi/dcron v0.6.0
+	github.com/maypok86/otter v1.2.4
 	github.com/opentracing/opentracing-go v1.2.0
 	github.com/panjf2000/ants/v2 v2.11.3
 	github.com/pkg/sftp v1.13.7
@@ -53,8 +54,10 @@ require (
 	github.com/cloudwego/eino-ext/libs/acl/openai v0.0.0-20250422092704-54e372e1fa3d // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
 	github.com/dlclark/regexp2 v1.11.4 // indirect
+	github.com/dolthub/maphash v0.1.0 // indirect
 	github.com/dustin/go-humanize v1.0.1 // indirect
 	github.com/fatih/color v1.18.0 // indirect
+	github.com/gammazero/deque v1.0.0 // indirect
 	github.com/getkin/kin-openapi v0.118.0 // indirect
 	github.com/go-logr/logr v1.4.2 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect

@@ -9,14 +9,14 @@ import (
 )
 
 type EngineConfig struct {
-	InitialPoolSize        int           // 初始池大小
-	MaxPoolSize            int           // 最大池大小
-	ExecutionTimeout       time.Duration // 执行超时
-	MaxConcurrentWorkflows int           // 最大并发工作流
+	InitialPoolSize        int // 初始池大小
+	MaxPoolSize            int // 最大池大小
+	MaxConcurrentWorkflows int // 最大并发工作流
 }
 
 type Runnable struct {
 	definition      *core.Graph
+	nodesNum        int64
 	executionPlan   *ExecutionPlan
 	conditionRouter map[string][]string
 	execContexts    sync.Map            // 使用sync.Map替代map+mutex提高并发性能
@@ -59,7 +59,6 @@ func DefaultConfig() *EngineConfig {
 	return &EngineConfig{
 		InitialPoolSize:        100,
 		MaxPoolSize:            10000,
-		ExecutionTimeout:       5 * time.Minute,
 		MaxConcurrentWorkflows: 1000,
 	}
 }

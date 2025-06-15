@@ -118,23 +118,29 @@ func (e *WorkflowEngine) buildConditionRouter(graph *core.Graph) (map[string][]s
 func (e *WorkflowEngine) registerRunnable(workflowID string, runnable *Runnable) {
 	e.mu.Lock()
 	defer e.mu.Unlock()
-	e.executorPool[workflowID] = runnable
+	e.runnablePool[workflowID] = runnable
 }
 
 // createExecutor 创建执行器
 func (e *WorkflowEngine) createRunnable(id string, graph *core.Graph, plan *ExecutionPlan, condition map[string][]string) *Runnable {
 	e.mu.Lock()
 	defer e.mu.Unlock()
+	// 设置默认超时时间
+	if graph.Timeout == 0 {
+		graph.Timeout = 2 * time.Minute
+	}
 	runnable := &Runnable{
 		definition:      graph,
+		nodesNum:        int64(len(graph.Nodes)),
 		executionPlan:   plan,
 		conditionRouter: condition,
 		status:          core.WorkflowStatusActive,
 		createdAt:       time.Now(),
 		shutdownCh:      make(chan struct{}),
+		defaultTTL:      graph.Timeout,
 	}
 
-	if existing, exists := e.executorPool[id]; exists {
+	if existing, exists := e.runnablePool[id]; exists {
 		existing.status = core.WorkflowStatusDeploying
 		// 复制已经存在的执行上下文,防止删除正在执行的上下文
 		existing.execContexts.Range(func(key, value any) bool {

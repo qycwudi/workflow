@@ -2,13 +2,12 @@ package engine
 
 import (
 	"sync"
-	"time"
 )
 
 type WorkflowEngine struct {
 	config *EngineConfig
 
-	executorPool map[string]*Runnable // 工作流执行器池
+	runnablePool map[string]*Runnable // 工作流执行器池
 	mu           sync.RWMutex         // 读写锁
 }
 
@@ -16,7 +15,7 @@ type WorkflowEngine struct {
 func NewWorkflowEngine(opts ...Option) *WorkflowEngine {
 	config := DefaultConfig()
 	engine := &WorkflowEngine{
-		executorPool: make(map[string]*Runnable),
+		runnablePool: make(map[string]*Runnable),
 		config:       config,
 	}
 
@@ -41,13 +40,6 @@ func WithPoolSize(size int) Option {
 func WithMaxPoolSize(size int) Option {
 	return func(e *WorkflowEngine) {
 		e.config.MaxPoolSize = size
-	}
-}
-
-// WithExecutionTimeout 设置执行超时
-func WithExecutionTimeout(timeout time.Duration) Option {
-	return func(e *WorkflowEngine) {
-		e.config.ExecutionTimeout = timeout
 	}
 }
 

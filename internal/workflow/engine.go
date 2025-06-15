@@ -48,27 +48,33 @@ func Register(ctx context.Context, id string, dsl string) error {
 	return nil
 }
 
-func Run(ctx context.Context, serialId, workspaceId string, data map[string]any) (string, core.NodeResult, error) {
-	logx.Infof("[workflow] start execute workflow [workspaceId:%s] [serialId:%s]", workspaceId, serialId)
+func Run(ctx context.Context, traceId, workspaceId string, data map[string]any) (string, map[string]any, error) {
+	logx.Infof("[workflow] start execute workflow [workspaceId:%s] [traceId:%s]", workspaceId, traceId)
 	defer func() {
-		logx.Infof("[workflow] clear execution context [workspaceId:%s] [serialId:%s]", workspaceId, serialId)
-		clearErr := eg.ClearExecutionContext(workspaceId, serialId)
+		logx.Infof("[workflow] clear execution context [workspaceId:%s] [traceId:%s]", workspaceId, traceId)
+		clearErr := eg.ClearExecutionContext(workspaceId, traceId)
 		if clearErr != nil {
 			logx.Errorf("[workflow] clear execution context error: %s", clearErr.Error())
 		}
 	}()
 	// 执行工作流
-	if err := eg.ExecuteWorkflow(ctx, workspaceId, serialId, data); err != nil {
+	execCtx, err := eg.ExecuteWorkflow(ctx, workspaceId, traceId, data, core.ContextExtra{
+		IsSub:             false,
+		ParentWorkspaceId: "",
+		Index:             -1,
+		NodeNum:           0,
+	})
+	if err != nil {
 		logx.Errorf("[workflow] execute workflow error: %s", err)
-		return serialId, core.NodeResult{}, err
+		return traceId, nil, err
 	}
 
-	endResult, ok := eg.GetNodeResult(workspaceId, serialId, "end_0")
+	endResult, ok := execCtx.GetVariable(core.EndParameters)
 	if !ok {
-		logx.Errorf("[workflow] end node result not found [workspaceId:%s] [serialId:%s]", workspaceId, serialId)
-		return serialId, core.NodeResult{}, errors.New("end node result not found:" + workspaceId + "," + serialId)
+		logx.Errorf("[workflow] end node result not found [workspaceId:%s] [traceId:%s]", workspaceId, traceId)
+		return traceId, nil, errors.New("end node result not found:" + workspaceId + "," + traceId)
 	}
-	return serialId, *endResult, nil
+	return traceId, endResult, nil
 }
 
 func RunSingle(ctx context.Context, serialId, workspaceId string, nodeId string, data map[string]any) (string, core.NodeResult, error) {

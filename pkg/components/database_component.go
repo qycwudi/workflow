@@ -22,13 +22,12 @@ type DatabaseComponent struct {
 	config DatabaseConfig
 }
 type DatabaseConfig struct {
-	DatasourceId      int64           `json:"datasourceId"`
-	SQL               string          `json:"sql"`
-	ErrorHandlingMode string          `json:"errorHandlingMode"`
-	Retry             int64           `json:"retry"`
-	Timeout           int64           `json:"timeout"`
-	DatasourceType    string          `json:"datasourceType"`
-	ExceptionConfig   ExceptionConfig `json:"exceptionConfig"`
+	DatasourceId      int64  `json:"datasourceId"`
+	SQL               string `json:"sql"`
+	ErrorHandlingMode string `json:"errorHandlingMode"`
+	Retry             int64  `json:"retry"`
+	Timeout           int64  `json:"timeout"`
+	DatasourceType    string `json:"datasourceType"`
 }
 
 var databaseComponentPool = sync.Pool{
@@ -51,14 +50,7 @@ func NewDatabaseComponent(config any) (*DatabaseComponent, error) {
 	if err := sonic.Unmarshal(jsonConfig, &databaseConfig); err != nil {
 		return nil, eris.Wrap(err, "failed to parse database component config")
 	}
-	databaseConfig.ExceptionConfig = ExceptionConfig{
-		Timeout:    databaseConfig.Timeout,
-		RetryTimes: int(databaseConfig.Retry),
-		OutputOnError: map[string]any{
-			"outputList": []map[string]any{},
-			"rowNum":     0,
-		},
-	}
+
 	component.config = databaseConfig
 	return component, nil
 }
@@ -85,7 +77,7 @@ func (d *DatabaseComponent) Execute(ctx context.Context, input any) (*core.Resul
 		logx.Errorf("[DATABASE] execute failed param:%s,error:%s", param, err.Error())
 		return &core.Result{
 			Route:  []string{Failed},
-			Output: d.config.ExceptionConfig.OutputOnError,
+			Output: nil,
 		}, eris.Wrap(err, "failed to replace exprs param:"+param)
 	}
 	return &core.Result{
@@ -100,10 +92,6 @@ func (d *DatabaseComponent) Validate() []core.ValidationError {
 
 func (d *DatabaseComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
-}
-
-func (d *DatabaseComponent) Exception() ExceptionConfig {
-	return d.config.ExceptionConfig
 }
 
 func (d *DatabaseComponent) Clear() {

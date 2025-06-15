@@ -108,8 +108,6 @@ func ProcessNodeOutput(data map[string]any, outputs NodeDataOutputs) (map[string
 		}
 		output[name] = processedValue
 	}
-
-	logx.Debugf("[Output processing completed] output:%+v", output)
 	return output, nil
 }
 

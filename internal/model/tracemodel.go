@@ -58,8 +58,8 @@ func (m *defaultTraceModel) UpdateByTraceIdAndNodeId(ctx context.Context, data *
 }
 
 func (m *defaultTraceModel) UpdateById(ctx context.Context, data *Trace) error {
-	query := fmt.Sprintf("update %s set elapsed_time = ?,`output` = ?,status = ?,error_msg = ? where `id` = ?", m.table)
-	_, err := m.conn.ExecCtx(ctx, query, data.ElapsedTime, data.Output, data.Status, data.ErrorMsg, data.Id)
+	query := fmt.Sprintf("update %s set elapsed_time = ?,`output` = ?,status = ?,error_msg = ?,`input` = ? where `id` = ?", m.table)
+	_, err := m.conn.ExecCtx(ctx, query, data.ElapsedTime, data.Output, data.Status, data.ErrorMsg, data.Input, data.Id)
 	return err
 }
 

@@ -100,8 +100,11 @@ func (i *IterationComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 
 // Execute implements Component.
 func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
-	execCtx := ctx.(*core.ExecutionContext)
-	r := make(map[string]interface{}, 0)
+	execCtx, ok := ctx.(*core.ExecutionContext)
+	if !ok {
+		return nil, errors.New("loop component context type error")
+	}
+	r := make(map[string]any, 0)
 	/*
 		{
 			"result_1": [
@@ -131,12 +134,15 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 		inputMap["item"] = v
 		// 迭代索引
 		inputMap["index"] = idx
-		// 构造 loop 输出 以_locals 结尾,迭代组件字段会在原来 loopId 上追加,防止后续组件的输入被覆盖
+		// 设置loop输出参数,用于子流程获取
 		execCtx.SetVariable(workflowID+"_locals"+".output", inputMap)
-		execCtx.SetVariable("sub_index", idx)
 		logx.Debugf("[loop] setVariable success: index: %d, output: %+v", idx, inputMap)
-
-		err := i.config.workflowEngine.ExecuteWorkflow(execCtx, workflowID, execCtx.TraceId, inputMap)
+		subExecCtx, err := i.config.workflowEngine.ExecuteWorkflow(execCtx, workflowID, execCtx.TraceId, inputMap, core.ContextExtra{
+			IsSub:             true,
+			ParentWorkspaceId: execCtx.WorkspaceId,
+			Index:             int64(idx),
+			NodeNum:           int64(len(iterVal)),
+		})
 		if err != nil {
 			// todo 错误处理机制
 			return nil, errors.New("[loop] execute failed: " + err.Error())
@@ -147,13 +153,9 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 			key := output.Extra.InputKey
 			outputKey := output.Extra.OutputKey
 			subNodeId := output.Extra.NodeId
-			result, ok := i.config.workflowEngine.GetNodeResult(workflowID, execCtx.TraceId, subNodeId)
+			outputValue, ok := subExecCtx.GetVariable(subNodeId + ".output")
 			if !ok {
 				return nil, errors.New("[loop] execute failed: get node result failed")
-			}
-			outputValue, ok := result.Output.(map[string]any)
-			if !ok {
-				return nil, errors.New("[loop] execute failed: output type mismatch")
 			}
 			// 赋值
 			subResult[key] = outputValue[outputKey]
@@ -169,7 +171,7 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 			}
 		}
 		// 清空 sub_index
-		execCtx.SetVariable("sub_index", -1)
+		execCtx.Extra.Index = -1
 		logx.Debugf("[loop] execute success: index: %d, item: %+v, result: %+v", idx, inputMap, r)
 	}
 
@@ -183,10 +185,6 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 // Validate implements Component.
 func (i *IterationComponent) Validate() []core.ValidationError {
 	return nil
-}
-
-func (c *IterationComponent) Exception() ExceptionConfig {
-	return ExceptionConfig{}
 }
 
 // var _ Component = new(IterationComponent)

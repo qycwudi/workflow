@@ -38,7 +38,6 @@ type ModelConfig struct {
 	Retry             int64                `json:"retry"`
 	Timeout           int64                `json:"timeout"`
 	ErrorHandlingMode string               `json:"errorHandlingMode"`
-	ExceptionConfig   ExceptionConfig      `json:"exceptionConfig"`
 	NodeDataOutputs   core.NodeDataOutputs `json:"output"` // 输出定义
 	OutputSchema      string               `json:"outputSchema"`
 }
@@ -58,10 +57,7 @@ func NewModelComponent(config any) (*ModelComponent, error) {
 	if err != nil {
 		return nil, err
 	}
-	modelConfig.ExceptionConfig = ExceptionConfig{
-		Timeout:    modelConfig.Timeout,
-		RetryTimes: int(modelConfig.Retry),
-	}
+
 	// 根据 NodeDataOutputs 输出定义，生成输出 json schema
 	modelConfig.OutputSchema = generateOutputSchema(modelConfig.NodeDataOutputs)
 	component.modelConfig = modelConfig
@@ -246,10 +242,6 @@ func (c *ModelComponent) Validate() []core.ValidationError {
 
 func (c *ModelComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 	return nil, nil
-}
-
-func (c *ModelComponent) Exception() ExceptionConfig {
-	return ExceptionConfig{}
 }
 
 func (c *ModelComponent) Clear() {

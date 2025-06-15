@@ -5,13 +5,11 @@ import (
 )
 
 type WorkflowEngine interface {
-	ExecuteWorkflow(ctx context.Context, workflowID string, serialID string, params map[string]any) error
-	GetNodeResult(workflowID, serialID, nodeID string) (*NodeResult, bool)
+	ExecuteWorkflow(ctx context.Context, workflowID string, traceID string, params map[string]any, extra ContextExtra) (*ExecutionContext, error)
 
 	ListWorkflows() []string
-	GetWorkflowStatus(workflowID string) (WorkflowStatus, bool)
 
-	PauseWorkflow(ctx context.Context, workflowID string, serialID string) error
+	PauseWorkflow(ctx context.Context, workflowID string, traceID string) error
 }
 
 // WorkflowStatus 表示工作流的状态

@@ -2,7 +2,6 @@ package openapi
 
 import (
 	"context"
-	"errors"
 	"sync"
 	"time"
 
@@ -137,18 +136,5 @@ func (l *OpenApiCallLogic) OpenApiCall(req *OpenApiCallRequest) (resp map[string
 	// 	logx.Errorf("API记录通道已满，丢弃记录: %s", traceId)
 	// }
 
-	// 防止类型转换错误
-	if result.Output == nil {
-		return map[string]any{}, errors.New("result is nil")
-	}
-	// 强转检查,防止 any 不是 map[string]any
-	if output, ok := result.Output.(map[string]any); ok {
-		return output, nil
-	}
-	return map[string]any{}, errors.New("result is not map[string]any")
-}
-
-// 停止批量处理器
-func StopBatchProcessor() {
-	close(stopChan)
+	return result, nil
 }
