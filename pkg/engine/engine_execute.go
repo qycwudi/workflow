@@ -356,7 +356,7 @@ func (e *WorkflowEngine) createTrace(ctx *core.ExecutionContext, node *WorkflowN
 	if !ctx.IsTrace {
 		return 0, nil
 	}
-	trace := &TraceRecore{
+	traceRecore := &TraceRecore{
 		WorkspaceId: ctx.WorkspaceId,
 		TraceId:     ctx.TraceId,
 		NodeId:      node.ID,
@@ -369,7 +369,7 @@ func (e *WorkflowEngine) createTrace(ctx *core.ExecutionContext, node *WorkflowN
 		Step:        ctx.Extra.Index,
 		SubIndex:    ctx.Extra.Index,
 	}
-	tid, err := Trace.CreateTrace(ctx, trace)
+	tid, err := trace.CreateTrace(ctx, traceRecore)
 	if err != nil {
 		logx.Errorf("[workflow_execute] create trace failed [Error:%v]", err)
 	}
@@ -384,7 +384,7 @@ func (e *WorkflowEngine) updateTrace(ctx *core.ExecutionContext, tid int64, node
 	if err != nil {
 		errorMsg = err.Error()
 	}
-	Trace.UpdateTraceById(ctx, &TraceRecore{
+	trace.UpdateTraceById(ctx, &TraceRecore{
 		Id:          tid,
 		NodeId:      node.ID,
 		TraceId:     ctx.TraceId,

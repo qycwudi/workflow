@@ -10,14 +10,14 @@ import (
 	"workflow/internal/model"
 )
 
-var Trace *TraceModel
+var trace *TraceModel
 
 type TraceModel struct {
 	TraceModel model.TraceModel
 }
 
 func NewTrace(model model.TraceModel) {
-	Trace = &TraceModel{
+	trace = &TraceModel{
 		TraceModel: model,
 	}
 }
