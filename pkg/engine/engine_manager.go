@@ -79,6 +79,11 @@ func (e *WorkflowEngine) ClearExecutionContext(workflowID, serialID string) erro
 	}
 
 	execCtx, ok := val.(*core.ExecutionContext)
+	if !ok {
+		return &EngineManagerError{
+			Message: "execution context type error: " + workflowID + ", " + serialID,
+		}
+	}
 	runnable.execContexts.Delete(serialID)
 	core.ReleaseExecutionContext(execCtx)
 
