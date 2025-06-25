@@ -106,7 +106,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3MzYyMTUwN
 }
 
 ### API调用-单结构
-POST http://127.0.0.1:8889/api/role/v1/ctr9h8d3sjtuumdejvng
+POST http://127.0.0.1:8889/api/role/v1/d1ds3o53sjtqa43rbfug
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 Authorization: Bearer 0241411184b34ffe8f0e38d78bb03771

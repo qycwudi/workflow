@@ -1,5 +1,5 @@
 ### API调用
-POST http://127.0.0.1:8888/workflow/api/v1/d0hg1l53sjtkf6do5h10
+POST http://127.0.0.1:8888/workflow/api/v1/d1ds3o53sjtqa43rbfug
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
 
@@ -50,4 +50,19 @@ Content-Type: application/json
 	"address": ["beijing", "shanghai","hangzhou"],
 	"mritalStatus":false,
 	"sight":1.0
+}
+
+### API调用
+POST http://127.0.0.1:8888/workflow/api/v1/d1ds3o53sjtqa43rbfug
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+
+{
+  "obj": {
+    "b1": "x1",
+    "b2": [
+      "x2"
+    ],
+    "b3": {"sks":"sv"}
+  }
 }

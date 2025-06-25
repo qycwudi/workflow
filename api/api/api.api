@@ -14,7 +14,7 @@ type ApiPublishResponse {
 type ApiPublishListRequest {
 	Current  int    `json:"current"`       // 当前页
 	PageSize int    `json:"pageSize"`      // 页大小
-	Id       string `json:"id,optional"`   // API_ID 非必填
+	Id       string `json:"id"`            // 空间ID
 	Name     string `json:"name,optional"` // 名称
 	Tag      string `json:"tag,optional"`  // 标签
 }
@@ -183,7 +183,8 @@ type ApiCallResponse {
 }
 
 type ApiCallTemplateRequest {
-	ApiId string `json:"apiId"`
+	ApiId  string `json:"apiId"`
+	CaseId string `json:"caseId"` // 用例ID
 }
 
 type ApiCallTemplateResponse {

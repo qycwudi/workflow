@@ -37,7 +37,7 @@ func (c customApiModel) UpdateStatusByApiId(ctx context.Context, apiId string, s
 func (c customApiModel) Page(ctx context.Context, current, size int, id, name, tag string) (*PageResponse[Api], error) {
 	conditions := make([]string, 0)
 	if id != "" {
-		conditions = append(conditions, fmt.Sprintf("api_id = '%s'", id))
+		conditions = append(conditions, fmt.Sprintf("workspace_id = '%s'", id))
 	}
 
 	if name != "" {

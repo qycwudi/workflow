@@ -4,11 +4,8 @@ import (
 	"context"
 
 	"github.com/bytedance/sonic"
-	"github.com/tidwall/gjson"
 	"github.com/zeromicro/go-zero/core/logx"
-	"github.com/zeromicro/x/errors"
 
-	"workflow/internal/logic"
 	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
@@ -35,15 +32,12 @@ func (l *ApiCallTemplateLogic) ApiCallTemplate(req *types.ApiCallTemplateRequest
 		return nil, err
 	}
 	url := l.svcCtx.Config.ApiUrl + "/" + req.ApiId
-	// 查询 canvas
-	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, api.WorkspaceId)
+	// 查询 case 参数
+	cases, err := l.svcCtx.CaseModel.FindOneByUid(l.ctx, req.CaseId)
 	if err != nil {
 		return nil, err
 	}
-	param, err := l.readData(gjson.Parse(canvas.Draft))
-	if err != nil {
-		return nil, err
-	}
+	param := cases.Params
 	// 查询 secret
 	header := map[string]string{}
 	secret, err := l.svcCtx.ApiSecretKeyModel.FindByApiId(l.ctx, api.ApiId)
@@ -66,21 +60,5 @@ func (l *ApiCallTemplateLogic) ApiCallTemplate(req *types.ApiCallTemplateRequest
 		Header: string(headerJson),
 		Body:   param,
 	}
-
 	return resp, nil
-}
-
-func (l *ApiCallTemplateLogic) readData(result gjson.Result) (string, error) {
-	nodes := result.Get("graph.nodes").Array()
-	for _, node := range nodes {
-		if node.Get("data.type").String() == "start" {
-			param := node.Get("data.custom.param").String()
-			var data interface{}
-			if err := sonic.Unmarshal([]byte(param), &data); err == nil {
-				return param, nil
-			}
-			return "", errors.New(int(logic.SystemError), "输入不是 JSON 格式")
-		}
-	}
-	return "", errors.New(int(logic.SystemError), "未找到开始节点")
 }

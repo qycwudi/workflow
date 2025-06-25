@@ -36,7 +36,8 @@ type ApiCallStatisticsResponse struct {
 }
 
 type ApiCallTemplateRequest struct {
-	ApiId string `json:"apiId"`
+	ApiId  string `json:"apiId"`
+	CaseId string `json:"caseId"` // 用例ID
 }
 
 type ApiCallTemplateResponse struct {
@@ -111,7 +112,7 @@ type ApiPublishList struct {
 type ApiPublishListRequest struct {
 	Current  int    `json:"current"`       // 当前页
 	PageSize int    `json:"pageSize"`      // 页大小
-	Id       string `json:"id,optional"`   // API_ID 非必填
+	Id       string `json:"id"`            // 空间ID
 	Name     string `json:"name,optional"` // 名称
 	Tag      string `json:"tag,optional"`  // 标签
 }
@@ -685,10 +686,10 @@ type JobPublishList struct {
 }
 
 type JobPublishListRequest struct {
-	Current     int    `json:"current"`
-	PageSize    int    `json:"pageSize"`
-	WorkSpaceId string `json:"workSpaceId,optional"`
-	JobName     string `json:"jobName,optional"`
+	Current  int    `json:"current"`
+	PageSize int    `json:"pageSize"`
+	Id       string `json:"id"`
+	JobName  string `json:"jobName,optional"`
 }
 
 type JobPublishListResponse struct {
