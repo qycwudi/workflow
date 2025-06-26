@@ -1,9 +1,9 @@
 FROM docker.m.daocloud.io/golang:1.24.3-alpine AS builder
-# docker build --platform linux/amd64 -t workflow:v3-b5 .
+# docker build --platform linux/amd64 -t workflow:v3-b7 .
 # docker login --username=qiangyuecheng registry.cn-hangzhou.aliyuncs.com
 # Qycssg00
-# docker tag b29ed9acfbe8 registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:v3-b5
-# docker push registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:v3-b5
+# docker tag 4c5e92e55074 registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:v3-b7
+# docker push registry.cn-hangzhou.aliyuncs.com/jenkins_construct_images/workflow:v3-b7
 # goctl kube deploy --name workflow-back --namespace workflow --port 8888 --o workflow-back-deploy.yaml
 
 LABEL stage=gobuilder

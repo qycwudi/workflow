@@ -17,6 +17,7 @@ type (
 	UsersModel interface {
 		usersModel
 		FindPage(ctx context.Context, username string, current int64, pageSize int64) (users []*Users, total int64, err error)
+		Count(ctx context.Context) (int64, error)
 	}
 
 	customUsersModel struct {
@@ -72,4 +73,11 @@ func (m *customUsersModel) FindPage(ctx context.Context, username string, curren
 		logc.Infov(ctx, err)
 		return nil, 0, err
 	}
+}
+
+func (m *customUsersModel) Count(ctx context.Context) (int64, error) {
+	query := fmt.Sprintf("select count(*) from %s", m.table)
+	var count int64
+	err := m.conn.QueryRowCtx(ctx, &count, query)
+	return count, err
 }

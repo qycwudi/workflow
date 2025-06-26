@@ -26,6 +26,7 @@ type (
 		FindByOn(ctx context.Context) ([]*Job, error)
 		FindByJobId(ctx context.Context, jobId string) (*Job, error)
 		FindPage(ctx context.Context, jobName, workspaceId string, current, pageSize int) (int64, []*Job, error)
+		Count(ctx context.Context) (int64, error)
 	}
 
 	customJobModel struct {
@@ -118,4 +119,11 @@ func (m *customJobModel) FindPage(ctx context.Context, jobName, workspaceId stri
 	}
 
 	return total, resp, nil
+}
+
+func (m *customJobModel) Count(ctx context.Context) (int64, error) {
+	query := fmt.Sprintf("select count(*) from %s where status = ?", m.table)
+	var count int64
+	err := m.conn.QueryRowCtx(ctx, &count, query, JobStatusOn)
+	return count, err
 }

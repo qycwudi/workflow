@@ -21,6 +21,7 @@ type (
 		UpdateStatusByApiId(ctx context.Context, apiId string, status string) error
 		Page(ctx context.Context, current, size int, apiId, name string, tag string) (*PageResponse[Api], error)
 		FindByWorkspaceId(ctx context.Context, workspaceId string) (*Api, error)
+		Count(ctx context.Context) (int64, error)
 	}
 
 	customApiModel struct {
@@ -102,6 +103,13 @@ func (c customApiModel) FindByWorkspaceId(ctx context.Context, workspaceId strin
 	default:
 		return nil, err
 	}
+}
+
+func (c customApiModel) Count(ctx context.Context) (int64, error) {
+	query := fmt.Sprintf("select count(*) from %s where status = ?", c.table)
+	var count int64
+	err := c.conn.QueryRowCtx(ctx, &count, query, ApiStatusOn)
+	return count, err
 }
 
 const (

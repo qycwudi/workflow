@@ -21,6 +21,7 @@ type (
 		Remove(ctx context.Context, workSpaceId string) error
 		UpdateByWorkspaceId(ctx context.Context, data *Workspace) error
 		GetWorkspaceById(ctx context.Context, workspaceId string) (*Workspace, error)
+		Count(ctx context.Context) (int64, error)
 	}
 
 	customWorkspaceModel struct {
@@ -81,7 +82,7 @@ func (c customWorkspaceModel) FindPage(ctx context.Context, uid string, current,
 
 	queryBuilder.WriteString(fmt.Sprintf("SELECT %s FROM %s WHERE is_delete = 0 and create_by = ?", workspaceRows, c.table))
 	totalBuilder.WriteString(fmt.Sprintf("SELECT count(*) FROM %s WHERE is_delete = 0 and create_by = ?", c.table))
-
+	params = append(params, uid)
 	// 如果workSpaceType不为空，则添加到查询条件
 	if workSpaceType != "" {
 		queryBuilder.WriteString(" AND `workspace_type` = ?")
@@ -95,7 +96,7 @@ func (c customWorkspaceModel) FindPage(ctx context.Context, uid string, current,
 		totalBuilder.WriteString(" AND `workspace_name` like CONCAT('%', ?, '%')")
 		params = append(params, workSpaceName)
 	}
-	params = append(params, uid)
+
 	// 查询total
 	// 执行查询总数的SQL
 	var total int64
@@ -177,6 +178,13 @@ func (c customWorkspaceModel) GetWorkspaceById(ctx context.Context, workspaceId 
 	default:
 		return nil, err
 	}
+}
+
+func (c customWorkspaceModel) Count(ctx context.Context) (int64, error) {
+	query := fmt.Sprintf("select count(*) from %s where is_delete = 0", c.table)
+	var count int64
+	err := c.conn.QueryRowCtx(ctx, &count, query)
+	return count, err
 }
 
 // NewWorkspaceModel returns a model for the database table.

@@ -69,6 +69,14 @@ type ApiExportCurlResponse struct {
 	Curl string `json:"curl"`
 }
 
+type ApiGetApiDocRequest struct {
+	ApiId string `json:"apiId"`
+}
+
+type ApiGetApiDocResponse struct {
+	ApiDoc string `json:"apiDoc"`
+}
+
 type ApiHistory struct {
 	Id          int64  `json:"id"`
 	WorkspaceId string `json:"workspaceId"`
@@ -563,16 +571,29 @@ type GetCanvasRunHistoryResp struct {
 }
 
 type GetDropDownListReq struct {
-	Kind string `json:"kind"`
+	Kinds []string `json:"kinds"` // 类型 mysql,model,sftp
 }
 
 type GetDropDownListResp struct {
-	List []GetDropDownListRespItem `json:"list"`
+	List []GetDropDownListRespItem `json:"list"` // 列表
 }
 
 type GetDropDownListRespItem struct {
-	Label string `json:"label"`
-	Value int64  `json:"value"`
+	Label string `json:"label"` // 标签
+	Value int64  `json:"value"` // 值
+}
+
+type GetHomeStatisticsReq struct {
+}
+
+type GetHomeStatisticsResp struct {
+	WorkspaceCount  int64      `json:"workspaceCount"`  // 工作空间数量
+	DatasourceCount int64      `json:"datasourceCount"` // 数据源数量
+	ApiCount        int64      `json:"apiCount"`        // 接口数量
+	JobCount        int64      `json:"jobCount"`        // 任务数量
+	UserCount       int64      `json:"userCount"`       // 用户数量
+	Message         []string   `json:"message"`         // 消息
+	SystemInfo      SystemInfo `json:"systemInfo"`      // 系统信息
 }
 
 type GetKvRequest struct {
@@ -943,6 +964,12 @@ type SaveCanvasHistoryReq struct {
 
 type SaveCanvasHistoryResp struct {
 	Id int64 `json:"id"` // 历史版本ID
+}
+
+type SystemInfo struct {
+	CPU    string `json:"cpu"`    // CPU
+	Memory string `json:"memory"` // 内存
+	Disk   string `json:"disk"`   // 磁盘
 }
 
 type TagEditRequest struct {

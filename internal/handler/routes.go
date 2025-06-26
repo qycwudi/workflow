@@ -60,6 +60,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: api.ApiExportCurlHandler(serverCtx),
 				},
 				{
+					// 获取api接口文档
+					Method:  http.MethodPost,
+					Path:    "/api/get/apidoc",
+					Handler: api.ApiGetApiDocHandler(serverCtx),
+				},
+				{
 					// API历史版本
 					Method:  http.MethodPost,
 					Path:    "/api/history",
@@ -146,6 +152,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Method:  http.MethodPost,
 					Path:    "/basics/dropdown",
 					Handler: basics.GetDropDownListHandler(serverCtx),
+				},
+				{
+					// 获取首页统计数据
+					Method:  http.MethodGet,
+					Path:    "/basics/home/statistics",
+					Handler: basics.GetHomeStatisticsHandler(serverCtx),
 				},
 			}...,
 		),

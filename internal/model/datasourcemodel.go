@@ -3,7 +3,9 @@ package model
 import (
 	"context"
 	"fmt"
+	"strings"
 
+	"github.com/zeromicro/go-zero/core/logx"
 	"github.com/zeromicro/go-zero/core/stores/sqlx"
 )
 
@@ -18,6 +20,8 @@ type (
 		FindBySwitch(ctx context.Context, switchStatus int64) ([]*Datasource, error)
 		UpdateStatus(ctx context.Context, id int64, status string) error
 		FindAllList(ctx context.Context) ([]*Datasource, error)
+		FindByTypesList(ctx context.Context, kinds []string) ([]*Datasource, error)
+		Count(ctx context.Context) (int64, error)
 	}
 
 	customDatasourceModel struct {
@@ -61,7 +65,7 @@ func (m *defaultDatasourceModel) FindDataSourcePageList(ctx context.Context, par
 		args = append(args, param.Status)
 	}
 
-	if param.Switch >= 0 {
+	if param.Switch > 0 {
 		conditions = append(conditions, "switch = ?")
 		args = append(args, param.Switch)
 	}
@@ -122,9 +126,37 @@ func (m *defaultDatasourceModel) FindAllList(ctx context.Context) ([]*Datasource
 	return result, nil
 }
 
+func (m *defaultDatasourceModel) FindByTypesList(ctx context.Context, kinds []string) ([]*Datasource, error) {
+	var result []*Datasource
+	// 拼接问号，用逗号分隔
+	questionMark := strings.Repeat(",?", len(kinds))
+	if len(questionMark) > 0 {
+		questionMark = questionMark[1:] // 去掉第一个逗号
+	}
+	param := []interface{}{DatasourceSwitchOn}
+	for _, kind := range kinds {
+		param = append(param, kind)
+	}
+	sql := "SELECT " + datasourceRows + " FROM " + m.table + " WHERE switch = ? and type in (" + questionMark + ")"
+	logx.Infof("sql: %s, param: %v", sql, param)
+	logx.Infof("param: %v", param)
+	err := m.conn.QueryRowsCtx(ctx, &result, sql, param...)
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
+}
+
+func (m *defaultDatasourceModel) Count(ctx context.Context) (int64, error) {
+	query := fmt.Sprintf("select count(*) from %s where switch = ?", m.table)
+	var count int64
+	err := m.conn.QueryRowCtx(ctx, &count, query, DatasourceSwitchOn)
+	return count, err
+}
+
 const (
 	DatasourceSwitchOn  = 1
-	DatasourceSwitchOff = 0
+	DatasourceSwitchOff = 2
 
 	DatasourceStatusConnected = "connected"
 	DatasourceStatusClosed    = "closed"

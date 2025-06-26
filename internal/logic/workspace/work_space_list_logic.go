@@ -51,6 +51,11 @@ func (l *WorkSpaceListLogic) WorkSpaceList(req *types.WorkSpaceListRequest) (res
 			return nil, errors.New(int(logic.SystemOrmError), "标签查询空间列表数据失败")
 		}
 
+		if len(workspaceIds) == 0 {
+			resp.Data = []types.WorkSpacePage{}
+			return resp, nil
+		}
+
 		workSpacePage, err := l.svcCtx.WorkSpaceModel.FindInWorkSpaceId(l.ctx, workspaceIds)
 		if err != nil {
 			if err == sql.ErrNoRows {
