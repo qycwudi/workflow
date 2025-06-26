@@ -2,7 +2,15 @@
 POST http://127.0.0.1:8888/workflow/basics/dropdown
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTEwMDIzOTgsImlhdCI6MTc1MDkxNTk5OCwidWlkIjoiODhkYWUzOTMtOWEzNy00NThlLTlhMmUtZDg5ODlkZmJhMGQyIiwidXNlcklkIjo2fQ.IOsZltGlQh5ZDAygnWNKKdMzAeZMFUCM1hL3cAgJxuM
 
 {
-  "kind": "datasource"
+  "kinds": ["mysql","model"]
 }
+
+### 获取首页统计
+GET http://127.0.0.1:8888/workflow/basics/home/statistics
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTEwMDIzOTgsImlhdCI6MTc1MDkxNTk5OCwidWlkIjoiODhkYWUzOTMtOWEzNy00NThlLTlhMmUtZDg5ODlkZmJhMGQyIiwidXNlcklkIjo2fQ.IOsZltGlQh5ZDAygnWNKKdMzAeZMFUCM1hL3cAgJxuM
+
+

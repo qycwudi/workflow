@@ -1,28 +1,50 @@
 syntax = "v1"
 
-type GetDropDownListReq{
-    Kind string `json:"kind"`
+type GetDropDownListReq {
+	Kinds []string `json:"kinds"` // 类型 mysql,model,sftp
 }
 
-type GetDropDownListResp{
-    List []GetDropDownListRespItem `json:"list"`
+type GetDropDownListResp {
+	List []GetDropDownListRespItem `json:"list"` // 列表
 }
 
-type GetDropDownListRespItem{
-    Label string `json:"label"`
-    Value int64 `json:"value"`
+type GetDropDownListRespItem {
+	Label string `json:"label"` // 标签
+	Value int64  `json:"value"` // 值
+}
+
+type GetHomeStatisticsReq {
+}
+
+type GetHomeStatisticsResp {
+	WorkspaceCount  int64      `json:"workspaceCount"`  // 工作空间数量
+	DatasourceCount int64      `json:"datasourceCount"` // 数据源数量
+	ApiCount        int64      `json:"apiCount"`        // 接口数量
+	JobCount        int64      `json:"jobCount"`        // 任务数量
+	UserCount       int64      `json:"userCount"`       // 用户数量
+	Message         []string   `json:"message"`         // 消息
+	SystemInfo      SystemInfo `json:"systemInfo"`      // 系统信息
+}
+
+type SystemInfo {
+	CPU    string `json:"cpu"`    // CPU
+	Memory string `json:"memory"` // 内存
+	Disk   string `json:"disk"`   // 磁盘
 }
 
 @server (
-    group: basics
-    prefix: /workflow
-    jwt: Auth
-    middleware: PermissionMiddleware
+	group: basics
+	prefix: /workflow
+	jwt: Auth
+	middleware: PermissionMiddleware
 )
 
 service workflow-api {
-    @doc "根据参数获取下拉框"
-    @handler GetDropDownList
-    post /basics/dropdown (GetDropDownListReq) returns (GetDropDownListResp)
-    
+	@doc "根据参数获取下拉框"
+	@handler GetDropDownList
+	post /basics/dropdown (GetDropDownListReq) returns (GetDropDownListResp)
+
+	@doc "获取首页统计数据"
+	@handler GetHomeStatistics
+	get /basics/home/statistics(GetHomeStatisticsReq) returns (GetHomeStatisticsResp)
 }
