@@ -74,7 +74,8 @@ type ApiGetApiDocRequest struct {
 }
 
 type ApiGetApiDocResponse struct {
-	ApiDoc string `json:"apiDoc"`
+	ApiDoc  string `json:"apiDoc"`
+	ApiName string `json:"apiName"`
 }
 
 type ApiHistory struct {

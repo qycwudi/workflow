@@ -223,6 +223,7 @@ type ApiGetApiDocRequest {
 
 type ApiGetApiDocResponse {
 	ApiDoc string `json:"apiDoc"`
+	ApiName string `json:"apiName"`
 }
 
 @server (

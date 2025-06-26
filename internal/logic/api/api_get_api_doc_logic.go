@@ -34,7 +34,8 @@ func (l *ApiGetApiDocLogic) ApiGetApiDoc(req *types.ApiGetApiDocRequest) (resp *
 		return nil, errors.New(int(logic.SystemOrmError), "api not found")
 	}
 	resp = &types.ApiGetApiDocResponse{
-		ApiDoc: apiEntity.ApiDoc,
+		ApiDoc:  apiEntity.ApiDoc,
+		ApiName: apiEntity.ApiName,
 	}
 	return resp, nil
 }
