@@ -128,13 +128,15 @@ func (l *OpenApiCallLogic) OpenApiCall(req *OpenApiCallRequest) (resp map[string
 	logx.Infof("API记录: %+v,err:%v", record, err)
 
 	// 将记录发送到通道
-	// select {
-	// case recordChan <- record:
-	// 	// 成功发送到通道
-	// default:
-	// 	// 通道已满，记录错误
-	// 	logx.Errorf("API记录通道已满，丢弃记录: %s", traceId)
-	// }
+	go func(rec *model.ApiRecord, tid string) {
+		select {
+		case recordChan <- rec:
+			// 成功发送到通道
+		default:
+			// 通道已满，记录错误
+			logx.Errorf("API记录通道已满，丢弃记录: %s", tid)
+		}
+	}(record, traceId)
 
 	return result, nil
 }

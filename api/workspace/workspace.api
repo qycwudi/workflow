@@ -55,6 +55,22 @@ type WorkSpacePage {
 	UpdateTime string `json:"updateTime"`
 }
 
+type WorkSpaceGetRequest {
+	Id string `json:"id"`
+}
+
+type WorkSpaceGetResponse {
+	WorkSpaceBase
+	Stat    WorkSpaceStat `json:"stat"`     // 统计信息
+	Message []string      `json:"messages"` // 消息
+}
+
+type WorkSpaceStat {
+	NodeCount   int    `json:"nodeCount"`   // 节点数量
+	RunCount    int    `json:"runCount"`    // 运行次数
+	LastRunTime string `json:"lastRunTime"` // 最后运行时间
+}
+
 type WorkSpaceEditTagRequest {
 	Id           string   `json:"id"`
 	WorkSpaceTag []string `json:"workSpaceTag"`
@@ -96,7 +112,7 @@ type TagRemoveResponse {
 type MockRequest {
 	Name string `json:"name"`
 	Age  int    `json:"age"`
-//    Info MockInfo `json:"info"`
+	// Info MockInfo `json:"info"`
 }
 
 type MockInfo {
@@ -107,7 +123,7 @@ type MockInfo {
 type MockResponse {
 	Name string `json:"name"`
 	Age  int    `json:"age"`
-//    Info MockInfo `json:"info"`
+	// Info MockInfo `json:"info"`
 }
 
 // 画布复制
@@ -131,17 +147,16 @@ type WorkSpaceEnvListResponse {
 }
 
 type EnvList {
-	Key string `json:"key"`
+	Key   string `json:"key"`
 	Value string `json:"value"`
 }
 
 type WorkSpaceEnvEditRequest {
-	Id string `json:"id"`
+	Id  string    `json:"id"`
 	Env []EnvList `json:"env"`
 }
 
 type WorkSpaceEnvEditResponse {
-	
 }
 
 type WorkSpaceExportRequest {
@@ -167,7 +182,7 @@ type WorkSpaceImportResponse {
 	// 定义路由前缀为 "/v1"
 	prefix: /workflow
 	jwt: Auth // 开启 jwt 认证
-    middleware: PermissionMiddleware // 开启权限认证
+	middleware: PermissionMiddleware // 开启权限认证
 )
 service workflow-api {
 	@doc "创建workspace"
@@ -185,6 +200,10 @@ service workflow-api {
 	@doc "列表workspace"
 	@handler WorkSpaceListHandler
 	post /workspace/list (WorkSpaceListRequest) returns (WorkSpaceListResponse)
+
+	@doc "获取workspace"
+	@handler WorkSpaceGetHandler
+	post /workspace/get (WorkSpaceGetRequest) returns (WorkSpaceGetResponse)
 
 	@doc "编辑workspace标签"
 	@handler WorkSpaceEditTagHandler
@@ -226,4 +245,3 @@ service workflow-api {
 	@handler WorkSpaceImportHandler
 	post /workspace/import (WorkSpaceImportRequest) returns (WorkSpaceImportResponse)
 }
-

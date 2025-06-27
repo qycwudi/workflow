@@ -1189,6 +1189,16 @@ type WorkSpaceExportResponse struct {
 	Export string `json:"export"`
 }
 
+type WorkSpaceGetRequest struct {
+	Id string `json:"id"`
+}
+
+type WorkSpaceGetResponse struct {
+	WorkSpaceBase
+	Stat    WorkSpaceStat `json:"stat"`     // 统计信息
+	Message []string      `json:"messages"` // 消息
+}
+
 type WorkSpaceImportRequest struct {
 	WorkSpaceBase
 	Export string `json:"export"`
@@ -1229,4 +1239,10 @@ type WorkSpacePage struct {
 }
 
 type WorkSpaceRemoveResponse struct {
+}
+
+type WorkSpaceStat struct {
+	NodeCount   int    `json:"nodeCount"`   // 节点数量
+	RunCount    int    `json:"runCount"`    // 运行次数
+	LastRunTime string `json:"lastRunTime"` // 最后运行时间
 }

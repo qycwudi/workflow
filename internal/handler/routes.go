@@ -691,6 +691,12 @@ func RegisterHandlers(server *rest.Server, serverCtx *svc.ServiceContext) {
 					Handler: workspace.WorkSpaceExportHandler(serverCtx),
 				},
 				{
+					// 获取workspace
+					Method:  http.MethodPost,
+					Path:    "/workspace/get",
+					Handler: workspace.WorkSpaceGetHandler(serverCtx),
+				},
+				{
 					// 画布导入
 					Method:  http.MethodPost,
 					Path:    "/workspace/import",
