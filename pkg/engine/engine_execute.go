@@ -145,7 +145,7 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 	execCtx := core.NewExecutionContextEnhanced(ctx, workflowID, serialID, params, extra, runnable.defaultTTL, runnable.nodesNum)
 
 	// 创建执行管理器
-	executionManager := NewExecutionManager(1)
+	executionManager := NewExecutionManager(1, e)
 	defer executionManager.Close()
 
 	// 创建工作流节点
@@ -186,7 +186,7 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 // executeWorkflowPhases 执行工作流阶段
 func (e *WorkflowEngine) executeWorkflowPhases(execCtx *core.ExecutionContextEnhanced, runnable *Runnable) error {
 	// 创建执行管理器
-	executionManager := NewExecutionManager(1000)
+	executionManager := NewExecutionManager(1000, e)
 	defer executionManager.Close()
 
 	// 总执行计划

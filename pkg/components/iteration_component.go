@@ -170,10 +170,12 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 				r[key] = append(arr, value)
 			}
 		}
-		// 清空 sub_index
-		execCtx.Extra.Index = -1
 		logx.Debugf("[loop] execute success: index: %d, item: %+v, result: %+v", idx, inputMap, r)
 	}
+
+	// 迭代完成后清空 sub_index，恢复到非子流程状态
+	execCtx.Extra.Index = -1
+	execCtx.Extra.IsSub = false
 
 	result := core.Result{
 		Output: r,

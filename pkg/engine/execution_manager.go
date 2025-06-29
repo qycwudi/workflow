@@ -15,7 +15,8 @@ import (
 
 // ExecutionManager 执行管理器，避免循环依赖
 type ExecutionManager struct {
-	poolManager *PoolManager
+	poolManager    *PoolManager
+	workflowEngine *WorkflowEngine
 }
 
 // PoolManager 简化的协程池管理器
@@ -76,9 +77,10 @@ func (pm *PoolManager) Close() {
 }
 
 // NewExecutionManager 创建执行管理器
-func NewExecutionManager(poolSize int) *ExecutionManager {
+func NewExecutionManager(poolSize int, workflowEngine *WorkflowEngine) *ExecutionManager {
 	return &ExecutionManager{
-		poolManager: NewPoolManager(poolSize),
+		poolManager:    NewPoolManager(poolSize),
+		workflowEngine: workflowEngine,
 	}
 }
 
@@ -134,7 +136,7 @@ func (em *ExecutionManager) executeNodeSimplified(execCtx *core.ExecutionContext
 	}
 
 	// 创建组件
-	component, err := components.ComponentFactory(nil, node.Type, node.Data)
+	component, err := components.ComponentFactory(em.workflowEngine, node.Type, node.Data)
 	if err != nil {
 		return fmt.Errorf("failed to create component [%s]: %w", node.ID, err)
 	}
@@ -176,6 +178,12 @@ func (em *ExecutionManager) executeNodeSteps(execCtx *core.ExecutionContextEnhan
 
 	// 创建追踪记录（如果启用追踪）
 	if execCtx.IsTrace && trace != nil {
+		// 确定 SubIndex：只有在迭代组件的子流程中才设置为非-1值
+		subIndex := int64(-1)
+		if execCtx.Extra.IsSub && execCtx.Extra.Index >= 0 {
+			subIndex = execCtx.Extra.Index
+		}
+
 		traceRecord = &TraceRecore{
 			WorkspaceId: execCtx.WorkspaceId,
 			TraceId:     execCtx.TraceId,
@@ -185,6 +193,7 @@ func (em *ExecutionManager) executeNodeSteps(execCtx *core.ExecutionContextEnhan
 			Status:      "running",
 			StartTime:   startTime,
 			Step:        0,
+			SubIndex:    subIndex,
 		}
 	}
 
