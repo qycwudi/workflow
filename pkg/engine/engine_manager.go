@@ -32,7 +32,7 @@ func (e *WorkflowEngine) immediateDeregister(workflowID string) error {
 }
 
 // GetExecutionContext 获取执行上下文
-func (e *WorkflowEngine) GetExecutionContext(workflowID, serialID string) (*core.ExecutionContext, error) {
+func (e *WorkflowEngine) GetExecutionContext(workflowID, serialID string) (*core.ExecutionContextEnhanced, error) {
 	e.mu.RLock()
 	defer e.mu.RUnlock()
 
@@ -50,7 +50,7 @@ func (e *WorkflowEngine) GetExecutionContext(workflowID, serialID string) (*core
 		}
 	}
 
-	execCtx, ok := val.(*core.ExecutionContext)
+	execCtx, ok := val.(*core.ExecutionContextEnhanced)
 	if !ok {
 		return nil, &EngineManagerError{
 			Message: "execution context type error: " + workflowID + ", " + serialID,
@@ -78,14 +78,14 @@ func (e *WorkflowEngine) ClearExecutionContext(workflowID, serialID string) erro
 		}
 	}
 
-	execCtx, ok := val.(*core.ExecutionContext)
+	execCtx, ok := val.(*core.ExecutionContextEnhanced)
 	if !ok {
 		return &EngineManagerError{
 			Message: "execution context type error: " + workflowID + ", " + serialID,
 		}
 	}
 	runnable.execContexts.Delete(serialID)
-	core.ReleaseExecutionContext(execCtx)
+	core.ReleaseExecutionContextEnhanced(execCtx)
 
 	return nil
 }
@@ -131,7 +131,7 @@ func (e *WorkflowEngine) PauseWorkflow(ctx context.Context, workflowID string, t
 		}
 	}
 
-	execCtx, ok := val.(*core.ExecutionContext)
+	execCtx, ok := val.(*core.ExecutionContextEnhanced)
 	if !ok {
 		return &EngineManagerError{
 			Message: "workflow execution context type error: " + workflowID + ", " + traceId,

@@ -65,16 +65,3 @@ func ReleaseGlobalPool() {
 		log.Println("Ants pool released.")
 	}
 }
-
-// TaskInput 代表一个任务的输入
-type TaskInput struct {
-	ID   int
-	Data interface{} // 实际任务数据
-}
-
-// TaskResult 代表一个任务的执行结果
-type TaskResult struct {
-	InputID int         // 对应输入的ID
-	Output  interface{} // 任务成功时的输出
-	Error   error       // 任务失败时的错误
-}

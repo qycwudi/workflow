@@ -25,6 +25,7 @@ require (
 	github.com/rotisserie/eris v0.5.4
 	github.com/rs/xid v1.6.0
 	github.com/samber/lo v1.47.0
+	github.com/shirou/gopsutil v3.21.11+incompatible
 	github.com/sijms/go-ora/v2 v2.8.22
 	github.com/tidwall/gjson v1.18.0
 	github.com/uptrace/bun v1.2.6
@@ -98,7 +99,6 @@ require (
 	github.com/prometheus/procfs v0.15.1 // indirect
 	github.com/puzpuzpuz/xsync/v3 v3.4.0 // indirect
 	github.com/robfig/cron/v3 v3.0.1 // indirect
-	github.com/shirou/gopsutil v3.21.11+incompatible // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/slongfield/pyfmt v0.0.0-20220222012616-ea85ff4c361f // indirect
 	github.com/spaolacci/murmur3 v1.1.0 // indirect

@@ -14,7 +14,7 @@ const (
 )
 
 // ParseNodeInputs 解析节点输入
-func ParseNodeInputs(parentOutputs *ExecutionContext, inputsValues map[string]NodeDataInputsValues, inputs NodeDataInputs) (map[string]any, error) {
+func ParseNodeInputs(parentOutputs *ExecutionContextEnhanced, inputsValues map[string]NodeDataInputsValues, inputs NodeDataInputs) (map[string]any, error) {
 	result := make(map[string]any)
 
 	// 遍历所有输入值

@@ -264,7 +264,7 @@ func (c *ConditionComponent) Validate() []core.ValidationError {
 	return nil
 }
 func (c *ConditionComponent) AnalyzeInputs(ctx context.Context) (any, error) {
-	execCtx := ctx.(*core.ExecutionContext)
+	execCtx := ctx.(*core.ExecutionContextEnhanced)
 	result := make(map[string]any)
 	for i, condition := range c.config.Conditions {
 		// 构造输入值

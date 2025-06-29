@@ -2,9 +2,6 @@ package components
 
 import (
 	"context"
-	"errors"
-
-	"github.com/bytedance/sonic"
 
 	"workflow/pkg/core"
 )
@@ -45,27 +42,5 @@ type Component interface {
 
 // ComponentFactory 组件工厂
 func ComponentFactory(e core.WorkflowEngine, nodeType string, inputs core.NodeData) (Component, error) {
-	switch nodeType {
-	case Start:
-		return NewStartComponent()
-	case End:
-		return NewEndComponent()
-	case HTTP:
-		return NewHTTPComponent(inputs.Custom)
-	case Code:
-		return NewCodeComponent(inputs.Custom)
-	case Model:
-		return NewModelComponent(inputs.Custom)
-	case Condition:
-		jsonConfig, err := sonic.Marshal(inputs.Conditions)
-		if err != nil {
-			return nil, errors.New("component configuration serialization failed: " + err.Error())
-		}
-		return NewConditionComponent(jsonConfig)
-	case Loop:
-		return NewIterationComponent(e, inputs.BatchFor, inputs.Custom)
-	case Database:
-		return NewDatabaseComponent(inputs.Custom)
-	}
-	return nil, errors.New("Component type not found: " + nodeType)
+	return ComponentFactoryFixed(e, nodeType, inputs)
 }

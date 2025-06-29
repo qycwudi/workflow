@@ -174,7 +174,7 @@ func (g *GojaJsEngine) PreCompileJs(config Config) error {
 func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]any) *goja.Runtime {
 	vm := goja.New()
 	vars := make(map[string]interface{})
-	if fromVars != nil {
+	if len(fromVars) > 0 {
 		for k, v := range fromVars {
 			vars[k] = v
 		}

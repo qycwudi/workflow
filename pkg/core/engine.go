@@ -5,7 +5,7 @@ import (
 )
 
 type WorkflowEngine interface {
-	ExecuteWorkflow(ctx context.Context, workflowID string, traceID string, params map[string]any, extra ContextExtra) (*ExecutionContext, error)
+	ExecuteWorkflow(ctx context.Context, workflowID string, traceID string, params map[string]any, extra ContextExtra) (*ExecutionContextEnhanced, error)
 
 	ListWorkflows() []string
 

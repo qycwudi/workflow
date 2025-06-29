@@ -58,7 +58,7 @@ func NewIterationComponent(e core.WorkflowEngine, batchFor core.NodeDataInputsVa
 
 // AnalyzeInputs implements Component.
 func (i *IterationComponent) AnalyzeInputs(ctx context.Context) (any, error) {
-	execCtx := ctx.(*core.ExecutionContext)
+	execCtx := ctx.(*core.ExecutionContextEnhanced)
 	// 构造
 	inputs := map[string]core.NodeDataInputsValues{"batchFor": i.config.BatchFor}
 	inputValues := core.NodeDataInputs{
@@ -100,7 +100,7 @@ func (i *IterationComponent) AnalyzeInputs(ctx context.Context) (any, error) {
 
 // Execute implements Component.
 func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Result, error) {
-	execCtx, ok := ctx.(*core.ExecutionContext)
+	execCtx, ok := ctx.(*core.ExecutionContextEnhanced)
 	if !ok {
 		return nil, errors.New("loop component context type error")
 	}

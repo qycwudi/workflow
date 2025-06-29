@@ -30,7 +30,7 @@ type Runnable struct {
 type ExecutionTask struct {
 	NodeID     string
 	Component  components.Component
-	Context    *core.ExecutionContext
+	Context    *core.ExecutionContextEnhanced
 	Engine     *WorkflowEngine
 	Runnable   *Runnable
 	WorkflowID string
