@@ -90,6 +90,32 @@ Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDczMTE1ODgsImlh
 POST http://127.0.0.1:8888/workflow/canvas/run/single
 User-Agent: Apifox/1.0.0 (https://apifox.com)
 Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTEyNjcwODMsImlhdCI6MTc1MTE4MDY4MywidWlkIjoiODhkYWUzOTMtOWEzNy00NThlLTlhMmUtZDg5ODlkZmJhMGQyIiwidXNlcklkIjo2fQ.hj6DUDS7_y_036FV8BEkZ1jCHJQuvsHeGnPmSOS2P5U
+
+{
+    "id": "d1efpiehbuqoh1rkt8dg",
+    "nodeId": "code_1751189800966",
+    "params": {
+        "input":"xuetu"
+    }
+}
+
+### 画布-执行-单组件-详情
+POST http://127.0.0.1:8888/workflow/canvas/run/single/detail
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NTEyNjcwODMsImlhdCI6MTc1MTE4MDY4MywidWlkIjoiODhkYWUzOTMtOWEzNy00NThlLTlhMmUtZDg5ODlkZmJhMGQyIiwidXNlcklkIjo2fQ.hj6DUDS7_y_036FV8BEkZ1jCHJQuvsHeGnPmSOS2P5U
+
+{       
+    "id": "d1efpiehbuqoh1rkt8dg",
+    "nodeId": "code_1751189800966"
+}
+
+
+### 画布-执行-单组件
+POST http://127.0.0.1:8888/workflow/canvas/run/single
+User-Agent: Apifox/1.0.0 (https://apifox.com)
+Content-Type: application/json
 Authorization: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDY2MDM3MDYsImlhdCI6MTc0NjUxNzMwNiwidXNlcklkIjoxfQ.hr52CJC7TC2MUAq6TGbduYiMic2KS6AEfGMNyqu9rPM
 
 {

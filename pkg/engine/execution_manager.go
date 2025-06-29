@@ -127,8 +127,8 @@ func (em *ExecutionManager) ExecutePhaseSimplified(execCtx *core.ExecutionContex
 
 // executeNodeSimplified 简化的节点执行
 func (em *ExecutionManager) executeNodeSimplified(execCtx *core.ExecutionContextEnhanced, runnable *Runnable, node *WorkflowNode) error {
-	// 跳过路由检查对于Start组件
-	if node.Type != constants.ComponentStart {
+	// 跳过路由检查对于Start组件或单节点执行
+	if node.Type != constants.ComponentStart && !execCtx.IsSingleNodeExecution() {
 		if !em.shouldExecuteNode(execCtx, runnable, node) {
 			utils.LogDebugInfo(utils.ModuleEngine, "node_route_check", map[string]any{"node_id": node.ID, "action": "skipped"})
 			return em.handleSkippedNode(execCtx, node)
@@ -203,7 +203,17 @@ func (em *ExecutionManager) executeNodeSteps(execCtx *core.ExecutionContextEnhan
 	}
 
 	// 准备输入
-	input, err := em.prepareNodeInput(execCtx, node, component)
+	var input map[string]any
+	var err error
+
+	if execCtx.IsSingleNodeExecution() {
+		// 单节点执行直接使用传入的参数作为输入
+		input, err = em.prepareSingleNodeInput(execCtx, node, component)
+	} else {
+		// 正常工作流执行使用标准输入准备
+		input, err = em.prepareNodeInput(execCtx, node, component)
+	}
+
 	if err != nil {
 		// 记录错误并更新追踪
 		if traceRecord != nil {
@@ -339,4 +349,17 @@ func (em *ExecutionManager) Close() {
 	if em.poolManager != nil {
 		em.poolManager.Close()
 	}
+}
+
+// prepareSingleNodeInput 为单节点执行准备输入
+func (em *ExecutionManager) prepareSingleNodeInput(execCtx *core.ExecutionContextEnhanced, node *WorkflowNode, component components.Component) (map[string]any, error) {
+	// 对于单节点执行，直接使用传入的参数作为输入
+	// 获取原始输入参数
+	genesisKey := constants.GenesisParameters + execCtx.WorkspaceId
+	rawParams, exists := execCtx.GetVariable(genesisKey)
+	if !exists {
+		return map[string]any{}, nil
+	}
+
+	return rawParams, nil
 }

@@ -63,13 +63,13 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 
 	// 确保调用取消函数
 	ExecutionContextEnhanced.Cancel()
-	
+
 	// 记录工作流完成追踪
 	if ExecutionContextEnhanced.IsTrace && trace != nil {
 		status := "completed"
 		errorMsg := ""
 		var output any
-		
+
 		if err != nil {
 			status = "failed"
 			errorMsg = err.Error()
@@ -79,7 +79,7 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 				output = endOutput
 			}
 		}
-		
+
 		workflowTrace := &TraceRecore{
 			WorkspaceId: ExecutionContextEnhanced.WorkspaceId,
 			TraceId:     traceID,
@@ -93,7 +93,7 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 		}
 		trace.UpdateTrace(ctx, workflowTrace)
 	}
-	
+
 	// 处理执行结果
 	if err != nil {
 		return nil, err
@@ -103,12 +103,12 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 
 func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, serialID string, nodeId string, params map[string]any) (*core.NodeResult, error) {
 	startTime := time.Now()
-	
+
 	// 获取工作流执行器
 	e.mu.RLock()
 	runnable, ok := e.runnablePool[workflowID]
 	e.mu.RUnlock()
-	
+
 	if !ok {
 		return nil, &EngineExecuteError{Message: "workflow not found: " + workflowID}
 	}
@@ -120,8 +120,16 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 			node = &n
 			break
 		}
+		if n.Type == constants.ComponentLoop {
+			for _, block := range n.Blocks {
+				if block.ID == nodeId {
+					node = &block
+					break
+				}
+			}
+		}
 	}
-	
+
 	if node == nil {
 		return nil, &EngineExecuteError{Message: "node not found: " + nodeId}
 	}
@@ -142,6 +150,7 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 		ParentWorkspaceId: "",
 		Index:             0,
 		NodeNum:           runnable.nodesNum,
+		IsSingleNode:      true, // 标记为单节点执行
 	}
 	execCtx := core.NewExecutionContextEnhanced(ctx, workflowID, serialID, params, extra, runnable.defaultTTL, runnable.nodesNum)
 
@@ -165,13 +174,13 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 	// 获取节点输出
 	var output any
 	var outputExists bool
-	
+
 	if node.Type == constants.ComponentEnd {
 		output, outputExists = execCtx.GetVariable(constants.EndParameters)
 	} else {
 		output, outputExists = execCtx.GetVariable(nodeId + ".output")
 	}
-	
+
 	if !outputExists {
 		return nil, &EngineExecuteError{Message: "node output not found"}
 	}

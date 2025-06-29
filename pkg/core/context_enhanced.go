@@ -44,6 +44,7 @@ type ContextExtra struct {
 	IsSub             bool   // 是否是子流程
 	ParentWorkspaceId string // 父流程workspaceId
 	NodeNum           int64  // 节点数量
+	IsSingleNode      bool   // 是否是单节点执行
 }
 
 type NodeResult struct {
@@ -329,6 +330,11 @@ func (ctx *ExecutionContextEnhanced) Value(key interface{}) interface{} {
 		return ctx
 	}
 	return ctx.Context.Value(key)
+}
+
+// IsSingleNodeExecution 检查是否是单节点执行
+func (ctx *ExecutionContextEnhanced) IsSingleNodeExecution() bool {
+	return ctx.Extra.IsSingleNode
 }
 
 // 增强的上下文池
