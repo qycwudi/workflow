@@ -14,6 +14,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/core"
+	"workflow/pkg/utils"
 )
 
 // CodejsComponent 代码执行组件
@@ -58,10 +59,10 @@ func NewCodeComponent(config any) (*CodeComponent, error) {
 	if err := sonic.Unmarshal(jsonConfig, &codeConfig); err != nil {
 		return nil, eris.Wrap(err, "failed to parse code execution component config")
 	}
-	logx.Debugf("[Code Execution] Config content: %s", codeConfig.Code)
+	utils.LogDebugInfo(utils.ModuleComponent, "code_config", map[string]any{"config_length": len(codeConfig.Code)})
 	engine, err := NewGojaJsEngine(codeConfig.Code, nil, codeConfig.Timeout)
 	if err != nil {
-		logx.Errorf("[Code Execution] Failed to create engine [error:%v]", err)
+		utils.LogModuleError(utils.ModuleComponent, "engine_creation", err)
 		return nil, eris.Wrap(err, "failed to create code execution component")
 	}
 	component.engine = engine
@@ -120,7 +121,7 @@ func NewGojaJsEngine(jsScript string, fromVars map[string]interface{}, timeout i
 
 	program, err := goja.Compile("", jsScript, true)
 	if err != nil {
-		logx.Errorf("[Code Execution] Failed to compile JS script [error:%v]", err)
+		utils.LogModuleError(utils.ModuleComponent, "js_compilation", err)
 		return nil, eris.Wrap(err, "failed to compile JS script")
 	}
 	jsEngine := &GojaJsEngine{
@@ -128,7 +129,7 @@ func NewGojaJsEngine(jsScript string, fromVars map[string]interface{}, timeout i
 		jsScript: program,
 	}
 	if err = jsEngine.PreCompileJs(config); err != nil {
-		logx.Errorf("[Code Execution] Failed to pre-compile JS script [error:%v]", err)
+		utils.LogModuleError(utils.ModuleComponent, "js_precompilation", err)
 		return nil, eris.Wrap(err, "failed to pre-compile JS script")
 	}
 	jsEngine.vmPool = sync.Pool{
@@ -145,7 +146,7 @@ func (g *GojaJsEngine) PreCompileJs(config Config) error {
 	for k, v := range config.Udf {
 		if jsFuncStr, ok := v.(string); ok {
 			if p, err := goja.Compile(k, jsFuncStr, true); err != nil {
-				logx.Errorf("[Code Execution] Failed to compile UDF script [function:%s] [error:%v]", k, err)
+				utils.LogModuleError(utils.ModuleComponent, "udf_compilation", err, logx.Field("function", k))
 				return eris.Wrap(err, "failed to compile UDF script")
 			} else {
 				jsUdfProgramCache[k] = p
@@ -154,7 +155,7 @@ func (g *GojaJsEngine) PreCompileJs(config Config) error {
 			if script.Type == Js || script.Type == "" {
 				if c, ok := script.Content.(string); ok {
 					if p, err := goja.Compile(k, c, true); err != nil {
-						logx.Errorf("[Code Execution] Failed to compile script content [function:%s] [error:%v]", k, err)
+						utils.LogModuleError(utils.ModuleComponent, "script_compilation", err, logx.Field("function", k))
 						return eris.Wrap(err, "failed to compile script content")
 					} else {
 						jsUdfProgramCache[k] = p
@@ -208,12 +209,12 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]any) *goja.Runti
 			vars[k] = vm.ToValue(v)
 		}
 		if err != nil {
-			logx.Errorf("[Code Execution] Failed to parse JS script [script:%s] [error:%v]", k, err)
+			utils.LogModuleError(utils.ModuleComponent, "js_parsing", err, logx.Field("script", k))
 		}
 	}
 	for k, v := range vars {
 		if err := vm.Set(k, v); err != nil {
-			logx.Errorf("[Code Execution] Failed to set variable [variable:%s] [error:%v]", k, err)
+			utils.LogModuleError(utils.ModuleComponent, "variable_setting", err, logx.Field("variable", k))
 		}
 	}
 
@@ -224,7 +225,7 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]any) *goja.Runti
 	closeStateChan(state)
 
 	if err != nil {
-		logx.Errorf("[Code Execution] JS VM execution failed [error:%v]", err)
+		utils.LogModuleError(utils.ModuleComponent, "vm_execution", err)
 	}
 	return vm
 }
@@ -233,7 +234,7 @@ func (g *GojaJsEngine) NewVm(config Config, fromVars map[string]any) *goja.Runti
 func (g *GojaJsEngine) Execute(functionName string, argumentList ...any) (out interface{}, err error) {
 	defer func() {
 		if caught := recover(); caught != nil {
-			logx.Errorf("[Code Execution] Panic occurred during execution [function:%s] [error:%v]", functionName, caught)
+			utils.LogModuleError(utils.ModuleComponent, "execution_panic", fmt.Errorf("panic: %v", caught), logx.Field("function", functionName))
 			err = eris.New(fmt.Sprintf("%s", caught))
 		}
 	}()
@@ -246,7 +247,7 @@ func (g *GojaJsEngine) Execute(functionName string, argumentList ...any) (out in
 
 	f, ok := goja.AssertFunction(vm.Get(functionName))
 	if !ok {
-		logx.Errorf("[Code Execution] Function does not exist [function:%s]", functionName)
+		utils.LogModuleError(utils.ModuleComponent, "function_not_found", fmt.Errorf("function not found: %s", functionName))
 		return nil, eris.New(functionName + " is not a function")
 	}
 	var params []goja.Value
@@ -260,7 +261,7 @@ func (g *GojaJsEngine) Execute(functionName string, argumentList ...any) (out in
 	g.vmPool.Put(vm)
 	if err != nil {
 		params, _ := sonic.Marshal(argumentList)
-		logx.Errorf("[Code Execution] Failed to execute function [function:%s] [params:%s] [error:%v]", functionName, string(params), err)
+		utils.LogModuleError(utils.ModuleComponent, "function_execution", err, logx.Field("function", functionName), logx.Field("params", string(params)))
 		return nil, eris.Wrap(err, "failed to execute function")
 	}
 	return res.Export(), nil

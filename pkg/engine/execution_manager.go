@@ -5,12 +5,11 @@ import (
 	"sync"
 	"time"
 
-	"github.com/zeromicro/go-zero/core/logx"
-
 	"workflow/pkg/components"
 	"workflow/pkg/constants"
 	"workflow/pkg/core"
 	"workflow/pkg/errors"
+	"workflow/pkg/utils"
 )
 
 // ExecutionManager 执行管理器，避免循环依赖
@@ -45,7 +44,7 @@ func (pm *PoolManager) worker() {
 		func() {
 			defer func() {
 				if r := recover(); r != nil {
-					logx.Errorf("[Pool] Task panic: %v", r)
+					utils.LogModuleError(utils.ModuleEngine, "pool_task_execution", fmt.Errorf("task panic: %v", r))
 				}
 				pm.wg.Done()
 			}()
@@ -62,6 +61,7 @@ func (pm *PoolManager) Submit(task func()) error {
 		return nil
 	default:
 		pm.wg.Done()
+		utils.LogModuleError(utils.ModuleEngine, "pool_submit", fmt.Errorf("pool is full"))
 		return errors.ExecutionError("pool", "pool is full").Build()
 	}
 }
@@ -86,7 +86,7 @@ func NewExecutionManager(poolSize int, workflowEngine *WorkflowEngine) *Executio
 
 // ExecutePhaseSimplified 简化的阶段执行
 func (em *ExecutionManager) ExecutePhaseSimplified(execCtx *core.ExecutionContextEnhanced, runnable *Runnable, phase ExecutionPhase) error {
-	logx.Debugf("[Workflow] Execute phase with %d nodes", len(phase.Nodes))
+	utils.LogDebugInfo(utils.ModuleEngine, "phase_execution", map[string]any{"node_count": len(phase.Nodes)})
 	// 创建错误收集器
 	var errorCollector struct {
 		mu     sync.Mutex
@@ -130,7 +130,7 @@ func (em *ExecutionManager) executeNodeSimplified(execCtx *core.ExecutionContext
 	// 跳过路由检查对于Start组件
 	if node.Type != constants.ComponentStart {
 		if !em.shouldExecuteNode(execCtx, runnable, node) {
-			logx.Debugf("[Workflow] Node route check failed, skipping: %s", node.ID)
+			utils.LogDebugInfo(utils.ModuleEngine, "node_route_check", map[string]any{"node_id": node.ID, "action": "skipped"})
 			return em.handleSkippedNode(execCtx, node)
 		}
 	}
@@ -157,7 +157,7 @@ func (em *ExecutionManager) shouldExecuteNode(execCtx *core.ExecutionContextEnha
 
 // handleSkippedNode 处理跳过的节点
 func (em *ExecutionManager) handleSkippedNode(execCtx *core.ExecutionContextEnhanced, node *WorkflowNode) error {
-	logx.Debugf("[Workflow] Node %s skipped, filling default values", node.ID)
+	utils.LogDebugInfo(utils.ModuleEngine, "node_skip_handling", map[string]any{"node_id": node.ID, "action": "filling_defaults"})
 
 	output := make(map[string]any)
 	processedOutput, err := core.ProcessNodeOutput(output, node.Data.NodeDataOutputs)
@@ -171,7 +171,7 @@ func (em *ExecutionManager) handleSkippedNode(execCtx *core.ExecutionContextEnha
 
 // executeNodeSteps 执行节点步骤
 func (em *ExecutionManager) executeNodeSteps(execCtx *core.ExecutionContextEnhanced, node *WorkflowNode, component components.Component) error {
-	logx.Debugf("[Workflow] Executing node: %s", node.ID)
+	utils.LogComponentExecution(node.ID, node.Type, "started", 0)
 
 	startTime := time.Now()
 	var traceRecord *TraceRecore
@@ -268,7 +268,7 @@ func (em *ExecutionManager) executeNodeSteps(execCtx *core.ExecutionContextEnhan
 		trace.UpdateTraceById(execCtx, traceRecord)
 	}
 
-	logx.Debugf("[Workflow] Node %s executed successfully", node.ID)
+	utils.LogComponentExecution(node.ID, node.Type, "completed", time.Since(startTime).Milliseconds())
 	return nil
 }
 

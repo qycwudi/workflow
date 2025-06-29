@@ -5,7 +5,7 @@ import (
 	"fmt"
 
 	"github.com/tidwall/gjson"
-	"github.com/zeromicro/go-zero/core/logx"
+	"workflow/pkg/utils"
 )
 
 const (
@@ -29,7 +29,7 @@ func ParseNodeInputs(parentOutputs *ExecutionContextEnhanced, inputsValues map[s
 		// 获取字段定义
 		prop, exists := inputs.Properties[name]
 		if !exists {
-			logx.Debugf("[输入处理] 未定义的输入字段: %s", name)
+			utils.LogDebugInfo(utils.ModuleEngine, "undefined_input_field", map[string]any{"field": name})
 			continue
 		}
 
@@ -66,7 +66,7 @@ func ParseNodeInputs(parentOutputs *ExecutionContextEnhanced, inputsValues map[s
 			if err != nil {
 				return nil, fmt.Errorf("父节点数据序列化失败: %v", err)
 			}
-			logx.Debugf("[输入处理] jsonData:%s,fieldPath:%s", string(jsonData), fieldPath)
+			utils.LogDebugInfo(utils.ModuleEngine, "input_reference_parsing", map[string]any{"field_path": fieldPath, "data_length": len(jsonData)})
 			// 使用 gjson 获取指定路径的值
 			value = gjson.GetBytes(jsonData, fieldPath).Value()
 			if value == nil {
@@ -83,9 +83,9 @@ func ParseNodeInputs(parentOutputs *ExecutionContextEnhanced, inputsValues map[s
 		}
 
 		result[name] = convertedValue
-		logx.Debugf("[输入处理] 输入解析成功 [字段:%s] [类型:%s] [值:%+v]", name, prop.Type, convertedValue)
+		utils.LogDebugInfo(utils.ModuleEngine, "input_parse_success", map[string]any{"field": name, "type": prop.Type})
 	}
-	logx.Debugf("[输入处理结束] result:%+v", result)
+	utils.LogDebugInfo(utils.ModuleEngine, "input_parse_complete", map[string]any{"field_count": len(result)})
 	return result, nil
 }
 

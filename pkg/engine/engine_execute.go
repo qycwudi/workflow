@@ -9,6 +9,7 @@ import (
 	"workflow/pkg/components"
 	"workflow/pkg/constants"
 	"workflow/pkg/core"
+	"workflow/pkg/utils"
 )
 
 // ExecuteWorkflow 执行工作流
@@ -18,7 +19,7 @@ func (e *WorkflowEngine) ExecuteWorkflow(ctx context.Context, workflowID string,
 		return nil, &EngineExecuteError{Message: "params is nil"}
 	}
 
-	logx.Debugf("[Workflow] Execute parameters: %+v", params)
+	utils.LogDebugInfo(utils.ModuleWorkflow, "workflow_execution", map[string]any{"params_count": len(params)})
 
 	// 获取工作流执行器
 	e.mu.RLock()
@@ -156,7 +157,7 @@ func (e *WorkflowEngine) ExecuteSingleWorkflow(ctx context.Context, workflowID, 
 	// 执行节点
 	err := executionManager.executeNodeSimplified(execCtx, runnable, workflowNode)
 	if err != nil {
-		logx.Errorw("failed to execute node", logx.Field("error", err.Error()))
+		utils.LogModuleError(utils.ModuleWorkflow, "single_node_execution", err, logx.Field("node_id", nodeId))
 		nodeResult.Error = err.Error()
 		return nodeResult, &EngineExecuteError{Message: "failed to execute node: " + err.Error()}
 	}
@@ -189,13 +190,16 @@ func (e *WorkflowEngine) executeWorkflowPhases(execCtx *core.ExecutionContextEnh
 	executionManager := NewExecutionManager(1000, e)
 	defer executionManager.Close()
 
-	// 总执行计划
-	logx.Debugf("[Workflow] Total execution plan: %d", len(runnable.executionPlan.Phases))
+	// 记录工作流执行开始
+	utils.LogWorkflowExecution(execCtx.WorkspaceId, execCtx.WorkspaceId, execCtx.TraceId, "", "started", 0, int(runnable.nodesNum))
 	for _, phase := range runnable.executionPlan.Phases {
 		if err := executionManager.ExecutePhaseSimplified(execCtx, runnable, phase); err != nil {
-			logx.Errorw("[Workflow] Execute phase failed", logx.Field("error", err.Error()))
+			utils.LogModuleError(utils.ModuleWorkflow, "phase_execution", err, logx.Field("phase_index", len(runnable.executionPlan.Phases)))
 			return err
 		}
 	}
+	// 记录工作流执行完成
+	startTime := time.Now()
+	utils.LogWorkflowExecution(execCtx.WorkspaceId, execCtx.WorkspaceId, execCtx.TraceId, "", "completed", time.Since(startTime).Milliseconds(), int(runnable.nodesNum))
 	return nil
 }

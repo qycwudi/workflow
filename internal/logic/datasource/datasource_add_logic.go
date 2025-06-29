@@ -18,6 +18,7 @@ import (
 	"workflow/internal/model"
 	"workflow/internal/svc"
 	"workflow/internal/types"
+	"workflow/pkg/utils"
 )
 
 type DatasourceAddLogic struct {
@@ -59,7 +60,7 @@ func (l *DatasourceAddLogic) DatasourceAdd(req *types.DatasourceAddRequest) (res
 		// 检查链接
 		err = datasource.CheckDataSourceClient(enum.DBType(req.Type), req.Config)
 		if err != nil {
-			l.Errorf("connect to datasource failed: %s", err.Error())
+			utils.LogModuleError(utils.ModuleDatasource, "connection_test", err)
 			status = model.DatasourceStatusClosed
 		}
 	}
@@ -92,7 +93,7 @@ func (l *DatasourceAddLogic) DatasourceAdd(req *types.DatasourceAddRequest) (res
 	// 双重保险 防止数据源客户端消息消费失败后,导致一直有副本同步失败
 	err = broadcast.NewDatasourceClientSyncConstructor().Publish(l.ctx)
 	if err != nil {
-		logx.Errorf("%s publish event failed: %s", "DatasourceClientSync", err.Error())
+		utils.LogModuleError(utils.ModuleAPI, "event_publishing", err, logx.Field("event", "DatasourceClientSync"))
 		return nil, err
 	}
 	resp = &types.DatasourceAddResponse{

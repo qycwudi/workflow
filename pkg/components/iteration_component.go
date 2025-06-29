@@ -9,6 +9,7 @@ import (
 	"github.com/zeromicro/go-zero/core/logx"
 
 	"workflow/pkg/core"
+	"workflow/pkg/utils"
 )
 
 type IterationComponent struct {
@@ -52,7 +53,7 @@ func NewIterationComponent(e core.WorkflowEngine, batchFor core.NodeDataInputsVa
 	iteraConfig.workflowEngine = e
 	iteraConfig.BatchFor = batchFor
 	component.config = iteraConfig
-	logx.Debugf("loop component configuration: %+v", iteraConfig)
+	utils.LogDebugInfo(utils.ModuleComponent, "iteration_config", map[string]any{"node_id": iteraConfig.NodeID, "batch_type": iteraConfig.BatchForType})
 	return component, nil
 }
 
@@ -136,7 +137,7 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 		inputMap["index"] = idx
 		// 设置loop输出参数,用于子流程获取
 		execCtx.SetVariable(workflowID+"_locals"+".output", inputMap)
-		logx.Debugf("[loop] setVariable success: index: %d, output: %+v", idx, inputMap)
+		utils.LogDebugInfo(utils.ModuleComponent, "iteration_variable_set", map[string]any{"index": idx, "workflow_id": workflowID})
 		subExecCtx, err := i.config.workflowEngine.ExecuteWorkflow(execCtx, workflowID, execCtx.TraceId, inputMap, core.ContextExtra{
 			IsSub:             true,
 			ParentWorkspaceId: execCtx.WorkspaceId,
@@ -170,7 +171,7 @@ func (i *IterationComponent) Execute(ctx context.Context, input any) (*core.Resu
 				r[key] = append(arr, value)
 			}
 		}
-		logx.Debugf("[loop] execute success: index: %d, item: %+v, result: %+v", idx, inputMap, r)
+		utils.LogComponentExecution(workflowID, "iteration_item", "completed", 0, logx.Field("index", idx), logx.Field("result_keys", len(subResult)))
 	}
 
 	// 迭代完成后清空 sub_index，恢复到非子流程状态

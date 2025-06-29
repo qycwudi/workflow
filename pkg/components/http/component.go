@@ -12,6 +12,7 @@ import (
 	"workflow/pkg/constants"
 	"workflow/pkg/core"
 	"workflow/pkg/errors"
+	"workflow/pkg/utils"
 	"workflow/pkg/validation"
 )
 
@@ -250,10 +251,9 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 	// 执行HTTP请求
 	statusCode, body, err := c.executeRequest(requestOpts)
 	if err != nil {
-		logx.Errorw("[HTTP] Request failed",
+		utils.LogModuleError(utils.ModuleComponent, "http_request", err, 
 			logx.Field("url", requestOpts.URL),
-			logx.Field("method", requestOpts.Method),
-			logx.Field("error", err))
+			logx.Field("method", requestOpts.Method))
 
 		if c.config.IgnoreError {
 			return &core.Result{
@@ -268,7 +268,7 @@ func (c *HTTPComponent) Execute(ctx context.Context, input any) (*core.Result, e
 		}, err
 	}
 
-	logx.Infow("[HTTP] Request successful",
+	utils.LogComponentExecution("http_request", "http", "completed", 0,
 		logx.Field("url", requestOpts.URL),
 		logx.Field("method", requestOpts.Method),
 		logx.Field("status_code", statusCode))
@@ -330,7 +330,7 @@ func (c *HTTPComponent) executeRequest(opts RequestOptions) (int, []byte, error)
 	if err != nil {
 		// 如果是连接错误，切换到NetHTTP重试
 		if c.isNetworkError(err) {
-			logx.Debugf("[HTTP] FastHTTP failed, switching to NetHTTP: %v", err)
+			utils.LogDebugInfo(utils.ModuleComponent, "http_client_fallback", map[string]any{"error": err.Error()})
 
 			netHTTPStrategy := NewNetHTTPStrategy(
 				time.Duration(c.config.Timeout)*time.Second,

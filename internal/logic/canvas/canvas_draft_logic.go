@@ -15,6 +15,7 @@ import (
 	"workflow/internal/svc"
 	"workflow/internal/types"
 	util "workflow/internal/utils"
+	pkgutils "workflow/pkg/utils"
 )
 
 type CanvasDraftLogic struct {
@@ -35,6 +36,11 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 	draftMarshal, _ := sonic.Marshal(req.Graph)
 	userId, _ := util.GetUserId(l.ctx)
 	userIdStr := strconv.FormatInt(userId, 10)
+	
+	// 记录画布草稿操作的审计日志
+	pkgutils.LogBusinessOperation(pkgutils.OpUpdate, req.Id, userIdStr, 
+		logx.Field("operation", "canvas_draft_save"),
+		logx.Field("draft_size", len(draftMarshal)))
 	canvas, err := l.svcCtx.CanvasModel.FindOneByWorkspaceId(l.ctx, req.Id)
 	if err != nil {
 		if err == model.ErrNotFound {
@@ -48,7 +54,7 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 				UpdateBy:    userIdStr,
 			})
 			if err != nil {
-				logx.Errorf("[Canvas] Failed to add canvas draft [WorkspaceID:%s] [Error:%v]", req.Id, err)
+				pkgutils.LogModuleError(pkgutils.ModuleCanvas, "canvas_draft_creation", err, logx.Field("workspace_id", req.Id))
 				return nil, errors.New(int(logic.SystemOrmError), "Failed to add canvas draft")
 			}
 			resp = &types.CanvasDraftResponse{
@@ -57,7 +63,7 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 			}
 			return resp, nil
 		} else {
-			logx.Errorf("[Canvas] Failed to query canvas draft [WorkspaceID:%s] [Error:%v]", req.Id, err)
+			pkgutils.LogModuleError(pkgutils.ModuleCanvas, "canvas_draft_query", err, logx.Field("workspace_id", req.Id))
 			return nil, errors.New(int(logic.SystemOrmError), "Failed to query canvas draft")
 		}
 	}
@@ -67,7 +73,7 @@ func (l *CanvasDraftLogic) CanvasDraft(req *types.CanvasDraftRequest) (resp *typ
 	canvas.UpdateBy = userIdStr
 	err = l.svcCtx.CanvasModel.Update(l.ctx, canvas)
 	if err != nil {
-		logx.Errorf("[Canvas] Failed to update canvas draft [WorkspaceID:%s] [Error:%v]", req.Id, err)
+		pkgutils.LogModuleError(pkgutils.ModuleCanvas, "canvas_draft_update", err, logx.Field("workspace_id", req.Id))
 		return nil, errors.New(int(logic.SystemOrmError), "Failed to update canvas draft")
 	}
 	resp = &types.CanvasDraftResponse{

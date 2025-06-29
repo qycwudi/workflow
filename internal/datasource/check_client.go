@@ -10,10 +10,10 @@ import (
 	"github.com/jlaffaye/ftp"
 	"github.com/pkg/sftp"
 	goora "github.com/sijms/go-ora/v2"
-	"github.com/zeromicro/go-zero/core/logx"
 	"golang.org/x/crypto/ssh"
 
 	"workflow/internal/enum"
+	"workflow/pkg/utils"
 )
 
 type DataSourceConfig struct {
@@ -147,7 +147,7 @@ func GenDataSourceDSN(t enum.DBType, config string) string {
 	c := DataSourceConfig{}
 	err := sonic.Unmarshal([]byte(config), &c)
 	if err != nil {
-		logx.Errorf("unmarshal datasource config failed, err:%v", err)
+		utils.LogModuleError(utils.ModuleDatasource, "config_parsing", err)
 		return ""
 	}
 

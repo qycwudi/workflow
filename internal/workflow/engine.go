@@ -10,6 +10,7 @@ import (
 	"workflow/internal/svc"
 	"workflow/pkg/core"
 	"workflow/pkg/engine"
+	"workflow/pkg/utils"
 )
 
 var eg *engine.WorkflowEngine
@@ -22,7 +23,7 @@ func InitEngine(ctx *svc.ServiceContext) {
 func InitOpenApiEngine(ctx *svc.ServiceContext) {
 	apis, err := ctx.ApiModel.FindByOn(context.Background())
 	if err != nil {
-		logx.Errorf("[workflow] find api error: %s", err)
+		utils.LogModuleError(utils.ModuleAPI, "api_lookup", err)
 		return
 	}
 	count := 0
@@ -30,19 +31,19 @@ func InitOpenApiEngine(ctx *svc.ServiceContext) {
 		Register(context.Background(), api.ApiId, api.Dsl)
 		count++
 	}
-	logx.Infof("[workflow] register api success [count:%d]", count)
+	utils.LogSystemEvent("api_registration_completed", utils.ModuleAPI, logx.Field("count", count))
 }
 
 func Register(ctx context.Context, id string, dsl string) error {
 	var graph core.Graph
 	err := sonic.Unmarshal([]byte(dsl), &graph)
 	if err != nil {
-		logx.Errorf("[workflow] compile workflow error: %s", err)
+		utils.LogModuleError(utils.ModuleWorkflow, "workflow_compilation", err, logx.Field("workflow_id", id))
 		return err
 	}
 	err = eg.Compile(ctx, id, &graph)
 	if err != nil {
-		logx.Errorf("[workflow] register workflow error: %s", err)
+		utils.LogModuleError(utils.ModuleWorkflow, "workflow_registration", err, logx.Field("workflow_id", id))
 		return err
 	}
 	return nil
