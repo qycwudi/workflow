@@ -20,7 +20,7 @@ Log:
 MySqlUrn: root:Root@123@tcp(10.99.51.9:3306)/workflow-dev?charset=utf8mb4&parseTime=True&loc=Local
 # 指定开发redis db5
 Redis:
-  Host: 10.90.64.57:6379
+  Host: 10.99.51.6:6379
   Password: 'redis123'
   DB: 6
 

@@ -4,7 +4,9 @@ import (
 	"bufio"
 	"bytes"
 	"crypto/tls"
+	"encoding/base64"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -184,19 +186,29 @@ func (x *HttpCallNode) createRequest(endpointUrl string, msg types.RuleMsg) (*ht
 	var reqBody []byte
 	var err error
 	contentType := x.Config.Headers[contentTypeKey]
-	if contentType == wwwFormUrlencodedContentType || contentType == wwwFormUrlencodedContentTypeUtf8 {
+	var newContentType string
+	switch contentType {
+	case wwwFormUrlencodedContentType, wwwFormUrlencodedContentTypeUtf8:
 		reqBody, err = x.prepareFormUrlEncodedRequestBody(msg)
-		if err != nil {
-			return nil, err
-		}
-	} else {
+	case formContentType:
+		reqBody, newContentType, err = x.prepareFormDataRequestBody(msg)
+	default:
 		reqBody, err = x.prepareRequestBody(msg)
-		if err != nil {
-			return nil, err
-		}
 	}
+	if err != nil {
+		return nil, err
+	}
+
 	logx.Infof("request body: %s", string(reqBody))
-	return http.NewRequest(x.Config.RequestMethod, endpointUrl, bytes.NewReader(reqBody))
+	req, err := http.NewRequest(x.Config.RequestMethod, endpointUrl, bytes.NewReader(reqBody))
+	if err != nil {
+		return nil, err
+	}
+	if newContentType != "" {
+		logx.Infof("new contentType: %s", newContentType)
+		req.Header.Set(contentTypeKey, newContentType)
+	}
+	return req, nil
 }
 
 // prepareRequestBody 准备请求体
@@ -257,7 +269,28 @@ func (x *HttpCallNode) prepareFormDataRequestBody(msg types.RuleMsg) ([]byte, st
 	for key, value := range data {
 		switch v := value.(type) {
 		case string:
-			_ = form.WriteField(key, v)
+			// 前缀为_base64_的key，需要使用form.CreateFormFile创建文件 _base64_file_filename
+			if strings.HasPrefix(key, "_base64_") {
+				content, filename, err := parseBase64PathWithIndex(key)
+				if err != nil {
+					return nil, "", err
+				}
+				formFile, err := form.CreateFormFile(content, filename)
+				if err != nil {
+					return nil, "", err
+				}
+				// 解码 base64
+				decoded, err := base64.StdEncoding.DecodeString(v)
+				if err != nil {
+					return nil, "", err
+				}
+				_, err = formFile.Write(decoded)
+				if err != nil {
+					return nil, "", err
+				}
+			} else {
+				_ = form.WriteField(key, v)
+			}
 		case float64:
 			_ = form.WriteField(key, fmt.Sprintf("%v", v))
 		case int:
@@ -284,14 +317,24 @@ func (x *HttpCallNode) prepareFormDataRequestBody(msg types.RuleMsg) ([]byte, st
 		}
 	}
 
-	defer func() { _ = form.Close() }()
+	// 必须先关闭 form writer 才能获取完整的 multipart 数据
+	err = form.Close()
+	if err != nil {
+		return nil, "", err
+	}
 	return payload.Bytes(), form.FormDataContentType(), nil
 }
 
 // setRequestHeaders 设置请求头
 func (x *HttpCallNode) setRequestHeaders(req *http.Request, evn map[string]interface{}) {
 	for key, value := range x.headersTemplate {
-		req.Header.Set(key.Execute(evn), value.Execute(evn))
+		headerKey := key.Execute(evn)
+		headerValue := value.Execute(evn)
+		// 对于multipart/form-data请求，不覆盖已设置的Content-Type（包含boundary）
+		if headerKey == contentTypeKey && headerValue == formContentType && req.Header.Get(contentTypeKey) != "" {
+			continue
+		}
+		req.Header.Set(headerKey, headerValue)
 	}
 }
 
@@ -409,4 +452,26 @@ func readFromStream(ctx types.RuleContext, msg types.RuleMsg, resp *http.Respons
 	if err := scanner.Err(); err != nil && err != io.EOF {
 		ctx.TellFailure(msg, err)
 	}
+}
+
+func parseBase64PathWithIndex(path string) (content, filename string, err error) {
+	const prefix = "_base64_"
+
+	if !strings.HasPrefix(path, prefix) {
+		return "", "", errors.New("path should have prefix _base64_")
+	}
+
+	// 移除前缀
+	remaining := path[len(prefix):]
+
+	// 查找第一个下划线的位置
+	idx := strings.Index(remaining, "_")
+	if idx == -1 || idx == 0 || idx == len(remaining)-1 {
+		return "", "", errors.New("invalid format: missing content or filename")
+	}
+
+	content = remaining[:idx]
+	filename = remaining[idx+1:]
+
+	return content, filename, nil
 }
